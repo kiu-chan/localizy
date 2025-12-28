@@ -76,17 +76,6 @@ class _MapPageState extends State<MapPage> {
       if (mounted) {
         setState(() {
           _currentPosition = LatLng(position.latitude, position.longitude);
-          _markers.add(
-            Marker(
-              markerId:  const MarkerId('current_location'),
-              position: _currentPosition,
-              infoWindow: InfoWindow(
-                title: l10n?.yourLocation ??  'Your location',
-                snippet: l10n?.youAreHere ?? 'You are here',
-              ),
-              icon:  BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueGreen),
-            ),
-          );
           _isLoading = false;
         });
 
@@ -133,13 +122,6 @@ class _MapPageState extends State<MapPage> {
         title:  Text(l10n?.map ??  'Map'),
         backgroundColor:  Colors.green. shade700,
         foregroundColor: Colors.white,
-        actions: [
-          IconButton(
-            icon: const Icon(Icons. my_location),
-            onPressed: _getCurrentLocation,
-            tooltip: l10n?.currentLocation ??  'Current location',
-          ),
-        ],
       ),
       body: _isLoading
           ? Center(
