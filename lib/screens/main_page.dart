@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:localizy/l10n/app_localizations.dart';
 import 'home_page.dart';
 import 'map_page.dart';
 import 'settings_page.dart';
@@ -21,6 +22,8 @@ class _MainPageState extends State<MainPage> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations. of(context);
+    
     return Scaffold(
       body:  _pages[_currentIndex],
       bottomNavigationBar: BottomNavigationBar(
@@ -31,19 +34,19 @@ class _MainPageState extends State<MainPage> {
           });
         },
         selectedItemColor: Colors.green.shade700,
-        unselectedItemColor: Colors.grey,
-        items: const [
+        unselectedItemColor:  Colors.grey,
+        items: [
           BottomNavigationBarItem(
-            icon: Icon(Icons. home),
-            label: 'Trang chủ',
+            icon: const Icon(Icons.home),
+            label: l10n?.home ??  'Home',
           ),
           BottomNavigationBarItem(
-            icon:  Icon(Icons.map),
-            label: 'Bản đồ',
+            icon: const Icon(Icons.map),
+            label: l10n?.map ?? 'Map',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons. settings),
-            label: 'Cài đặt',
+            icon:  const Icon(Icons.settings),
+            label: l10n?.settings ?? 'Settings',
           ),
         ],
       ),

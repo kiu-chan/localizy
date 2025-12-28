@@ -104,16 +104,6 @@ class SettingsPage extends StatelessWidget {
                           ],
                         ),
                       ),
-                      DropdownMenuItem(
-                        value:  'vi',
-                        child: Row(
-                          children:  [
-                            const Text('🇻🇳', style:  TextStyle(fontSize: 20)),
-                            const SizedBox(width: 8),
-                            Text(l10n.vietnamese),
-                          ],
-                        ),
-                      ),
                     ],
                     onChanged: (String? newValue) {
                       if (newValue != null) {
