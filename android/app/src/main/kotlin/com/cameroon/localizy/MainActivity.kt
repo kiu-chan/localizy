@@ -1,4 +1,4 @@
-package com.example.localizy
+package com.cameroon.localizy
 
 import io.flutter.embedding.android.FlutterActivity
 
