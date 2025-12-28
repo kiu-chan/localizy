@@ -4,7 +4,7 @@ import 'package:provider/provider.dart';
 import '../utils/language_manager.dart';
 
 class SettingsPage extends StatelessWidget {
-  const SettingsPage({Key? key}) : super(key: key);
+  const SettingsPage({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -52,7 +52,7 @@ class SettingsPage extends StatelessWidget {
               borderRadius: BorderRadius.circular(12),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.grey.withOpacity(0.2),
+                  color: Colors.grey.withValues(alpha: 0.2),
                   spreadRadius: 1,
                   blurRadius:  5,
                   offset:  const Offset(0, 2),

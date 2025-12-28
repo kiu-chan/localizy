@@ -5,7 +5,7 @@ import 'forgot_password_page.dart';
 import 'main_page.dart';
 
 class LoginPage extends StatefulWidget {
-  const LoginPage({Key?  key}) : super(key: key);
+  const LoginPage({super.key});
 
   @override
   State<LoginPage> createState() => _LoginPageState();
@@ -87,7 +87,7 @@ class _LoginPageState extends State<LoginPage> {
                         shape: BoxShape.circle,
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.black.withOpacity(0.2),
+                            color: Colors.black.withValues(alpha: 0.2),
                             blurRadius:  20,
                             offset:  const Offset(0, 10),
                           ),
@@ -134,7 +134,7 @@ class _LoginPageState extends State<LoginPage> {
                         borderRadius: BorderRadius.circular(20),
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.black.withOpacity(0.1),
+                            color: Colors.black.withValues(alpha: 0.1),
                             blurRadius: 20,
                             offset: const Offset(0, 10),
                           ),

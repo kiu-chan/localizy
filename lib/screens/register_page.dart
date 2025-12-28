@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:localizy/l10n/app_localizations.dart';
 
 class RegisterPage extends StatefulWidget {
-  const RegisterPage({Key? key}) : super(key: key);
+  const RegisterPage({super.key});
 
   @override
   State<RegisterPage> createState() => _RegisterPageState();
@@ -110,7 +110,7 @@ class _RegisterPageState extends State<RegisterPage> {
                               shape: BoxShape.circle,
                               boxShadow: [
                                 BoxShadow(
-                                  color: Colors.black.withOpacity(0.2),
+                                  color: Colors.black.withValues(alpha: 0.2),
                                   blurRadius: 20,
                                   offset: const Offset(0, 10),
                                 ),
@@ -157,7 +157,7 @@ class _RegisterPageState extends State<RegisterPage> {
                               borderRadius: BorderRadius.circular(20),
                               boxShadow: [
                                 BoxShadow(
-                                  color: Colors.black.withOpacity(0.1),
+                                  color: Colors.black.withValues(alpha: 0.1),
                                   blurRadius: 20,
                                   offset: const Offset(0, 10),
                                 ),

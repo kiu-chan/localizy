@@ -4,7 +4,7 @@ import 'package:geolocator/geolocator.dart';
 import 'package:localizy/l10n/app_localizations.dart';
 
 class MapPage extends StatefulWidget {
-  const MapPage({Key?  key}) : super(key: key);
+  const MapPage({super.key});
 
   @override
   State<MapPage> createState() => _MapPageState();
@@ -14,7 +14,7 @@ class _MapPageState extends State<MapPage> {
   GoogleMapController? _mapController;
   LatLng _currentPosition = const LatLng(48.8566, 2.3522); // Paris mặc định
   bool _isLoading = true;
-  Set<Marker> _markers = {};
+  final Set<Marker> _markers = {};
 
   @override
   void initState() {
