@@ -9,7 +9,17 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  flutter_localizations:
+    sdk: flutter
+  flutter_dotenv: ^6.0.0
   flutter_launcher_icons: ^0.14.4
+  geolocator: ^14.0.2
+  google_maps_flutter: ^2.14.0
+  intl: ^0.20.2
+  location: ^8.0.1
+  permission_handler: ^12.0.1
+  shared_preferences: ^2.5.4
+  provider: ^6.1.5+1
 
 flutter_icons:
   android: true
@@ -24,6 +34,8 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
+  generate: true
 
   assets:
     - assets/icon/
+    - .env

@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:localizy/l10n/app_localizations.dart';
 import 'register_page.dart';
 import 'forgot_password_page.dart';
+import 'main_page.dart';
 
 class LoginPage extends StatefulWidget {
-  const LoginPage({Key? key}) : super(key: key);
+  const LoginPage({Key?  key}) : super(key: key);
 
   @override
   State<LoginPage> createState() => _LoginPageState();
@@ -37,9 +39,16 @@ class _LoginPageState extends State<LoginPage> {
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Đăng nhập thành công!'),
+          SnackBar(
+            content:  Text(AppLocalizations.of(context)!.loginSuccess),
             backgroundColor: Colors.green,
+          ),
+        );
+        
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (context) => const MainPage(),
           ),
         );
       }
@@ -48,11 +57,13 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    
     return Scaffold(
       body: Container(
         decoration: BoxDecoration(
           gradient: LinearGradient(
-            begin: Alignment.topCenter,
+            begin:  Alignment.topCenter,
             end: Alignment.bottomCenter,
             colors: [
               Colors.green.shade400,
@@ -77,8 +88,8 @@ class _LoginPageState extends State<LoginPage> {
                         boxShadow: [
                           BoxShadow(
                             color: Colors.black.withOpacity(0.2),
-                            blurRadius: 20,
-                            offset: const Offset(0, 10),
+                            blurRadius:  20,
+                            offset:  const Offset(0, 10),
                           ),
                         ],
                       ),
@@ -92,27 +103,27 @@ class _LoginPageState extends State<LoginPage> {
                             return Icon(
                               Icons.eco,
                               size: 60,
-                              color: Colors.green.shade700,
+                              color: Colors. green.shade700,
                             );
                           },
                         ),
                       ),
                     ),
                     const SizedBox(height: 40),
-                    const Text(
-                      'Chào mừng trở lại!',
-                      style: TextStyle(
-                        fontSize: 32,
+                    Text(
+                      l10n.welcomeBack,
+                      style: const TextStyle(
+                        fontSize:  32,
                         fontWeight: FontWeight.bold,
                         color: Colors.white,
                       ),
                     ),
                     const SizedBox(height: 8),
-                    const Text(
-                      'Đăng nhập để tiếp tục',
-                      style: TextStyle(
+                    Text(
+                      l10n.loginToContinue,
+                      style:  const TextStyle(
                         fontSize: 16,
-                        color: Colors.white70,
+                        color: Colors. white70,
                       ),
                     ),
                     const SizedBox(height: 40),
@@ -129,19 +140,19 @@ class _LoginPageState extends State<LoginPage> {
                           ),
                         ],
                       ),
-                      child: Column(
+                      child:  Column(
                         children: [
                           TextFormField(
                             controller: _emailController,
                             keyboardType: TextInputType.emailAddress,
                             decoration: InputDecoration(
-                              labelText: 'Email',
+                              labelText: l10n.email,
                               prefixIcon: Icon(
                                 Icons.email_outlined,
                                 color: Colors.green.shade700,
                               ),
                               border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(12),
+                                borderRadius: BorderRadius. circular(12),
                               ),
                               focusedBorder: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(12),
@@ -153,10 +164,10 @@ class _LoginPageState extends State<LoginPage> {
                             ),
                             validator: (value) {
                               if (value == null || value.isEmpty) {
-                                return 'Vui lòng nhập email';
+                                return l10n. pleaseEnterEmail;
                               }
                               if (!value.contains('@')) {
-                                return 'Email không hợp lệ';
+                                return l10n.invalidEmail;
                               }
                               return null;
                             },
@@ -166,17 +177,17 @@ class _LoginPageState extends State<LoginPage> {
                             controller: _passwordController,
                             obscureText: !_isPasswordVisible,
                             decoration: InputDecoration(
-                              labelText: 'Mật khẩu',
+                              labelText:  l10n.password,
                               prefixIcon: Icon(
                                 Icons.lock_outlined,
-                                color: Colors.green.shade700,
+                                color: Colors. green.shade700,
                               ),
-                              suffixIcon: IconButton(
-                                icon: Icon(
+                              suffixIcon:  IconButton(
+                                icon:  Icon(
                                   _isPasswordVisible
                                       ? Icons.visibility_off
                                       : Icons.visibility,
-                                  color: Colors.green.shade700,
+                                  color: Colors. green.shade700,
                                 ),
                                 onPressed: () {
                                   setState(() {
@@ -185,10 +196,10 @@ class _LoginPageState extends State<LoginPage> {
                                 },
                               ),
                               border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(12),
+                                borderRadius: BorderRadius. circular(12),
                               ),
                               focusedBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(12),
+                                borderRadius: BorderRadius. circular(12),
                                 borderSide: BorderSide(
                                   color: Colors.green.shade700,
                                   width: 2,
@@ -197,31 +208,31 @@ class _LoginPageState extends State<LoginPage> {
                             ),
                             validator: (value) {
                               if (value == null || value.isEmpty) {
-                                return 'Vui lòng nhập mật khẩu';
+                                return l10n. pleaseEnterPassword;
                               }
                               if (value.length < 6) {
-                                return 'Mật khẩu phải có ít nhất 6 ký tự';
+                                return l10n.passwordMinLength;
                               }
                               return null;
                             },
                           ),
                           const SizedBox(height: 12),
                           Align(
-                            alignment: Alignment.centerRight,
+                            alignment:  Alignment.centerRight,
                             child: TextButton(
                               onPressed: () {
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                    builder: (context) =>
+                                    builder:  (context) =>
                                         const ForgotPasswordPage(),
                                   ),
                                 );
                               },
                               child: Text(
-                                'Quên mật khẩu?',
+                                l10n.forgotPassword,
                                 style: TextStyle(
-                                  color: Colors.green.shade700,
+                                  color:  Colors.green.shade700,
                                   fontWeight: FontWeight.w600,
                                 ),
                               ),
@@ -229,12 +240,12 @@ class _LoginPageState extends State<LoginPage> {
                           ),
                           const SizedBox(height: 24),
                           SizedBox(
-                            width: double.infinity,
+                            width:  double.infinity,
                             height: 56,
                             child: ElevatedButton(
-                              onPressed: _isLoading ? null : _handleLogin,
+                              onPressed: _isLoading ? null :  _handleLogin,
                               style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.green.shade700,
+                                backgroundColor: Colors. green.shade700,
                                 foregroundColor: Colors.white,
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(12),
@@ -245,16 +256,16 @@ class _LoginPageState extends State<LoginPage> {
                                   ? const SizedBox(
                                       height: 24,
                                       width: 24,
-                                      child: CircularProgressIndicator(
+                                      child:  CircularProgressIndicator(
                                         color: Colors.white,
                                         strokeWidth: 2,
                                       ),
                                     )
-                                  : const Text(
-                                      'Đăng nhập',
-                                      style: TextStyle(
+                                  : Text(
+                                      l10n.login,
+                                      style: const TextStyle(
                                         fontSize: 18,
-                                        fontWeight: FontWeight.bold,
+                                        fontWeight:  FontWeight.bold,
                                       ),
                                     ),
                             ),
@@ -266,9 +277,9 @@ class _LoginPageState extends State<LoginPage> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        const Text(
-                          'Chưa có tài khoản? ',
-                          style: TextStyle(color: Colors.white70),
+                        Text(
+                          l10n.noAccount,
+                          style: const TextStyle(color: Colors.white70),
                         ),
                         TextButton(
                           onPressed: () {
@@ -279,11 +290,11 @@ class _LoginPageState extends State<LoginPage> {
                               ),
                             );
                           },
-                          child: const Text(
-                            'Đăng ký',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
+                          child: Text(
+                            l10n.register,
+                            style: const TextStyle(
+                              color: Colors. white,
+                              fontWeight:  FontWeight.bold,
                             ),
                           ),
                         ),
