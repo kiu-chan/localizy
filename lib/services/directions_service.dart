@@ -7,10 +7,11 @@ class DirectionsService {
   static final String _apiKey = dotenv.env['GOOGLE_MAPS_API_KEY'] ?? '';
 
   /// Lấy tuyến đường từ điểm xuất phát đến điểm đến
-  static Future<DirectionsResult?> getDirections({
+  static Future<DirectionsResult? > getDirections({
     required LatLng origin,
     required LatLng destination,
     TravelMode mode = TravelMode.driving,
+    String language = 'vi', // Thêm tham số language
   }) async {
     try {
       // Kiểm tra API Key
@@ -24,8 +25,9 @@ class DirectionsService {
       print('📍 Origin: ${origin.latitude}, ${origin.longitude}');
       print('📍 Destination: ${destination.latitude}, ${destination.longitude}');
       print('🚗 Travel Mode: ${_getTravelModeString(mode)}');
+      print('🌐 Language: $language');
 
-      // FIX: Sử dụng Uri.https và queryParameters thay vì parse string
+      // Sử dụng Uri. https và queryParameters với language parameter
       final uri = Uri.https(
         'maps.googleapis.com',
         '/maps/api/directions/json',
@@ -34,7 +36,7 @@ class DirectionsService {
           'destination': '${destination.latitude},${destination.longitude}',
           'mode': _getTravelModeString(mode),
           'key': _apiKey,
-          'language': 'vi',
+          'language': language, // Sử dụng language parameter
         },
       );
 
@@ -53,15 +55,15 @@ class DirectionsService {
         // Kiểm tra các trạng thái lỗi từ API
         if (data['status'] == 'REQUEST_DENIED') {
           print('❌ REQUEST_DENIED: ${data['error_message']}');
-          print('Possible reasons: ');
+          print('Possible reasons:');
           print('1. API Key is invalid');
-          print('2. Directions API is not enabled');
+          print('2.  Directions API is not enabled');
           print('3. Billing is not enabled');
           return null;
         }
         
         if (data['status'] == 'ZERO_RESULTS') {
-          print('❌ ZERO_RESULTS: No route found between these points');
+          print('❌ ZERO_RESULTS:  No route found between these points');
           return null;
         }
         
@@ -77,18 +79,18 @@ class DirectionsService {
         }
         
         if (data['status'] == 'UNKNOWN_ERROR') {
-          print('❌ UNKNOWN_ERROR:  Server error, try again');
+          print('❌ UNKNOWN_ERROR: Server error, try again');
           return null;
         }
         
-        if (data['status'] == 'OK' && data['routes']. isNotEmpty) {
+        if (data['status'] == 'OK' && data['routes'].isNotEmpty) {
           print('✅ Route found successfully! ');
-          print('📊 Number of routes: ${data['routes'].length}');
-          return DirectionsResult.fromJson(data);
+          print('📊 Number of routes: ${data['routes']. length}');
+          return DirectionsResult. fromJson(data);
         }
       } else {
         print('❌ HTTP Error: ${response.statusCode}');
-        print('Response: ${response.body}');
+        print('Response:  ${response.body}');
       }
       
       return null;
@@ -117,7 +119,7 @@ class DirectionsService {
   static List<LatLng> decodePolyline(String encoded) {
     List<LatLng> points = [];
     int index = 0;
-    int len = encoded. length;
+    int len = encoded.length;
     int lat = 0;
     int lng = 0;
 
@@ -217,10 +219,10 @@ class DirectionStep {
     required this.endLocation,
   });
 
-  factory DirectionStep. fromJson(Map<String, dynamic> json) {
+  factory DirectionStep.fromJson(Map<String, dynamic> json) {
     return DirectionStep(
-      instructions: json['html_instructions']
-          .toString()
+      instructions:  json['html_instructions']
+          . toString()
           .replaceAll(RegExp(r'<[^>]*>'), ''), // Loại bỏ HTML tags
       distance: json['distance']['text'],
       duration: json['duration']['text'],

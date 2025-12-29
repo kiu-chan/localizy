@@ -12,7 +12,7 @@ class HomePage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text(l10n.home),
-        backgroundColor: Colors.green.shade700,
+        backgroundColor: Colors.green. shade700,
         foregroundColor: Colors.white,
       ),
       body: SingleChildScrollView(
@@ -28,7 +28,7 @@ class HomePage extends StatelessWidget {
                   end: Alignment.bottomRight,
                   colors: [
                     Colors.green.shade400,
-                    Colors.green.shade700,
+                    Colors.green. shade700,
                   ],
                 ),
               ),
@@ -65,7 +65,7 @@ class HomePage extends StatelessWidget {
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    'Quản lý đỗ xe thông minh',
+                    l10n.smartParkingManagement,
                     style: const TextStyle(
                       fontSize:  16,
                       color:  Colors.white70,
@@ -84,7 +84,7 @@ class HomePage extends StatelessWidget {
                   const SizedBox(height: 8),
                   
                   Text(
-                    'Chức năng chính',
+                    l10n. mainFeatures,
                     style: TextStyle(
                       fontSize: 20,
                       fontWeight:  FontWeight.bold,
@@ -106,44 +106,44 @@ class HomePage extends StatelessWidget {
                       _buildFeatureCard(
                         context:  context,
                         icon: Icons.verified_outlined,
-                        title: 'Xác minh địa chỉ',
+                        title: l10n.addressVerification,
                         color: Colors.blue,
                         onTap: () {
                           ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(content: Text('Chức năng xác minh địa chỉ')),
+                            SnackBar(content: Text(l10n.addressVerificationFunction)),
                           );
                         },
                       ),
                       _buildFeatureCard(
                         context: context,
                         icon: Icons.payment,
-                        title: 'Thanh toán đỗ xe',
+                        title: l10n.parkingPayment,
                         color: Colors.green,
                         onTap: () {
                           ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(content: Text('Chức năng thanh toán đỗ xe')),
+                            SnackBar(content: Text(l10n.parkingPaymentFunction)),
                           );
                         },
                       ),
                       _buildFeatureCard(
-                        context:  context,
+                        context: context,
                         icon: Icons.receipt_long,
-                        title: 'Kiểm tra thanh toán',
+                        title: l10n.paymentCheck,
                         color: Colors.orange,
                         onTap: () {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(content: Text('Kiểm tra thanh toán đỗ xe')),
+                          ScaffoldMessenger. of(context).showSnackBar(
+                            SnackBar(content: Text(l10n.checkParkingPayment)),
                           );
                         },
                       ),
                       _buildFeatureCard(
                         context: context,
                         icon: Icons.search,
-                        title: 'Tìm kiếm địa chỉ',
+                        title: l10n.addressSearch,
                         color: Colors.purple,
                         onTap: () {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(content: Text('Chức năng tìm kiếm địa chỉ')),
+                          ScaffoldMessenger. of(context).showSnackBar(
+                            SnackBar(content: Text(l10n.addressSearchFunction)),
                           );
                         },
                       ),
@@ -153,7 +153,7 @@ class HomePage extends StatelessWidget {
                   const SizedBox(height: 24),
                   
                   Text(
-                    'Thao tác nhanh',
+                    l10n. quickActions,
                     style: TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
@@ -167,27 +167,27 @@ class HomePage extends StatelessWidget {
                   _buildActionCard(
                     context: context,
                     icon: Icons. map_outlined,
-                    title:  'Xem bản đồ',
-                    description: 'Tìm kiếm và xem vị trí bãi đỗ xe',
+                    title: l10n.viewMap,
+                    description: l10n.findAndViewParkingLots,
                     color: Colors.teal,
                     onTap: () {
                       ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content:  Text('Mở bản đồ')),
+                        SnackBar(content: Text(l10n.openMap)),
                       );
                     },
                   ),
                   
-                  const SizedBox(height:  12),
+                  const SizedBox(height: 12),
                   
                   _buildActionCard(
                     context: context,
                     icon:  Icons.history,
-                    title: 'Lịch sử giao dịch',
-                    description: 'Xem lịch sử thanh toán đỗ xe',
+                    title: l10n.transactionHistory,
+                    description:  l10n.viewParkingPaymentHistory,
                     color: Colors.indigo,
                     onTap: () {
                       ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content:  Text('Xem lịch sử giao dịch')),
+                        SnackBar(content: Text(l10n.viewTransactionHistory)),
                       );
                     },
                   ),
@@ -197,9 +197,9 @@ class HomePage extends StatelessWidget {
                   _buildActionCard(
                     context: context,
                     icon: Icons.camera_alt_outlined,
-                    title: 'Quét biển số xe (OCR)',
-                    description:  'Nhận diện biển số xe tự động',
-                    color:  Colors.red,
+                    title: l10n.licensePlateScannerOCR,
+                    description: l10n.automaticLicensePlateRecognition,
+                    color: Colors.red,
                     onTap:  () async {
                       // Navigate to OCR screen
                       final result = await Navigator.push(
@@ -211,7 +211,7 @@ class HomePage extends StatelessWidget {
                       
                       if (result != null && context.mounted) {
                         ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content:  Text('Biển số đã quét:  $result')),
+                          SnackBar(content:  Text('${l10n.licensePlateScanned}:  $result')),
                         );
                       }
                     },
@@ -268,7 +268,7 @@ class HomePage extends StatelessWidget {
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
                   style: const TextStyle(
-                    fontSize:  13,
+                    fontSize: 13,
                     fontWeight: FontWeight.w600,
                   ),
                 ),
@@ -327,9 +327,9 @@ class HomePage extends StatelessWidget {
                     const SizedBox(height: 4),
                     Text(
                       description,
-                      style:  TextStyle(
+                      style: TextStyle(
                         fontSize: 13,
-                        color: Colors.grey[600],
+                        color: Colors. grey[600],
                       ),
                     ),
                   ],

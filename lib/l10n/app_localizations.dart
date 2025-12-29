@@ -448,6 +448,324 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Français'**
   String get french;
+
+  /// No description provided for @smartParkingManagement.
+  ///
+  /// In en, this message translates to:
+  /// **'Smart parking management'**
+  String get smartParkingManagement;
+
+  /// No description provided for @mainFeatures.
+  ///
+  /// In en, this message translates to:
+  /// **'Main Features'**
+  String get mainFeatures;
+
+  /// No description provided for @addressVerification.
+  ///
+  /// In en, this message translates to:
+  /// **'Address verification'**
+  String get addressVerification;
+
+  /// No description provided for @parkingPayment.
+  ///
+  /// In en, this message translates to:
+  /// **'Parking payment'**
+  String get parkingPayment;
+
+  /// No description provided for @paymentCheck.
+  ///
+  /// In en, this message translates to:
+  /// **'Payment check'**
+  String get paymentCheck;
+
+  /// No description provided for @addressSearch.
+  ///
+  /// In en, this message translates to:
+  /// **'Address search'**
+  String get addressSearch;
+
+  /// No description provided for @quickActions.
+  ///
+  /// In en, this message translates to:
+  /// **'Quick actions'**
+  String get quickActions;
+
+  /// No description provided for @viewMap.
+  ///
+  /// In en, this message translates to:
+  /// **'View map'**
+  String get viewMap;
+
+  /// No description provided for @findAndViewParkingLots.
+  ///
+  /// In en, this message translates to:
+  /// **'Find and view parking lot locations'**
+  String get findAndViewParkingLots;
+
+  /// No description provided for @transactionHistory.
+  ///
+  /// In en, this message translates to:
+  /// **'Transaction history'**
+  String get transactionHistory;
+
+  /// No description provided for @viewParkingPaymentHistory.
+  ///
+  /// In en, this message translates to:
+  /// **'View parking payment history'**
+  String get viewParkingPaymentHistory;
+
+  /// No description provided for @licensePlateScannerOCR.
+  ///
+  /// In en, this message translates to:
+  /// **'License plate scanner (OCR)'**
+  String get licensePlateScannerOCR;
+
+  /// No description provided for @automaticLicensePlateRecognition.
+  ///
+  /// In en, this message translates to:
+  /// **'Automatic license plate recognition'**
+  String get automaticLicensePlateRecognition;
+
+  /// No description provided for @addressVerificationFunction.
+  ///
+  /// In en, this message translates to:
+  /// **'Address verification function'**
+  String get addressVerificationFunction;
+
+  /// No description provided for @parkingPaymentFunction.
+  ///
+  /// In en, this message translates to:
+  /// **'Parking payment function'**
+  String get parkingPaymentFunction;
+
+  /// No description provided for @checkParkingPayment.
+  ///
+  /// In en, this message translates to:
+  /// **'Check parking payment'**
+  String get checkParkingPayment;
+
+  /// No description provided for @addressSearchFunction.
+  ///
+  /// In en, this message translates to:
+  /// **'Address search function'**
+  String get addressSearchFunction;
+
+  /// No description provided for @viewTransactionHistory.
+  ///
+  /// In en, this message translates to:
+  /// **'View transaction history'**
+  String get viewTransactionHistory;
+
+  /// No description provided for @licensePlateScanned.
+  ///
+  /// In en, this message translates to:
+  /// **'License plate scanned'**
+  String get licensePlateScanned;
+
+  /// No description provided for @licensePlateScanner.
+  ///
+  /// In en, this message translates to:
+  /// **'License Plate Scanner'**
+  String get licensePlateScanner;
+
+  /// No description provided for @noCameraFound.
+  ///
+  /// In en, this message translates to:
+  /// **'No camera found on device.'**
+  String get noCameraFound;
+
+  /// No description provided for @cameraError.
+  ///
+  /// In en, this message translates to:
+  /// **'Camera Error'**
+  String get cameraError;
+
+  /// No description provided for @errorInitializingCamera.
+  ///
+  /// In en, this message translates to:
+  /// **'Error initializing camera'**
+  String get errorInitializingCamera;
+
+  /// No description provided for @recognizing.
+  ///
+  /// In en, this message translates to:
+  /// **'Recognizing...'**
+  String get recognizing;
+
+  /// No description provided for @processing.
+  ///
+  /// In en, this message translates to:
+  /// **'Processing...'**
+  String get processing;
+
+  /// No description provided for @noLicensePlateDetected.
+  ///
+  /// In en, this message translates to:
+  /// **'No license plate detected'**
+  String get noLicensePlateDetected;
+
+  /// No description provided for @error.
+  ///
+  /// In en, this message translates to:
+  /// **'Error'**
+  String get error;
+
+  /// No description provided for @cannotDeleteFile.
+  ///
+  /// In en, this message translates to:
+  /// **'Cannot delete file'**
+  String get cannotDeleteFile;
+
+  /// No description provided for @confirmLicensePlate.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm License Plate'**
+  String get confirmLicensePlate;
+
+  /// No description provided for @detectedLicensePlate.
+  ///
+  /// In en, this message translates to:
+  /// **'Detected license plate:'**
+  String get detectedLicensePlate;
+
+  /// No description provided for @enterLicensePlate.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter license plate'**
+  String get enterLicensePlate;
+
+  /// No description provided for @supportedCountries.
+  ///
+  /// In en, this message translates to:
+  /// **'Supported:  Vietnam 🇻🇳, France 🇫🇷, Cameroon 🇨🇲'**
+  String get supportedCountries;
+
+  /// No description provided for @cancel.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel'**
+  String get cancel;
+
+  /// No description provided for @confirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm'**
+  String get confirm;
+
+  /// No description provided for @pleaseEnterLicensePlate.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter license plate'**
+  String get pleaseEnterLicensePlate;
+
+  /// No description provided for @placeLicensePlateInFrame.
+  ///
+  /// In en, this message translates to:
+  /// **'Place license plate in frame'**
+  String get placeLicensePlateInFrame;
+
+  /// No description provided for @autoRecognition.
+  ///
+  /// In en, this message translates to:
+  /// **'Auto recognition:  Vietnam 🇻🇳, France 🇫🇷, Cameroon 🇨🇲'**
+  String get autoRecognition;
+
+  /// No description provided for @errorInitializingCameraDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'Error initializing camera:  {error}'**
+  String errorInitializingCameraDetails(Object error);
+
+  /// No description provided for @destination.
+  ///
+  /// In en, this message translates to:
+  /// **'Destination'**
+  String get destination;
+
+  /// No description provided for @navigationStarted.
+  ///
+  /// In en, this message translates to:
+  /// **'Navigation started'**
+  String get navigationStarted;
+
+  /// No description provided for @navigationStopped.
+  ///
+  /// In en, this message translates to:
+  /// **'Navigation stopped'**
+  String get navigationStopped;
+
+  /// No description provided for @arrivedAtDestination.
+  ///
+  /// In en, this message translates to:
+  /// **'🎉 You have arrived at your destination!'**
+  String get arrivedAtDestination;
+
+  /// No description provided for @noRouteFound.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not find a route'**
+  String get noRouteFound;
+
+  /// No description provided for @errorFindingRoute.
+  ///
+  /// In en, this message translates to:
+  /// **'Error finding route'**
+  String get errorFindingRoute;
+
+  /// No description provided for @tapToSelectDestination.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap on the map to select destination'**
+  String get tapToSelectDestination;
+
+  /// No description provided for @travelModeDriving.
+  ///
+  /// In en, this message translates to:
+  /// **'Driving'**
+  String get travelModeDriving;
+
+  /// No description provided for @travelModeWalking.
+  ///
+  /// In en, this message translates to:
+  /// **'Walking'**
+  String get travelModeWalking;
+
+  /// No description provided for @travelModeBicycling.
+  ///
+  /// In en, this message translates to:
+  /// **'Bicycling'**
+  String get travelModeBicycling;
+
+  /// No description provided for @travelModeTransit.
+  ///
+  /// In en, this message translates to:
+  /// **'Transit'**
+  String get travelModeTransit;
+
+  /// No description provided for @step.
+  ///
+  /// In en, this message translates to:
+  /// **'Step'**
+  String get step;
+
+  /// No description provided for @fastestRoute.
+  ///
+  /// In en, this message translates to:
+  /// **'Fastest route'**
+  String get fastestRoute;
+
+  /// No description provided for @start.
+  ///
+  /// In en, this message translates to:
+  /// **'Start'**
+  String get start;
+
+  /// No description provided for @stop.
+  ///
+  /// In en, this message translates to:
+  /// **'Stop'**
+  String get stop;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

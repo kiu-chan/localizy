@@ -184,4 +184,165 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get french => 'Français';
+
+  @override
+  String get smartParkingManagement => 'Gestion intelligente du stationnement';
+
+  @override
+  String get mainFeatures => 'Fonctionnalités principales';
+
+  @override
+  String get addressVerification => 'Vérification d\'adresse';
+
+  @override
+  String get parkingPayment => 'Paiement du stationnement';
+
+  @override
+  String get paymentCheck => 'Vérification du paiement';
+
+  @override
+  String get addressSearch => 'Recherche d\'adresse';
+
+  @override
+  String get quickActions => 'Actions rapides';
+
+  @override
+  String get viewMap => 'Voir la carte';
+
+  @override
+  String get findAndViewParkingLots => 'Trouver et voir les emplacements de stationnement';
+
+  @override
+  String get transactionHistory => 'Historique des transactions';
+
+  @override
+  String get viewParkingPaymentHistory => 'Voir l\'historique des paiements de stationnement';
+
+  @override
+  String get licensePlateScannerOCR => 'Scanner de plaque d\'immatriculation (OCR)';
+
+  @override
+  String get automaticLicensePlateRecognition => 'Reconnaissance automatique de plaque d\'immatriculation';
+
+  @override
+  String get addressVerificationFunction => 'Fonction de vérification d\'adresse';
+
+  @override
+  String get parkingPaymentFunction => 'Fonction de paiement du stationnement';
+
+  @override
+  String get checkParkingPayment => 'Vérifier le paiement du stationnement';
+
+  @override
+  String get addressSearchFunction => 'Fonction de recherche d\'adresse';
+
+  @override
+  String get viewTransactionHistory => 'Voir l\'historique des transactions';
+
+  @override
+  String get licensePlateScanned => 'Plaque d\'immatriculation scannée';
+
+  @override
+  String get licensePlateScanner => 'Scanner de plaque d\'immatriculation';
+
+  @override
+  String get noCameraFound => 'Aucune caméra trouvée sur l\'appareil.';
+
+  @override
+  String get cameraError => 'Erreur de caméra';
+
+  @override
+  String get errorInitializingCamera => 'Erreur lors de l\'initialisation de la caméra';
+
+  @override
+  String get recognizing => 'Reconnaissance en cours...';
+
+  @override
+  String get processing => 'Traitement.. .';
+
+  @override
+  String get noLicensePlateDetected => 'Aucune plaque d\'immatriculation détectée';
+
+  @override
+  String get error => 'Erreur';
+
+  @override
+  String get cannotDeleteFile => 'Impossible de supprimer le fichier';
+
+  @override
+  String get confirmLicensePlate => 'Confirmer la plaque d\'immatriculation';
+
+  @override
+  String get detectedLicensePlate => 'Plaque d\'immatriculation détectée:';
+
+  @override
+  String get enterLicensePlate => 'Entrer la plaque d\'immatriculation';
+
+  @override
+  String get supportedCountries => 'Pris en charge:  Vietnam 🇻🇳, France 🇫🇷, Cameroun 🇨🇲';
+
+  @override
+  String get cancel => 'Annuler';
+
+  @override
+  String get confirm => 'Confirmer';
+
+  @override
+  String get pleaseEnterLicensePlate => 'Veuillez entrer la plaque d\'immatriculation';
+
+  @override
+  String get placeLicensePlateInFrame => 'Placez la plaque d\'immatriculation dans le cadre';
+
+  @override
+  String get autoRecognition => 'Reconnaissance automatique:  Vietnam 🇻🇳, France 🇫🇷, Cameroun 🇨🇲';
+
+  @override
+  String errorInitializingCameraDetails(Object error) {
+    return 'Erreur lors de l\'initialisation de la caméra: $error';
+  }
+
+  @override
+  String get destination => 'Destination';
+
+  @override
+  String get navigationStarted => 'Navigation démarrée';
+
+  @override
+  String get navigationStopped => 'Navigation arrêtée';
+
+  @override
+  String get arrivedAtDestination => '🎉 Vous êtes arrivé à destination! ';
+
+  @override
+  String get noRouteFound => 'Impossible de trouver un itinéraire';
+
+  @override
+  String get errorFindingRoute => 'Erreur lors de la recherche d\'itinéraire';
+
+  @override
+  String get tapToSelectDestination => 'Appuyez sur la carte pour sélectionner la destination';
+
+  @override
+  String get travelModeDriving => 'En voiture';
+
+  @override
+  String get travelModeWalking => 'À pied';
+
+  @override
+  String get travelModeBicycling => 'À vélo';
+
+  @override
+  String get travelModeTransit => 'Transports en commun';
+
+  @override
+  String get step => 'Étape';
+
+  @override
+  String get fastestRoute => 'Itinéraire le plus rapide';
+
+  @override
+  String get start => 'Démarrer';
+
+  @override
+  String get stop => 'Arrêter';
 }

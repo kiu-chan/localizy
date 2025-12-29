@@ -2,7 +2,8 @@ import 'dart:io';
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import '../../models/plate_country.dart';
+import 'package:localizy/l10n/app_localizations.dart';
+import 'package:localizy/models/plate_country.dart';
 import '../../services/plate_recognition_service.dart';
 import '../../widgets/scanner_overlay_painter.dart';
 
@@ -22,24 +23,39 @@ class _LicensePlateScannerScreenState extends State<LicensePlateScannerScreen> {
   final ImagePicker _imagePicker = ImagePicker();
   final PlateRecognitionService _recognitionService = PlateRecognitionService();
   Rect? _scanArea;
+  bool _isSetupCameraCalled = false;
 
   @override
   void initState() {
     super.initState();
-    _setupCamera();
+    // Không gọi _setupCamera() ở đây nữa
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // Chỉ setup camera một lần khi dependencies đã sẵn sàng
+    if (!_isSetupCameraCalled) {
+      _isSetupCameraCalled = true;
+      _setupCamera();
+    }
   }
 
   Future<void> _setupCamera() async {
+    final l10n = AppLocalizations.of(context)!;
+    
     try {
       final cameras = await availableCameras();
       if (cameras.isEmpty) {
-        setState(() {
-          _errorText = 'Không tìm thấy camera nào trên thiết bị. ';
-        });
+        if (mounted) {
+          setState(() {
+            _errorText = l10n.noCameraFound;
+          });
+        }
         return;
       }
 
-      final backCamera = cameras. firstWhere(
+      final backCamera = cameras.firstWhere(
         (c) => c.lensDirection == CameraLensDirection.back,
         orElse: () => cameras.first,
       );
@@ -55,13 +71,17 @@ class _LicensePlateScannerScreenState extends State<LicensePlateScannerScreen> {
       await _initializeControllerFuture;
       if (mounted) setState(() {});
     } on CameraException catch (e) {
-      setState(() {
-        _errorText = 'Lỗi Camera: ${e.code} ${e.description}';
-      });
+      if (mounted) {
+        setState(() {
+          _errorText = '${l10n.cameraError}: ${e.code} ${e.description}';
+        });
+      }
     } catch (e) {
-      setState(() {
-        _errorText = 'Lỗi khi khởi tạo camera: $e';
-      });
+      if (mounted) {
+        setState(() {
+          _errorText = '${l10n.errorInitializingCamera}: $e';
+        });
+      }
     }
   }
 
@@ -71,11 +91,13 @@ class _LicensePlateScannerScreenState extends State<LicensePlateScannerScreen> {
     final left = (screenSize.width - scanWidth) / 2;
     final top = (screenSize.height - scanHeight) / 2;
     
-    _scanArea = Rect. fromLTWH(left, top, scanWidth, scanHeight);
+    _scanArea = Rect.fromLTWH(left, top, scanWidth, scanHeight);
   }
 
   Future<void> _captureAndProcessImage() async {
-    if (_controller == null || !_controller! .value.isInitialized) {
+    final l10n = AppLocalizations.of(context)!;
+    
+    if (_controller == null || !_controller!.value.isInitialized) {
       return;
     }
 
@@ -83,21 +105,21 @@ class _LicensePlateScannerScreenState extends State<LicensePlateScannerScreen> {
 
     setState(() {
       _isProcessing = true;
-      _detectedText = 'Đang nhận diện... ';
+      _detectedText = l10n.recognizing;
     });
 
     try {
       final XFile picture = await _controller!.takePicture();
       
       final detectedPlate = await _recognitionService.recognizeFromImage(
-        picture. path,
+        picture.path,
         PlateCountry.auto,
       );
       
       try {
         await File(picture.path).delete();
       } catch (e) {
-        debugPrint('Không thể xóa file: $e');
+        debugPrint('${l10n.cannotDeleteFile}: $e');
       }
       
       if (mounted) {
@@ -108,9 +130,9 @@ class _LicensePlateScannerScreenState extends State<LicensePlateScannerScreen> {
           _showEditDialog(detectedPlate);
         } else {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Không phát hiện biển số xe'),
-              duration: Duration(seconds: 2),
+            SnackBar(
+              content: Text(l10n.noLicensePlateDetected),
+              duration: const Duration(seconds: 2),
             ),
           );
           setState(() {
@@ -122,7 +144,7 @@ class _LicensePlateScannerScreenState extends State<LicensePlateScannerScreen> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Lỗi:  $e')),
+          SnackBar(content: Text('${l10n. error}: $e')),
         );
         setState(() {
           _detectedText = '';
@@ -138,13 +160,15 @@ class _LicensePlateScannerScreenState extends State<LicensePlateScannerScreen> {
   }
 
   Future<void> _pickImageFromGallery() async {
+    final l10n = AppLocalizations.of(context)!;
+    
     setState(() {
       _isProcessing = true;
-      _detectedText = 'Đang xử lý...';
+      _detectedText = l10n.processing;
     });
 
     try {
-      final XFile?  image = await _imagePicker.pickImage(
+      final XFile?  image = await _imagePicker. pickImage(
         source: ImageSource.gallery,
       );
 
@@ -162,9 +186,9 @@ class _LicensePlateScannerScreenState extends State<LicensePlateScannerScreen> {
             _showEditDialog(detectedPlate);
           } else {
             ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text('Không phát hiện biển số xe'),
-                duration: Duration(seconds: 2),
+              SnackBar(
+                content: Text(l10n.noLicensePlateDetected),
+                duration: const Duration(seconds: 2),
               ),
             );
             setState(() {
@@ -180,7 +204,7 @@ class _LicensePlateScannerScreenState extends State<LicensePlateScannerScreen> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Lỗi: $e')),
+          SnackBar(content: Text('${l10n. error}: $e')),
         );
         setState(() {
           _detectedText = '';
@@ -196,52 +220,53 @@ class _LicensePlateScannerScreenState extends State<LicensePlateScannerScreen> {
   }
 
   void _showEditDialog(String detectedPlate) {
+    final l10n = AppLocalizations. of(context)!;
     final TextEditingController controller = TextEditingController(text: detectedPlate);
     
     showDialog(
-      context:  context,
+      context: context,
       barrierDismissible: false,
       builder: (BuildContext dialogContext) => AlertDialog(
         title: Row(
           children: [
-            Icon(Icons.edit, color: Colors.blue, size: 28),
+            const Icon(Icons.edit, color: Colors.blue, size: 28),
             const SizedBox(width: 12),
-            const Expanded(child: Text('Xác nhận biển số xe')),
+            Expanded(child: Text(l10n.confirmLicensePlate)),
           ],
         ),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
-              'Biển số đã phát hiện:',
-              style: TextStyle(
+            Text(
+              l10n.detectedLicensePlate,
+              style: const TextStyle(
                 fontSize: 14,
                 color: Colors.grey,
               ),
             ),
-            const SizedBox(height:  12),
+            const SizedBox(height: 12),
             TextField(
               controller: controller,
               decoration: InputDecoration(
-                hintText: 'Nhập biển số xe',
+                hintText: l10n.enterLicensePlate,
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
-                  borderSide: BorderSide(color: Colors.blue. shade200, width: 2),
+                  borderSide:  BorderSide(color: Colors.blue.shade200, width: 2),
                 ),
                 enabledBorder: OutlineInputBorder(
                   borderRadius:  BorderRadius.circular(12),
                   borderSide: BorderSide(color: Colors.blue. shade200, width: 2),
                 ),
                 focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius. circular(12),
-                  borderSide: BorderSide(color: Colors.blue, width: 2),
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: const BorderSide(color: Colors. blue, width: 2),
                 ),
                 filled: true,
                 fillColor: Colors.blue.shade50,
                 prefixIcon: Icon(Icons.directions_car, color: Colors.blue.shade700),
               ),
-              style:  const TextStyle(
+              style: const TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
                 letterSpacing: 1.2,
@@ -251,34 +276,10 @@ class _LicensePlateScannerScreenState extends State<LicensePlateScannerScreen> {
               autofocus: true,
               maxLines: 2,
             ),
-            const SizedBox(height: 16),
-            Container(
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                color: Colors.amber.shade50,
-                borderRadius: BorderRadius.circular(8),
-                border: Border.all(color: Colors.amber.shade200),
-              ),
-              child: Row(
-                children: [
-                  Icon(Icons.info_outline, size: 20, color: Colors. amber.shade900),
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: Text(
-                      'Hỗ trợ:  Việt Nam 🇻🇳, Pháp 🇫🇷, Cameroon 🇨🇲',
-                      style: TextStyle(
-                        fontSize: 11,
-                        color: Colors. amber.shade900,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
           ],
         ),
         actions: [
-          TextButton. icon(
+          TextButton.icon(
             onPressed: () {
               Navigator.pop(dialogContext);
               setState(() {
@@ -286,7 +287,7 @@ class _LicensePlateScannerScreenState extends State<LicensePlateScannerScreen> {
               });
             },
             icon: const Icon(Icons.close),
-            label: const Text('Hủy'),
+            label: Text(l10n.cancel),
           ),
           ElevatedButton. icon(
             style: ElevatedButton.styleFrom(
@@ -301,12 +302,12 @@ class _LicensePlateScannerScreenState extends State<LicensePlateScannerScreen> {
                 Navigator.pop(context, plateNumber);
               } else {
                 ScaffoldMessenger.of(dialogContext).showSnackBar(
-                  const SnackBar(content: Text('Vui lòng nhập biển số xe')),
+                  SnackBar(content: Text(l10n.pleaseEnterLicensePlate)),
                 );
               }
             },
             icon: const Icon(Icons.check_circle),
-            label: const Text('Xác nhận'),
+            label: Text(l10n.confirm),
           ),
         ],
       ),
@@ -329,7 +330,7 @@ class _LicensePlateScannerScreenState extends State<LicensePlateScannerScreen> {
     var scale = size.aspectRatio * _controller!.value.aspectRatio;
     if (scale < 1) scale = 1 / scale;
 
-    return Transform.scale(
+    return Transform. scale(
       scale: scale,
       child: Center(
         child: CameraPreview(_controller!),
@@ -338,10 +339,12 @@ class _LicensePlateScannerScreenState extends State<LicensePlateScannerScreen> {
   }
 
   Widget _buildBody() {
+    final l10n = AppLocalizations. of(context)!;
+    
     if (_errorText != null) {
       return Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+        child:  Column(
+          mainAxisAlignment:  MainAxisAlignment.center,
           children: [
             const Icon(Icons.error_outline, size: 64, color: Colors.red),
             const SizedBox(height:  16),
@@ -373,7 +376,7 @@ class _LicensePlateScannerScreenState extends State<LicensePlateScannerScreen> {
           });
 
           return Stack(
-            fit:  StackFit.expand,
+            fit: StackFit.expand,
             children: [
               _buildCameraPreview(),
               
@@ -387,7 +390,7 @@ class _LicensePlateScannerScreenState extends State<LicensePlateScannerScreen> {
                 left: 0,
                 right: 0,
                 child: Container(
-                  padding: const EdgeInsets. all(16),
+                  padding: const EdgeInsets.all(16),
                   margin: const EdgeInsets.symmetric(horizontal: 20),
                   decoration: BoxDecoration(
                     color: Colors.black87,
@@ -397,24 +400,16 @@ class _LicensePlateScannerScreenState extends State<LicensePlateScannerScreen> {
                     children: [
                       const Icon(Icons.camera_alt, color: Colors.white, size: 32),
                       const SizedBox(height: 8),
-                      const Text(
-                        'Đặt biển số xe vào trong khung',
+                      Text(
+                        l10n.placeLicensePlateInFrame,
                         textAlign: TextAlign.center,
-                        style: TextStyle(
+                        style: const TextStyle(
                           color: Colors.white,
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
                       const SizedBox(height: 4),
-                      Text(
-                        'Tự động nhận diện:  Việt Nam 🇻🇳, Pháp 🇫🇷, Cameroon 🇨🇲',
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          color: Colors.white70,
-                          fontSize: 12,
-                        ),
-                      ),
                     ],
                   ),
                 ),
@@ -429,21 +424,25 @@ class _LicensePlateScannerScreenState extends State<LicensePlateScannerScreen> {
                     padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 20),
                     margin: const EdgeInsets.symmetric(horizontal: 32),
                     decoration: BoxDecoration(
-                      color: _detectedText.contains('Đang') ? Colors.orange : Colors.green,
+                      color: _detectedText.contains(l10n.recognizing) || _detectedText.contains(l10n.processing) 
+                          ? Colors.orange 
+                          : Colors.green,
                       borderRadius: BorderRadius.circular(12),
-                      boxShadow: [
+                      boxShadow: const [
                         BoxShadow(
-                          color: Colors.black26,
+                          color: Colors. black26,
                           blurRadius:  10,
-                          offset:  Offset(0, 4),
+                          offset: Offset(0, 4),
                         ),
                       ],
                     ),
-                    child:  Column(
+                    child: Column(
                       children: [
                         Icon(
-                          _detectedText.contains('Đang') ? Icons.search :  Icons.check_circle,
-                          color:  Colors.white,
+                          _detectedText.contains(l10n.recognizing) || _detectedText.contains(l10n.processing) 
+                              ? Icons.search 
+                              : Icons.check_circle,
+                          color: Colors.white,
                           size: 24,
                         ),
                         const SizedBox(height: 8),
@@ -477,7 +476,7 @@ class _LicensePlateScannerScreenState extends State<LicensePlateScannerScreen> {
                     ),
                     
                     Container(
-                      decoration: BoxDecoration(
+                      decoration: const BoxDecoration(
                         shape: BoxShape.circle,
                         boxShadow: [
                           BoxShadow(
@@ -510,12 +509,12 @@ class _LicensePlateScannerScreenState extends State<LicensePlateScannerScreen> {
                           setState(() {});
                         }
                       },
-                      backgroundColor: Colors. white,
+                      backgroundColor: Colors.white,
                       child: Icon(
                         _controller?. value.flashMode == FlashMode.torch
                             ? Icons.flash_on
                             : Icons.flash_off,
-                        color:  Colors.amber,
+                        color: Colors.amber,
                       ),
                     ),
                   ],
@@ -533,7 +532,7 @@ class _LicensePlateScannerScreenState extends State<LicensePlateScannerScreen> {
                 Padding(
                   padding: const EdgeInsets.all(16.0),
                   child: Text(
-                    'Lỗi khi khởi tạo camera: ${snapshot.error}',
+                    '${l10n.errorInitializingCamera}: ${snapshot.error}',
                     textAlign: TextAlign.center,
                   ),
                 ),
@@ -549,9 +548,11 @@ class _LicensePlateScannerScreenState extends State<LicensePlateScannerScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations. of(context)!;
+    
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Quét biển số xe'),
+        title: Text(l10n. licensePlateScanner),
         backgroundColor: Colors.red,
         foregroundColor: Colors.white,
       ),

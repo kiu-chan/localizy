@@ -184,4 +184,165 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get french => 'Français';
+
+  @override
+  String get smartParkingManagement => 'Smart parking management';
+
+  @override
+  String get mainFeatures => 'Main Features';
+
+  @override
+  String get addressVerification => 'Address verification';
+
+  @override
+  String get parkingPayment => 'Parking payment';
+
+  @override
+  String get paymentCheck => 'Payment check';
+
+  @override
+  String get addressSearch => 'Address search';
+
+  @override
+  String get quickActions => 'Quick actions';
+
+  @override
+  String get viewMap => 'View map';
+
+  @override
+  String get findAndViewParkingLots => 'Find and view parking lot locations';
+
+  @override
+  String get transactionHistory => 'Transaction history';
+
+  @override
+  String get viewParkingPaymentHistory => 'View parking payment history';
+
+  @override
+  String get licensePlateScannerOCR => 'License plate scanner (OCR)';
+
+  @override
+  String get automaticLicensePlateRecognition => 'Automatic license plate recognition';
+
+  @override
+  String get addressVerificationFunction => 'Address verification function';
+
+  @override
+  String get parkingPaymentFunction => 'Parking payment function';
+
+  @override
+  String get checkParkingPayment => 'Check parking payment';
+
+  @override
+  String get addressSearchFunction => 'Address search function';
+
+  @override
+  String get viewTransactionHistory => 'View transaction history';
+
+  @override
+  String get licensePlateScanned => 'License plate scanned';
+
+  @override
+  String get licensePlateScanner => 'License Plate Scanner';
+
+  @override
+  String get noCameraFound => 'No camera found on device.';
+
+  @override
+  String get cameraError => 'Camera Error';
+
+  @override
+  String get errorInitializingCamera => 'Error initializing camera';
+
+  @override
+  String get recognizing => 'Recognizing...';
+
+  @override
+  String get processing => 'Processing...';
+
+  @override
+  String get noLicensePlateDetected => 'No license plate detected';
+
+  @override
+  String get error => 'Error';
+
+  @override
+  String get cannotDeleteFile => 'Cannot delete file';
+
+  @override
+  String get confirmLicensePlate => 'Confirm License Plate';
+
+  @override
+  String get detectedLicensePlate => 'Detected license plate:';
+
+  @override
+  String get enterLicensePlate => 'Enter license plate';
+
+  @override
+  String get supportedCountries => 'Supported:  Vietnam 🇻🇳, France 🇫🇷, Cameroon 🇨🇲';
+
+  @override
+  String get cancel => 'Cancel';
+
+  @override
+  String get confirm => 'Confirm';
+
+  @override
+  String get pleaseEnterLicensePlate => 'Please enter license plate';
+
+  @override
+  String get placeLicensePlateInFrame => 'Place license plate in frame';
+
+  @override
+  String get autoRecognition => 'Auto recognition:  Vietnam 🇻🇳, France 🇫🇷, Cameroon 🇨🇲';
+
+  @override
+  String errorInitializingCameraDetails(Object error) {
+    return 'Error initializing camera:  $error';
+  }
+
+  @override
+  String get destination => 'Destination';
+
+  @override
+  String get navigationStarted => 'Navigation started';
+
+  @override
+  String get navigationStopped => 'Navigation stopped';
+
+  @override
+  String get arrivedAtDestination => '🎉 You have arrived at your destination!';
+
+  @override
+  String get noRouteFound => 'Could not find a route';
+
+  @override
+  String get errorFindingRoute => 'Error finding route';
+
+  @override
+  String get tapToSelectDestination => 'Tap on the map to select destination';
+
+  @override
+  String get travelModeDriving => 'Driving';
+
+  @override
+  String get travelModeWalking => 'Walking';
+
+  @override
+  String get travelModeBicycling => 'Bicycling';
+
+  @override
+  String get travelModeTransit => 'Transit';
+
+  @override
+  String get step => 'Step';
+
+  @override
+  String get fastestRoute => 'Fastest route';
+
+  @override
+  String get start => 'Start';
+
+  @override
+  String get stop => 'Stop';
 }
