@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:localizy/l10n/app_localizations.dart';
-import 'home_page.dart';
-import 'map_page.dart';
-import 'settings_page.dart';
+import 'home/home_page.dart';
+import 'map/map_page.dart';
+import 'setting/settings_page.dart';
 
 class MainPage extends StatefulWidget {
   const MainPage({super.key});

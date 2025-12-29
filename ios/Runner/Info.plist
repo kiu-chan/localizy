@@ -44,12 +44,11 @@
 	<key>CADisableMinimumFrameDurationOnPhone</key>
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
-	<true/>
-    <key>NSLocationWhenInUseUsageDescription</key>
-    <string>Ứng dụng cần truy cập vị trí của bạn để hiển thị trên bản đồ</string>
-    <key>NSLocationAlwaysUsageDescription</key>
-    <string>Ứng dụng cần truy cập vị trí của bạn để hiển thị trên bản đồ</string>
-    <key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
-    <string>Ứng dụng cần truy cập vị trí của bạn để hiển thị trên bản đồ</string>
+	<true/><key>NSLocationWhenInUseUsageDescription</key>
+	<string>This app needs access to your location to provide personalized map features and navigation.</string>
+	<key>NSLocationAlwaysUsageDescription</key>
+	<string>This app needs access to your location to provide personalized map features and navigation.</string>
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+	<string>This app needs access to your location to provide personalized map features and navigation.</string>
 </dict>
 </plist>

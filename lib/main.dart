@@ -4,7 +4,7 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:localizy/l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
 import 'dart:io' show Platform;
-import 'screens/login_page.dart';
+import 'screens/account/login_page.dart';
 import 'utils/language_manager.dart';
 import 'utils/config_manager.dart';
 

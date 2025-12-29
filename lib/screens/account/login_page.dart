@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:localizy/l10n/app_localizations.dart';
 import 'register_page.dart';
 import 'forgot_password_page.dart';
-import 'main_page.dart';
+import '../main_page.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});

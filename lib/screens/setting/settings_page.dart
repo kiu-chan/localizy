@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:localizy/l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
-import '../utils/language_manager.dart';
+import '../../utils/language_manager.dart';
 
 class SettingsPage extends StatelessWidget {
   const SettingsPage({super.key});
