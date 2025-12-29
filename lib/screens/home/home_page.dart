@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:localizy/l10n/app_localizations.dart';
+import 'package:localizy/screens/ocr/license_plate_scanner_screen.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
@@ -7,11 +8,11 @@ class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    
+
     return Scaffold(
       appBar: AppBar(
         title: Text(l10n.home),
-        backgroundColor: Colors.green. shade700,
+        backgroundColor: Colors.green.shade700,
         foregroundColor: Colors.white,
       ),
       body: SingleChildScrollView(
@@ -41,14 +42,14 @@ class HomePage extends StatelessWidget {
                       boxShadow: [
                         BoxShadow(
                           color: Colors.black. withValues(alpha: 0.2),
-                          blurRadius: 20,
+                          blurRadius:  20,
                           offset: const Offset(0, 10),
                         ),
                       ],
                     ),
-                    child:  Icon(
+                    child: Icon(
                       Icons.local_parking,
-                      size:  60,
+                      size: 60,
                       color: Colors. green.shade700,
                     ),
                   ),
@@ -94,13 +95,13 @@ class HomePage extends StatelessWidget {
                   const SizedBox(height: 16),
                   
                   // Main Features Grid
-                  GridView. count(
+                  GridView.count(
                     shrinkWrap: true,
                     physics: const NeverScrollableScrollPhysics(),
                     crossAxisCount: 2,
                     mainAxisSpacing: 12,
                     crossAxisSpacing: 12,
-                    childAspectRatio: 1.0, // Changed from 1.1 to 1.0
+                    childAspectRatio: 1.0,
                     children: [
                       _buildFeatureCard(
                         context:  context,
@@ -108,7 +109,6 @@ class HomePage extends StatelessWidget {
                         title: 'Xác minh địa chỉ',
                         color: Colors.blue,
                         onTap: () {
-                          // Navigate to address verification screen
                           ScaffoldMessenger.of(context).showSnackBar(
                             const SnackBar(content: Text('Chức năng xác minh địa chỉ')),
                           );
@@ -120,31 +120,28 @@ class HomePage extends StatelessWidget {
                         title: 'Thanh toán đỗ xe',
                         color: Colors.green,
                         onTap: () {
-                          // Navigate to parking payment screen
                           ScaffoldMessenger.of(context).showSnackBar(
                             const SnackBar(content: Text('Chức năng thanh toán đỗ xe')),
                           );
                         },
                       ),
                       _buildFeatureCard(
-                        context: context,
+                        context:  context,
                         icon: Icons.receipt_long,
                         title: 'Kiểm tra thanh toán',
-                        color: Colors. orange,
+                        color: Colors.orange,
                         onTap: () {
-                          // Navigate to payment check screen
                           ScaffoldMessenger.of(context).showSnackBar(
                             const SnackBar(content: Text('Kiểm tra thanh toán đỗ xe')),
                           );
                         },
                       ),
                       _buildFeatureCard(
-                        context:  context,
+                        context: context,
                         icon: Icons.search,
                         title: 'Tìm kiếm địa chỉ',
                         color: Colors.purple,
                         onTap: () {
-                          // Navigate to address search screen
                           ScaffoldMessenger.of(context).showSnackBar(
                             const SnackBar(content: Text('Chức năng tìm kiếm địa chỉ')),
                           );
@@ -160,7 +157,7 @@ class HomePage extends StatelessWidget {
                     style: TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
-                      color: Colors. grey[800],
+                      color: Colors.grey[800],
                     ),
                   ),
                   
@@ -170,29 +167,27 @@ class HomePage extends StatelessWidget {
                   _buildActionCard(
                     context: context,
                     icon: Icons. map_outlined,
-                    title: 'Xem bản đồ',
+                    title:  'Xem bản đồ',
                     description: 'Tìm kiếm và xem vị trí bãi đỗ xe',
                     color: Colors.teal,
                     onTap: () {
-                      // Navigate to map screen
                       ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(content:  Text('Mở bản đồ')),
                       );
                     },
                   ),
                   
-                  const SizedBox(height: 12),
+                  const SizedBox(height:  12),
                   
                   _buildActionCard(
                     context: context,
                     icon:  Icons.history,
                     title: 'Lịch sử giao dịch',
-                    description:  'Xem lịch sử thanh toán đỗ xe',
+                    description: 'Xem lịch sử thanh toán đỗ xe',
                     color: Colors.indigo,
                     onTap: () {
-                      // Navigate to transaction history screen
                       ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('Xem lịch sử giao dịch')),
+                        const SnackBar(content:  Text('Xem lịch sử giao dịch')),
                       );
                     },
                   ),
@@ -203,17 +198,26 @@ class HomePage extends StatelessWidget {
                     context: context,
                     icon: Icons.camera_alt_outlined,
                     title: 'Quét biển số xe (OCR)',
-                    description: 'Nhận diện biển số xe tự động',
+                    description:  'Nhận diện biển số xe tự động',
                     color:  Colors.red,
-                    onTap:  () {
+                    onTap:  () async {
                       // Navigate to OCR screen
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('Mở camera quét biển số')),
+                      final result = await Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder:  (context) => const LicensePlateScannerScreen(),
+                        ),
                       );
+                      
+                      if (result != null && context.mounted) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content:  Text('Biển số đã quét:  $result')),
+                        );
+                      }
                     },
                   ),
                   
-                  const SizedBox(height: 24),
+                  const SizedBox(height:  24),
                 ],
               ),
             ),
@@ -223,7 +227,6 @@ class HomePage extends StatelessWidget {
     );
   }
 
-  // Feature card for grid view (main features)
   Widget _buildFeatureCard({
     required BuildContext context,
     required IconData icon,
@@ -240,32 +243,32 @@ class HomePage extends StatelessWidget {
         onTap: onTap,
         borderRadius: BorderRadius.circular(16),
         child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8), // Reduced padding
-          child:  Column(
+          padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
+          child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
-            mainAxisSize: MainAxisSize.min, // Added to prevent overflow
+            mainAxisSize: MainAxisSize.min,
             children: [
               Container(
-                padding: const EdgeInsets.all(14), // Reduced from 16
+                padding: const EdgeInsets.all(14),
                 decoration: BoxDecoration(
-                  color: color.withValues(alpha: 0.1),
+                  color: color. withValues(alpha: 0.1),
                   shape: BoxShape.circle,
                 ),
                 child: Icon(
                   icon,
-                  size: 32, // Reduced from 36
+                  size: 32,
                   color: color,
                 ),
               ),
-              const SizedBox(height: 10), // Reduced from 12
-              Flexible( // Added Flexible to prevent text overflow
+              const SizedBox(height: 10),
+              Flexible(
                 child: Text(
                   title,
                   textAlign: TextAlign.center,
-                  maxLines: 2, // Added max lines
-                  overflow: TextOverflow. ellipsis, // Added overflow handling
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
                   style: const TextStyle(
-                    fontSize: 13, // Reduced from 14
+                    fontSize:  13,
                     fontWeight: FontWeight.w600,
                   ),
                 ),
@@ -277,7 +280,6 @@ class HomePage extends StatelessWidget {
     );
   }
 
-  // Action card for list view (quick actions)
   Widget _buildActionCard({
     required BuildContext context,
     required IconData icon,
@@ -287,13 +289,13 @@ class HomePage extends StatelessWidget {
     required VoidCallback onTap,
   }) {
     return Card(
-      elevation: 3,
+      elevation:  3,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(16),
       ),
       child: InkWell(
         onTap: onTap,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius:  BorderRadius.circular(16),
         child: Container(
           padding: const EdgeInsets.all(16),
           child: Row(
@@ -313,21 +315,21 @@ class HomePage extends StatelessWidget {
               const SizedBox(width: 16),
               Expanded(
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment. start,
                   children: [
                     Text(
                       title,
                       style: const TextStyle(
-                        fontSize: 16,
-                        fontWeight:  FontWeight.bold,
+                        fontSize:  16,
+                        fontWeight: FontWeight.bold,
                       ),
                     ),
                     const SizedBox(height: 4),
                     Text(
                       description,
-                      style: TextStyle(
+                      style:  TextStyle(
                         fontSize: 13,
-                        color: Colors. grey[600],
+                        color: Colors.grey[600],
                       ),
                     ),
                   ],

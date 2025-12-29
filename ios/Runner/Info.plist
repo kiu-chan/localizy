@@ -50,5 +50,9 @@
 	<string>This app needs access to your location to provide personalized map features and navigation.</string>
 	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
 	<string>This app needs access to your location to provide personalized map features and navigation.</string>
+	<key>NSCameraUsageDescription</key>
+	<string>Ứng dụng cần truy cập camera để quét biển số</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Ứng dụng cần truy cập thư viện ảnh để chọn ảnh biển số xe</string>
 </dict>
 </plist>
