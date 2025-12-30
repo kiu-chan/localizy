@@ -271,7 +271,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get recognizing => 'Reconnaissance en cours...';
 
   @override
-  String get processing => 'Traitement.. .';
+  String get processing => 'Traitement en cours...';
 
   @override
   String get noLicensePlateDetected =>
@@ -364,4 +364,335 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get stop => 'Arrêter';
+
+  @override
+  String get mapConfirmIntro =>
+      'Confirmez l\'emplacement exact de l\'adresse à vérifier sur la carte';
+
+  @override
+  String get selectLocationOnMap => 'Sélectionner l\'emplacement sur la carte';
+
+  @override
+  String get changeLocation => 'Changer l\'emplacement';
+
+  @override
+  String get selectedLocation => 'Emplacement sélectionné';
+
+  @override
+  String get coordinates => 'Coordonnées';
+
+  @override
+  String get importantNotes => 'Notes importantes';
+
+  @override
+  String get notePleaseMarkExactly =>
+      'Veuillez marquer l\'emplacement exact à vérifier';
+
+  @override
+  String get noteCheckCoordinates =>
+      'Vérifiez attentivement les coordonnées et l\'adresse affichée';
+
+  @override
+  String get noteLocationWillBeUsed =>
+      'Cet emplacement sera utilisé pour la vérification';
+
+  @override
+  String get confirmAndContinue => 'Confirmer et continuer';
+
+  @override
+  String get noLocationSelected => 'Aucun emplacement sélectionné';
+
+  @override
+  String get uploadDocuments => 'Télécharger des documents';
+
+  @override
+  String get confirmLocation => 'Confirmer l\'emplacement';
+
+  @override
+  String get payment => 'Paiement';
+
+  @override
+  String get selectAppointment => 'Sélectionner un rendez-vous';
+
+  @override
+  String get complete => 'Terminer';
+
+  @override
+  String stepProgress(Object currentStep, Object stepTitle, Object totalSteps) {
+    return 'Étape $currentStep/$totalSteps: $stepTitle';
+  }
+
+  @override
+  String percentComplete(Object percent) {
+    return '$percent% terminé';
+  }
+
+  @override
+  String get appointmentIntro =>
+      'Sélectionnez une date et une heure convenables pour que le personnel vienne vérifier';
+
+  @override
+  String get selectDate => 'Sélectionner la date';
+
+  @override
+  String get tapToChange => 'Appuyez pour modifier';
+
+  @override
+  String get selectDateSuitable => 'Sélectionnez une date qui vous convient';
+
+  @override
+  String get selectTimeSlot => 'Sélectionner le créneau horaire';
+
+  @override
+  String get fullyBooked => 'Complet';
+
+  @override
+  String get yourAppointment => 'Votre rendez-vous';
+
+  @override
+  String get date => 'Date';
+
+  @override
+  String get timeSlot => 'Créneau horaire';
+
+  @override
+  String get noteStaffWillArrive =>
+      'Le personnel arrivera pendant le créneau horaire sélectionné';
+
+  @override
+  String get notePleaseBePresent =>
+      'Veuillez être présent à l\'adresse à l\'heure du rendez-vous';
+
+  @override
+  String get notePrepareOriginalDocs =>
+      'Préparez les documents originaux pour vérification';
+
+  @override
+  String get confirmAppointment => 'Confirmer le rendez-vous';
+
+  @override
+  String get requestSubmitted => 'Demande envoyée! ';
+
+  @override
+  String get thankYouForCompleting =>
+      'Merci d\'avoir terminé le processus de vérification';
+
+  @override
+  String get yourAddressCode => 'VOTRE CODE D\'ADRESSE';
+
+  @override
+  String get copyCode => 'Copier le code';
+
+  @override
+  String get addressCodeCopied => 'Code d\'adresse copié';
+
+  @override
+  String get requestSummary => 'Résumé de la demande';
+
+  @override
+  String get identityDocument => 'Document d\'identité';
+
+  @override
+  String get uploaded => 'Téléchargé';
+
+  @override
+  String get addressProofDoc => 'Preuve d\'adresse';
+
+  @override
+  String get location => 'Emplacement';
+
+  @override
+  String get confirmed => 'Confirmé';
+
+  @override
+  String get completed => 'Terminé';
+
+  @override
+  String get appointmentDate => 'Date du rendez-vous';
+
+  @override
+  String get paymentMomo => 'Portefeuille MoMo';
+
+  @override
+  String get paymentZaloPay => 'ZaloPay';
+
+  @override
+  String get paymentBankTransfer => 'Virement bancaire';
+
+  @override
+  String get paymentCard => 'Carte de crédit/débit';
+
+  @override
+  String get paymentUnknown => 'Inconnu';
+
+  @override
+  String get nextSteps => 'Prochaines étapes';
+
+  @override
+  String get step1ReceiveEmail =>
+      'Recevoir un email de confirmation dans les 5 minutes';
+
+  @override
+  String get step2StaffContact =>
+      'Le personnel vous contactera 1 jour à l\'avance';
+
+  @override
+  String get step3VerifyAddress => 'Vérifier l\'adresse à l\'heure prévue';
+
+  @override
+  String get step4ReceiveResult =>
+      'Recevoir le résultat de vérification après 24 heures';
+
+  @override
+  String get importantNotesTitle => 'Notes importantes';
+
+  @override
+  String get noteSaveAddressCode =>
+      'Veuillez enregistrer le code d\'adresse pour consultation';
+
+  @override
+  String get noteBePresentOnTime =>
+      'Soyez présent à l\'heure à l\'adresse enregistrée';
+
+  @override
+  String get noteContactHotline =>
+      'Contactez la hotline 1900xxxx si besoin d\'aide';
+
+  @override
+  String get share => 'Partager';
+
+  @override
+  String get backToHome => 'Retour à l\'accueil';
+
+  @override
+  String get documentUploadIntro =>
+      'Veuillez télécharger les documents nécessaires pour vérifier votre adresse';
+
+  @override
+  String get idDocumentSection => '1. Document d\'identité';
+
+  @override
+  String get documentType => 'Type de document:';
+
+  @override
+  String get idCardCCCD => 'Carte d\'identité/CCCD';
+
+  @override
+  String get passport => 'Passeport';
+
+  @override
+  String get idDocumentDescription =>
+      'Prenez des photos claires des deux côtés du document';
+
+  @override
+  String get addressProofSection => '2. Document de preuve d\'adresse';
+
+  @override
+  String get addressProofTitle => 'Document de preuve d\'adresse';
+
+  @override
+  String get addressProofDescription =>
+      'Factures de services publics, contrat de location, enregistrement de résidence temporaire, etc.';
+
+  @override
+  String get noteImageMustBeClear =>
+      'Les images doivent être claires, non floues ou masquées';
+
+  @override
+  String get noteDocumentMustBeValid =>
+      'Les informations sur les documents doivent être valides';
+
+  @override
+  String get noteAddressMustMatch =>
+      'L\'adresse sur le document doit correspondre au lieu de vérification';
+
+  @override
+  String get noteSupportedFormats => 'Formats pris en charge: JPG, PNG';
+
+  @override
+  String get uploadDocument => 'Télécharger le document';
+
+  @override
+  String get delete => 'Supprimer';
+
+  @override
+  String get chooseFromGallery => 'Choisir dans la galerie';
+
+  @override
+  String get takePhoto => 'Prendre une photo';
+
+  @override
+  String get errorSelectingImage => 'Erreur lors de la sélection de l\'image';
+
+  @override
+  String get continueButton => 'Continuer';
+
+  @override
+  String get selectLocation => 'Sélectionner l\'emplacement';
+
+  @override
+  String get mapPickerInstruction =>
+      'Déplacez la carte - l\'épingle de l\'icône pointe vers les coordonnées exactes';
+
+  @override
+  String get paymentIntro =>
+      'Payez les frais de vérification pour continuer le processus';
+
+  @override
+  String get totalPayment => 'Paiement total';
+
+  @override
+  String get currencyVND => 'VND';
+
+  @override
+  String get addressVerificationFee => 'Frais de vérification d\'adresse';
+
+  @override
+  String get selectPaymentMethod => 'Sélectionner le mode de paiement';
+
+  @override
+  String get paymentMomoDescription =>
+      'Payer via portefeuille électronique MoMo';
+
+  @override
+  String get paymentZaloPayDescription =>
+      'Payer via portefeuille électronique ZaloPay';
+
+  @override
+  String get paymentBankTransferDescription => 'Virement bancaire direct';
+
+  @override
+  String get paymentCardDescription => 'Payer avec Visa, MasterCard';
+
+  @override
+  String get feeDetails => 'Détails des frais';
+
+  @override
+  String get basicVerificationFee => 'Frais de vérification de base';
+
+  @override
+  String get travelFee => 'Frais de déplacement';
+
+  @override
+  String get total => 'Total';
+
+  @override
+  String get noteFeeNonRefundable =>
+      'Les frais ne sont pas remboursables après paiement';
+
+  @override
+  String get noteReceiveInvoice => 'Vous recevrez une facture par email';
+
+  @override
+  String get noteVerificationStartsAfterPayment =>
+      'Le processus de vérification commencera après un paiement réussi';
+
+  @override
+  String get payButton => 'Payer';
+
+  @override
+  String get securedBySSL => 'Paiement sécurisé par SSL';
+
+  @override
+  String get pleaseWaitAMoment => 'Veuillez patienter un moment';
 }

@@ -351,4 +351,326 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get stop => 'Stop';
+
+  @override
+  String get mapConfirmIntro =>
+      'Confirm the exact location of the address to be verified on the map';
+
+  @override
+  String get selectLocationOnMap => 'Select location on map';
+
+  @override
+  String get changeLocation => 'Change location';
+
+  @override
+  String get selectedLocation => 'Selected location';
+
+  @override
+  String get coordinates => 'Coordinates';
+
+  @override
+  String get importantNotes => 'Important notes';
+
+  @override
+  String get notePleaseMarkExactly =>
+      'Please mark the exact location to verify';
+
+  @override
+  String get noteCheckCoordinates =>
+      'Check the coordinates and displayed address carefully';
+
+  @override
+  String get noteLocationWillBeUsed =>
+      'This location will be used for verification';
+
+  @override
+  String get confirmAndContinue => 'Confirm and continue';
+
+  @override
+  String get noLocationSelected => 'No location selected';
+
+  @override
+  String get uploadDocuments => 'Upload documents';
+
+  @override
+  String get confirmLocation => 'Confirm location';
+
+  @override
+  String get payment => 'Payment';
+
+  @override
+  String get selectAppointment => 'Select appointment';
+
+  @override
+  String get complete => 'Complete';
+
+  @override
+  String stepProgress(Object currentStep, Object stepTitle, Object totalSteps) {
+    return 'Step $currentStep/$totalSteps:  $stepTitle';
+  }
+
+  @override
+  String percentComplete(Object percent) {
+    return '$percent% complete';
+  }
+
+  @override
+  String get appointmentIntro =>
+      'Select a convenient date and time for staff to come and verify';
+
+  @override
+  String get selectDate => 'Select date';
+
+  @override
+  String get tapToChange => 'Tap to change';
+
+  @override
+  String get selectDateSuitable => 'Select a date that suits you';
+
+  @override
+  String get selectTimeSlot => 'Select time slot';
+
+  @override
+  String get fullyBooked => 'Fully booked';
+
+  @override
+  String get yourAppointment => 'Your appointment';
+
+  @override
+  String get date => 'Date';
+
+  @override
+  String get timeSlot => 'Time slot';
+
+  @override
+  String get noteStaffWillArrive =>
+      'Staff will arrive during the selected time slot';
+
+  @override
+  String get notePleaseBePresent =>
+      'Please be present at the address at the appointment time';
+
+  @override
+  String get notePrepareOriginalDocs =>
+      'Prepare original documents for verification';
+
+  @override
+  String get confirmAppointment => 'Confirm appointment';
+
+  @override
+  String get requestSubmitted => 'Request submitted! ';
+
+  @override
+  String get thankYouForCompleting =>
+      'Thank you for completing the verification process';
+
+  @override
+  String get yourAddressCode => 'YOUR ADDRESS CODE';
+
+  @override
+  String get copyCode => 'Copy code';
+
+  @override
+  String get addressCodeCopied => 'Address code copied';
+
+  @override
+  String get requestSummary => 'Request summary';
+
+  @override
+  String get identityDocument => 'Identity document';
+
+  @override
+  String get uploaded => 'Uploaded';
+
+  @override
+  String get addressProofDoc => 'Address proof';
+
+  @override
+  String get location => 'Location';
+
+  @override
+  String get confirmed => 'Confirmed';
+
+  @override
+  String get completed => 'Completed';
+
+  @override
+  String get appointmentDate => 'Appointment date';
+
+  @override
+  String get paymentMomo => 'MoMo Wallet';
+
+  @override
+  String get paymentZaloPay => 'ZaloPay';
+
+  @override
+  String get paymentBankTransfer => 'Bank transfer';
+
+  @override
+  String get paymentCard => 'Credit/Debit card';
+
+  @override
+  String get paymentUnknown => 'Unknown';
+
+  @override
+  String get nextSteps => 'Next steps';
+
+  @override
+  String get step1ReceiveEmail => 'Receive confirmation email within 5 minutes';
+
+  @override
+  String get step2StaffContact => 'Staff will contact 1 day in advance';
+
+  @override
+  String get step3VerifyAddress => 'Verify address at scheduled time';
+
+  @override
+  String get step4ReceiveResult => 'Receive verification result after 24 hours';
+
+  @override
+  String get importantNotesTitle => 'Important notes';
+
+  @override
+  String get noteSaveAddressCode => 'Please save the address code for lookup';
+
+  @override
+  String get noteBePresentOnTime =>
+      'Be present on time at the registered address';
+
+  @override
+  String get noteContactHotline => 'Contact hotline 1900xxxx if support needed';
+
+  @override
+  String get share => 'Share';
+
+  @override
+  String get backToHome => 'Back to home';
+
+  @override
+  String get documentUploadIntro =>
+      'Please upload the necessary documents to verify your address';
+
+  @override
+  String get idDocumentSection => '1. Identity document';
+
+  @override
+  String get documentType => 'Document type:';
+
+  @override
+  String get idCardCCCD => 'ID Card/CCCD';
+
+  @override
+  String get passport => 'Passport';
+
+  @override
+  String get idDocumentDescription =>
+      'Take clear photos of both sides of the document';
+
+  @override
+  String get addressProofSection => '2. Address proof document';
+
+  @override
+  String get addressProofTitle => 'Address proof document';
+
+  @override
+  String get addressProofDescription =>
+      'Utility bills, rental contract, temporary residence registration, etc.';
+
+  @override
+  String get noteImageMustBeClear =>
+      'Images must be clear, not blurry or obscured';
+
+  @override
+  String get noteDocumentMustBeValid =>
+      'Information on documents must be valid';
+
+  @override
+  String get noteAddressMustMatch =>
+      'Address on document must match verification location';
+
+  @override
+  String get noteSupportedFormats => 'Supported formats: JPG, PNG';
+
+  @override
+  String get uploadDocument => 'Upload document';
+
+  @override
+  String get delete => 'Delete';
+
+  @override
+  String get chooseFromGallery => 'Choose from gallery';
+
+  @override
+  String get takePhoto => 'Take photo';
+
+  @override
+  String get errorSelectingImage => 'Error selecting image';
+
+  @override
+  String get continueButton => 'Continue';
+
+  @override
+  String get selectLocation => 'Select location';
+
+  @override
+  String get mapPickerInstruction =>
+      'Move the map - icon pin points to exact coordinates';
+
+  @override
+  String get paymentIntro => 'Pay verification fee to continue the process';
+
+  @override
+  String get totalPayment => 'Total payment';
+
+  @override
+  String get currencyVND => 'VND';
+
+  @override
+  String get addressVerificationFee => 'Address verification fee';
+
+  @override
+  String get selectPaymentMethod => 'Select payment method';
+
+  @override
+  String get paymentMomoDescription => 'Pay via MoMo e-wallet';
+
+  @override
+  String get paymentZaloPayDescription => 'Pay via ZaloPay e-wallet';
+
+  @override
+  String get paymentBankTransferDescription => 'Direct bank transfer';
+
+  @override
+  String get paymentCardDescription => 'Pay with Visa, MasterCard';
+
+  @override
+  String get feeDetails => 'Fee details';
+
+  @override
+  String get basicVerificationFee => 'Basic verification fee';
+
+  @override
+  String get travelFee => 'Travel fee';
+
+  @override
+  String get total => 'Total';
+
+  @override
+  String get noteFeeNonRefundable => 'Fee is non-refundable after payment';
+
+  @override
+  String get noteReceiveInvoice => 'You will receive an invoice via email';
+
+  @override
+  String get noteVerificationStartsAfterPayment =>
+      'Verification process will start after successful payment';
+
+  @override
+  String get payButton => 'Pay';
+
+  @override
+  String get securedBySSL => 'Payment secured by SSL';
+
+  @override
+  String get pleaseWaitAMoment => 'Please wait a moment';
 }

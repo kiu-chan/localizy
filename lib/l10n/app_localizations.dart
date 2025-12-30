@@ -599,7 +599,7 @@ abstract class AppLocalizations {
   /// No description provided for @processing.
   ///
   /// In fr, this message translates to:
-  /// **'Traitement.. .'**
+  /// **'Traitement en cours...'**
   String get processing;
 
   /// No description provided for @noLicensePlateDetected.
@@ -769,6 +769,606 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'Arrêter'**
   String get stop;
+
+  /// No description provided for @mapConfirmIntro.
+  ///
+  /// In fr, this message translates to:
+  /// **'Confirmez l\'emplacement exact de l\'adresse à vérifier sur la carte'**
+  String get mapConfirmIntro;
+
+  /// No description provided for @selectLocationOnMap.
+  ///
+  /// In fr, this message translates to:
+  /// **'Sélectionner l\'emplacement sur la carte'**
+  String get selectLocationOnMap;
+
+  /// No description provided for @changeLocation.
+  ///
+  /// In fr, this message translates to:
+  /// **'Changer l\'emplacement'**
+  String get changeLocation;
+
+  /// No description provided for @selectedLocation.
+  ///
+  /// In fr, this message translates to:
+  /// **'Emplacement sélectionné'**
+  String get selectedLocation;
+
+  /// No description provided for @coordinates.
+  ///
+  /// In fr, this message translates to:
+  /// **'Coordonnées'**
+  String get coordinates;
+
+  /// No description provided for @importantNotes.
+  ///
+  /// In fr, this message translates to:
+  /// **'Notes importantes'**
+  String get importantNotes;
+
+  /// No description provided for @notePleaseMarkExactly.
+  ///
+  /// In fr, this message translates to:
+  /// **'Veuillez marquer l\'emplacement exact à vérifier'**
+  String get notePleaseMarkExactly;
+
+  /// No description provided for @noteCheckCoordinates.
+  ///
+  /// In fr, this message translates to:
+  /// **'Vérifiez attentivement les coordonnées et l\'adresse affichée'**
+  String get noteCheckCoordinates;
+
+  /// No description provided for @noteLocationWillBeUsed.
+  ///
+  /// In fr, this message translates to:
+  /// **'Cet emplacement sera utilisé pour la vérification'**
+  String get noteLocationWillBeUsed;
+
+  /// No description provided for @confirmAndContinue.
+  ///
+  /// In fr, this message translates to:
+  /// **'Confirmer et continuer'**
+  String get confirmAndContinue;
+
+  /// No description provided for @noLocationSelected.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucun emplacement sélectionné'**
+  String get noLocationSelected;
+
+  /// No description provided for @uploadDocuments.
+  ///
+  /// In fr, this message translates to:
+  /// **'Télécharger des documents'**
+  String get uploadDocuments;
+
+  /// No description provided for @confirmLocation.
+  ///
+  /// In fr, this message translates to:
+  /// **'Confirmer l\'emplacement'**
+  String get confirmLocation;
+
+  /// No description provided for @payment.
+  ///
+  /// In fr, this message translates to:
+  /// **'Paiement'**
+  String get payment;
+
+  /// No description provided for @selectAppointment.
+  ///
+  /// In fr, this message translates to:
+  /// **'Sélectionner un rendez-vous'**
+  String get selectAppointment;
+
+  /// No description provided for @complete.
+  ///
+  /// In fr, this message translates to:
+  /// **'Terminer'**
+  String get complete;
+
+  /// No description provided for @stepProgress.
+  ///
+  /// In fr, this message translates to:
+  /// **'Étape {currentStep}/{totalSteps}: {stepTitle}'**
+  String stepProgress(Object currentStep, Object stepTitle, Object totalSteps);
+
+  /// No description provided for @percentComplete.
+  ///
+  /// In fr, this message translates to:
+  /// **'{percent}% terminé'**
+  String percentComplete(Object percent);
+
+  /// No description provided for @appointmentIntro.
+  ///
+  /// In fr, this message translates to:
+  /// **'Sélectionnez une date et une heure convenables pour que le personnel vienne vérifier'**
+  String get appointmentIntro;
+
+  /// No description provided for @selectDate.
+  ///
+  /// In fr, this message translates to:
+  /// **'Sélectionner la date'**
+  String get selectDate;
+
+  /// No description provided for @tapToChange.
+  ///
+  /// In fr, this message translates to:
+  /// **'Appuyez pour modifier'**
+  String get tapToChange;
+
+  /// No description provided for @selectDateSuitable.
+  ///
+  /// In fr, this message translates to:
+  /// **'Sélectionnez une date qui vous convient'**
+  String get selectDateSuitable;
+
+  /// No description provided for @selectTimeSlot.
+  ///
+  /// In fr, this message translates to:
+  /// **'Sélectionner le créneau horaire'**
+  String get selectTimeSlot;
+
+  /// No description provided for @fullyBooked.
+  ///
+  /// In fr, this message translates to:
+  /// **'Complet'**
+  String get fullyBooked;
+
+  /// No description provided for @yourAppointment.
+  ///
+  /// In fr, this message translates to:
+  /// **'Votre rendez-vous'**
+  String get yourAppointment;
+
+  /// No description provided for @date.
+  ///
+  /// In fr, this message translates to:
+  /// **'Date'**
+  String get date;
+
+  /// No description provided for @timeSlot.
+  ///
+  /// In fr, this message translates to:
+  /// **'Créneau horaire'**
+  String get timeSlot;
+
+  /// No description provided for @noteStaffWillArrive.
+  ///
+  /// In fr, this message translates to:
+  /// **'Le personnel arrivera pendant le créneau horaire sélectionné'**
+  String get noteStaffWillArrive;
+
+  /// No description provided for @notePleaseBePresent.
+  ///
+  /// In fr, this message translates to:
+  /// **'Veuillez être présent à l\'adresse à l\'heure du rendez-vous'**
+  String get notePleaseBePresent;
+
+  /// No description provided for @notePrepareOriginalDocs.
+  ///
+  /// In fr, this message translates to:
+  /// **'Préparez les documents originaux pour vérification'**
+  String get notePrepareOriginalDocs;
+
+  /// No description provided for @confirmAppointment.
+  ///
+  /// In fr, this message translates to:
+  /// **'Confirmer le rendez-vous'**
+  String get confirmAppointment;
+
+  /// No description provided for @requestSubmitted.
+  ///
+  /// In fr, this message translates to:
+  /// **'Demande envoyée! '**
+  String get requestSubmitted;
+
+  /// No description provided for @thankYouForCompleting.
+  ///
+  /// In fr, this message translates to:
+  /// **'Merci d\'avoir terminé le processus de vérification'**
+  String get thankYouForCompleting;
+
+  /// No description provided for @yourAddressCode.
+  ///
+  /// In fr, this message translates to:
+  /// **'VOTRE CODE D\'ADRESSE'**
+  String get yourAddressCode;
+
+  /// No description provided for @copyCode.
+  ///
+  /// In fr, this message translates to:
+  /// **'Copier le code'**
+  String get copyCode;
+
+  /// No description provided for @addressCodeCopied.
+  ///
+  /// In fr, this message translates to:
+  /// **'Code d\'adresse copié'**
+  String get addressCodeCopied;
+
+  /// No description provided for @requestSummary.
+  ///
+  /// In fr, this message translates to:
+  /// **'Résumé de la demande'**
+  String get requestSummary;
+
+  /// No description provided for @identityDocument.
+  ///
+  /// In fr, this message translates to:
+  /// **'Document d\'identité'**
+  String get identityDocument;
+
+  /// No description provided for @uploaded.
+  ///
+  /// In fr, this message translates to:
+  /// **'Téléchargé'**
+  String get uploaded;
+
+  /// No description provided for @addressProofDoc.
+  ///
+  /// In fr, this message translates to:
+  /// **'Preuve d\'adresse'**
+  String get addressProofDoc;
+
+  /// No description provided for @location.
+  ///
+  /// In fr, this message translates to:
+  /// **'Emplacement'**
+  String get location;
+
+  /// No description provided for @confirmed.
+  ///
+  /// In fr, this message translates to:
+  /// **'Confirmé'**
+  String get confirmed;
+
+  /// No description provided for @completed.
+  ///
+  /// In fr, this message translates to:
+  /// **'Terminé'**
+  String get completed;
+
+  /// No description provided for @appointmentDate.
+  ///
+  /// In fr, this message translates to:
+  /// **'Date du rendez-vous'**
+  String get appointmentDate;
+
+  /// No description provided for @paymentMomo.
+  ///
+  /// In fr, this message translates to:
+  /// **'Portefeuille MoMo'**
+  String get paymentMomo;
+
+  /// No description provided for @paymentZaloPay.
+  ///
+  /// In fr, this message translates to:
+  /// **'ZaloPay'**
+  String get paymentZaloPay;
+
+  /// No description provided for @paymentBankTransfer.
+  ///
+  /// In fr, this message translates to:
+  /// **'Virement bancaire'**
+  String get paymentBankTransfer;
+
+  /// No description provided for @paymentCard.
+  ///
+  /// In fr, this message translates to:
+  /// **'Carte de crédit/débit'**
+  String get paymentCard;
+
+  /// No description provided for @paymentUnknown.
+  ///
+  /// In fr, this message translates to:
+  /// **'Inconnu'**
+  String get paymentUnknown;
+
+  /// No description provided for @nextSteps.
+  ///
+  /// In fr, this message translates to:
+  /// **'Prochaines étapes'**
+  String get nextSteps;
+
+  /// No description provided for @step1ReceiveEmail.
+  ///
+  /// In fr, this message translates to:
+  /// **'Recevoir un email de confirmation dans les 5 minutes'**
+  String get step1ReceiveEmail;
+
+  /// No description provided for @step2StaffContact.
+  ///
+  /// In fr, this message translates to:
+  /// **'Le personnel vous contactera 1 jour à l\'avance'**
+  String get step2StaffContact;
+
+  /// No description provided for @step3VerifyAddress.
+  ///
+  /// In fr, this message translates to:
+  /// **'Vérifier l\'adresse à l\'heure prévue'**
+  String get step3VerifyAddress;
+
+  /// No description provided for @step4ReceiveResult.
+  ///
+  /// In fr, this message translates to:
+  /// **'Recevoir le résultat de vérification après 24 heures'**
+  String get step4ReceiveResult;
+
+  /// No description provided for @importantNotesTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Notes importantes'**
+  String get importantNotesTitle;
+
+  /// No description provided for @noteSaveAddressCode.
+  ///
+  /// In fr, this message translates to:
+  /// **'Veuillez enregistrer le code d\'adresse pour consultation'**
+  String get noteSaveAddressCode;
+
+  /// No description provided for @noteBePresentOnTime.
+  ///
+  /// In fr, this message translates to:
+  /// **'Soyez présent à l\'heure à l\'adresse enregistrée'**
+  String get noteBePresentOnTime;
+
+  /// No description provided for @noteContactHotline.
+  ///
+  /// In fr, this message translates to:
+  /// **'Contactez la hotline 1900xxxx si besoin d\'aide'**
+  String get noteContactHotline;
+
+  /// No description provided for @share.
+  ///
+  /// In fr, this message translates to:
+  /// **'Partager'**
+  String get share;
+
+  /// No description provided for @backToHome.
+  ///
+  /// In fr, this message translates to:
+  /// **'Retour à l\'accueil'**
+  String get backToHome;
+
+  /// No description provided for @documentUploadIntro.
+  ///
+  /// In fr, this message translates to:
+  /// **'Veuillez télécharger les documents nécessaires pour vérifier votre adresse'**
+  String get documentUploadIntro;
+
+  /// No description provided for @idDocumentSection.
+  ///
+  /// In fr, this message translates to:
+  /// **'1. Document d\'identité'**
+  String get idDocumentSection;
+
+  /// No description provided for @documentType.
+  ///
+  /// In fr, this message translates to:
+  /// **'Type de document:'**
+  String get documentType;
+
+  /// No description provided for @idCardCCCD.
+  ///
+  /// In fr, this message translates to:
+  /// **'Carte d\'identité/CCCD'**
+  String get idCardCCCD;
+
+  /// No description provided for @passport.
+  ///
+  /// In fr, this message translates to:
+  /// **'Passeport'**
+  String get passport;
+
+  /// No description provided for @idDocumentDescription.
+  ///
+  /// In fr, this message translates to:
+  /// **'Prenez des photos claires des deux côtés du document'**
+  String get idDocumentDescription;
+
+  /// No description provided for @addressProofSection.
+  ///
+  /// In fr, this message translates to:
+  /// **'2. Document de preuve d\'adresse'**
+  String get addressProofSection;
+
+  /// No description provided for @addressProofTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Document de preuve d\'adresse'**
+  String get addressProofTitle;
+
+  /// No description provided for @addressProofDescription.
+  ///
+  /// In fr, this message translates to:
+  /// **'Factures de services publics, contrat de location, enregistrement de résidence temporaire, etc.'**
+  String get addressProofDescription;
+
+  /// No description provided for @noteImageMustBeClear.
+  ///
+  /// In fr, this message translates to:
+  /// **'Les images doivent être claires, non floues ou masquées'**
+  String get noteImageMustBeClear;
+
+  /// No description provided for @noteDocumentMustBeValid.
+  ///
+  /// In fr, this message translates to:
+  /// **'Les informations sur les documents doivent être valides'**
+  String get noteDocumentMustBeValid;
+
+  /// No description provided for @noteAddressMustMatch.
+  ///
+  /// In fr, this message translates to:
+  /// **'L\'adresse sur le document doit correspondre au lieu de vérification'**
+  String get noteAddressMustMatch;
+
+  /// No description provided for @noteSupportedFormats.
+  ///
+  /// In fr, this message translates to:
+  /// **'Formats pris en charge: JPG, PNG'**
+  String get noteSupportedFormats;
+
+  /// No description provided for @uploadDocument.
+  ///
+  /// In fr, this message translates to:
+  /// **'Télécharger le document'**
+  String get uploadDocument;
+
+  /// No description provided for @delete.
+  ///
+  /// In fr, this message translates to:
+  /// **'Supprimer'**
+  String get delete;
+
+  /// No description provided for @chooseFromGallery.
+  ///
+  /// In fr, this message translates to:
+  /// **'Choisir dans la galerie'**
+  String get chooseFromGallery;
+
+  /// No description provided for @takePhoto.
+  ///
+  /// In fr, this message translates to:
+  /// **'Prendre une photo'**
+  String get takePhoto;
+
+  /// No description provided for @errorSelectingImage.
+  ///
+  /// In fr, this message translates to:
+  /// **'Erreur lors de la sélection de l\'image'**
+  String get errorSelectingImage;
+
+  /// No description provided for @continueButton.
+  ///
+  /// In fr, this message translates to:
+  /// **'Continuer'**
+  String get continueButton;
+
+  /// No description provided for @selectLocation.
+  ///
+  /// In fr, this message translates to:
+  /// **'Sélectionner l\'emplacement'**
+  String get selectLocation;
+
+  /// No description provided for @mapPickerInstruction.
+  ///
+  /// In fr, this message translates to:
+  /// **'Déplacez la carte - l\'épingle de l\'icône pointe vers les coordonnées exactes'**
+  String get mapPickerInstruction;
+
+  /// No description provided for @paymentIntro.
+  ///
+  /// In fr, this message translates to:
+  /// **'Payez les frais de vérification pour continuer le processus'**
+  String get paymentIntro;
+
+  /// No description provided for @totalPayment.
+  ///
+  /// In fr, this message translates to:
+  /// **'Paiement total'**
+  String get totalPayment;
+
+  /// No description provided for @currencyVND.
+  ///
+  /// In fr, this message translates to:
+  /// **'VND'**
+  String get currencyVND;
+
+  /// No description provided for @addressVerificationFee.
+  ///
+  /// In fr, this message translates to:
+  /// **'Frais de vérification d\'adresse'**
+  String get addressVerificationFee;
+
+  /// No description provided for @selectPaymentMethod.
+  ///
+  /// In fr, this message translates to:
+  /// **'Sélectionner le mode de paiement'**
+  String get selectPaymentMethod;
+
+  /// No description provided for @paymentMomoDescription.
+  ///
+  /// In fr, this message translates to:
+  /// **'Payer via portefeuille électronique MoMo'**
+  String get paymentMomoDescription;
+
+  /// No description provided for @paymentZaloPayDescription.
+  ///
+  /// In fr, this message translates to:
+  /// **'Payer via portefeuille électronique ZaloPay'**
+  String get paymentZaloPayDescription;
+
+  /// No description provided for @paymentBankTransferDescription.
+  ///
+  /// In fr, this message translates to:
+  /// **'Virement bancaire direct'**
+  String get paymentBankTransferDescription;
+
+  /// No description provided for @paymentCardDescription.
+  ///
+  /// In fr, this message translates to:
+  /// **'Payer avec Visa, MasterCard'**
+  String get paymentCardDescription;
+
+  /// No description provided for @feeDetails.
+  ///
+  /// In fr, this message translates to:
+  /// **'Détails des frais'**
+  String get feeDetails;
+
+  /// No description provided for @basicVerificationFee.
+  ///
+  /// In fr, this message translates to:
+  /// **'Frais de vérification de base'**
+  String get basicVerificationFee;
+
+  /// No description provided for @travelFee.
+  ///
+  /// In fr, this message translates to:
+  /// **'Frais de déplacement'**
+  String get travelFee;
+
+  /// No description provided for @total.
+  ///
+  /// In fr, this message translates to:
+  /// **'Total'**
+  String get total;
+
+  /// No description provided for @noteFeeNonRefundable.
+  ///
+  /// In fr, this message translates to:
+  /// **'Les frais ne sont pas remboursables après paiement'**
+  String get noteFeeNonRefundable;
+
+  /// No description provided for @noteReceiveInvoice.
+  ///
+  /// In fr, this message translates to:
+  /// **'Vous recevrez une facture par email'**
+  String get noteReceiveInvoice;
+
+  /// No description provided for @noteVerificationStartsAfterPayment.
+  ///
+  /// In fr, this message translates to:
+  /// **'Le processus de vérification commencera après un paiement réussi'**
+  String get noteVerificationStartsAfterPayment;
+
+  /// No description provided for @payButton.
+  ///
+  /// In fr, this message translates to:
+  /// **'Payer'**
+  String get payButton;
+
+  /// No description provided for @securedBySSL.
+  ///
+  /// In fr, this message translates to:
+  /// **'Paiement sécurisé par SSL'**
+  String get securedBySSL;
+
+  /// No description provided for @pleaseWaitAMoment.
+  ///
+  /// In fr, this message translates to:
+  /// **'Veuillez patienter un moment'**
+  String get pleaseWaitAMoment;
 }
 
 class _AppLocalizationsDelegate

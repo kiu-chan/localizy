@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:localizy/l10n/app_localizations.dart';
 import 'package:localizy/screens/home/verification/appointment_page.dart';
 import 'package:localizy/screens/home/verification/completion_page.dart';
 import 'package:localizy/screens/home/verification/document_upload_page.dart';
@@ -26,14 +27,17 @@ class _AddressVerificationFlowState extends State<AddressVerificationFlow> {
   DateTime? _appointmentDate;
   TimeOfDay? _appointmentTime;
   String? _timeSlot;
-  
-  final List<String> _stepTitles = [
-    'Tải lên tài liệu',
-    'Xác nhận vị trí',
-    'Thanh toán',
-    'Chọn lịch hẹn',
-    'Hoàn tất',
-  ];
+
+  List<String> _getStepTitles(BuildContext context) {
+    final localizations = AppLocalizations.of(context)!;
+    return [
+      localizations.uploadDocuments,
+      localizations.confirmLocation,
+      localizations.payment,
+      localizations.selectAppointment,
+      localizations. complete,
+    ];
+  }
 
   void _nextStep(dynamic data) {
     setState(() {
@@ -49,7 +53,7 @@ class _AddressVerificationFlowState extends State<AddressVerificationFlow> {
           break;
         case 1:
           // Map location data
-          _location = data as Map<String, double>?;
+          _location = data as Map<String, double>? ;
           break;
         case 2:
           // Payment data
@@ -88,6 +92,8 @@ class _AddressVerificationFlowState extends State<AddressVerificationFlow> {
 
   @override
   Widget build(BuildContext context) {
+    final localizations = AppLocalizations.of(context)!;
+    
     return WillPopScope(
       onWillPop: () async {
         if (_currentStep > 0) {
@@ -96,13 +102,13 @@ class _AddressVerificationFlowState extends State<AddressVerificationFlow> {
         }
         return true;
       },
-      child: Scaffold(
+      child:  Scaffold(
         appBar: AppBar(
-          title: const Text('Xác minh địa chỉ'),
-          backgroundColor:  Colors.green.shade700,
+          title: Text(localizations.addressVerification),
+          backgroundColor: Colors.green. shade700,
           foregroundColor: Colors.white,
           leading: IconButton(
-            icon: const Icon(Icons.arrow_back),
+            icon:  const Icon(Icons.arrow_back),
             onPressed: () {
               if (_currentStep > 0) {
                 _previousStep();
@@ -128,13 +134,16 @@ class _AddressVerificationFlowState extends State<AddressVerificationFlow> {
   }
 
   Widget _buildProgressStepper() {
+    final localizations = AppLocalizations.of(context)!;
+    final stepTitles = _getStepTitles(context);
+    
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: Colors.white,
         boxShadow: [
           BoxShadow(
-            color: Colors.grey.withValues(alpha: 0.1),
+            color: Colors. grey.withValues(alpha: 0.1),
             blurRadius: 4,
             offset: const Offset(0, 2),
           ),
@@ -157,16 +166,16 @@ class _AddressVerificationFlowState extends State<AddressVerificationFlow> {
           const SizedBox(height: 12),
           // Step title
           Text(
-            'Bước ${_currentStep + 1}/5: ${_stepTitles[_currentStep]}',
-            style: const TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
+            localizations. stepProgress(_currentStep + 1, 5, stepTitles[_currentStep]),
+            style:  const TextStyle(
+              fontSize:  16,
+              fontWeight:  FontWeight.bold,
             ),
           ),
           const SizedBox(height: 4),
           // Progress percentage
           Text(
-            '${(((_currentStep + 1) / 5) * 100).toInt()}% hoàn thành',
+            localizations.percentComplete((((_currentStep + 1) / 5) * 100).toInt()),
             style: TextStyle(
               fontSize: 14,
               color: Colors.grey[600],
@@ -185,14 +194,14 @@ class _AddressVerificationFlowState extends State<AddressVerificationFlow> {
       width: 32,
       height: 32,
       decoration: BoxDecoration(
-        shape: BoxShape.circle,
+        shape: BoxShape. circle,
         color: isCompleted
-            ? Colors.green.shade700
+            ? Colors.green. shade700
             : isCurrent
-                ? Colors.green. shade700
-                : Colors.grey.shade300,
+                ? Colors.green.shade700
+                : Colors.grey. shade300,
         border: Border.all(
-          color: isCurrent ?  Colors.green.shade900 : Colors.transparent,
+          color: isCurrent ?  Colors.green.shade900 :  Colors.transparent,
           width: 2,
         ),
       ),
@@ -202,7 +211,7 @@ class _AddressVerificationFlowState extends State<AddressVerificationFlow> {
             : Text(
                 '${index + 1}',
                 style: TextStyle(
-                  color: isCurrent ? Colors.white : Colors.grey[600],
+                  color: isCurrent ? Colors.white : Colors. grey[600],
                   fontWeight: FontWeight.bold,
                   fontSize: 14,
                 ),
@@ -217,7 +226,7 @@ class _AddressVerificationFlowState extends State<AddressVerificationFlow> {
     return Container(
       width:  40,
       height: 2,
-      color: isCompleted ?  Colors.green.shade700 :  Colors.grey.shade300,
+      color: isCompleted ? Colors.green.shade700 : Colors.grey.shade300,
     );
   }
 
@@ -244,16 +253,16 @@ class _AddressVerificationFlowState extends State<AddressVerificationFlow> {
         );
       case 2:
         return PaymentPage(
-          initialPaymentMethod:  _paymentMethod,
+          initialPaymentMethod: _paymentMethod,
           onNext: _nextStep,
           onPrevious: _previousStep,
         );
       case 3:
         return AppointmentPage(
           initialDate: _appointmentDate,
-          initialTime: _appointmentTime,
+          initialTime:  _appointmentTime,
           onNext: _nextStep,
-          onPrevious:  _previousStep,
+          onPrevious: _previousStep,
         );
       case 4:
         return CompletionPage(

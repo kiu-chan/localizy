@@ -29,7 +29,7 @@ class _MapConfirmationPageState extends State<MapConfirmationPage> {
     super.initState();
     _selectedLocation = widget.initialLocation;
     if (_selectedLocation != null) {
-      _address = 'Lat: ${_selectedLocation!['lat']! . toStringAsFixed(6)}, Lng: ${_selectedLocation!['lng']!.toStringAsFixed(6)}';
+      _address = 'Lat: ${_selectedLocation!['lat']! .toStringAsFixed(6)}, Lng: ${_selectedLocation!['lng']!.toStringAsFixed(6)}';
     }
   }
 
@@ -54,8 +54,8 @@ class _MapConfirmationPageState extends State<MapConfirmationPage> {
       
       if (_mapController != null) {
         _mapController!.animateCamera(
-          CameraUpdate. newLatLng(
-            LatLng(_selectedLocation!['lat']!, _selectedLocation!['lng']!),
+          CameraUpdate.newLatLng(
+            LatLng(_selectedLocation!['lat']!, _selectedLocation!['lng']! ),
           ),
         );
       }
@@ -70,6 +70,8 @@ class _MapConfirmationPageState extends State<MapConfirmationPage> {
 
   @override
   Widget build(BuildContext context) {
+    final localizations = AppLocalizations.of(context)!;
+    
     return Column(
       children: [
         Expanded(
@@ -86,20 +88,20 @@ class _MapConfirmationPageState extends State<MapConfirmationPage> {
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),
                   ),
-                  child: Padding(
+                  child:  Padding(
                     padding: const EdgeInsets.all(16.0),
                     child: Row(
                       children: [
                         Icon(
                           Icons.info_outline,
                           color: Colors.blue. shade700,
-                          size:  28,
+                          size: 28,
                         ),
                         const SizedBox(width: 12),
-                        const Expanded(
+                        Expanded(
                           child: Text(
-                            'Xác nhận vị trí chính xác của địa chỉ cần xác minh trên bản đồ',
-                            style: TextStyle(fontSize: 14),
+                            localizations.mapConfirmIntro,
+                            style: const TextStyle(fontSize: 14),
                           ),
                         ),
                       ],
@@ -115,12 +117,12 @@ class _MapConfirmationPageState extends State<MapConfirmationPage> {
                   width: double.infinity,
                   child: Container(
                     decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(16),
-                      border: Border.all(color: Colors.grey.shade300, width: 2),
+                      borderRadius:  BorderRadius.circular(16),
+                      border: Border. all(color: Colors.grey. shade300, width: 2),
                     ),
                     clipBehavior: Clip.antiAlias,
                     child:  _selectedLocation == null
-                        ? _buildEmptyMapPlaceholder()
+                        ?  _buildEmptyMapPlaceholder()
                         : _buildMapPreview(),
                   ),
                 ),
@@ -131,7 +133,7 @@ class _MapConfirmationPageState extends State<MapConfirmationPage> {
                 SizedBox(
                   width:  double.infinity,
                   child: OutlinedButton. icon(
-                    onPressed: _openMapPicker,
+                    onPressed:  _openMapPicker,
                     icon: Icon(
                       _selectedLocation == null 
                           ? Icons.add_location 
@@ -139,8 +141,8 @@ class _MapConfirmationPageState extends State<MapConfirmationPage> {
                     ),
                     label: Text(
                       _selectedLocation == null 
-                          ? 'Chọn vị trí trên bản đồ' 
-                          : 'Thay đổi vị trí',
+                          ? localizations.selectLocationOnMap
+                          : localizations.changeLocation,
                     ),
                     style: OutlinedButton.styleFrom(
                       padding: const EdgeInsets.symmetric(vertical: 14),
@@ -162,7 +164,7 @@ class _MapConfirmationPageState extends State<MapConfirmationPage> {
                     color: Colors.green.shade50,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),
-                      side: BorderSide(color:  Colors.green.shade700, width: 2),
+                      side: BorderSide(color: Colors.green.shade700, width: 2),
                     ),
                     child:  Padding(
                       padding: const EdgeInsets.all(16.0),
@@ -173,13 +175,13 @@ class _MapConfirmationPageState extends State<MapConfirmationPage> {
                             children: [
                               Icon(
                                 Icons.check_circle,
-                                color:  Colors.green.shade700,
+                                color: Colors.green.shade700,
                                 size: 24,
                               ),
                               const SizedBox(width: 12),
-                              const Text(
-                                'Vị trí đã chọn',
-                                style: TextStyle(
+                              Text(
+                                localizations.selectedLocation,
+                                style: const TextStyle(
                                   fontSize: 16,
                                   fontWeight: FontWeight.bold,
                                 ),
@@ -189,7 +191,7 @@ class _MapConfirmationPageState extends State<MapConfirmationPage> {
                           const Divider(height: 24),
                           _buildLocationRow(
                             Icons.location_on,
-                            'Tọa độ',
+                            localizations.coordinates,
                             _address,
                           ),
                         ],
@@ -219,19 +221,19 @@ class _MapConfirmationPageState extends State<MapConfirmationPage> {
                               color: Colors.orange.shade700,
                             ),
                             const SizedBox(width: 8),
-                            const Text(
-                              'Lưu ý',
-                              style: TextStyle(
+                            Text(
+                              localizations.importantNotes,
+                              style: const TextStyle(
                                 fontSize: 16,
-                                fontWeight:  FontWeight.bold,
+                                fontWeight: FontWeight.bold,
                               ),
                             ),
                           ],
                         ),
                         const SizedBox(height: 12),
-                        _buildNoteItem('Vui lòng đánh dấu chính xác vị trí cần xác minh'),
-                        _buildNoteItem('Kiểm tra kỹ tọa độ và địa chỉ hiển thị'),
-                        _buildNoteItem('Vị trí này sẽ được sử dụng cho việc xác minh'),
+                        _buildNoteItem(localizations.notePleaseMarkExactly),
+                        _buildNoteItem(localizations. noteCheckCoordinates),
+                        _buildNoteItem(localizations.noteLocationWillBeUsed),
                       ],
                     ),
                   ),
@@ -250,6 +252,8 @@ class _MapConfirmationPageState extends State<MapConfirmationPage> {
   }
 
   Widget _buildEmptyMapPlaceholder() {
+    final localizations = AppLocalizations.of(context)!;
+    
     return Container(
       width: double.infinity,
       height: double.infinity,
@@ -264,9 +268,9 @@ class _MapConfirmationPageState extends State<MapConfirmationPage> {
           ),
           const SizedBox(height: 16),
           Text(
-            'Chưa chọn vị trí',
+            localizations.noLocationSelected,
             style: TextStyle(
-              fontSize: 16,
+              fontSize:  16,
               color: Colors.grey[600],
             ),
           ),
@@ -310,7 +314,7 @@ class _MapConfirmationPageState extends State<MapConfirmationPage> {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Icon(icon, size: 20, color: Colors. green.shade700),
+        Icon(icon, size: 20, color: Colors.green.shade700),
         const SizedBox(width: 12),
         Expanded(
           child: Column(
@@ -320,7 +324,7 @@ class _MapConfirmationPageState extends State<MapConfirmationPage> {
                 label,
                 style: TextStyle(
                   fontSize: 12,
-                  color: Colors. grey[600],
+                  color: Colors.grey[600],
                 ),
               ),
               const SizedBox(height: 4),
@@ -342,7 +346,7 @@ class _MapConfirmationPageState extends State<MapConfirmationPage> {
     return Padding(
       padding: const EdgeInsets.only(bottom: 8.0),
       child: Row(
-        crossAxisAlignment: CrossAxisAlignment. start,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const Text('• ', style: TextStyle(fontSize: 16)),
           Expanded(
@@ -354,13 +358,15 @@ class _MapConfirmationPageState extends State<MapConfirmationPage> {
   }
 
   Widget _buildBottomButton() {
+    final localizations = AppLocalizations.of(context)!;
+    
     return Container(
       padding: const EdgeInsets.all(16.0),
       decoration: BoxDecoration(
-        color: Colors. white,
-        boxShadow:  [
+        color: Colors.white,
+        boxShadow: [
           BoxShadow(
-            color: Colors.grey. withValues(alpha: 0.2),
+            color:  Colors.grey.withValues(alpha: 0.2),
             blurRadius: 8,
             offset: const Offset(0, -2),
           ),
@@ -380,18 +386,18 @@ class _MapConfirmationPageState extends State<MapConfirmationPage> {
                 borderRadius:  BorderRadius.circular(12),
               ),
             ),
-            child: const Row(
+            child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Text(
-                  'Xác nhận và tiếp tục',
-                  style: TextStyle(
+                  localizations.confirmAndContinue,
+                  style: const TextStyle(
                     fontSize: 16,
-                    fontWeight: FontWeight. bold,
+                    fontWeight: FontWeight.bold,
                   ),
                 ),
-                SizedBox(width:  8),
-                Icon(Icons.arrow_forward),
+                const SizedBox(width: 8),
+                const Icon(Icons.arrow_forward),
               ],
             ),
           ),

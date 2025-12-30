@@ -1,10 +1,11 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:localizy/l10n/app_localizations.dart';
 
 class DocumentUploadPage extends StatefulWidget {
   final File? initialIdDocument;
-  final File?  initialAddressProof;
+  final File?   initialAddressProof;
   final String initialIdType;
   final Function(File, File, String)? onDocumentsUploaded;
 
@@ -21,7 +22,7 @@ class DocumentUploadPage extends StatefulWidget {
 }
 
 class _DocumentUploadPageState extends State<DocumentUploadPage> {
-  File?  _idDocument;
+  File?   _idDocument;
   File?  _addressProof;
   final ImagePicker _picker = ImagePicker();
   
@@ -32,20 +33,22 @@ class _DocumentUploadPageState extends State<DocumentUploadPage> {
     super.initState();
     _idDocument = widget.initialIdDocument;
     _addressProof = widget.initialAddressProof;
-    _selectedIdType = widget. initialIdType;
+    _selectedIdType = widget.initialIdType;
   }
 
   Future<void> _pickImage(String documentType) async {
+    final localizations = AppLocalizations.of(context)!;
+    
     try {
       final XFile? pickedFile = await showModalBottomSheet<XFile>(
         context: context,
         builder: (BuildContext context) {
           return SafeArea(
-            child:  Wrap(
+            child:   Wrap(
               children: [
                 ListTile(
-                  leading: const Icon(Icons.photo_library),
-                  title:  const Text('Chọn từ thư viện'),
+                  leading:  const Icon(Icons.photo_library),
+                  title: Text(localizations.chooseFromGallery),
                   onTap: () async {
                     final file = await _picker.pickImage(source: ImageSource.gallery);
                     if (context.mounted) {
@@ -55,11 +58,11 @@ class _DocumentUploadPageState extends State<DocumentUploadPage> {
                 ),
                 ListTile(
                   leading: const Icon(Icons.camera_alt),
-                  title:  const Text('Chụp ảnh'),
+                  title:  Text(localizations.takePhoto),
                   onTap: () async {
                     final file = await _picker.pickImage(source: ImageSource.camera);
-                    if (context. mounted) {
-                      Navigator. pop(context, file);
+                    if (context.mounted) {
+                      Navigator.pop(context, file);
                     }
                   },
                 ),
@@ -81,7 +84,7 @@ class _DocumentUploadPageState extends State<DocumentUploadPage> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Lỗi khi chọn ảnh: $e')),
+          SnackBar(content: Text('${localizations.errorSelectingImage}:  $e')),
         );
       }
     }
@@ -111,33 +114,35 @@ class _DocumentUploadPageState extends State<DocumentUploadPage> {
 
   @override
   Widget build(BuildContext context) {
+    final localizations = AppLocalizations.of(context)!;
+    
     return SingleChildScrollView(
-      padding:  const EdgeInsets.all(16.0),
+      padding:   const EdgeInsets.all(16.0),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment:  CrossAxisAlignment.start,
         children: [
           const SizedBox(height: 16),
           
           // Introduction
           Card(
-            elevation: 2,
+            elevation:  2,
             shape: RoundedRectangleBorder(
-              borderRadius:  BorderRadius.circular(12),
+              borderRadius: BorderRadius.circular(12),
             ),
             child: Padding(
-              padding: const EdgeInsets.all(16.0),
+              padding: const EdgeInsets. all(16.0),
               child: Row(
                 children: [
                   Icon(
-                    Icons. info_outline,
+                    Icons.info_outline,
                     color: Colors.blue.shade700,
                     size: 32,
                   ),
                   const SizedBox(width: 16),
-                  const Expanded(
+                  Expanded(
                     child: Text(
-                      'Vui lòng tải lên các tài liệu cần thiết để xác minh địa chỉ của bạn',
-                      style: TextStyle(fontSize: 14),
+                      localizations. documentUploadIntro,
+                      style: const TextStyle(fontSize: 14),
                     ),
                   ),
                 ],
@@ -149,7 +154,7 @@ class _DocumentUploadPageState extends State<DocumentUploadPage> {
           
           // ID Document Section
           Text(
-            '1. Giấy tờ tùy thân',
+            localizations. idDocumentSection,
             style: TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.bold,
@@ -157,22 +162,22 @@ class _DocumentUploadPageState extends State<DocumentUploadPage> {
             ),
           ),
           
-          const SizedBox(height:  12),
+          const SizedBox(height: 12),
           
           // ID Type Selection
           Container(
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: Colors.grey[100],
+              color: Colors. grey[100],
               borderRadius: BorderRadius.circular(12),
             ),
-            child:  Column(
+            child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
-                  'Loại giấy tờ: ',
-                  style: TextStyle(
-                    fontSize: 14,
+                Text(
+                  localizations. documentType,
+                  style: const TextStyle(
+                    fontSize:  14,
                     fontWeight: FontWeight.w500,
                   ),
                 ),
@@ -181,9 +186,9 @@ class _DocumentUploadPageState extends State<DocumentUploadPage> {
                   children: [
                     Expanded(
                       child: _buildRadioOption(
-                        value: 'cmnd',
-                        label: 'CMND/CCCD',
-                        groupValue: _selectedIdType,
+                        value:  'cmnd',
+                        label: localizations.idCardCCCD,
+                        groupValue:  _selectedIdType,
                         onChanged: (value) {
                           setState(() {
                             _selectedIdType = value!;
@@ -193,9 +198,9 @@ class _DocumentUploadPageState extends State<DocumentUploadPage> {
                     ),
                     const SizedBox(width: 8),
                     Expanded(
-                      child: _buildRadioOption(
+                      child:  _buildRadioOption(
                         value: 'passport',
-                        label: 'Hộ chiếu',
+                        label: localizations.passport,
                         groupValue: _selectedIdType,
                         onChanged: (value) {
                           setState(() {
@@ -214,8 +219,8 @@ class _DocumentUploadPageState extends State<DocumentUploadPage> {
           
           // ID Document Upload
           _buildDocumentUploadCard(
-            title: _selectedIdType == 'cmnd' ? 'CMND/CCCD' : 'Hộ chiếu',
-            description: 'Chụp rõ ràng cả 2 mặt của giấy tờ',
+            title:  _selectedIdType == 'cmnd' ? localizations.idCardCCCD : localizations.passport,
+            description: localizations.idDocumentDescription,
             icon: Icons.credit_card,
             color: Colors.blue,
             document: _idDocument,
@@ -227,7 +232,7 @@ class _DocumentUploadPageState extends State<DocumentUploadPage> {
           
           // Address Proof Section
           Text(
-            '2. Giấy tờ chứng minh địa chỉ',
+            localizations.addressProofSection,
             style: TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.bold,
@@ -238,10 +243,10 @@ class _DocumentUploadPageState extends State<DocumentUploadPage> {
           const SizedBox(height: 12),
           
           _buildDocumentUploadCard(
-            title: 'Giấy tờ chứng minh địa chỉ',
-            description: 'Hóa đơn điện nước, hợp đồng thuê nhà, giấy đăng ký tạm trú, v.v.',
+            title: localizations.addressProofTitle,
+            description: localizations.addressProofDescription,
             icon: Icons.receipt_long,
-            color: Colors.orange,
+            color: Colors. orange,
             document: _addressProof,
             onUpload:  () => _pickImage('address'),
             onRemove: () => _removeImage('address'),
@@ -254,34 +259,34 @@ class _DocumentUploadPageState extends State<DocumentUploadPage> {
             elevation: 2,
             color: Colors.amber.shade50,
             shape: RoundedRectangleBorder(
-              borderRadius:  BorderRadius.circular(12),
+              borderRadius: BorderRadius.circular(12),
             ),
             child: Padding(
-              padding: const EdgeInsets.all(16.0),
+              padding:  const EdgeInsets.all(16.0),
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment. start,
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Row(
                     children: [
                       Icon(
                         Icons.warning_amber,
-                        color: Colors.orange.shade700,
+                        color: Colors.orange. shade700,
                       ),
                       const SizedBox(width: 8),
-                      const Text(
-                        'Lưu ý quan trọng',
-                        style: TextStyle(
-                          fontSize: 16,
+                      Text(
+                        localizations.importantNotesTitle,
+                        style: const TextStyle(
+                          fontSize:  16,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
                     ],
                   ),
                   const SizedBox(height: 12),
-                  _buildNoteItem('Ảnh phải rõ ràng, không bị mờ hoặc che khuất'),
-                  _buildNoteItem('Thông tin trên giấy tờ phải còn hiệu lực'),
-                  _buildNoteItem('Địa chỉ trên giấy tờ phải khớp với vị trí xác minh'),
-                  _buildNoteItem('Định dạng hỗ trợ: JPG, PNG'),
+                  _buildNoteItem(localizations. noteImageMustBeClear),
+                  _buildNoteItem(localizations. noteDocumentMustBeValid),
+                  _buildNoteItem(localizations.noteAddressMustMatch),
+                  _buildNoteItem(localizations.noteSupportedFormats),
                 ],
               ),
             ),
@@ -295,26 +300,26 @@ class _DocumentUploadPageState extends State<DocumentUploadPage> {
             height: 50,
             child: ElevatedButton(
               onPressed: _canProceed() ? _proceedToNextStep : null,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.green.shade700,
+              style:  ElevatedButton.styleFrom(
+                backgroundColor: Colors.green. shade700,
                 foregroundColor: Colors.white,
                 disabledBackgroundColor: Colors. grey[300],
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: BorderRadius. circular(12),
                 ),
               ),
-              child: const Row(
+              child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
-                    'Tiếp tục',
-                    style: TextStyle(
+                    localizations.continueButton,
+                    style:  const TextStyle(
                       fontSize: 16,
-                      fontWeight: FontWeight.bold,
+                      fontWeight: FontWeight. bold,
                     ),
                   ),
-                  SizedBox(width: 8),
-                  Icon(Icons.arrow_forward),
+                  const SizedBox(width: 8),
+                  const Icon(Icons.arrow_forward),
                 ],
               ),
             ),
@@ -361,19 +366,21 @@ class _DocumentUploadPageState extends State<DocumentUploadPage> {
     required String description,
     required IconData icon,
     required Color color,
-    required File?  document,
+    required File? document,
     required VoidCallback onUpload,
     required VoidCallback onRemove,
   }) {
+    final localizations = AppLocalizations.of(context)!;
+    
     return Card(
-      elevation: 3,
+      elevation:  3,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(16),
       ),
       child: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment:  CrossAxisAlignment.start,
           children: [
             Row(
               children: [
@@ -392,21 +399,21 @@ class _DocumentUploadPageState extends State<DocumentUploadPage> {
                 const SizedBox(width:  12),
                 Expanded(
                   child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment. start,
                     children: [
                       Text(
                         title,
                         style: const TextStyle(
-                          fontSize: 16,
+                          fontSize:  16,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
-                      const SizedBox(height: 4),
+                      const SizedBox(height:  4),
                       Text(
                         description,
                         style:  TextStyle(
                           fontSize: 12,
-                          color: Colors. grey[600],
+                          color: Colors.grey[600],
                         ),
                       ),
                     ],
@@ -421,7 +428,7 @@ class _DocumentUploadPageState extends State<DocumentUploadPage> {
                 child: OutlinedButton. icon(
                   onPressed:  onUpload,
                   icon: const Icon(Icons.upload_file),
-                  label: const Text('Tải lên tài liệu'),
+                  label: Text(localizations.uploadDocument),
                   style: OutlinedButton.styleFrom(
                     padding: const EdgeInsets.symmetric(vertical: 12),
                     side: BorderSide(color: color),
@@ -445,10 +452,10 @@ class _DocumentUploadPageState extends State<DocumentUploadPage> {
                   children: [
                     ClipRRect(
                       borderRadius: BorderRadius.circular(8),
-                      child: Image. file(
+                      child: Image.file(
                         document,
                         height: 200,
-                        width: double. infinity,
+                        width: double.infinity,
                         fit: BoxFit.cover,
                       ),
                     ),
@@ -457,14 +464,14 @@ class _DocumentUploadPageState extends State<DocumentUploadPage> {
                       children: [
                         const Icon(
                           Icons.check_circle,
-                          color:  Colors.green,
+                          color: Colors.green,
                           size: 20,
                         ),
                         const SizedBox(width: 8),
-                        const Expanded(
+                        Expanded(
                           child: Text(
-                            'Đã tải lên',
-                            style: TextStyle(
+                            localizations.uploaded,
+                            style: const TextStyle(
                               color: Colors.green,
                               fontWeight: FontWeight.w600,
                             ),
@@ -472,8 +479,8 @@ class _DocumentUploadPageState extends State<DocumentUploadPage> {
                         ),
                         TextButton. icon(
                           onPressed:  onRemove,
-                          icon: const Icon(Icons.delete, size: 18),
-                          label: const Text('Xóa'),
+                          icon:  const Icon(Icons.delete, size: 18),
+                          label: Text(localizations.delete),
                           style: TextButton.styleFrom(
                             foregroundColor: Colors.red,
                           ),
@@ -502,7 +509,7 @@ class _DocumentUploadPageState extends State<DocumentUploadPage> {
           Expanded(
             child: Text(
               text,
-              style:  const TextStyle(fontSize: 13),
+              style: const TextStyle(fontSize: 13),
             ),
           ),
         ],

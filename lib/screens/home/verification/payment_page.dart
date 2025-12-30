@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:localizy/l10n/app_localizations.dart';
 
 class PaymentPage extends StatefulWidget {
   final String? initialPaymentMethod;
@@ -17,7 +18,7 @@ class PaymentPage extends StatefulWidget {
 }
 
 class _PaymentPageState extends State<PaymentPage> {
-  String?  _selectedPaymentMethod;
+  String? _selectedPaymentMethod;
   final int _verificationFee = 100000;
 
   @override
@@ -33,20 +34,22 @@ class _PaymentPageState extends State<PaymentPage> {
   }
 
   void _processPayment() {
+    final localizations = AppLocalizations.of(context)!;
+    
     if (_selectedPaymentMethod != null) {
       // TODO: Implement actual payment processing
       showDialog(
         context: context,
         barrierDismissible: false,
         builder: (context) => AlertDialog(
-          title:  const Row(
+          title:  Row(
             children: [
-              CircularProgressIndicator(),
-              SizedBox(width: 16),
-              Text('Đang xử lý... '),
+              const CircularProgressIndicator(),
+              const SizedBox(width: 16),
+              Text(localizations. processing),
             ],
           ),
-          content: const Text('Vui lòng đợi trong giây lát'),
+          content: Text(localizations.pleaseWaitAMoment),
         ),
       );
 
@@ -58,8 +61,17 @@ class _PaymentPageState extends State<PaymentPage> {
     }
   }
 
+  String _formatCurrency(int amount) {
+    return amount.toString().replaceAllMapped(
+      RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), 
+      (Match m) => '${m[1]},'
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
+    final localizations = AppLocalizations.of(context)!;
+    
     return SingleChildScrollView(
       padding: const EdgeInsets.all(16.0),
       child: Column(
@@ -83,10 +95,10 @@ class _PaymentPageState extends State<PaymentPage> {
                     size: 32,
                   ),
                   const SizedBox(width: 16),
-                  const Expanded(
-                    child: Text(
-                      'Thanh toán phí xác minh để tiếp tục quy trình',
-                      style:  TextStyle(fontSize: 14),
+                  Expanded(
+                    child:  Text(
+                      localizations.paymentIntro,
+                      style: const TextStyle(fontSize: 14),
                     ),
                   ),
                 ],
@@ -106,37 +118,37 @@ class _PaymentPageState extends State<PaymentPage> {
                 end: Alignment.bottomRight,
               ),
               borderRadius: BorderRadius.circular(16),
-              boxShadow:  [
+              boxShadow: [
                 BoxShadow(
                   color: Colors.green.withValues(alpha: 0.3),
-                  blurRadius:  8,
-                  offset:  const Offset(0, 4),
+                  blurRadius: 8,
+                  offset: const Offset(0, 4),
                 ),
               ],
             ),
             child: Column(
               children: [
-                const Text(
-                  'Tổng thanh toán',
-                  style: TextStyle(
-                    fontSize: 16,
+                Text(
+                  localizations.totalPayment,
+                  style: const TextStyle(
+                    fontSize:  16,
                     color: Colors.white70,
                   ),
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  '${_verificationFee.toString().replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},')} VNĐ',
+                  '${_formatCurrency(_verificationFee)} ${localizations.currencyVND}',
                   style: const TextStyle(
-                    fontSize: 32,
+                    fontSize:  32,
                     fontWeight: FontWeight.bold,
                     color: Colors.white,
                   ),
                 ),
                 const SizedBox(height: 4),
-                const Text(
-                  'Phí xác minh địa chỉ',
-                  style: TextStyle(
-                    fontSize: 14,
+                Text(
+                  localizations.addressVerificationFee,
+                  style: const TextStyle(
+                    fontSize:  14,
                     color: Colors. white70,
                   ),
                 ),
@@ -147,21 +159,21 @@ class _PaymentPageState extends State<PaymentPage> {
           const SizedBox(height: 24),
           
           // Payment methods
-          const Text(
-            'Chọn phương thức thanh toán',
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
+          Text(
+            localizations.selectPaymentMethod,
+            style:  const TextStyle(
+              fontSize:  18,
+              fontWeight:  FontWeight.bold,
             ),
           ),
           
-          const SizedBox(height:  16),
+          const SizedBox(height: 16),
           
           _buildPaymentMethodCard(
             method: 'momo',
             icon: Icons. account_balance_wallet,
-            title: 'Ví MoMo',
-            description: 'Thanh toán qua ví điện tử MoMo',
+            title: localizations.paymentMomo,
+            description: localizations.paymentMomoDescription,
             color: Colors.pink,
           ),
           
@@ -170,8 +182,8 @@ class _PaymentPageState extends State<PaymentPage> {
           _buildPaymentMethodCard(
             method:  'zalopay',
             icon: Icons.payment,
-            title: 'ZaloPay',
-            description:  'Thanh toán qua ví điện tử ZaloPay',
+            title: localizations.paymentZaloPay,
+            description:  localizations.paymentZaloPayDescription,
             color: Colors.blue,
           ),
           
@@ -180,9 +192,9 @@ class _PaymentPageState extends State<PaymentPage> {
           _buildPaymentMethodCard(
             method: 'bank',
             icon: Icons.account_balance,
-            title: 'Chuyển khoản ngân hàng',
-            description: 'Chuyển khoản trực tiếp qua ngân hàng',
-            color:  Colors.green,
+            title: localizations. paymentBankTransfer,
+            description:  localizations.paymentBankTransferDescription,
+            color: Colors.green,
           ),
           
           const SizedBox(height: 12),
@@ -190,8 +202,8 @@ class _PaymentPageState extends State<PaymentPage> {
           _buildPaymentMethodCard(
             method: 'card',
             icon: Icons.credit_card,
-            title: 'Thẻ tín dụng/Ghi nợ',
-            description: 'Thanh toán bằng thẻ Visa, MasterCard',
+            title: localizations.paymentCard,
+            description: localizations. paymentCardDescription,
             color: Colors.orange,
           ),
           
@@ -208,20 +220,26 @@ class _PaymentPageState extends State<PaymentPage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
-                    'Chi tiết phí',
-                    style: TextStyle(
+                  Text(
+                    localizations.feeDetails,
+                    style: const TextStyle(
                       fontSize: 16,
-                      fontWeight: FontWeight.bold,
+                      fontWeight:  FontWeight.bold,
                     ),
                   ),
                   const Divider(height: 24),
-                  _buildFeeRow('Phí xác minh cơ bản', '80,000 VNĐ'),
-                  _buildFeeRow('Phí di chuyển', '20,000 VNĐ'),
+                  _buildFeeRow(
+                    localizations.basicVerificationFee,
+                    '80,000 ${localizations.currencyVND}',
+                  ),
+                  _buildFeeRow(
+                    localizations. travelFee,
+                    '20,000 ${localizations.currencyVND}',
+                  ),
                   const Divider(height: 24),
                   _buildFeeRow(
-                    'Tổng cộng',
-                    '100,000 VNĐ',
+                    localizations. total,
+                    '100,000 ${localizations.currencyVND}',
                     isTotal: true,
                   ),
                 ],
@@ -229,19 +247,19 @@ class _PaymentPageState extends State<PaymentPage> {
             ),
           ),
           
-          const SizedBox(height: 24),
+          const SizedBox(height:  24),
           
           // Important notes
           Card(
             elevation: 2,
-            color:  Colors.amber.shade50,
+            color: Colors.amber. shade50,
             shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12),
+              borderRadius:  BorderRadius.circular(12),
             ),
-            child:  Padding(
+            child: Padding(
               padding: const EdgeInsets.all(16.0),
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment. start,
                 children: [
                   Row(
                     children: [
@@ -250,19 +268,19 @@ class _PaymentPageState extends State<PaymentPage> {
                         color: Colors.orange.shade700,
                       ),
                       const SizedBox(width: 8),
-                      const Text(
-                        'Lưu ý',
-                        style:  TextStyle(
+                      Text(
+                        localizations.importantNotes,
+                        style: const TextStyle(
                           fontSize:  16,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
                     ],
                   ),
-                  const SizedBox(height:  12),
-                  _buildNoteItem('Phí không được hoàn lại sau khi thanh toán'),
-                  _buildNoteItem('Bạn sẽ nhận được hóa đơn qua email'),
-                  _buildNoteItem('Quá trình xác minh sẽ bắt đầu sau khi thanh toán thành công'),
+                  const SizedBox(height: 12),
+                  _buildNoteItem(localizations. noteFeeNonRefundable),
+                  _buildNoteItem(localizations. noteReceiveInvoice),
+                  _buildNoteItem(localizations.noteVerificationStartsAfterPayment),
                 ],
               ),
             ),
@@ -275,11 +293,11 @@ class _PaymentPageState extends State<PaymentPage> {
             width: double.infinity,
             height: 50,
             child: ElevatedButton(
-              onPressed: _selectedPaymentMethod != null ? _processPayment : null,
-              style: ElevatedButton.styleFrom(
+              onPressed: _selectedPaymentMethod != null ?  _processPayment : null,
+              style: ElevatedButton. styleFrom(
                 backgroundColor: Colors.green.shade700,
                 foregroundColor: Colors.white,
-                disabledBackgroundColor: Colors.grey[300],
+                disabledBackgroundColor: Colors. grey[300],
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12),
                 ),
@@ -291,10 +309,10 @@ class _PaymentPageState extends State<PaymentPage> {
                   const SizedBox(width: 8),
                   Text(
                     _selectedPaymentMethod != null
-                        ? 'Thanh toán ${_verificationFee.toString().replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},')} VNĐ'
-                        : 'Chọn phương thức thanh toán',
-                    style:  const TextStyle(
-                      fontSize:  16,
+                        ? '${localizations.payButton} ${_formatCurrency(_verificationFee)} ${localizations.currencyVND}'
+                        : localizations. selectPaymentMethod,
+                    style: const TextStyle(
+                      fontSize: 16,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
@@ -312,10 +330,10 @@ class _PaymentPageState extends State<PaymentPage> {
               Icon(Icons.security, size: 16, color: Colors.grey[600]),
               const SizedBox(width: 8),
               Text(
-                'Thanh toán được bảo mật bởi SSL',
+                localizations.securedBySSL,
                 style: TextStyle(
                   fontSize: 12,
-                  color: Colors.grey[600],
+                  color: Colors. grey[600],
                 ),
               ),
             ],
@@ -337,11 +355,11 @@ class _PaymentPageState extends State<PaymentPage> {
     final isSelected = _selectedPaymentMethod == method;
     
     return Card(
-      elevation: isSelected ? 4 : 2,
+      elevation: isSelected ?  4 : 2,
       shape: RoundedRectangleBorder(
         borderRadius:  BorderRadius.circular(12),
         side: BorderSide(
-          color: isSelected ? Colors.green. shade700 : Colors.transparent,
+          color: isSelected ? Colors.green.shade700 : Colors.transparent,
           width: 2,
         ),
       ),
@@ -349,9 +367,9 @@ class _PaymentPageState extends State<PaymentPage> {
         onTap: () => _selectPaymentMethod(method),
         borderRadius: BorderRadius.circular(12),
         child: Padding(
-          padding: const EdgeInsets.all(16.0),
+          padding: const EdgeInsets. all(16.0),
           child: Row(
-            children: [
+            children:  [
               Container(
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
@@ -361,7 +379,7 @@ class _PaymentPageState extends State<PaymentPage> {
                 child:  Icon(
                   icon,
                   color: color,
-                  size: 28,
+                  size:  28,
                 ),
               ),
               const SizedBox(width:  16),
@@ -371,17 +389,17 @@ class _PaymentPageState extends State<PaymentPage> {
                   children: [
                     Text(
                       title,
-                      style:  const TextStyle(
-                        fontSize: 16,
+                      style: const TextStyle(
+                        fontSize:  16,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-                    const SizedBox(height: 4),
+                    const SizedBox(height:  4),
                     Text(
                       description,
                       style: TextStyle(
                         fontSize: 12,
-                        color: Colors.grey[600],
+                        color: Colors. grey[600],
                       ),
                     ),
                   ],
@@ -397,11 +415,11 @@ class _PaymentPageState extends State<PaymentPage> {
                     color: isSelected ? Colors.green.shade700 : Colors.grey,
                     width: 2,
                   ),
-                  color: isSelected ? Colors.green. shade700 : Colors.transparent,
+                  color: isSelected ? Colors.green.shade700 : Colors.transparent,
                 ),
                 child: isSelected
                     ?  const Icon(
-                        Icons.check,
+                        Icons. check,
                         size: 16,
                         color: Colors. white,
                       )
@@ -419,12 +437,12 @@ class _PaymentPageState extends State<PaymentPage> {
       padding: const EdgeInsets.symmetric(vertical: 4.0),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
+        children:  [
           Text(
             label,
-            style:  TextStyle(
+            style: TextStyle(
               fontSize: isTotal ? 16 : 14,
-              fontWeight: isTotal ? FontWeight. bold : FontWeight.normal,
+              fontWeight: isTotal ? FontWeight.bold : FontWeight.normal,
             ),
           ),
           Text(

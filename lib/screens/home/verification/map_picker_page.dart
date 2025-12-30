@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:localizy/l10n/app_localizations.dart';
 
 class MapPickerPage extends StatefulWidget {
   final Map<String, double>? initialLocation;
@@ -15,7 +16,7 @@ class MapPickerPage extends StatefulWidget {
 }
 
 class _MapPickerPageState extends State<MapPickerPage> {
-  GoogleMapController? _mapController;
+  GoogleMapController?  _mapController;
   LatLng _centerLocation = const LatLng(21.0285, 105.8542);
   bool _isLoading = true;
 
@@ -26,10 +27,10 @@ class _MapPickerPageState extends State<MapPickerPage> {
   }
 
   Future<void> _initializeLocation() async {
-    if (widget.initialLocation != null) {
+    if (widget. initialLocation != null) {
       _centerLocation = LatLng(
-        widget. initialLocation!['lat']!,
-        widget.initialLocation!['lng']!,
+        widget.initialLocation! ['lat']!,
+        widget.initialLocation!['lng']! ,
       );
     } else {
       await _loadCurrentLocation();
@@ -59,7 +60,7 @@ class _MapPickerPageState extends State<MapPickerPage> {
 
       _centerLocation = LatLng(position.latitude, position.longitude);
     } catch (e) {
-      print('Error:  $e');
+      print('Error: $e');
     }
   }
 
@@ -73,14 +74,14 @@ class _MapPickerPageState extends State<MapPickerPage> {
     Navigator.pop(context, {
       'lat': _centerLocation.latitude,
       'lng':  _centerLocation.longitude,
-      'address': 'Lat:  ${_centerLocation.latitude. toStringAsFixed(6)}, '
-                 'Lng:  ${_centerLocation.longitude.toStringAsFixed(6)}',
+      'address': 'Lat:  ${_centerLocation.latitude.toStringAsFixed(6)}, '
+                 'Lng: ${_centerLocation.longitude.toStringAsFixed(6)}',
     });
   }
 
   void _moveToMyLocation() async {
     try {
-      Position position = await Geolocator. getCurrentPosition(
+      Position position = await Geolocator.getCurrentPosition(
         desiredAccuracy: LocationAccuracy.high,
       );
       
@@ -99,12 +100,14 @@ class _MapPickerPageState extends State<MapPickerPage> {
 
   @override
   Widget build(BuildContext context) {
+    final localizations = AppLocalizations.of(context)!;
+    
     if (_isLoading) {
       return Scaffold(
         appBar: AppBar(
-          title: const Text('Chọn vị trí'),
+          title: Text(localizations.selectLocation),
           backgroundColor: Colors.green.shade700,
-          foregroundColor: Colors. white,
+          foregroundColor: Colors.white,
         ),
         body: const Center(child: CircularProgressIndicator()),
       );
@@ -112,7 +115,7 @@ class _MapPickerPageState extends State<MapPickerPage> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Chọn vị trí'),
+        title:  Text(localizations.selectLocation),
         backgroundColor: Colors.green. shade700,
         foregroundColor: Colors.white,
       ),
@@ -139,7 +142,7 @@ class _MapPickerPageState extends State<MapPickerPage> {
               child: Icon(
                 Icons.location_on,
                 size: 50,
-                color: Colors.red.shade700,
+                color:  Colors.red.shade700,
                 shadows: const [
                   Shadow(
                     blurRadius: 10,
@@ -158,20 +161,20 @@ class _MapPickerPageState extends State<MapPickerPage> {
             right: 16,
             child: Card(
               elevation: 4,
-              child:  Padding(
+              child: Padding(
                 padding: const EdgeInsets.all(16),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisSize: MainAxisSize.min,
+                  mainAxisSize: MainAxisSize. min,
                   children: [
                     Row(
-                      children:  [
-                        Icon(Icons. info_outline, color: Colors. blue.shade700),
+                      children: [
+                        Icon(Icons.info_outline, color: Colors.blue.shade700),
                         const SizedBox(width: 8),
-                        const Expanded(
+                        Expanded(
                           child: Text(
-                            'Di chuyển bản đồ - chân icon chỉ tọa độ chính xác',
-                            style: TextStyle(fontWeight: FontWeight.bold),
+                            localizations.mapPickerInstruction,
+                            style: const TextStyle(fontWeight: FontWeight.bold),
                           ),
                         ),
                       ],
@@ -179,15 +182,15 @@ class _MapPickerPageState extends State<MapPickerPage> {
                     const Divider(height: 16),
                     Row(
                       children: [
-                        Icon(Icons.gps_fixed, size: 18, color: Colors.red.shade700),
+                        Icon(Icons.gps_fixed, size: 18, color: Colors. red.shade700),
                         const SizedBox(width: 8),
                         Expanded(
                           child: Text(
-                            'Lat: ${_centerLocation.latitude.toStringAsFixed(6)}\n'
-                            'Lng: ${_centerLocation.longitude.toStringAsFixed(6)}',
+                            'Lat: ${_centerLocation. latitude.toStringAsFixed(6)}\n'
+                            'Lng: ${_centerLocation. longitude.toStringAsFixed(6)}',
                             style: const TextStyle(
-                              fontSize: 13,
-                              fontWeight:  FontWeight.w600,
+                              fontSize:  13,
+                              fontWeight: FontWeight.w600,
                               fontFamily: 'monospace',
                             ),
                           ),
@@ -206,9 +209,9 @@ class _MapPickerPageState extends State<MapPickerPage> {
             bottom: 100,
             child: FloatingActionButton(
               heroTag: 'my_location',
-              onPressed: _moveToMyLocation,
+              onPressed:  _moveToMyLocation,
               backgroundColor: Colors.white,
-              child: Icon(Icons.my_location, color: Colors.green.shade700),
+              child: Icon(Icons.my_location, color: Colors.green. shade700),
             ),
           ),
 
@@ -217,22 +220,22 @@ class _MapPickerPageState extends State<MapPickerPage> {
             left: 16,
             right: 16,
             bottom: 16,
-            child:  SafeArea(
-              child:  ElevatedButton(
+            child: SafeArea(
+              child: ElevatedButton(
                 onPressed: _onConfirm,
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.green.shade700,
-                  foregroundColor: Colors.white,
+                  foregroundColor:  Colors.white,
                   padding: const EdgeInsets.symmetric(vertical: 16),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),
                   ),
                   elevation: 4,
                 ),
-                child: const Text(
-                  'Xác nhận vị trí',
-                  style: TextStyle(
-                    fontSize: 16,
+                child: Text(
+                  localizations.confirmLocation,
+                  style: const TextStyle(
+                    fontSize:  16,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
