@@ -11,8 +11,6 @@ if (envFile.exists()) {
     envFile.withInputStream { envProperties.load(it) }
 }
 
-def googleMapsApiKey = envProperties.getProperty("GOOGLE_MAPS_API_KEY_ANDROID", "")
-
 android {
     namespace = "com.cameroon.localizy"
     compileSdk = flutter.compileSdkVersion
@@ -33,10 +31,16 @@ android {
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
         versionName = flutter.versionName
+        def secretsPropertiesFile = rootProject.file("secrets.properties")
+        def secretsProperties = new Properties()
+        if (secretsPropertiesFile.exists()) {
+            secretsPropertiesFile.withReader('UTF-8') { reader ->
+                secretsProperties.load(reader)
+            }
+        }
         
-        // Inject Google Maps API Key
         manifestPlaceholders = [
-            GOOGLE_MAPS_API_KEY: googleMapsApiKey
+            GOOGLE_MAPS_API_KEY_ANDROID: secretsProperties['GOOGLE_MAPS_API_KEY_ANDROID'] ?: ""
         ]
     }
 
