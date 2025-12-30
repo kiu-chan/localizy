@@ -274,7 +274,7 @@ class _LoginPageState extends State<LoginPage> {
                       ),
                     ),
                     const SizedBox(height: 24),
-                    Row(
+                    Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Text(
@@ -293,8 +293,8 @@ class _LoginPageState extends State<LoginPage> {
                           child: Text(
                             l10n.register,
                             style: const TextStyle(
-                              color: Colors. white,
-                              fontWeight:  FontWeight.bold,
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
                             ),
                           ),
                         ),

@@ -48,7 +48,8 @@ class AppLocalizationsFr extends AppLocalizations {
   String get pleaseEnterPassword => 'Veuillez entrer votre mot de passe';
 
   @override
-  String get passwordMinLength => 'Le mot de passe doit contenir au moins 6 caractères';
+  String get passwordMinLength =>
+      'Le mot de passe doit contenir au moins 6 caractères';
 
   @override
   String get createAccount => 'Créer un compte';
@@ -78,13 +79,15 @@ class AppLocalizationsFr extends AppLocalizations {
   String get passwordsDoNotMatch => 'Les mots de passe ne correspondent pas';
 
   @override
-  String get pleaseAgreeToTerms => 'Veuillez accepter les conditions d\'utilisation';
+  String get pleaseAgreeToTerms =>
+      'Veuillez accepter les conditions d\'utilisation';
 
   @override
   String get resetPassword => 'Réinitialiser le mot de passe';
 
   @override
-  String get resetPasswordDescription => 'Entrez votre adresse e-mail et nous vous enverrons des instructions pour réinitialiser votre mot de passe';
+  String get resetPasswordDescription =>
+      'Entrez votre adresse e-mail et nous vous enverrons des instructions pour réinitialiser votre mot de passe';
 
   @override
   String get sendRequest => 'Envoyer la demande';
@@ -93,7 +96,8 @@ class AppLocalizationsFr extends AppLocalizations {
   String get checkEmail => 'Vérifiez votre e-mail! ';
 
   @override
-  String get checkEmailDescription => 'Nous avons envoyé des instructions de réinitialisation de mot de passe à';
+  String get checkEmailDescription =>
+      'Nous avons envoyé des instructions de réinitialisation de mot de passe à';
 
   @override
   String get backToLogin => 'Retour à la connexion';
@@ -120,7 +124,8 @@ class AppLocalizationsFr extends AppLocalizations {
   String get viewAndExploreMap => 'Voir et explorer la carte';
 
   @override
-  String get mapFeatureInDevelopment => 'La fonction carte est en cours de développement';
+  String get mapFeatureInDevelopment =>
+      'La fonction carte est en cours de développement';
 
   @override
   String get openMap => 'Ouvrir la carte';
@@ -135,10 +140,12 @@ class AppLocalizationsFr extends AppLocalizations {
   String get locationPermissionDenied => 'Autorisation de localisation refusée';
 
   @override
-  String get pleaseEnableLocationInSettings => 'Veuillez activer l\'autorisation de localisation dans les paramètres';
+  String get pleaseEnableLocationInSettings =>
+      'Veuillez activer l\'autorisation de localisation dans les paramètres';
 
   @override
-  String get errorGettingLocation => 'Erreur lors de l\'obtention de la position';
+  String get errorGettingLocation =>
+      'Erreur lors de l\'obtention de la position';
 
   @override
   String get yourLocation => 'Votre position';
@@ -210,22 +217,27 @@ class AppLocalizationsFr extends AppLocalizations {
   String get viewMap => 'Voir la carte';
 
   @override
-  String get findAndViewParkingLots => 'Trouver et voir les emplacements de stationnement';
+  String get findAndViewParkingLots =>
+      'Trouver et voir les emplacements de stationnement';
 
   @override
   String get transactionHistory => 'Historique des transactions';
 
   @override
-  String get viewParkingPaymentHistory => 'Voir l\'historique des paiements de stationnement';
+  String get viewParkingPaymentHistory =>
+      'Voir l\'historique des paiements de stationnement';
 
   @override
-  String get licensePlateScannerOCR => 'Scanner de plaque d\'immatriculation (OCR)';
+  String get licensePlateScannerOCR =>
+      'Scanner de plaque d\'immatriculation (OCR)';
 
   @override
-  String get automaticLicensePlateRecognition => 'Reconnaissance automatique de plaque d\'immatriculation';
+  String get automaticLicensePlateRecognition =>
+      'Reconnaissance automatique de plaque d\'immatriculation';
 
   @override
-  String get addressVerificationFunction => 'Fonction de vérification d\'adresse';
+  String get addressVerificationFunction =>
+      'Fonction de vérification d\'adresse';
 
   @override
   String get parkingPaymentFunction => 'Fonction de paiement du stationnement';
@@ -252,7 +264,8 @@ class AppLocalizationsFr extends AppLocalizations {
   String get cameraError => 'Erreur de caméra';
 
   @override
-  String get errorInitializingCamera => 'Erreur lors de l\'initialisation de la caméra';
+  String get errorInitializingCamera =>
+      'Erreur lors de l\'initialisation de la caméra';
 
   @override
   String get recognizing => 'Reconnaissance en cours...';
@@ -261,7 +274,8 @@ class AppLocalizationsFr extends AppLocalizations {
   String get processing => 'Traitement.. .';
 
   @override
-  String get noLicensePlateDetected => 'Aucune plaque d\'immatriculation détectée';
+  String get noLicensePlateDetected =>
+      'Aucune plaque d\'immatriculation détectée';
 
   @override
   String get error => 'Erreur';
@@ -279,7 +293,8 @@ class AppLocalizationsFr extends AppLocalizations {
   String get enterLicensePlate => 'Entrer la plaque d\'immatriculation';
 
   @override
-  String get supportedCountries => 'Pris en charge:  Vietnam 🇻🇳, France 🇫🇷, Cameroun 🇨🇲';
+  String get supportedCountries =>
+      'Pris en charge:  Vietnam 🇻🇳, France 🇫🇷, Cameroun 🇨🇲';
 
   @override
   String get cancel => 'Annuler';
@@ -288,13 +303,16 @@ class AppLocalizationsFr extends AppLocalizations {
   String get confirm => 'Confirmer';
 
   @override
-  String get pleaseEnterLicensePlate => 'Veuillez entrer la plaque d\'immatriculation';
+  String get pleaseEnterLicensePlate =>
+      'Veuillez entrer la plaque d\'immatriculation';
 
   @override
-  String get placeLicensePlateInFrame => 'Placez la plaque d\'immatriculation dans le cadre';
+  String get placeLicensePlateInFrame =>
+      'Placez la plaque d\'immatriculation dans le cadre';
 
   @override
-  String get autoRecognition => 'Reconnaissance automatique:  Vietnam 🇻🇳, France 🇫🇷, Cameroun 🇨🇲';
+  String get autoRecognition =>
+      'Reconnaissance automatique:  Vietnam 🇻🇳, France 🇫🇷, Cameroun 🇨🇲';
 
   @override
   String errorInitializingCameraDetails(Object error) {
@@ -320,7 +338,8 @@ class AppLocalizationsFr extends AppLocalizations {
   String get errorFindingRoute => 'Erreur lors de la recherche d\'itinéraire';
 
   @override
-  String get tapToSelectDestination => 'Appuyez sur la carte pour sélectionner la destination';
+  String get tapToSelectDestination =>
+      'Appuyez sur la carte pour sélectionner la destination';
 
   @override
   String get travelModeDriving => 'En voiture';

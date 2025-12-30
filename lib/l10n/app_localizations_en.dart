@@ -84,7 +84,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get resetPassword => 'Reset password';
 
   @override
-  String get resetPasswordDescription => 'Enter your email address and we will send you instructions to reset your password';
+  String get resetPasswordDescription =>
+      'Enter your email address and we will send you instructions to reset your password';
 
   @override
   String get sendRequest => 'Send request';
@@ -93,7 +94,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get checkEmail => 'Check your email! ';
 
   @override
-  String get checkEmailDescription => 'We have sent password reset instructions to';
+  String get checkEmailDescription =>
+      'We have sent password reset instructions to';
 
   @override
   String get backToLogin => 'Back to login';
@@ -135,7 +137,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get locationPermissionDenied => 'Location permission denied';
 
   @override
-  String get pleaseEnableLocationInSettings => 'Please enable location permission in settings';
+  String get pleaseEnableLocationInSettings =>
+      'Please enable location permission in settings';
 
   @override
   String get errorGettingLocation => 'Error getting location';
@@ -222,7 +225,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get licensePlateScannerOCR => 'License plate scanner (OCR)';
 
   @override
-  String get automaticLicensePlateRecognition => 'Automatic license plate recognition';
+  String get automaticLicensePlateRecognition =>
+      'Automatic license plate recognition';
 
   @override
   String get addressVerificationFunction => 'Address verification function';
@@ -279,7 +283,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get enterLicensePlate => 'Enter license plate';
 
   @override
-  String get supportedCountries => 'Supported:  Vietnam 🇻🇳, France 🇫🇷, Cameroon 🇨🇲';
+  String get supportedCountries =>
+      'Supported:  Vietnam 🇻🇳, France 🇫🇷, Cameroon 🇨🇲';
 
   @override
   String get cancel => 'Cancel';
@@ -294,7 +299,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get placeLicensePlateInFrame => 'Place license plate in frame';
 
   @override
-  String get autoRecognition => 'Auto recognition:  Vietnam 🇻🇳, France 🇫🇷, Cameroon 🇨🇲';
+  String get autoRecognition =>
+      'Auto recognition:  Vietnam 🇻🇳, France 🇫🇷, Cameroon 🇨🇲';
 
   @override
   String errorInitializingCameraDetails(Object error) {
