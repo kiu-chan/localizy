@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:localizy/l10n/app_localizations.dart';
+import 'package:localizy/screens/home/verification/address_verification_flow.dart';
 import 'package:localizy/screens/ocr/license_plate_scanner_screen.dart';
 
 class HomePage extends StatelessWidget {
@@ -12,11 +13,11 @@ class HomePage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text(l10n.home),
-        backgroundColor: Colors.green. shade700,
+        backgroundColor: Colors.green.shade700,
         foregroundColor: Colors.white,
       ),
       body: SingleChildScrollView(
-        child:  Column(
+        child: Column(
           children: [
             // Header Section
             Container(
@@ -28,7 +29,7 @@ class HomePage extends StatelessWidget {
                   end: Alignment.bottomRight,
                   colors: [
                     Colors.green.shade400,
-                    Colors.green. shade700,
+                    Colors.green.shade700,
                   ],
                 ),
               ),
@@ -41,7 +42,7 @@ class HomePage extends StatelessWidget {
                       shape: BoxShape.circle,
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black. withValues(alpha: 0.2),
+                          color: Colors.black.withValues(alpha: 0.2),
                           blurRadius:  20,
                           offset: const Offset(0, 10),
                         ),
@@ -67,8 +68,8 @@ class HomePage extends StatelessWidget {
                   Text(
                     l10n.smartParkingManagement,
                     style: const TextStyle(
-                      fontSize:  16,
-                      color:  Colors.white70,
+                      fontSize: 16,
+                      color: Colors.white70,
                     ),
                   ),
                 ],
@@ -85,7 +86,7 @@ class HomePage extends StatelessWidget {
                   
                   Text(
                     l10n. mainFeatures,
-                    style: TextStyle(
+                    style:  TextStyle(
                       fontSize: 20,
                       fontWeight:  FontWeight.bold,
                       color: Colors.grey[800],
@@ -109,8 +110,11 @@ class HomePage extends StatelessWidget {
                         title: l10n.addressVerification,
                         color: Colors.blue,
                         onTap: () {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(content: Text(l10n.addressVerificationFunction)),
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder:  (context) => const AddressVerificationFlow(),
+                            ),
                           );
                         },
                       ),
@@ -128,11 +132,11 @@ class HomePage extends StatelessWidget {
                       _buildFeatureCard(
                         context: context,
                         icon: Icons.receipt_long,
-                        title: l10n.paymentCheck,
-                        color: Colors.orange,
+                        title:  l10n.paymentCheck,
+                        color: Colors. orange,
                         onTap: () {
-                          ScaffoldMessenger. of(context).showSnackBar(
-                            SnackBar(content: Text(l10n.checkParkingPayment)),
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content:  Text(l10n.checkParkingPayment)),
                           );
                         },
                       ),
@@ -141,9 +145,9 @@ class HomePage extends StatelessWidget {
                         icon: Icons.search,
                         title: l10n.addressSearch,
                         color: Colors.purple,
-                        onTap: () {
-                          ScaffoldMessenger. of(context).showSnackBar(
-                            SnackBar(content: Text(l10n.addressSearchFunction)),
+                        onTap:  () {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content:  Text(l10n.addressSearchFunction)),
                           );
                         },
                       ),
@@ -172,7 +176,7 @@ class HomePage extends StatelessWidget {
                     color: Colors.teal,
                     onTap: () {
                       ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text(l10n.openMap)),
+                        SnackBar(content:  Text(l10n.openMap)),
                       );
                     },
                   ),
@@ -196,10 +200,10 @@ class HomePage extends StatelessWidget {
                   
                   _buildActionCard(
                     context: context,
-                    icon: Icons.camera_alt_outlined,
+                    icon: Icons. camera_alt_outlined,
                     title: l10n.licensePlateScannerOCR,
-                    description: l10n.automaticLicensePlateRecognition,
-                    color: Colors.red,
+                    description:  l10n.automaticLicensePlateRecognition,
+                    color:  Colors.red,
                     onTap:  () async {
                       // Navigate to OCR screen
                       final result = await Navigator.push(
@@ -237,7 +241,7 @@ class HomePage extends StatelessWidget {
     return Card(
       elevation: 3,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius. circular(16),
       ),
       child: InkWell(
         onTap: onTap,
@@ -315,12 +319,12 @@ class HomePage extends StatelessWidget {
               const SizedBox(width: 16),
               Expanded(
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment. start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
                       title,
                       style: const TextStyle(
-                        fontSize:  16,
+                        fontSize: 16,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
@@ -329,7 +333,7 @@ class HomePage extends StatelessWidget {
                       description,
                       style: TextStyle(
                         fontSize: 13,
-                        color: Colors. grey[600],
+                        color: Colors.grey[600],
                       ),
                     ),
                   ],
