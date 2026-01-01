@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
+import 'package:localizy/l10n/app_localizations.dart';
 
 class ParkingPaymentPage extends StatefulWidget {
-  const ParkingPaymentPage({super. key});
+  const ParkingPaymentPage({super.key});
 
   @override
   State<ParkingPaymentPage> createState() => _ParkingPaymentPageState();
@@ -22,11 +23,11 @@ class _ParkingPaymentPageState extends State<ParkingPaymentPage> {
   int _parkingFee = 0;
   
   final Map<String, Map<String, dynamic>> _durationPrices = {
-    '1h': {'price': 10000, 'label': '1 giờ', 'icon': Icons.access_time},
-    '2h': {'price': 18000, 'label': '2 giờ', 'icon': Icons.access_time},
-    '4h': {'price': 35000, 'label': '4 giờ', 'icon': Icons.schedule},
-    '8h': {'price': 65000, 'label': '8 giờ', 'icon': Icons.schedule},
-    '1day': {'price': 100000, 'label': '1 ngày', 'icon': Icons. today},
+    '1h': {'price': 10000, 'label': '1 hour', 'icon': Icons.access_time},
+    '2h': {'price': 18000, 'label': '2 hours', 'icon': Icons.access_time},
+    '4h': {'price': 35000, 'label': '4 hours', 'icon': Icons.schedule},
+    '8h': {'price': 65000, 'label': '8 hours', 'icon': Icons.schedule},
+    '1day': {'price': 100000, 'label': '1 day', 'icon': Icons.today},
   };
 
   @override
@@ -46,7 +47,7 @@ class _ParkingPaymentPageState extends State<ParkingPaymentPage> {
     _licensePlateController.dispose();
     _parkingZoneController.dispose();
     _licensePlateFocusNode.dispose();
-    _parkingZoneFocusNode. dispose();
+    _parkingZoneFocusNode.dispose();
     super.dispose();
   }
 
@@ -71,17 +72,17 @@ class _ParkingPaymentPageState extends State<ParkingPaymentPage> {
   }
 
   Future<void> _processPayment() async {
-    if (!_formKey.currentState!. validate()) {
+    if (!_formKey.currentState!.validate()) {
       return;
     }
 
     if (_selectedPaymentMethod == null) {
-      _showErrorSnackBar('Vui lòng chọn phương thức thanh toán');
+      _showErrorSnackBar('Please select a payment method');
       return;
     }
 
     if (_selectedDuration == null) {
-      _showErrorSnackBar('Vui lòng chọn thời gian đỗ');
+      _showErrorSnackBar('Please select parking duration');
       return;
     }
 
@@ -101,12 +102,12 @@ class _ParkingPaymentPageState extends State<ParkingPaymentPage> {
                 height: 60,
                 child: CircularProgressIndicator(
                   strokeWidth: 5,
-                  valueColor: AlwaysStoppedAnimation<Color>(Colors.green. shade700),
+                  valueColor: AlwaysStoppedAnimation<Color>(Colors.green.shade700),
                 ),
               ),
               const SizedBox(height: 24),
               const Text(
-                'Đang xử lý thanh toán...',
+                'Processing payment...',
                 style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.w600,
@@ -114,10 +115,10 @@ class _ParkingPaymentPageState extends State<ParkingPaymentPage> {
               ),
               const SizedBox(height: 8),
               Text(
-                'Vui lòng đợi trong giây lát',
+                'Please wait a moment',
                 style: TextStyle(
                   fontSize: 14,
-                  color: Colors.grey. shade600,
+                  color: Colors. grey.shade600,
                 ),
               ),
             ],
@@ -127,7 +128,7 @@ class _ParkingPaymentPageState extends State<ParkingPaymentPage> {
     );
 
     // Simulate payment processing
-    await Future. delayed(const Duration(seconds: 2));
+    await Future.delayed(const Duration(seconds: 2));
 
     if (mounted) {
       Navigator.pop(context); // Close loading dialog
@@ -153,6 +154,7 @@ class _ParkingPaymentPageState extends State<ParkingPaymentPage> {
   }
 
   void _showSuccessDialog() {
+    final l10n = AppLocalizations. of(context)!;
     final ticketCode = 'PKT${DateTime.now().millisecondsSinceEpoch.toString().substring(5)}';
     final endTime = _startTime!.add(_getDurationFromKey(_selectedDuration!));
     
@@ -176,8 +178,8 @@ class _ParkingPaymentPageState extends State<ParkingPaymentPage> {
                     shape: BoxShape.circle,
                   ),
                   child: Icon(
-                    Icons. check_circle,
-                    color: Colors.green.shade600,
+                    Icons.check_circle,
+                    color: Colors.green. shade600,
                     size: 56,
                   ),
                 ),
@@ -185,9 +187,9 @@ class _ParkingPaymentPageState extends State<ParkingPaymentPage> {
                 const SizedBox(height:  24),
                 
                 const Text(
-                  'Thanh toán thành công!',
-                  style: TextStyle(
-                    fontSize: 24,
+                  'Payment Successful!',
+                  style:  TextStyle(
+                    fontSize:  24,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
@@ -195,11 +197,11 @@ class _ParkingPaymentPageState extends State<ParkingPaymentPage> {
                 const SizedBox(height: 8),
                 
                 Text(
-                  'Vé đỗ xe của bạn đã được kích hoạt',
+                  'Your parking ticket has been activated',
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontSize: 14,
-                    color: Colors.grey. shade600,
+                    color: Colors. grey.shade600,
                   ),
                 ),
                 
@@ -210,14 +212,14 @@ class _ParkingPaymentPageState extends State<ParkingPaymentPage> {
                   padding: const EdgeInsets.all(20),
                   decoration: BoxDecoration(
                     gradient: LinearGradient(
-                      colors: [Colors.green. shade400, Colors.green.shade700],
+                      colors: [Colors.green.shade400, Colors.green.shade700],
                     ),
                     borderRadius: BorderRadius.circular(16),
                   ),
                   child: Column(
                     children: [
                       const Text(
-                        'MÃ VÉ ĐỖ XE',
+                        'PARKING TICKET CODE',
                         style: TextStyle(
                           fontSize: 12,
                           color: Colors.white70,
@@ -230,7 +232,7 @@ class _ParkingPaymentPageState extends State<ParkingPaymentPage> {
                         style: const TextStyle(
                           fontSize: 28,
                           fontWeight: FontWeight.bold,
-                          color: Colors.white,
+                          color: Colors. white,
                           letterSpacing: 2,
                         ),
                       ),
@@ -244,7 +246,7 @@ class _ParkingPaymentPageState extends State<ParkingPaymentPage> {
                                 children: [
                                   Icon(Icons.check, color: Colors.white, size: 20),
                                   SizedBox(width: 8),
-                                  Text('Đã sao chép mã vé'),
+                                  Text('Code copied'),
                                 ],
                               ),
                               backgroundColor: Colors.green.shade700,
@@ -258,11 +260,11 @@ class _ParkingPaymentPageState extends State<ParkingPaymentPage> {
                         },
                         icon: const Icon(Icons.copy, size: 16, color: Colors.white),
                         label: const Text(
-                          'Sao chép mã',
+                          'Copy Code',
                           style: TextStyle(color: Colors.white),
                         ),
                         style: OutlinedButton.styleFrom(
-                          side: const BorderSide(color:  Colors.white, width: 2),
+                          side: const BorderSide(color: Colors. white, width: 2),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(8),
                           ),
@@ -282,56 +284,56 @@ class _ParkingPaymentPageState extends State<ParkingPaymentPage> {
                     borderRadius: BorderRadius.circular(12),
                     border: Border.all(color: Colors.grey.shade200),
                   ),
-                  child:  Column(
+                  child: Column(
                     children: [
                       _buildDetailRow(
                         Icons.directions_car,
-                        'Biển số xe',
-                        _licensePlateController.text. toUpperCase(),
+                        'License Plate',
+                        _licensePlateController. text. toUpperCase(),
                       ),
                       const Divider(height: 20),
                       _buildDetailRow(
                         Icons.location_on,
-                        'Khu vực',
+                        'Zone',
                         _parkingZoneController.text.toUpperCase(),
                       ),
                       const Divider(height: 20),
                       _buildDetailRow(
                         Icons.access_time,
-                        'Thời gian',
+                        'Duration',
                         _durationPrices[_selectedDuration!]!['label'],
                       ),
                       const Divider(height: 20),
                       _buildDetailRow(
                         Icons.schedule,
-                        'Bắt đầu',
+                        'Start Time',
                         DateFormat('HH:mm - dd/MM/yyyy').format(_startTime!),
                       ),
                       const Divider(height: 20),
                       _buildDetailRow(
                         Icons.event_available,
-                        'Kết thúc',
+                        'End Time',
                         DateFormat('HH:mm - dd/MM/yyyy').format(endTime),
                       ),
                       const Divider(height: 20),
                       _buildDetailRow(
                         Icons.payments,
-                        'Thanh toán',
-                        _getPaymentMethodName(_selectedPaymentMethod!),
+                        'Payment',
+                        _getPaymentMethodName(l10n, _selectedPaymentMethod!),
                         isHighlight: true,
                       ),
                       const Divider(height: 20),
                       _buildDetailRow(
                         Icons.attach_money,
-                        'Số tiền',
-                        '${_formatCurrency(_parkingFee)} VNĐ',
+                        'Amount',
+                        '${_formatCurrency(_parkingFee)} VND',
                         isHighlight: true,
                       ),
                     ],
                   ),
                 ),
                 
-                const SizedBox(height:  24),
+                const SizedBox(height: 24),
                 
                 // Action buttons
                 Row(
@@ -350,8 +352,8 @@ class _ParkingPaymentPageState extends State<ParkingPaymentPage> {
                           ),
                         ),
                         child: const Text(
-                          'Đóng',
-                          style:  TextStyle(
+                          'Close',
+                          style: TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.w600,
                           ),
@@ -360,7 +362,7 @@ class _ParkingPaymentPageState extends State<ParkingPaymentPage> {
                     ),
                     const SizedBox(width: 12),
                     Expanded(
-                      child:  ElevatedButton(
+                      child: ElevatedButton(
                         onPressed: () {
                           Navigator.pop(context);
                           Navigator.pop(context);
@@ -369,16 +371,16 @@ class _ParkingPaymentPageState extends State<ParkingPaymentPage> {
                         style: ElevatedButton.styleFrom(
                           padding: const EdgeInsets.symmetric(vertical: 14),
                           backgroundColor: Colors.green.shade700,
-                          foregroundColor: Colors.white,
+                          foregroundColor:  Colors.white,
                           elevation: 0,
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(12),
                           ),
                         ),
                         child: const Text(
-                          'Xem vé',
-                          style: TextStyle(
-                            fontSize: 16,
+                          'View Ticket',
+                          style:  TextStyle(
+                            fontSize:  16,
                             fontWeight: FontWeight.w600,
                           ),
                         ),
@@ -396,11 +398,11 @@ class _ParkingPaymentPageState extends State<ParkingPaymentPage> {
 
   Widget _buildDetailRow(IconData icon, String label, String value, {bool isHighlight = false}) {
     return Row(
-      children:  [
+      children: [
         Icon(
           icon,
           size: 20,
-          color:  isHighlight ? Colors.green.shade700 : Colors.grey.shade600,
+          color: isHighlight ? Colors.green.shade700 : Colors.grey.shade600,
         ),
         const SizedBox(width: 12),
         Expanded(
@@ -415,8 +417,8 @@ class _ParkingPaymentPageState extends State<ParkingPaymentPage> {
         Text(
           value,
           style: TextStyle(
-            fontSize: 14,
-            fontWeight: isHighlight ? FontWeight.bold :  FontWeight.w600,
+            fontSize:  14,
+            fontWeight: isHighlight ? FontWeight.bold : FontWeight.w600,
             color: isHighlight ? Colors. green.shade700 : Colors. black87,
           ),
         ),
@@ -441,29 +443,31 @@ class _ParkingPaymentPageState extends State<ParkingPaymentPage> {
     }
   }
 
-  String _getPaymentMethodName(String method) {
+  String _getPaymentMethodName(AppLocalizations l10n, String method) {
     switch (method) {
       case 'momo':
-        return 'Ví MoMo';
+        return l10n.paymentMomo;
       case 'zalopay':
-        return 'ZaloPay';
+        return l10n.paymentZaloPay;
       case 'bank':
-        return 'Chuyển khoản';
+        return l10n. paymentBankTransfer;
       case 'card':
-        return 'Thẻ ngân hàng';
-      default:
+        return l10n. paymentCard;
+      default: 
         return method;
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations. of(context)!;
+    
     return Scaffold(
-      backgroundColor: Colors.grey. shade50,
-      appBar:  AppBar(
-        title: const Text(
-          'Thanh toán đỗ xe',
-          style: TextStyle(fontWeight: FontWeight.w600),
+      backgroundColor: Colors.grey.shade50,
+      appBar: AppBar(
+        title: Text(
+          l10n.parkingPayment,
+          style: const TextStyle(fontWeight: FontWeight.w600),
         ),
         backgroundColor: Colors.green.shade700,
         foregroundColor: Colors.white,
@@ -483,13 +487,13 @@ class _ParkingPaymentPageState extends State<ParkingPaymentPage> {
                     Container(
                       width: double.infinity,
                       padding: const EdgeInsets.all(20),
-                      decoration: BoxDecoration(
+                      decoration:  BoxDecoration(
                         gradient: LinearGradient(
-                          colors: [Colors.green. shade400, Colors.green.shade700],
-                          begin:  Alignment.topLeft,
-                          end: Alignment.bottomRight,
+                          colors: [Colors.green.shade400, Colors.green.shade700],
+                          begin: Alignment. topLeft,
+                          end:  Alignment.bottomRight,
                         ),
-                        borderRadius: BorderRadius.circular(16),
+                        borderRadius:  BorderRadius.circular(16),
                         boxShadow: [
                           BoxShadow(
                             color: Colors.green.shade200,
@@ -503,12 +507,12 @@ class _ParkingPaymentPageState extends State<ParkingPaymentPage> {
                           Container(
                             padding: const EdgeInsets.all(16),
                             decoration: BoxDecoration(
-                              color:  Colors.white. withOpacity(0.2),
+                              color: Colors.white. withOpacity(0.2),
                               borderRadius: BorderRadius.circular(12),
                             ),
                             child: const Icon(
                               Icons.local_parking,
-                              color: Colors.white,
+                              color:  Colors.white,
                               size: 32,
                             ),
                           ),
@@ -518,18 +522,18 @@ class _ParkingPaymentPageState extends State<ParkingPaymentPage> {
                               crossAxisAlignment:  CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  'Thanh toán nhanh',
+                                  'Quick Payment',
                                   style: TextStyle(
-                                    fontSize: 18,
+                                    fontSize:  18,
                                     fontWeight: FontWeight.bold,
                                     color: Colors.white,
                                   ),
                                 ),
                                 SizedBox(height: 4),
                                 Text(
-                                  'An toàn & Tiện lợi',
+                                  'Safe & Convenient',
                                   style: TextStyle(
-                                    fontSize: 14,
+                                    fontSize:  14,
                                     color: Colors.white70,
                                   ),
                                 ),
@@ -543,13 +547,13 @@ class _ParkingPaymentPageState extends State<ParkingPaymentPage> {
                     const SizedBox(height: 24),
                     
                     // Vehicle Information Section
-                    _buildSectionTitle('Thông tin xe', Icons.directions_car),
+                    _buildSectionTitle('Vehicle Information', Icons.directions_car),
                     const SizedBox(height: 12),
                     
                     Container(
                       padding: const EdgeInsets.all(16),
                       decoration: BoxDecoration(
-                        color: Colors.white,
+                        color:  Colors.white,
                         borderRadius: BorderRadius.circular(16),
                         boxShadow: [
                           BoxShadow(
@@ -565,16 +569,16 @@ class _ParkingPaymentPageState extends State<ParkingPaymentPage> {
                             controller:  _licensePlateController,
                             focusNode: _licensePlateFocusNode,
                             decoration: InputDecoration(
-                              labelText: 'Biển số xe',
+                              labelText: 'License Plate',
                               labelStyle: TextStyle(
-                                color: (_licensePlateFocusNode.hasFocus || _licensePlateController.text. isNotEmpty)
+                                color: (_licensePlateFocusNode.hasFocus || _licensePlateController. text.isNotEmpty)
                                     ? Colors.green.shade700
                                     :  Colors.grey,
                               ),
-                              hintText: 'VD: 30A-12345',
+                              hintText: 'e.g.:  30A-12345',
                               prefixIcon: Icon(
                                 Icons.directions_car,
-                                color: _licensePlateFocusNode. hasFocus
+                                color:  _licensePlateFocusNode. hasFocus
                                     ? Colors.green. shade700
                                     : Colors.grey,
                               ),
@@ -596,7 +600,7 @@ class _ParkingPaymentPageState extends State<ParkingPaymentPage> {
                             textCapitalization: TextCapitalization. characters,
                             validator: (value) {
                               if (value == null || value. isEmpty) {
-                                return 'Vui lòng nhập biển số xe';
+                                return 'Please enter license plate';
                               }
                               return null;
                             },
@@ -608,38 +612,38 @@ class _ParkingPaymentPageState extends State<ParkingPaymentPage> {
                             controller:  _parkingZoneController,
                             focusNode: _parkingZoneFocusNode,
                             decoration: InputDecoration(
-                              labelText: 'Khu vực đỗ',
+                              labelText: 'Parking Zone',
                               labelStyle: TextStyle(
-                                color: (_parkingZoneFocusNode. hasFocus || _parkingZoneController.text.isNotEmpty)
-                                    ? Colors. green.shade700
-                                    : Colors.grey,
+                                color: (_parkingZoneFocusNode.hasFocus || _parkingZoneController. text.isNotEmpty)
+                                    ? Colors.green.shade700
+                                    : Colors. grey,
                               ),
-                              hintText:  'VD: A1, B2, C3',
+                              hintText: 'e.g.: A1, B2, C3',
                               prefixIcon: Icon(
                                 Icons.location_on,
                                 color: _parkingZoneFocusNode.hasFocus
-                                    ? Colors. green.shade700
+                                    ? Colors.green.shade700
                                     : Colors.grey,
                               ),
                               border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(12),
-                                borderSide:  BorderSide(color: Colors. grey.shade300),
-                              ),
-                              enabledBorder: OutlineInputBorder(
                                 borderRadius: BorderRadius. circular(12),
                                 borderSide: BorderSide(color: Colors.grey.shade300),
                               ),
-                              focusedBorder: OutlineInputBorder(
+                              enabledBorder: OutlineInputBorder(
+                                borderRadius:  BorderRadius.circular(12),
+                                borderSide: BorderSide(color: Colors.grey. shade300),
+                              ),
+                              focusedBorder:  OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(12),
-                                borderSide: BorderSide(color: Colors.green.shade700, width: 2),
+                                borderSide: BorderSide(color:  Colors.green.shade700, width: 2),
                               ),
                               filled: true,
                               fillColor: Colors.grey.shade50,
                             ),
-                            textCapitalization: TextCapitalization.characters,
+                            textCapitalization:  TextCapitalization.characters,
                             validator: (value) {
-                              if (value == null || value. isEmpty) {
-                                return 'Vui lòng nhập khu vực đỗ';
+                              if (value == null || value.isEmpty) {
+                                return 'Please enter parking zone';
                               }
                               return null;
                             },
@@ -651,7 +655,7 @@ class _ParkingPaymentPageState extends State<ParkingPaymentPage> {
                     const SizedBox(height: 24),
                     
                     // Duration Selection
-                    _buildSectionTitle('Thời gian đỗ', Icons.schedule),
+                    _buildSectionTitle('Parking Duration', Icons.schedule),
                     const SizedBox(height: 12),
                     
                     Container(
@@ -687,19 +691,19 @@ class _ParkingPaymentPageState extends State<ParkingPaymentPage> {
                     const SizedBox(height: 24),
                     
                     // Payment Methods
-                    _buildSectionTitle('Phương thức thanh toán', Icons.payment),
+                    _buildSectionTitle('Payment Method', Icons.payment),
                     const SizedBox(height: 12),
                     
                     Container(
-                      padding: const EdgeInsets. all(16),
+                      padding: const EdgeInsets.all(16),
                       decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(16),
+                        color: Colors. white,
+                        borderRadius:  BorderRadius.circular(16),
                         boxShadow: [
                           BoxShadow(
                             color: Colors.black.withOpacity(0.05),
-                            blurRadius: 10,
-                            offset: const Offset(0, 2),
+                            blurRadius:  10,
+                            offset:  const Offset(0, 2),
                           ),
                         ],
                       ),
@@ -708,32 +712,32 @@ class _ParkingPaymentPageState extends State<ParkingPaymentPage> {
                           _buildPaymentMethodCard(
                             method: 'momo',
                             icon: Icons.account_balance_wallet,
-                            title: 'Ví MoMo',
-                            description: 'Thanh toán qua ví MoMo',
+                            title: l10n.paymentMomo,
+                            description: l10n.paymentMomoDescription,
                             color: Colors.pink,
                           ),
                           const SizedBox(height: 12),
                           _buildPaymentMethodCard(
                             method:  'zalopay',
                             icon: Icons.payment,
-                            title: 'ZaloPay',
-                            description: 'Thanh toán qua ZaloPay',
-                            color: Colors.blue,
+                            title: l10n. paymentZaloPay,
+                            description: l10n. paymentZaloPayDescription,
+                            color:  Colors.blue,
                           ),
                           const SizedBox(height: 12),
                           _buildPaymentMethodCard(
-                            method:  'bank',
+                            method: 'bank',
                             icon: Icons.account_balance,
-                            title: 'Chuyển khoản',
-                            description: 'Chuyển khoản ngân hàng',
-                            color: Colors.teal,
+                            title: l10n.paymentBankTransfer,
+                            description: l10n.paymentBankTransferDescription,
+                            color: Colors. teal,
                           ),
-                          const SizedBox(height: 12),
+                          const SizedBox(height:  12),
                           _buildPaymentMethodCard(
                             method: 'card',
                             icon: Icons.credit_card,
-                            title: 'Thẻ ngân hàng',
-                            description: 'Thanh toán bằng thẻ',
+                            title: l10n.paymentCard,
+                            description: l10n.paymentCardDescription,
                             color: Colors.orange,
                           ),
                         ],
@@ -769,14 +773,14 @@ class _ParkingPaymentPageState extends State<ParkingPaymentPage> {
                       mainAxisAlignment:  MainAxisAlignment.spaceBetween,
                       children: [
                         const Text(
-                          'Tổng thanh toán',
+                          'Total Payment',
                           style: TextStyle(
                             fontSize: 16,
                             color: Colors.grey,
                           ),
                         ),
                         Text(
-                          '${_formatCurrency(_parkingFee)} VNĐ',
+                          '${_formatCurrency(_parkingFee)} VND',
                           style: TextStyle(
                             fontSize: 24,
                             fontWeight: FontWeight.bold,
@@ -787,7 +791,7 @@ class _ParkingPaymentPageState extends State<ParkingPaymentPage> {
                     ),
                     const SizedBox(height: 12),
                     SizedBox(
-                      width: double.infinity,
+                      width:  double.infinity,
                       height: 56,
                       child: ElevatedButton(
                         onPressed: _processPayment,
@@ -806,9 +810,9 @@ class _ParkingPaymentPageState extends State<ParkingPaymentPage> {
                             const SizedBox(width: 8),
                             Text(
                               _selectedPaymentMethod != null
-                                  ? 'Thanh toán ngay'
-                                  : 'Chọn phương thức thanh toán',
-                              style: const TextStyle(
+                                  ? 'Pay Now'
+                                  : 'Select Payment Method',
+                              style:  const TextStyle(
                                 fontSize:  18,
                                 fontWeight: FontWeight.w600,
                               ),
@@ -828,7 +832,7 @@ class _ParkingPaymentPageState extends State<ParkingPaymentPage> {
 
   Widget _buildSectionTitle(String title, IconData icon) {
     return Row(
-      children: [
+      children:  [
         Icon(icon, size: 24, color: Colors.green.shade700),
         const SizedBox(width: 8),
         Text(
@@ -858,21 +862,21 @@ class _ParkingPaymentPageState extends State<ParkingPaymentPage> {
           color:  isSelected ? Colors.green.shade50 : Colors.grey.shade50,
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
-            color: isSelected ? Colors.green.shade700 : Colors.grey.shade200,
+            color: isSelected ? Colors. green.shade700 : Colors. grey.shade200,
             width: 2,
           ),
         ),
         child: Row(
-          children:  [
+          children: [
             Container(
               padding: const EdgeInsets.all(10),
               decoration: BoxDecoration(
-                color: isSelected ?  Colors.green.shade700 :  Colors.grey.shade300,
+                color: isSelected ? Colors.green.shade700 : Colors.grey.shade300,
                 borderRadius: BorderRadius.circular(10),
               ),
               child:  Icon(
                 icon,
-                color: isSelected ? Colors.white :  Colors.grey. shade600,
+                color: isSelected ? Colors.white : Colors.grey. shade600,
                 size: 24,
               ),
             ),
@@ -891,7 +895,7 @@ class _ParkingPaymentPageState extends State<ParkingPaymentPage> {
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    '${_formatCurrency(price)} VNĐ',
+                    '${_formatCurrency(price)} VND',
                     style: TextStyle(
                       fontSize: 14,
                       color: isSelected ? Colors.green.shade600 : Colors.grey.shade600,
@@ -939,17 +943,17 @@ class _ParkingPaymentPageState extends State<ParkingPaymentPage> {
       onTap: () => _selectPaymentMethod(method),
       borderRadius: BorderRadius.circular(12),
       child: Container(
-        padding: const EdgeInsets. all(16),
-        decoration:  BoxDecoration(
-          color:  isSelected ? color. withOpacity(0.1) : Colors.grey.shade50,
-          borderRadius: BorderRadius.circular(12),
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: isSelected ? color. withOpacity(0.1) : Colors.grey.shade50,
+          borderRadius: BorderRadius. circular(12),
           border: Border.all(
-            color: isSelected ? color :  Colors.grey.shade200,
+            color: isSelected ? color : Colors.grey.shade200,
             width: 2,
           ),
         ),
         child: Row(
-          children: [
+          children:  [
             Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(

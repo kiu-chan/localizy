@@ -5,7 +5,7 @@ import 'map/map_page.dart';
 import 'setting/settings_page.dart';
 
 class MainPage extends StatefulWidget {
-  const MainPage({super.key});
+  const MainPage({super. key});
 
   @override
   State<MainPage> createState() => _MainPageState();
@@ -13,9 +13,8 @@ class MainPage extends StatefulWidget {
 
 class _MainPageState extends State<MainPage> {
   int _currentIndex = 0;
-  bool _hideBottomNav = false; // Thêm biến để kiểm soát việc ẩn/hiện bottom nav
+  bool _hideBottomNav = false;
 
-  // Callback để MapPage có thể thông báo khi cần ẩn/hiện bottom nav
   void _setBottomNavVisibility(bool hide) {
     if (_hideBottomNav != hide) {
       setState(() {
@@ -27,43 +26,91 @@ class _MainPageState extends State<MainPage> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
+    final colorScheme = Theme.of(context).colorScheme;
     
     return Scaffold(
-      // Sử dụng IndexedStack thay vì _pages[_currentIndex]
-      // IndexedStack giữ state của tất cả các pages
       body: IndexedStack(
         index: _currentIndex,
         children: [
           const HomePage(),
-          MapPage(onNavigationStateChanged: _setBottomNavVisibility), // Truyền callback
+          MapPage(onNavigationStateChanged:  _setBottomNavVisibility),
           const SettingsPage(),
         ],
       ),
       bottomNavigationBar: _hideBottomNav 
-          ? null // Ẩn hoàn toàn bottom navigation khi đang điều hướng
-          : BottomNavigationBar(
-              currentIndex: _currentIndex,
-              onTap: (index) {
-                setState(() {
-                  _currentIndex = index;
-                });
-              },
-              selectedItemColor: Colors.green. shade700,
-              unselectedItemColor: Colors.grey,
-              items: [
-                BottomNavigationBarItem(
-                  icon: const Icon(Icons.home),
-                  label: l10n?.home ?? 'Home',
+          ? null
+          : Container(
+              decoration: BoxDecoration(
+                color: colorScheme.surface,
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black. withOpacity(0.08),
+                    blurRadius:  8,
+                    offset:  const Offset(0, -2),
+                  ),
+                ],
+              ),
+              child: SafeArea(
+                child: BottomNavigationBar(
+                  currentIndex: _currentIndex,
+                  onTap: (index) {
+                    setState(() {
+                      _currentIndex = index;
+                    });
+                  },
+                  backgroundColor:  Colors.transparent,
+                  elevation: 0,
+                  selectedItemColor: Colors.green.shade700,
+                  unselectedItemColor: Colors.grey.shade500,
+                  selectedLabelStyle: const TextStyle(
+                    fontWeight: FontWeight.w600,
+                    fontSize: 12,
+                  ),
+                  unselectedLabelStyle:  const TextStyle(
+                    fontWeight: FontWeight.w400,
+                    fontSize: 11,
+                  ),
+                  type: BottomNavigationBarType.fixed,
+                  items: [
+                    BottomNavigationBarItem(
+                      icon: const Icon(Icons.home_outlined),
+                      activeIcon: Container(
+                        padding: const EdgeInsets.all(8),
+                        decoration: BoxDecoration(
+                          color: Colors.green.shade700.withOpacity(0.15),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: const Icon(Icons.home),
+                      ),
+                      label: l10n?. home ?? 'Home',
+                    ),
+                    BottomNavigationBarItem(
+                      icon: const Icon(Icons.map_outlined),
+                      activeIcon: Container(
+                        padding:  const EdgeInsets.all(8),
+                        decoration: BoxDecoration(
+                          color: Colors.green.shade700.withOpacity(0.15),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: const Icon(Icons.map),
+                      ),
+                      label: l10n?. map ?? 'Map',
+                    ),
+                    BottomNavigationBarItem(
+                      icon: const Icon(Icons.settings_outlined),
+                      activeIcon: Container(
+                        padding:  const EdgeInsets.all(8),
+                        decoration: BoxDecoration(
+                          color: Colors.green.shade700.withOpacity(0.15),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: const Icon(Icons.settings),
+                      ),
+                      label: l10n?. settings ?? 'Settings',
+                    ),
+                  ],
                 ),
-                BottomNavigationBarItem(
-                  icon: const Icon(Icons.map),
-                  label: l10n?.map ?? 'Map',
-                ),
-                BottomNavigationBarItem(
-                  icon: const Icon(Icons.settings),
-                  label: l10n?.settings ?? 'Settings',
-                ),
-              ],
+              ),
             ),
     );
   }

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:localizy/l10n/app_localizations.dart';
 
 class AddressSearchPage extends StatefulWidget {
   const AddressSearchPage({super.key});
@@ -18,13 +19,13 @@ class _AddressSearchPageState extends State<AddressSearchPage> {
   Map<String, dynamic>? _selectedAddress;
   GoogleMapController? _mapController;
   
-  // Mock data - thay thế bằng API thực tế
+  // Mock data - replace with real API
   final List<Map<String, dynamic>> _mockAddresses = [
     {
       'id': '1',
-      'address': '123 Nguyễn Huệ, Quận 1, TP. HCM',
-      'district': 'Quận 1',
-      'city': 'TP.  Hồ Chí Minh',
+      'address': '123 Nguyen Hue, District 1, HCMC',
+      'district': 'District 1',
+      'city': 'Ho Chi Minh City',
       'lat': 10.7769,
       'lng': 106.7009,
       'verified': true,
@@ -33,9 +34,9 @@ class _AddressSearchPageState extends State<AddressSearchPage> {
     },
     {
       'id': '2',
-      'address': '456 Lê Lợi, Quận 1, TP.HCM',
-      'district': 'Quận 1',
-      'city': 'TP.  Hồ Chí Minh',
+      'address': '456 Le Loi, District 1, HCMC',
+      'district': 'District 1',
+      'city': 'Ho Chi Minh City',
       'lat': 10.7740,
       'lng': 106.6990,
       'verified': true,
@@ -44,9 +45,9 @@ class _AddressSearchPageState extends State<AddressSearchPage> {
     },
     {
       'id': '3',
-      'address': '789 Trần Hưng Đạo, Quận 5, TP.HCM',
-      'district': 'Quận 5',
-      'city': 'TP.  Hồ Chí Minh',
+      'address': '789 Tran Hung Dao, District 5, HCMC',
+      'district': 'District 5',
+      'city': 'Ho Chi Minh City',
       'lat': 10.7550,
       'lng': 106.6770,
       'verified': false,
@@ -55,20 +56,20 @@ class _AddressSearchPageState extends State<AddressSearchPage> {
     },
     {
       'id': '4',
-      'address': '234 Võ Văn Tần, Quận 3, TP.HCM',
-      'district': 'Quận 3',
-      'city':  'TP. Hồ Chí Minh',
+      'address': '234 Vo Van Tan, District 3, HCMC',
+      'district': 'District 3',
+      'city': 'Ho Chi Minh City',
       'lat': 10.7830,
       'lng': 106.6920,
       'verified': true,
-      'parkingAvailable': true,
+      'parkingAvailable':  true,
       'parkingSpots': 20,
     },
     {
       'id': '5',
-      'address': '567 Hai Bà Trưng, Quận 3, TP.HCM',
-      'district': 'Quận 3',
-      'city': 'TP.  Hồ Chí Minh',
+      'address': '567 Hai Ba Trung, District 3, HCMC',
+      'district': 'District 3',
+      'city': 'Ho Chi Minh City',
       'lat': 10.7880,
       'lng': 106.6950,
       'verified': true,
@@ -106,14 +107,14 @@ class _AddressSearchPageState extends State<AddressSearchPage> {
     });
 
     // Simulate API call
-    await Future.delayed(const Duration(milliseconds: 500));
+    await Future. delayed(const Duration(milliseconds: 500));
 
     // Filter mock data
     final results = _mockAddresses.where((address) {
       final searchLower = query.toLowerCase();
-      return address['address']. toString().toLowerCase().contains(searchLower) ||
+      return address['address'].toString().toLowerCase().contains(searchLower) ||
              address['district'].toString().toLowerCase().contains(searchLower) ||
-             address['city']. toString().toLowerCase().contains(searchLower);
+             address['city'].toString().toLowerCase().contains(searchLower);
     }).toList();
 
     setState(() {
@@ -129,8 +130,8 @@ class _AddressSearchPageState extends State<AddressSearchPage> {
 
     // Animate camera to selected location
     if (_mapController != null) {
-      _mapController! .animateCamera(
-        CameraUpdate.newCameraPosition(
+      _mapController!.animateCamera(
+        CameraUpdate. newCameraPosition(
           CameraPosition(
             target: LatLng(address['lat'], address['lng']),
             zoom: 17,
@@ -151,13 +152,13 @@ class _AddressSearchPageState extends State<AddressSearchPage> {
           children: [
             Icon(Icons.check, color: Colors.white, size: 20),
             SizedBox(width: 8),
-            Text('Đã sao chép địa chỉ'),
+            Text('Address copied'),
           ],
         ),
-        backgroundColor:  Colors.green. shade700,
+        backgroundColor: Colors.green.shade700,
         behavior: SnackBarBehavior.floating,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(10),
+          borderRadius:  BorderRadius.circular(10),
         ),
         duration: const Duration(seconds: 2),
       ),
@@ -167,18 +168,20 @@ class _AddressSearchPageState extends State<AddressSearchPage> {
   void _openInMap(Map<String, dynamic> address) {
     // TODO: Open in Google Maps or navigation
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Mở bản đồ.. .')),
+      const SnackBar(content: Text('Opening map.. .')),
     );
   }
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations. of(context)!;
+    
     return Scaffold(
-      backgroundColor: Colors.grey. shade50,
-      appBar:  AppBar(
-        title: const Text(
-          'Tìm kiếm địa chỉ',
-          style: TextStyle(fontWeight: FontWeight.w600),
+      backgroundColor: Colors.grey.shade50,
+      appBar: AppBar(
+        title: Text(
+          l10n.addressSearch,
+          style: const TextStyle(fontWeight: FontWeight.w600),
         ),
         backgroundColor: Colors.purple.shade700,
         foregroundColor: Colors.white,
@@ -194,8 +197,8 @@ class _AddressSearchPageState extends State<AddressSearchPage> {
               boxShadow: [
                 BoxShadow(
                   color: Colors.black.withOpacity(0.05),
-                  blurRadius: 10,
-                  offset: const Offset(0, 2),
+                  blurRadius:  10,
+                  offset:  const Offset(0, 2),
                 ),
               ],
             ),
@@ -206,7 +209,7 @@ class _AddressSearchPageState extends State<AddressSearchPage> {
                   controller: _searchController,
                   focusNode: _searchFocusNode,
                   decoration: InputDecoration(
-                    hintText: 'Nhập địa chỉ, quận, thành phố...',
+                    hintText: 'Enter address, district, city...',
                     prefixIcon: Icon(
                       Icons.search,
                       color: _searchFocusNode.hasFocus
@@ -223,7 +226,7 @@ class _AddressSearchPageState extends State<AddressSearchPage> {
                                   child: SizedBox(
                                     width: 20,
                                     height: 20,
-                                    child:  CircularProgressIndicator(
+                                    child: CircularProgressIndicator(
                                       strokeWidth: 2,
                                       valueColor: AlwaysStoppedAnimation<Color>(
                                         Colors.purple.shade700,
@@ -243,7 +246,7 @@ class _AddressSearchPageState extends State<AddressSearchPage> {
                         : null,
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
-                      borderSide: BorderSide(color: Colors.grey.shade300),
+                      borderSide:  BorderSide(color: Colors.grey.shade300),
                     ),
                     enabledBorder: OutlineInputBorder(
                       borderRadius:  BorderRadius.circular(12),
@@ -274,11 +277,11 @@ class _AddressSearchPageState extends State<AddressSearchPage> {
                     scrollDirection: Axis.horizontal,
                     child: Row(
                       children: [
-                        _buildQuickFilter('Quận 1', Icons.location_city),
-                        _buildQuickFilter('Quận 3', Icons.location_city),
-                        _buildQuickFilter('Quận 5', Icons.location_city),
-                        _buildQuickFilter('Đã xác minh', Icons.verified),
-                        _buildQuickFilter('Có bãi đỗ', Icons.local_parking),
+                        _buildQuickFilter('District 1', Icons.location_city),
+                        _buildQuickFilter('District 3', Icons.location_city),
+                        _buildQuickFilter('District 5', Icons.location_city),
+                        _buildQuickFilter('Verified', Icons.verified),
+                        _buildQuickFilter('Parking', Icons.local_parking),
                       ],
                     ),
                   ),
@@ -289,7 +292,7 @@ class _AddressSearchPageState extends State<AddressSearchPage> {
           
           // Results
           Expanded(
-            child: _selectedAddress != null
+            child:  _selectedAddress != null
                 ? _buildDetailView()
                 : _buildSearchResults(),
           ),
@@ -344,7 +347,7 @@ class _AddressSearchPageState extends State<AddressSearchPage> {
             ),
             const SizedBox(height:  24),
             const Text(
-              'Tìm kiếm địa chỉ',
+              'Search Address',
               style: TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
@@ -352,10 +355,10 @@ class _AddressSearchPageState extends State<AddressSearchPage> {
             ),
             const SizedBox(height: 8),
             Text(
-              'Nhập địa chỉ để bắt đầu tìm kiếm',
-              style:  TextStyle(
+              'Enter an address to start searching',
+              style: TextStyle(
                 fontSize: 14,
-                color: Colors. grey. shade600,
+                color: Colors.grey.shade600,
               ),
             ),
           ],
@@ -372,7 +375,7 @@ class _AddressSearchPageState extends State<AddressSearchPage> {
               valueColor: AlwaysStoppedAnimation<Color>(Colors.purple.shade700),
             ),
             const SizedBox(height: 16),
-            const Text('Đang tìm kiếm... '),
+            const Text('Searching...'),
           ],
         ),
       );
@@ -386,22 +389,22 @@ class _AddressSearchPageState extends State<AddressSearchPage> {
             Icon(
               Icons.search_off,
               size: 64,
-              color: Colors.grey. shade400,
+              color: Colors.grey.shade400,
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height:  16),
             const Text(
-              'Không tìm thấy kết quả',
+              'No results found',
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.w600,
               ),
             ),
-            const SizedBox(height:  8),
+            const SizedBox(height: 8),
             Text(
-              'Thử tìm kiếm với từ khóa khác',
+              'Try searching with different keywords',
               style: TextStyle(
                 fontSize: 14,
-                color: Colors.grey. shade600,
+                color: Colors.grey.shade600,
               ),
             ),
           ],
@@ -434,18 +437,18 @@ class _AddressSearchPageState extends State<AddressSearchPage> {
       child: InkWell(
         onTap: () => _selectAddress(address),
         borderRadius: BorderRadius.circular(16),
-        child: Padding(
+        child:  Padding(
           padding: const EdgeInsets.all(16),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Row(
-                crossAxisAlignment:  CrossAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Container(
                     padding: const EdgeInsets.all(12),
                     decoration: BoxDecoration(
-                      color: Colors.purple.shade50,
+                      color:  Colors.purple.shade50,
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: Icon(
@@ -490,11 +493,11 @@ class _AddressSearchPageState extends State<AddressSearchPage> {
                                     ),
                                     const SizedBox(width: 4),
                                     Text(
-                                      'Xác minh',
-                                      style:  TextStyle(
+                                      'Verified',
+                                      style: TextStyle(
                                         fontSize: 11,
                                         fontWeight: FontWeight.w600,
-                                        color: Colors.green.shade700,
+                                        color: Colors. green.shade700,
                                       ),
                                     ),
                                   ],
@@ -541,7 +544,7 @@ class _AddressSearchPageState extends State<AddressSearchPage> {
                                 ),
                                 const SizedBox(width: 4),
                                 Text(
-                                  '${address['parkingSpots']} chỗ đỗ',
+                                  '${address['parkingSpots']} spots',
                                   style: TextStyle(
                                     fontSize: 12,
                                     fontWeight: FontWeight.w600,
@@ -565,7 +568,7 @@ class _AddressSearchPageState extends State<AddressSearchPage> {
   }
 
   Widget _buildDetailView() {
-    final address = _selectedAddress!;
+    final address = _selectedAddress! ;
     final isVerified = address['verified'] as bool;
     final hasParkingAvailable = address['parkingAvailable'] as bool;
     
@@ -580,7 +583,7 @@ class _AddressSearchPageState extends State<AddressSearchPage> {
                 target: LatLng(address['lat'], address['lng']),
                 zoom: 17,
               ),
-              onMapCreated: (controller) {
+              onMapCreated:  (controller) {
                 _mapController = controller;
               },
               markers: {
@@ -611,8 +614,8 @@ class _AddressSearchPageState extends State<AddressSearchPage> {
                       _selectedAddress = null;
                     });
                   },
-                  icon:  const Icon(Icons.arrow_back, size: 20),
-                  label: const Text('Quay lại kết quả'),
+                  icon: const Icon(Icons.arrow_back, size: 20),
+                  label: const Text('Back to results'),
                   style: TextButton.styleFrom(
                     foregroundColor: Colors.purple.shade700,
                     padding: EdgeInsets.zero,
@@ -639,7 +642,7 @@ class _AddressSearchPageState extends State<AddressSearchPage> {
                             address['address'],
                             style: const TextStyle(
                               fontSize: 20,
-                              fontWeight: FontWeight. bold,
+                              fontWeight: FontWeight.bold,
                             ),
                           ),
                           const SizedBox(height: 8),
@@ -665,11 +668,11 @@ class _AddressSearchPageState extends State<AddressSearchPage> {
                                       ),
                                       const SizedBox(width: 6),
                                       Text(
-                                        'Đã xác minh',
+                                        'Verified',
                                         style: TextStyle(
-                                          fontSize: 13,
-                                          fontWeight:  FontWeight.w600,
-                                          color: Colors.green. shade700,
+                                          fontSize:  13,
+                                          fontWeight: FontWeight.w600,
+                                          color: Colors. green.shade700,
                                         ),
                                       ),
                                     ],
@@ -697,11 +700,11 @@ class _AddressSearchPageState extends State<AddressSearchPage> {
                                       ),
                                       const SizedBox(width: 6),
                                       Text(
-                                        'Có bãi đỗ',
+                                        'Parking Available',
                                         style: TextStyle(
-                                          fontSize: 13,
+                                          fontSize:  13,
                                           fontWeight: FontWeight.w600,
-                                          color: Colors.blue.shade700,
+                                          color: Colors. blue.shade700,
                                         ),
                                       ),
                                     ],
@@ -715,7 +718,7 @@ class _AddressSearchPageState extends State<AddressSearchPage> {
                   ],
                 ),
                 
-                const SizedBox(height:  24),
+                const SizedBox(height: 24),
                 
                 // Details grid
                 Container(
@@ -728,27 +731,27 @@ class _AddressSearchPageState extends State<AddressSearchPage> {
                     children: [
                       _buildDetailRow(
                         Icons.location_city,
-                        'Quận/Huyện',
+                        'District',
                         address['district'],
                       ),
                       const Divider(height: 20),
                       _buildDetailRow(
                         Icons.business,
-                        'Thành phố',
+                        'City',
                         address['city'],
                       ),
-                      const Divider(height:  20),
+                      const Divider(height: 20),
                       _buildDetailRow(
-                        Icons. map,
-                        'Tọa độ',
+                        Icons.map,
+                        'Coordinates',
                         '${address['lat']. toStringAsFixed(6)}, ${address['lng'].toStringAsFixed(6)}',
                       ),
                       if (hasParkingAvailable) ...[
                         const Divider(height: 20),
                         _buildDetailRow(
                           Icons.local_parking,
-                          'Số chỗ đỗ',
-                          '${address['parkingSpots']} chỗ',
+                          'Parking Spots',
+                          '${address['parkingSpots']} spots',
                         ),
                       ],
                     ],
@@ -763,8 +766,8 @@ class _AddressSearchPageState extends State<AddressSearchPage> {
                     Expanded(
                       child: OutlinedButton.icon(
                         onPressed: () => _copyAddress(address['address']),
-                        icon: const Icon(Icons.copy, size: 20),
-                        label: const Text('Sao chép'),
+                        icon:  const Icon(Icons.copy, size: 20),
+                        label: const Text('Copy'),
                         style: OutlinedButton.styleFrom(
                           padding: const EdgeInsets.symmetric(vertical: 14),
                           side: BorderSide(
@@ -782,7 +785,7 @@ class _AddressSearchPageState extends State<AddressSearchPage> {
                       child: ElevatedButton.icon(
                         onPressed: () => _openInMap(address),
                         icon: const Icon(Icons.directions, size: 20),
-                        label: const Text('Chỉ đường'),
+                        label: const Text('Directions'),
                         style: ElevatedButton.styleFrom(
                           padding: const EdgeInsets.symmetric(vertical: 14),
                           backgroundColor: Colors.purple.shade700,
@@ -806,15 +809,15 @@ class _AddressSearchPageState extends State<AddressSearchPage> {
                         // TODO: Navigate to parking payment
                         ScaffoldMessenger.of(context).showSnackBar(
                           const SnackBar(
-                            content: Text('Chuyển đến trang thanh toán... '),
+                            content: Text('Navigating to payment...'),
                           ),
                         );
                       },
-                      icon: const Icon(Icons.payment, size: 20),
-                      label: const Text('Thanh toán đỗ xe'),
+                      icon: const Icon(Icons. payment, size: 20),
+                      label: const Text('Pay for Parking'),
                       style: ElevatedButton.styleFrom(
-                        padding: const EdgeInsets. symmetric(vertical: 14),
-                        backgroundColor: Colors.green. shade700,
+                        padding: const EdgeInsets.symmetric(vertical: 14),
+                        backgroundColor: Colors.green.shade700,
                         foregroundColor: Colors.white,
                         elevation: 0,
                         shape: RoundedRectangleBorder(
@@ -838,13 +841,13 @@ class _AddressSearchPageState extends State<AddressSearchPage> {
         Icon(
           icon,
           size: 20,
-          color: Colors.grey.shade600,
+          color: Colors. grey.shade600,
         ),
-        const SizedBox(width:  12),
+        const SizedBox(width: 12),
         Expanded(
           child: Text(
             label,
-            style:  TextStyle(
+            style: TextStyle(
               fontSize: 14,
               color: Colors.grey.shade600,
             ),

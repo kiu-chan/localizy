@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
+import 'package:localizy/l10n/app_localizations.dart';
 
 class PaymentCheckPage extends StatefulWidget {
   const PaymentCheckPage({super.key});
@@ -49,7 +50,7 @@ class _PaymentCheckPageState extends State<PaymentCheckPage> {
     });
 
     // Simulate API call
-    await Future.delayed(const Duration(seconds: 1));
+    await Future. delayed(const Duration(seconds: 1));
 
     // Mock data - replace with real API call
     setState(() {
@@ -65,7 +66,7 @@ class _PaymentCheckPageState extends State<PaymentCheckPage> {
         'status': 'active', // active, expired, paid
         'startTime': DateTime.now().subtract(const Duration(hours: 2)),
         'endTime': DateTime. now().add(const Duration(hours: 2)),
-        'duration': '4 giờ',
+        'duration': '4 hours',
         'amount': 35000,
         'paymentMethod': 'MoMo',
         'paidAt': DateTime.now().subtract(const Duration(hours: 2)),
@@ -90,12 +91,12 @@ class _PaymentCheckPageState extends State<PaymentCheckPage> {
 
   Color _getStatusColor(String status) {
     switch (status) {
-      case 'active': 
+      case 'active':  
         return Colors.green;
-      case 'expired':
+      case 'expired': 
         return Colors.red;
       case 'paid':
-        return Colors. blue;
+        return Colors.blue;
       default:
         return Colors.grey;
     }
@@ -104,23 +105,23 @@ class _PaymentCheckPageState extends State<PaymentCheckPage> {
   String _getStatusText(String status) {
     switch (status) {
       case 'active': 
-        return 'Đang hoạt động';
-      case 'expired':
-        return 'Hết hạn';
-      case 'paid':
-        return 'Đã thanh toán';
-      default: 
-        return 'Không xác định';
+        return 'Active';
+      case 'expired': 
+        return 'Expired';
+      case 'paid': 
+        return 'Paid';
+      default:  
+        return 'Unknown';
     }
   }
 
   IconData _getStatusIcon(String status) {
     switch (status) {
-      case 'active': 
+      case 'active':  
         return Icons.check_circle;
-      case 'expired': 
+      case 'expired':  
         return Icons.error;
-      case 'paid':
+      case 'paid': 
         return Icons.paid;
       default:
         return Icons.info;
@@ -129,22 +130,24 @@ class _PaymentCheckPageState extends State<PaymentCheckPage> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations. of(context)!;
+    
     return Scaffold(
-      backgroundColor: Colors.grey. shade50,
+      backgroundColor: Colors.grey.shade50,
       appBar: AppBar(
-        title: const Text(
-          'Kiểm tra thanh toán',
-          style: TextStyle(fontWeight: FontWeight.w600),
+        title: Text(
+          l10n.paymentCheck,
+          style: const TextStyle(fontWeight: FontWeight.w600),
         ),
-        backgroundColor: Colors.orange. shade700,
-        foregroundColor: Colors.white,
+        backgroundColor: Colors.orange.shade700,
+        foregroundColor: Colors. white,
         elevation: 0,
         actions: [
           if (_ticketInfo != null)
             IconButton(
               icon: const Icon(Icons.refresh),
               onPressed: _clearSearch,
-              tooltip: 'Tìm kiếm mới',
+              tooltip: 'New Search',
             ),
         ],
       ),
@@ -157,20 +160,20 @@ class _PaymentCheckPageState extends State<PaymentCheckPage> {
             children: [
               // Header card
               Container(
-                width: double.infinity,
+                width:  double.infinity,
                 padding: const EdgeInsets.all(20),
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
-                    colors: [Colors.orange. shade400, Colors.orange.shade700],
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
+                    colors: [Colors.orange.shade400, Colors.orange.shade700],
+                    begin: Alignment. topLeft,
+                    end:  Alignment.bottomRight,
                   ),
-                  borderRadius: BorderRadius.circular(16),
+                  borderRadius:  BorderRadius.circular(16),
                   boxShadow: [
                     BoxShadow(
                       color: Colors.orange.shade200,
-                      blurRadius: 10,
-                      offset: const Offset(0, 4),
+                      blurRadius:  10,
+                      offset:  const Offset(0, 4),
                     ),
                   ],
                 ),
@@ -184,7 +187,7 @@ class _PaymentCheckPageState extends State<PaymentCheckPage> {
                       ),
                       child: const Icon(
                         Icons.search,
-                        color: Colors. white,
+                        color: Colors.white,
                         size: 32,
                       ),
                     ),
@@ -194,7 +197,7 @@ class _PaymentCheckPageState extends State<PaymentCheckPage> {
                         crossAxisAlignment:  CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'Tra cứu vé đỗ xe',
+                            'Search Parking Ticket',
                             style: TextStyle(
                               fontSize: 18,
                               fontWeight: FontWeight.bold,
@@ -203,7 +206,7 @@ class _PaymentCheckPageState extends State<PaymentCheckPage> {
                           ),
                           SizedBox(height: 4),
                           Text(
-                            'Kiểm tra thông tin & trạng thái',
+                            'Check information & status',
                             style: TextStyle(
                               fontSize: 14,
                               color: Colors.white70,
@@ -226,24 +229,24 @@ class _PaymentCheckPageState extends State<PaymentCheckPage> {
                   borderRadius: BorderRadius.circular(12),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withOpacity(0.05),
+                      color: Colors.black. withOpacity(0.05),
                       blurRadius:  10,
                       offset: const Offset(0, 2),
                     ),
                   ],
                 ),
-                child:  Row(
+                child: Row(
                   children: [
                     Expanded(
                       child: _buildTabButton(
-                        'Mã vé',
+                        'Ticket Code',
                         Icons.confirmation_number,
                         'ticket',
                       ),
                     ),
                     Expanded(
                       child: _buildTabButton(
-                        'Biển số',
+                        'License Plate',
                         Icons.directions_car,
                         'license',
                       ),
@@ -252,48 +255,48 @@ class _PaymentCheckPageState extends State<PaymentCheckPage> {
                 ),
               ),
               
-              const SizedBox(height: 24),
+              const SizedBox(height:  24),
               
               // Search form
               Container(
                 padding: const EdgeInsets.all(20),
                 decoration: BoxDecoration(
-                  color: Colors. white,
-                  borderRadius:  BorderRadius.circular(16),
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(16),
                   boxShadow: [
                     BoxShadow(
                       color: Colors.black.withOpacity(0.05),
-                      blurRadius:  10,
-                      offset:  const Offset(0, 2),
+                      blurRadius: 10,
+                      offset: const Offset(0, 2),
                     ),
                   ],
                 ),
-                child:  Column(
+                child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     if (_searchMethod == 'ticket') ...[
                       const Text(
-                        'Nhập mã vé đỗ xe',
-                        style: TextStyle(
-                          fontSize: 16,
+                        'Enter parking ticket code',
+                        style:  TextStyle(
+                          fontSize:  16,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
                       const SizedBox(height: 12),
                       TextFormField(
-                        controller:  _ticketCodeController,
+                        controller: _ticketCodeController,
                         focusNode: _ticketCodeFocusNode,
-                        decoration: InputDecoration(
-                          labelText: 'Mã vé',
+                        decoration:  InputDecoration(
+                          labelText: 'Ticket Code',
                           labelStyle: TextStyle(
-                            color: (_ticketCodeFocusNode.hasFocus || _ticketCodeController.text.isNotEmpty)
+                            color: (_ticketCodeFocusNode. hasFocus || _ticketCodeController.text.isNotEmpty)
                                 ? Colors.orange.shade700
                                 : Colors.grey,
                           ),
-                          hintText: 'VD: PKT123456',
+                          hintText: 'e.g.:  PKT123456',
                           prefixIcon: Icon(
                             Icons.confirmation_number,
-                            color:  _ticketCodeFocusNode. hasFocus
+                            color: _ticketCodeFocusNode. hasFocus
                                 ? Colors.orange.shade700
                                 : Colors.grey,
                           ),
@@ -308,11 +311,11 @@ class _PaymentCheckPageState extends State<PaymentCheckPage> {
                           ),
                           enabledBorder: OutlineInputBorder(
                             borderRadius:  BorderRadius.circular(12),
-                            borderSide: BorderSide(color: Colors.grey.shade300),
+                            borderSide: BorderSide(color: Colors.grey. shade300),
                           ),
-                          focusedBorder: OutlineInputBorder(
+                          focusedBorder:  OutlineInputBorder(
                             borderRadius: BorderRadius.circular(12),
-                            borderSide: BorderSide(color: Colors.orange.shade700, width: 2),
+                            borderSide: BorderSide(color:  Colors.orange.shade700, width: 2),
                           ),
                           filled: true,
                           fillColor: Colors.grey.shade50,
@@ -320,14 +323,14 @@ class _PaymentCheckPageState extends State<PaymentCheckPage> {
                         textCapitalization: TextCapitalization. characters,
                         validator: (value) {
                           if (value == null || value. isEmpty) {
-                            return 'Vui lòng nhập mã vé';
+                            return 'Please enter ticket code';
                           }
                           return null;
                         },
                       ),
                     ] else ...[
                       const Text(
-                        'Nhập biển số xe',
+                        'Enter license plate number',
                         style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
@@ -338,35 +341,35 @@ class _PaymentCheckPageState extends State<PaymentCheckPage> {
                         controller: _licensePlateController,
                         focusNode: _licensePlateFocusNode,
                         decoration:  InputDecoration(
-                          labelText: 'Biển số xe',
-                          labelStyle:  TextStyle(
-                            color:  (_licensePlateFocusNode.hasFocus || _licensePlateController.text.isNotEmpty)
+                          labelText: 'License Plate',
+                          labelStyle: TextStyle(
+                            color: (_licensePlateFocusNode.hasFocus || _licensePlateController.text.isNotEmpty)
                                 ? Colors.orange.shade700
                                 : Colors.grey,
                           ),
-                          hintText: 'VD: 30A-12345',
+                          hintText: 'e.g.: 30A-12345',
                           prefixIcon: Icon(
-                            Icons. directions_car,
+                            Icons.directions_car,
                             color: _licensePlateFocusNode.hasFocus
                                 ? Colors.orange.shade700
                                 : Colors.grey,
                           ),
-                          suffixIcon: _licensePlateController. text.isNotEmpty
+                          suffixIcon: _licensePlateController.text.isNotEmpty
                               ? IconButton(
                                   icon: const Icon(Icons.clear),
-                                  onPressed:  () => _licensePlateController. clear(),
+                                  onPressed: () => _licensePlateController.clear(),
                                 )
                               : null,
                           border: OutlineInputBorder(
-                            borderRadius: BorderRadius. circular(12),
-                          ),
-                          enabledBorder:  OutlineInputBorder(
                             borderRadius: BorderRadius.circular(12),
-                            borderSide: BorderSide(color:  Colors.grey.shade300),
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                            borderSide: BorderSide(color: Colors.grey.shade300),
                           ),
                           focusedBorder: OutlineInputBorder(
-                            borderRadius:  BorderRadius.circular(12),
-                            borderSide: BorderSide(color: Colors.orange. shade700, width: 2),
+                            borderRadius: BorderRadius.circular(12),
+                            borderSide:  BorderSide(color: Colors. orange.shade700, width: 2),
                           ),
                           filled: true,
                           fillColor: Colors.grey.shade50,
@@ -374,7 +377,7 @@ class _PaymentCheckPageState extends State<PaymentCheckPage> {
                         textCapitalization: TextCapitalization.characters,
                         validator: (value) {
                           if (value == null || value.isEmpty) {
-                            return 'Vui lòng nhập biển số xe';
+                            return 'Please enter license plate';
                           }
                           return null;
                         },
@@ -389,8 +392,8 @@ class _PaymentCheckPageState extends State<PaymentCheckPage> {
                       child: ElevatedButton(
                         onPressed: _isSearching ? null : _searchTicket,
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.orange. shade700,
-                          foregroundColor: Colors.white,
+                          backgroundColor: Colors.orange.shade700,
+                          foregroundColor:  Colors.white,
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(12),
                           ),
@@ -411,7 +414,7 @@ class _PaymentCheckPageState extends State<PaymentCheckPage> {
                                   Icon(Icons.search, size: 24),
                                   SizedBox(width: 8),
                                   Text(
-                                    'Tra cứu',
+                                    'Search',
                                     style: TextStyle(
                                       fontSize: 18,
                                       fontWeight:  FontWeight.w600,
@@ -427,7 +430,7 @@ class _PaymentCheckPageState extends State<PaymentCheckPage> {
               
               // Results
               if (_ticketInfo != null) ...[
-                const SizedBox(height: 24),
+                const SizedBox(height:  24),
                 _buildTicketInfo(),
               ],
             ],
@@ -440,7 +443,7 @@ class _PaymentCheckPageState extends State<PaymentCheckPage> {
   Widget _buildTabButton(String label, IconData icon, String method) {
     final isSelected = _searchMethod == method;
     return InkWell(
-      onTap:  () {
+      onTap: () {
         setState(() {
           _searchMethod = method;
           _ticketInfo = null;
@@ -450,7 +453,7 @@ class _PaymentCheckPageState extends State<PaymentCheckPage> {
       child: Container(
         padding: const EdgeInsets. symmetric(vertical: 12),
         decoration: BoxDecoration(
-          color: isSelected ?  Colors.orange.shade700 :  Colors.transparent,
+          color: isSelected ? Colors.orange. shade700 : Colors.transparent,
           borderRadius: BorderRadius.circular(8),
         ),
         child: Row(
@@ -489,7 +492,7 @@ class _PaymentCheckPageState extends State<PaymentCheckPage> {
           padding: const EdgeInsets.all(20),
           decoration: BoxDecoration(
             color: statusColor,
-            borderRadius: BorderRadius.circular(16),
+            borderRadius: BorderRadius. circular(16),
             boxShadow: [
               BoxShadow(
                 color: statusColor.withOpacity(0.3),
@@ -505,19 +508,19 @@ class _PaymentCheckPageState extends State<PaymentCheckPage> {
                 color: Colors.white,
                 size: 48,
               ),
-              const SizedBox(height: 12),
+              const SizedBox(height:  12),
               Text(
                 _getStatusText(status),
                 style: const TextStyle(
                   fontSize: 24,
                   fontWeight: FontWeight.bold,
-                  color: Colors. white,
+                  color: Colors.white,
                 ),
               ),
               if (status == 'active') ...[
                 const SizedBox(height: 8),
                 Text(
-                  'Còn lại: ${_calculateTimeRemaining(_ticketInfo!['endTime'])}',
+                  'Remaining: ${_calculateTimeRemaining(_ticketInfo!['endTime'])}',
                   style: const TextStyle(
                     fontSize:  16,
                     color:  Colors.white70,
@@ -528,7 +531,7 @@ class _PaymentCheckPageState extends State<PaymentCheckPage> {
           ),
         ),
         
-        const SizedBox(height:  16),
+        const SizedBox(height: 16),
         
         // Ticket details card
         Container(
@@ -552,7 +555,7 @@ class _PaymentCheckPageState extends State<PaymentCheckPage> {
                   Icon(Icons.receipt_long, color: Colors.orange.shade700, size: 24),
                   const SizedBox(width: 8),
                   const Text(
-                    'Thông tin vé',
+                    'Ticket Information',
                     style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
@@ -560,61 +563,61 @@ class _PaymentCheckPageState extends State<PaymentCheckPage> {
                   ),
                 ],
               ),
-              const SizedBox(height: 20),
+              const SizedBox(height:  20),
               
               _buildInfoRow(
                 Icons.confirmation_number,
-                'Mã vé',
+                'Ticket Code',
                 _ticketInfo!['ticketCode'],
                 showCopy: true,
               ),
               const Divider(height: 24),
               _buildInfoRow(
                 Icons.directions_car,
-                'Biển số xe',
-                _ticketInfo! ['licensePlate'],
+                'License Plate',
+                _ticketInfo!['licensePlate'],
               ),
               const Divider(height: 24),
               _buildInfoRow(
                 Icons. location_on,
-                'Khu vực',
-                _ticketInfo!['zone'],
+                'Zone',
+                _ticketInfo! ['zone'],
               ),
               const Divider(height: 24),
               _buildInfoRow(
                 Icons.access_time,
-                'Thời gian',
-                _ticketInfo!['duration'],
+                'Duration',
+                _ticketInfo! ['duration'],
               ),
               const Divider(height: 24),
               _buildInfoRow(
                 Icons.schedule,
-                'Bắt đầu',
+                'Start Time',
                 DateFormat('HH:mm - dd/MM/yyyy').format(_ticketInfo!['startTime']),
               ),
               const Divider(height: 24),
               _buildInfoRow(
                 Icons.event_available,
-                'Kết thúc',
+                'End Time',
                 DateFormat('HH:mm - dd/MM/yyyy').format(_ticketInfo!['endTime']),
               ),
               const Divider(height: 24),
               _buildInfoRow(
                 Icons.payment,
-                'Thanh toán',
-                _ticketInfo!['paymentMethod'],
+                'Payment',
+                _ticketInfo! ['paymentMethod'],
               ),
               const Divider(height: 24),
               _buildInfoRow(
-                Icons. attach_money,
-                'Số tiền',
-                '${_formatCurrency(_ticketInfo!['amount'])} VNĐ',
+                Icons.attach_money,
+                'Amount',
+                '${_formatCurrency(_ticketInfo!['amount'])} VND',
                 isHighlight: true,
               ),
               const Divider(height:  24),
               _buildInfoRow(
                 Icons.check_circle,
-                'Đã thanh toán',
+                'Paid At',
                 DateFormat('HH:mm - dd/MM/yyyy').format(_ticketInfo!['paidAt']),
               ),
             ],
@@ -627,10 +630,10 @@ class _PaymentCheckPageState extends State<PaymentCheckPage> {
         Row(
           children: [
             Expanded(
-              child: OutlinedButton. icon(
+              child: OutlinedButton.icon(
                 onPressed: _clearSearch,
                 icon: const Icon(Icons.search),
-                label: const Text('Tra cứu mới'),
+                label: const Text('New Search'),
                 style: OutlinedButton.styleFrom(
                   padding: const EdgeInsets.symmetric(vertical: 14),
                   side: BorderSide(color: Colors.grey.shade300, width: 2),
@@ -646,15 +649,15 @@ class _PaymentCheckPageState extends State<PaymentCheckPage> {
                 onPressed: () {
                   // TODO: Extend parking time
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Chức năng gia hạn đang phát triển')),
+                    const SnackBar(content: Text('Extension feature in development')),
                   );
                 },
                 icon: const Icon(Icons.add_circle),
-                label: const Text('Gia hạn'),
+                label: const Text('Extend'),
                 style: ElevatedButton.styleFrom(
                   padding: const EdgeInsets.symmetric(vertical: 14),
                   backgroundColor: Colors.orange.shade700,
-                  foregroundColor: Colors.white,
+                  foregroundColor:  Colors.white,
                   elevation: 0,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),
@@ -674,14 +677,14 @@ class _PaymentCheckPageState extends State<PaymentCheckPage> {
         Icon(
           icon,
           size: 20,
-          color: isHighlight ? Colors.orange.shade700 : Colors.grey.shade600,
+          color:  isHighlight ? Colors.orange. shade700 : Colors.grey. shade600,
         ),
         const SizedBox(width: 12),
         Expanded(
           child: Text(
             label,
             style: TextStyle(
-              fontSize:  14,
+              fontSize: 14,
               color: Colors.grey.shade600,
             ),
           ),
@@ -696,7 +699,7 @@ class _PaymentCheckPageState extends State<PaymentCheckPage> {
                     children: [
                       Icon(Icons.check, color: Colors.white, size: 20),
                       SizedBox(width: 8),
-                      Text('Đã sao chép'),
+                      Text('Copied'),
                     ],
                   ),
                   backgroundColor: Colors.green.shade700,
@@ -733,15 +736,15 @@ class _PaymentCheckPageState extends State<PaymentCheckPage> {
 
   String _calculateTimeRemaining(DateTime endTime) {
     final remaining = endTime.difference(DateTime. now());
-    if (remaining. isNegative) return 'Đã hết hạn';
+    if (remaining.isNegative) return 'Expired';
     
     final hours = remaining.inHours;
     final minutes = remaining.inMinutes % 60;
     
     if (hours > 0) {
-      return '$hours giờ $minutes phút';
+      return '$hours hours $minutes mins';
     } else {
-      return '$minutes phút';
+      return '$minutes mins';
     }
   }
 }
