@@ -513,14 +513,9 @@ class _MapPageState extends State<MapPage> {
                   myLocationEnabled: true,
                   myLocationButtonEnabled: false,
                   mapType: MapType.normal,
-                  zoomControlsEnabled: ! _isNavigating,
+                  zoomControlsEnabled: false,
                   compassEnabled: true,
                   mapToolbarEnabled: false,
-                  padding: EdgeInsets.only(
-                    bottom: _directionsResult != null 
-                        ? (_isNavigating ? 280 : 200) 
-                        : 0,
-                  ),
                 ),
           // Panel hiển thị thông tin chỉ đường
           if (_directionsResult != null)

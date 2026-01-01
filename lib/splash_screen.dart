@@ -70,8 +70,7 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
       await ConfigManager.initialize();
       
       // Kiểm tra trạng thái đăng nhập
-      final prefs = await SharedPreferences.getInstance();
-      final isLoggedIn = prefs.getBool('isLoggedIn') ?? false;
+      await SharedPreferences.getInstance();
       
       if (mounted) {
         // Chuyển đến màn hình phù hợp
