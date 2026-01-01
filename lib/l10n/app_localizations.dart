@@ -1369,6 +1369,36 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'Veuillez patienter un moment'**
   String get pleaseWaitAMoment;
+
+  /// No description provided for @selectMapType.
+  ///
+  /// In fr, this message translates to:
+  /// **'Sélectionner le type de carte'**
+  String get selectMapType;
+
+  /// No description provided for @normal.
+  ///
+  /// In fr, this message translates to:
+  /// **'Normal'**
+  String get normal;
+
+  /// No description provided for @satellite.
+  ///
+  /// In fr, this message translates to:
+  /// **'Satellite'**
+  String get satellite;
+
+  /// No description provided for @terrain.
+  ///
+  /// In fr, this message translates to:
+  /// **'Terrain'**
+  String get terrain;
+
+  /// No description provided for @hybrid.
+  ///
+  /// In fr, this message translates to:
+  /// **'Hybride'**
+  String get hybrid;
 }
 
 class _AppLocalizationsDelegate

@@ -14,18 +14,24 @@ class MainPage extends StatefulWidget {
 class _MainPageState extends State<MainPage> {
   int _currentIndex = 0;
 
-  final List<Widget> _pages = [
-    const HomePage(),
-    const MapPage(),
-    const SettingsPage(),
+  // Tạo danh sách pages một lần duy nhất, không tạo lại mỗi lần build
+  final List<Widget> _pages = const [
+    HomePage(),
+    MapPage(),
+    SettingsPage(),
   ];
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations. of(context);
+    final l10n = AppLocalizations.of(context);
     
     return Scaffold(
-      body:  _pages[_currentIndex],
+      // Sử dụng IndexedStack thay vì _pages[_currentIndex]
+      // IndexedStack giữ state của tất cả các pages
+      body: IndexedStack(
+        index: _currentIndex,
+        children: _pages,
+      ),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _currentIndex,
         onTap: (index) {
@@ -33,8 +39,8 @@ class _MainPageState extends State<MainPage> {
             _currentIndex = index;
           });
         },
-        selectedItemColor: Colors.green.shade700,
-        unselectedItemColor:  Colors.grey,
+        selectedItemColor: Colors.green. shade700,
+        unselectedItemColor: Colors.grey,
         items: [
           BottomNavigationBarItem(
             icon: const Icon(Icons.home),
@@ -45,7 +51,7 @@ class _MainPageState extends State<MainPage> {
             label: l10n?.map ?? 'Map',
           ),
           BottomNavigationBarItem(
-            icon:  const Icon(Icons.settings),
+            icon: const Icon(Icons. settings),
             label: l10n?.settings ?? 'Settings',
           ),
         ],

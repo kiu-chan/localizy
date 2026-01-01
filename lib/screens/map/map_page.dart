@@ -6,6 +6,9 @@ import 'package:geolocator/geolocator.dart';
 import 'package:localizy/l10n/app_localizations.dart';
 import 'package:localizy/services/directions_service.dart';
 import 'package:localizy/screens/map/widgets/directions_panel.dart';
+import 'package:localizy/screens/map/widgets/map_type_selector.dart';
+import 'package:localizy/screens/map/widgets/address_search_bar.dart';
+import 'package:localizy/configs/map_config.dart';
 
 class MapPage extends StatefulWidget {
   const MapPage({super.key});
@@ -14,16 +17,17 @@ class MapPage extends StatefulWidget {
   State<MapPage> createState() => _MapPageState();
 }
 
-class _MapPageState extends State<MapPage> {
+class _MapPageState extends State<MapPage> with AutomaticKeepAliveClientMixin {
   GoogleMapController? _mapController;
-  LatLng _currentPosition = const LatLng(48.8566, 2.3522);
+  LatLng _currentPosition = MapConfig.defaultPosition;
   bool _isLoading = true;
+  bool _hasLoadedOnce = false; // Thêm flag để track đã load lần đầu chưa
   final Set<Marker> _markers = {};
   final Set<Polyline> _polylines = {};
   bool _isMapReady = false;
   
   DirectionsResult? _directionsResult;
-  LatLng? _destinationPosition;
+  LatLng?  _destinationPosition;
   bool _isSelectingDestination = false;
   TravelMode _selectedTravelMode = TravelMode.driving;
   
@@ -34,6 +38,13 @@ class _MapPageState extends State<MapPage> {
   StreamSubscription<Position>? _positionStreamSubscription;
   Timer? _navigationTimer;
 
+  // Map type selection
+  MapType _currentMapType = MapConfig.defaultMapType;
+
+  // Giữ state của widget khi chuyển tab
+  @override
+  bool get wantKeepAlive => true;
+
   @override
   void initState() {
     super.initState();
@@ -42,7 +53,8 @@ class _MapPageState extends State<MapPage> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    if (_isLoading) {
+    // Chỉ load location lần đầu tiên
+    if (_isLoading && !_hasLoadedOnce) {
       _getCurrentLocation();
     }
   }
@@ -50,13 +62,13 @@ class _MapPageState extends State<MapPage> {
   // Helper method để lấy language code từ locale hiện tại
   String _getLanguageCode() {
     final locale = Localizations.localeOf(context);
-    return locale.languageCode; // 'vi', 'en', 'fr', etc.
+    return locale.languageCode;
   }
 
   Future<void> _getCurrentLocation() async {
     if (! mounted) return;
     
-    final l10n = AppLocalizations.of(context);
+    final l10n = AppLocalizations. of(context);
     
     try {
       LocationPermission permission = await Geolocator.checkPermission();
@@ -66,7 +78,7 @@ class _MapPageState extends State<MapPage> {
           if (mounted) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
-                content: Text(l10n?. locationPermissionDenied ?? 'Location permission denied'),
+                content: Text(l10n?.locationPermissionDenied ?? 'Location permission denied'),
                 backgroundColor: Colors.red,
               ),
             );
@@ -74,6 +86,7 @@ class _MapPageState extends State<MapPage> {
           if (mounted) {
             setState(() {
               _isLoading = false;
+              _hasLoadedOnce = true;
             });
           }
           return;
@@ -92,6 +105,7 @@ class _MapPageState extends State<MapPage> {
         if (mounted) {
           setState(() {
             _isLoading = false;
+            _hasLoadedOnce = true;
           });
         }
         return;
@@ -106,13 +120,15 @@ class _MapPageState extends State<MapPage> {
       setState(() {
         _currentPosition = LatLng(position.latitude, position.longitude);
         _isLoading = false;
+        _hasLoadedOnce = true;
       });
 
-      _animateToPosition(_currentPosition, zoom: 15.0);
+      _animateToPosition(_currentPosition, zoom: MapConfig.defaultZoom);
     } catch (e) {
       if (mounted) {
         setState(() {
           _isLoading = false;
+          _hasLoadedOnce = true;
         });
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -155,9 +171,9 @@ class _MapPageState extends State<MapPage> {
 
     // Theo dõi vị trí liên tục
     _positionStreamSubscription = Geolocator.getPositionStream(
-      locationSettings: const LocationSettings(
+      locationSettings: LocationSettings(
         accuracy: LocationAccuracy.high,
-        distanceFilter: 5, // Cập nhật mỗi 5 mét
+        distanceFilter: MapConfig.distanceFilter. toInt(),
       ),
     ).listen((Position position) {
       if (!mounted || ! _isNavigating) return;
@@ -169,7 +185,7 @@ class _MapPageState extends State<MapPage> {
       });
 
       // Cập nhật camera để theo dõi vị trí hiện tại
-      _animateToPosition(currentPos, zoom: 18.0);
+      _animateToPosition(currentPos, zoom:  MapConfig.navigationZoom);
 
       // Kiểm tra và cập nhật bước hiện tại
       _updateNavigationStep(currentPos);
@@ -179,7 +195,7 @@ class _MapPageState extends State<MapPage> {
       SnackBar(
         content: Text(l10n?.navigationStarted ?? 'Navigation started'),
         backgroundColor: Colors.green,
-        duration: const Duration(seconds: 2),
+        duration: MapConfig.snackBarDuration,
       ),
     );
   }
@@ -204,7 +220,7 @@ class _MapPageState extends State<MapPage> {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(l10n?.navigationStopped ?? 'Navigation stopped'),
-        duration: const Duration(seconds: 2),
+        duration: MapConfig.snackBarDuration,
       ),
     );
   }
@@ -217,14 +233,14 @@ class _MapPageState extends State<MapPage> {
 
     final l10n = AppLocalizations.of(context);
     final currentStep = _directionsResult!. steps[_currentStepIndex];
-    final distanceToEnd = _calculateDistance(currentPos, currentStep.endLocation);
+    final distanceToEnd = _calculateDistance(currentPos, currentStep. endLocation);
 
     setState(() {
       _distanceToNextStep = distanceToEnd;
     });
 
-    // Nếu đã gần đến cuối bước hiện tại (< 20m), chuyển sang bước tiếp theo
-    if (distanceToEnd < 20) {
+    // Nếu đã gần đến cuối bước hiện tại
+    if (distanceToEnd < MapConfig.stepCompletionDistance) {
       if (_currentStepIndex < _directionsResult!.steps. length - 1) {
         setState(() {
           _currentStepIndex++;
@@ -236,7 +252,7 @@ class _MapPageState extends State<MapPage> {
           SnackBar(
             content: Text(nextStep.instructions),
             backgroundColor: Colors.blue,
-            duration: const Duration(seconds: 3),
+            duration: MapConfig.navigationSnackBarDuration,
           ),
         );
       } else {
@@ -244,26 +260,26 @@ class _MapPageState extends State<MapPage> {
         _stopNavigation();
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(l10n?.arrivedAtDestination ?? '🎉 You have arrived at your destination!'),
+            content: Text(l10n?.arrivedAtDestination ?? '🎉 You have arrived at your destination! '),
             backgroundColor: Colors.green,
-            duration: const Duration(seconds: 3),
+            duration: MapConfig. navigationSnackBarDuration,
           ),
         );
       }
     }
   }
 
-  Future<void> _animateToPosition(LatLng position, {double zoom = 15.0}) async {
+  Future<void> _animateToPosition(LatLng position, {double?  zoom}) async {
     if (!mounted || ! _isMapReady || _mapController == null) return;
     
     try {
-      await _mapController!.animateCamera(
+      await _mapController! .animateCamera(
         CameraUpdate.newCameraPosition(
           CameraPosition(
             target: position,
-            zoom: zoom,
-            bearing: _isNavigating ? 0 : 0,
-            tilt: _isNavigating ? 45 : 0,
+            zoom: zoom ?? MapConfig. defaultZoom,
+            bearing: _isNavigating ? MapConfig.navigationBearing : 0,
+            tilt: _isNavigating ?  MapConfig.navigationTilt : MapConfig.normalTilt,
           ),
         ),
       );
@@ -272,15 +288,15 @@ class _MapPageState extends State<MapPage> {
     }
   }
 
-  Future<void> _animateToBounds(LatLngBounds bounds, {double padding = 100.0}) async {
+  Future<void> _animateToBounds(LatLngBounds bounds, {double? padding}) async {
     if (!mounted || !_isMapReady || _mapController == null) return;
     
     try {
-      await _mapController!. animateCamera(
-        CameraUpdate.newLatLngBounds(bounds, padding),
+      await _mapController!.animateCamera(
+        CameraUpdate. newLatLngBounds(bounds, padding ??  MapConfig.boundsPadding),
       );
     } catch (e) {
-      debugPrint('Error animating camera to bounds:  $e');
+      debugPrint('Error animating camera to bounds: $e');
     }
   }
 
@@ -292,19 +308,19 @@ class _MapPageState extends State<MapPage> {
         zoomIn ? CameraUpdate.zoomIn() : CameraUpdate.zoomOut(),
       );
     } catch (e) {
-      debugPrint('Error zooming: $e');
+      debugPrint('Error zooming:  $e');
     }
   }
 
   void _onMapCreated(GoogleMapController controller) {
-    if (! mounted) return;
+    if (!mounted) return;
     
     _mapController = controller;
     setState(() {
       _isMapReady = true;
     });
     
-    if (_currentPosition != const LatLng(48.8566, 2.3522)) {
+    if (_currentPosition != MapConfig.defaultPosition) {
       _animateToPosition(_currentPosition);
     }
   }
@@ -320,9 +336,9 @@ class _MapPageState extends State<MapPage> {
       _markers.add(
         Marker(
           markerId: const MarkerId('destination'),
-          position: position,
-          icon:  BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueRed),
-          infoWindow: InfoWindow(title: l10n?. destination ?? 'Destination'),
+          position:  position,
+          icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueRed),
+          infoWindow: InfoWindow(title: l10n?.destination ??  'Destination'),
         ),
       );
       _isSelectingDestination = false;
@@ -335,7 +351,7 @@ class _MapPageState extends State<MapPage> {
     if (!mounted || _destinationPosition == null) return;
 
     final l10n = AppLocalizations.of(context);
-    final languageCode = _getLanguageCode(); // LẤY LANGUAGE CODE
+    final languageCode = _getLanguageCode();
 
     setState(() {
       _isLoading = true;
@@ -344,12 +360,12 @@ class _MapPageState extends State<MapPage> {
     try {
       final result = await DirectionsService.getDirections(
         origin: _currentPosition,
-        destination: _destinationPosition!,
+        destination: _destinationPosition! ,
         mode: _selectedTravelMode,
-        language: languageCode, // TRUYỀN LANGUAGE CODE VÀO API
+        language: languageCode,
       );
 
-      if (!mounted) return;
+      if (! mounted) return;
 
       if (result != null && result.polylinePoints.isNotEmpty) {
         setState(() {
@@ -381,7 +397,7 @@ class _MapPageState extends State<MapPage> {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text(l10n?. noRouteFound ?? 'Could not find a route'),
-              backgroundColor: Colors.red,
+              backgroundColor: Colors. red,
             ),
           );
         }
@@ -392,7 +408,7 @@ class _MapPageState extends State<MapPage> {
           _isLoading = false;
         });
         
-        ScaffoldMessenger.of(context).showSnackBar(
+        ScaffoldMessenger. of(context).showSnackBar(
           SnackBar(
             content: Text('${l10n?.errorFindingRoute ?? 'Error finding route'}: $e'),
             backgroundColor: Colors.red,
@@ -414,7 +430,7 @@ class _MapPageState extends State<MapPage> {
       
       double minLat = points.first.latitude;
       double maxLat = points.first.latitude;
-      double minLng = points.first. longitude;
+      double minLng = points.first.longitude;
       double maxLng = points.first.longitude;
 
       for (final point in points) {
@@ -429,7 +445,7 @@ class _MapPageState extends State<MapPage> {
         northeast: LatLng(maxLat, maxLng),
       );
 
-      _animateToBounds(bounds, padding: 100.0);
+      _animateToBounds(bounds);
     } catch (e) {
       debugPrint('Error fitting bounds: $e');
     }
@@ -447,7 +463,7 @@ class _MapPageState extends State<MapPage> {
       _directionsResult = null;
       _destinationPosition = null;
       _polylines.clear();
-      _markers.removeWhere((marker) => marker.markerId.value == 'destination');
+      _markers.removeWhere((marker) => marker.markerId.value == 'destination' || marker.markerId.value == 'searched');
       _isSelectingDestination = false;
       _currentStepIndex = 0;
       _distanceToNextStep = null;
@@ -466,7 +482,83 @@ class _MapPageState extends State<MapPage> {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(l10n?.tapToSelectDestination ?? 'Tap on the map to select destination'),
-        duration: const Duration(seconds: 2),
+        duration: MapConfig.snackBarDuration,
+      ),
+    );
+  }
+
+  void _onMapTypeChanged(MapType newMapType) {
+    setState(() {
+      _currentMapType = newMapType;
+    });
+  }
+
+  // Xử lý khi chọn địa chỉ từ tìm kiếm
+  void _onAddressSelected(AddressResult address) {
+    final position = LatLng(address. lat, address.lng);
+    
+    setState(() {
+      // Xóa marker tìm kiếm cũ
+      _markers.removeWhere((marker) => marker.markerId.value == 'searched');
+      
+      // Thêm marker mới
+      _markers.add(
+        Marker(
+          markerId: const MarkerId('searched'),
+          position: position,
+          icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueBlue),
+          infoWindow:  InfoWindow(
+            title: address.code,
+            snippet: address.address,
+          ),
+        ),
+      );
+    });
+
+    // Di chuyển camera đến vị trí
+    _animateToPosition(position, zoom: 17.0);
+
+    // Hiển thị thông báo
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Row(
+          children: [
+            Icon(
+              address.verified ? Icons.verified :  Icons.location_on,
+              color: Colors.white,
+              size: 20,
+            ),
+            const SizedBox(width: 8),
+            Expanded(
+              child: Text('${address.code} - ${address.address}'),
+            ),
+          ],
+        ),
+        backgroundColor: address.verified ? Colors.green. shade700 : Colors.blue.shade700,
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(
+          borderRadius:  BorderRadius.circular(10),
+        ),
+        duration: const Duration(seconds: 3),
+        action: SnackBarAction(
+          label: 'Chỉ đường',
+          textColor: Colors.white,
+          onPressed: () {
+            setState(() {
+              _destinationPosition = position;
+              _markers.removeWhere((marker) => marker.markerId.value == 'destination');
+              _markers. add(
+                Marker(
+                  markerId: const MarkerId('destination'),
+                  position: position,
+                  icon:  BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueRed),
+                  infoWindow: InfoWindow(title: address.address),
+                ),
+              );
+            });
+            _getDirections();
+          },
+        ),
       ),
     );
   }
@@ -476,25 +568,28 @@ class _MapPageState extends State<MapPage> {
     _isMapReady = false;
     _positionStreamSubscription?.cancel();
     _navigationTimer?.cancel();
-    _mapController?.dispose();
+    // Không dispose mapController để giữ state
+    // _mapController?.dispose();
     _mapController = null;
-    super.dispose();
+    super. dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context);
+    super.build(context); // Bắt buộc gọi khi dùng AutomaticKeepAliveClientMixin
+    
+    final l10n = AppLocalizations. of(context);
     
     return Scaffold(
       body: Stack(
         children: [
-          _isLoading
+          _isLoading && ! _hasLoadedOnce
               ? Center(
                   child: Column(
                     mainAxisAlignment:  MainAxisAlignment.center,
                     children: [
                       CircularProgressIndicator(
-                        color: Colors.green.shade700,
+                        color: Colors.green. shade700,
                       ),
                       const SizedBox(height: 16),
                       Text(l10n?.loadingMap ?? 'Loading map... '),
@@ -506,27 +601,45 @@ class _MapPageState extends State<MapPage> {
                   onTap: _onMapTap,
                   initialCameraPosition: CameraPosition(
                     target: _currentPosition,
-                    zoom: 15.0,
+                    zoom: MapConfig.defaultZoom,
                   ),
                   markers: _markers,
                   polylines: _polylines,
                   myLocationEnabled: true,
-                  myLocationButtonEnabled: false,
-                  mapType: MapType.normal,
-                  zoomControlsEnabled: false,
-                  compassEnabled: true,
-                  mapToolbarEnabled: false,
+                  myLocationButtonEnabled: MapConfig.showMyLocationButton,
+                  mapType: _currentMapType,
+                  zoomControlsEnabled: MapConfig.showZoomControls,
+                  compassEnabled: MapConfig.showCompass,
+                  mapToolbarEnabled: MapConfig.showMapToolbar,
+                  minMaxZoomPreference: MinMaxZoomPreference(
+                    MapConfig.minZoom,
+                    MapConfig.maxZoom,
+                  ),
                 ),
+          
+          // Thanh tìm kiếm địa chỉ
+          if (! _isLoading && ! _isNavigating)
+            AddressSearchBar(
+              onAddressSelected:  _onAddressSelected,
+            ),
+          
+          // Nút chọn loại bản đồ
+          if (! _isLoading)
+            MapTypeSelector(
+              currentMapType: _currentMapType,
+              onMapTypeChanged: _onMapTypeChanged,
+            ),
+          
           // Panel hiển thị thông tin chỉ đường
           if (_directionsResult != null)
             DirectionsPanel(
-              directionsResult:  _directionsResult,
+              directionsResult: _directionsResult,
               onClose: _clearRoute,
               currentStepIndex: _currentStepIndex,
               distanceToNextStep: _distanceToNextStep,
               isNavigating: _isNavigating,
               onStartNavigation: _startNavigation,
-              onStopNavigation:  _stopNavigation,
+              onStopNavigation: _stopNavigation,
             ),
         ],
       ),
@@ -544,7 +657,7 @@ class _MapPageState extends State<MapPage> {
                       : Colors.red,
                   child: Icon(
                     _directionsResult == null
-                        ?  Icons.directions
+                        ? Icons.directions
                         : Icons.clear,
                     color: Colors.white,
                   ),
@@ -553,14 +666,14 @@ class _MapPageState extends State<MapPage> {
                 FloatingActionButton(
                   heroTag: 'zoom_in',
                   onPressed:  () => _animateZoom(true),
-                  backgroundColor: Colors.white,
-                  child: Icon(Icons.add, color: Colors.green.shade700),
+                  backgroundColor: Colors. white,
+                  child: Icon(Icons.add, color: Colors.green. shade700),
                 ),
                 const SizedBox(height: 10),
                 FloatingActionButton(
                   heroTag: 'zoom_out',
                   onPressed: () => _animateZoom(false),
-                  backgroundColor:  Colors.white,
+                  backgroundColor: Colors.white,
                   child: Icon(Icons.remove, color: Colors.green.shade700),
                 ),
                 const SizedBox(height: 10),

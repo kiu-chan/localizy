@@ -673,4 +673,19 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get pleaseWaitAMoment => 'Please wait a moment';
+
+  @override
+  String get selectMapType => 'Select Map Type';
+
+  @override
+  String get normal => 'Normal';
+
+  @override
+  String get satellite => 'Satellite';
+
+  @override
+  String get terrain => 'Terrain';
+
+  @override
+  String get hybrid => 'Hybrid';
 }

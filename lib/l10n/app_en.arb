@@ -223,5 +223,10 @@
   "payButton": "Pay",
   "securedBySSL":  "Payment secured by SSL",
   "processing": "Processing...",
-  "pleaseWaitAMoment":  "Please wait a moment"
+  "pleaseWaitAMoment":  "Please wait a moment",
+  "selectMapType": "Select Map Type",
+  "normal": "Normal",
+  "satellite": "Satellite",
+  "terrain": "Terrain",
+  "hybrid": "Hybrid"
 } 
