@@ -2,17 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:localizy/l10n/app_localizations.dart';
+import 'package:localizy/splash_screen.dart';
 import 'package:provider/provider.dart';
 import 'dart:io' show Platform;
-import 'screens/account/login_page.dart';
 import 'utils/language_manager.dart';
 import 'utils/config_manager.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  
-  // Load environment variables
-  await ConfigManager.initialize();
   
   // Initialize Google Maps cho iOS
   if (Platform.isIOS) {
@@ -33,7 +30,7 @@ Future<void> _initializeGoogleMapsIOS() async {
     final result = await platform.invokeMethod('setGoogleMapsApiKey', {
       'apiKey': ConfigManager.googleMapsApiKeyIOS,
     });
-    debugPrint('Google Maps iOS initialized:  $result');
+    debugPrint('Google Maps iOS initialized: $result');
   } catch (e) {
     debugPrint('Failed to initialize Google Maps for iOS: $e');
   }
@@ -61,10 +58,10 @@ class MyApp extends StatelessWidget {
             GlobalCupertinoLocalizations.delegate,
           ],
           theme: ThemeData(
-            primarySwatch: Colors. green,
-            visualDensity: VisualDensity. adaptivePlatformDensity,
+            primarySwatch: Colors.green,
+            visualDensity: VisualDensity.adaptivePlatformDensity,
           ),
-          home: const LoginPage(),
+          home: const SplashScreen(), // Thay đổi từ LoginPage sang SplashScreen
         );
       },
     );
