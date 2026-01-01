@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:localizy/l10n/app_localizations.dart';
 import 'package:localizy/screens/home/verification/address_verification_flow.dart';
+import 'package:localizy/screens/home/parking_payment_page.dart';
+import 'package:localizy/screens/home/payment_check_page.dart';
+import 'package:localizy/screens/home/address_search_page.dart';
 import 'package:localizy/screens/ocr/license_plate_scanner_screen.dart';
 
 class HomePage extends StatelessWidget {
@@ -17,7 +20,7 @@ class HomePage extends StatelessWidget {
         foregroundColor: Colors.white,
       ),
       body: SingleChildScrollView(
-        child: Column(
+        child:  Column(
           children: [
             // Header Section
             Container(
@@ -29,7 +32,7 @@ class HomePage extends StatelessWidget {
                   end: Alignment.bottomRight,
                   colors: [
                     Colors.green.shade400,
-                    Colors.green.shade700,
+                    Colors.green. shade700,
                   ],
                 ),
               ),
@@ -68,8 +71,8 @@ class HomePage extends StatelessWidget {
                   Text(
                     l10n.smartParkingManagement,
                     style: const TextStyle(
-                      fontSize: 16,
-                      color: Colors.white70,
+                      fontSize:  16,
+                      color:  Colors.white70,
                     ),
                   ),
                 ],
@@ -86,7 +89,7 @@ class HomePage extends StatelessWidget {
                   
                   Text(
                     l10n. mainFeatures,
-                    style:  TextStyle(
+                    style: TextStyle(
                       fontSize: 20,
                       fontWeight:  FontWeight.bold,
                       color: Colors.grey[800],
@@ -120,23 +123,29 @@ class HomePage extends StatelessWidget {
                       ),
                       _buildFeatureCard(
                         context: context,
-                        icon: Icons.payment,
+                        icon:  Icons.payment,
                         title: l10n.parkingPayment,
                         color: Colors.green,
                         onTap: () {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(content: Text(l10n.parkingPaymentFunction)),
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const ParkingPaymentPage(),
+                            ),
                           );
                         },
                       ),
                       _buildFeatureCard(
-                        context: context,
+                        context:  context,
                         icon: Icons.receipt_long,
-                        title:  l10n.paymentCheck,
-                        color: Colors. orange,
-                        onTap: () {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(content:  Text(l10n.checkParkingPayment)),
+                        title: l10n.paymentCheck,
+                        color: Colors.orange,
+                        onTap:  () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const PaymentCheckPage(),
+                            ),
                           );
                         },
                       ),
@@ -145,9 +154,12 @@ class HomePage extends StatelessWidget {
                         icon: Icons.search,
                         title: l10n.addressSearch,
                         color: Colors.purple,
-                        onTap:  () {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(content:  Text(l10n.addressSearchFunction)),
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const AddressSearchPage(),
+                            ),
                           );
                         },
                       ),
@@ -170,13 +182,13 @@ class HomePage extends StatelessWidget {
                   // Quick Actions
                   _buildActionCard(
                     context: context,
-                    icon: Icons. map_outlined,
+                    icon: Icons.map_outlined,
                     title: l10n.viewMap,
                     description: l10n.findAndViewParkingLots,
                     color: Colors.teal,
                     onTap: () {
                       ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content:  Text(l10n.openMap)),
+                        SnackBar(content: Text(l10n.openMap)),
                       );
                     },
                   ),
@@ -191,7 +203,7 @@ class HomePage extends StatelessWidget {
                     color: Colors.indigo,
                     onTap: () {
                       ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text(l10n.viewTransactionHistory)),
+                        SnackBar(content:  Text(l10n.viewTransactionHistory)),
                       );
                     },
                   ),
@@ -202,9 +214,9 @@ class HomePage extends StatelessWidget {
                     context: context,
                     icon: Icons. camera_alt_outlined,
                     title: l10n.licensePlateScannerOCR,
-                    description:  l10n.automaticLicensePlateRecognition,
+                    description: l10n.automaticLicensePlateRecognition,
                     color:  Colors.red,
-                    onTap:  () async {
+                    onTap: () async {
                       // Navigate to OCR screen
                       final result = await Navigator.push(
                         context,
@@ -241,7 +253,7 @@ class HomePage extends StatelessWidget {
     return Card(
       elevation: 3,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius. circular(16),
+        borderRadius: BorderRadius.circular(16),
       ),
       child: InkWell(
         onTap: onTap,
@@ -325,15 +337,15 @@ class HomePage extends StatelessWidget {
                       title,
                       style: const TextStyle(
                         fontSize: 16,
-                        fontWeight: FontWeight.bold,
+                        fontWeight:  FontWeight.bold,
                       ),
                     ),
                     const SizedBox(height: 4),
                     Text(
                       description,
-                      style: TextStyle(
+                      style:  TextStyle(
                         fontSize: 13,
-                        color: Colors.grey[600],
+                        color: Colors. grey[600],
                       ),
                     ),
                   ],
