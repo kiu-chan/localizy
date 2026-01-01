@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:localizy/l10n/app_localizations.dart';
-import 'package:intl/intl.dart';
 
 class AppointmentPage extends StatefulWidget {
   final DateTime?  initialDate;
@@ -101,7 +100,6 @@ class _AppointmentPageState extends State<AppointmentPage> {
   }
 
   String _formatDate(DateTime date) {
-    final localizations = AppLocalizations.of(context)!;
     final locale = Localizations.localeOf(context).languageCode;
     
     if (locale == 'vi') {
@@ -119,8 +117,6 @@ class _AppointmentPageState extends State<AppointmentPage> {
 
   @override
   Widget build(BuildContext context) {
-    final localizations = AppLocalizations.of(context)!;
-    
     return Column(
       children: [
         Expanded(

@@ -471,20 +471,6 @@ class _MapPageState extends State<MapPage> {
     );
   }
 
-  String _getTravelModeText(TravelMode mode) {
-    final l10n = AppLocalizations. of(context);
-    switch (mode) {
-      case TravelMode.driving:
-        return l10n?.travelModeDriving ?? 'Driving';
-      case TravelMode.walking:
-        return l10n?. travelModeWalking ??  'Walking';
-      case TravelMode.bicycling:
-        return l10n?.travelModeBicycling ?? 'Bicycling';
-      case TravelMode.transit:
-        return l10n?.travelModeTransit ?? 'Transit';
-    }
-  }
-
   @override
   void dispose() {
     _isMapReady = false;
@@ -500,67 +486,6 @@ class _MapPageState extends State<MapPage> {
     final l10n = AppLocalizations.of(context);
     
     return Scaffold(
-      appBar: AppBar(
-        title: Text(l10n?.map ?? 'Map'),
-        backgroundColor: Colors.green. shade700,
-        foregroundColor: Colors.white,
-        actions: [
-          if (_directionsResult != null && ! _isNavigating)
-            PopupMenuButton<TravelMode>(
-              icon: const Icon(Icons.directions),
-              onSelected: (mode) {
-                if (mounted) {
-                  setState(() {
-                    _selectedTravelMode = mode;
-                  });
-                  _getDirections();
-                }
-              },
-              itemBuilder:  (context) => [
-                PopupMenuItem(
-                  value:  TravelMode.driving,
-                  child: Row(
-                    children: [
-                      Icon(Icons.directions_car, color: Colors.green. shade700),
-                      const SizedBox(width: 8),
-                      Text(_getTravelModeText(TravelMode.driving)),
-                    ],
-                  ),
-                ),
-                PopupMenuItem(
-                  value: TravelMode.walking,
-                  child: Row(
-                    children: [
-                      Icon(Icons.directions_walk, color: Colors.green.shade700),
-                      const SizedBox(width: 8),
-                      Text(_getTravelModeText(TravelMode. walking)),
-                    ],
-                  ),
-                ),
-                PopupMenuItem(
-                  value:  TravelMode.bicycling,
-                  child: Row(
-                    children: [
-                      Icon(Icons.directions_bike, color: Colors.green.shade700),
-                      const SizedBox(width: 8),
-                      Text(_getTravelModeText(TravelMode.bicycling)),
-                    ],
-                  ),
-                ),
-                PopupMenuItem(
-                  value: TravelMode.transit,
-                  child: Row(
-                    children: [
-                      Icon(Icons.directions_transit, color: Colors.green.shade700),
-                      const SizedBox(width: 8),
-                      Text(_getTravelModeText(TravelMode. transit)),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-        ],
-      ),
       body: Stack(
         children: [
           _isLoading

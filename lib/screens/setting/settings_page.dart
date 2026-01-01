@@ -18,11 +18,6 @@ class SettingsPage extends StatelessWidget {
         : 'fr'; // Mặc định là 'fr' nếu không hợp lệ
 
     return Scaffold(
-      appBar:  AppBar(
-        title: Text(l10n.settings),
-        backgroundColor: Colors.green.shade700,
-        foregroundColor:  Colors.white,
-      ),
       body: ListView(
         children: [
           const SizedBox(height: 20),

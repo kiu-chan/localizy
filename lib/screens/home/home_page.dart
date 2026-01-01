@@ -14,11 +14,6 @@ class HomePage extends StatelessWidget {
     final l10n = AppLocalizations.of(context)!;
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text(l10n.home),
-        backgroundColor: Colors.green.shade700,
-        foregroundColor: Colors.white,
-      ),
       body: SingleChildScrollView(
         child:  Column(
           children: [
