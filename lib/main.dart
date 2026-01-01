@@ -1,20 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:localizy/l10n/app_localizations.dart';
 import 'package:localizy/splash_screen.dart';
 import 'package:provider/provider.dart';
-import 'dart:io' show Platform;
 import 'utils/language_manager.dart';
 import 'utils/config_manager.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  
-  // Initialize Google Maps cho iOS
-  if (Platform.isIOS) {
-    await _initializeGoogleMapsIOS();
-  }
+
+  await ConfigManager.initialize();
   
   runApp(
     ChangeNotifierProvider(
@@ -22,18 +17,6 @@ void main() async {
       child: const MyApp(),
     ),
   );
-}
-
-Future<void> _initializeGoogleMapsIOS() async {
-  const platform = MethodChannel('com.cameroon.localizy/config');
-  try {
-    final result = await platform.invokeMethod('setGoogleMapsApiKey', {
-      'apiKey': ConfigManager.googleMapsApiKeyIOS,
-    });
-    debugPrint('Google Maps iOS initialized: $result');
-  } catch (e) {
-    debugPrint('Failed to initialize Google Maps for iOS: $e');
-  }
 }
 
 class MyApp extends StatelessWidget {
@@ -53,15 +36,15 @@ class MyApp extends StatelessWidget {
           ],
           localizationsDelegates: const [
             AppLocalizations.delegate,
-            GlobalMaterialLocalizations.delegate,
+            GlobalMaterialLocalizations. delegate,
             GlobalWidgetsLocalizations.delegate,
             GlobalCupertinoLocalizations.delegate,
           ],
-          theme: ThemeData(
+          theme:  ThemeData(
             primarySwatch: Colors.green,
             visualDensity: VisualDensity.adaptivePlatformDensity,
           ),
-          home: const SplashScreen(), // Thay đổi từ LoginPage sang SplashScreen
+          home: const SplashScreen(),
         );
       },
     );

@@ -5,30 +5,36 @@ import GoogleMaps
 @main
 @objc class AppDelegate: FlutterAppDelegate {
   override func application(
-    _ application: UIApplication,
+    _ application:  UIApplication,
     didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
   ) -> Bool {
     
-    // Tạo Method Channel để nhận API key từ Flutter
-    let controller:  FlutterViewController = window?.rootViewController as! FlutterViewController
-    let configChannel = FlutterMethodChannel(name: "com.cameroon.localizy/config",
-                                             binaryMessenger: controller.binaryMessenger)
+    // Tắt verbose logging của Google Maps
+    GMSServices.setMetalRendererEnabled(true)
     
-    configChannel.setMethodCallHandler({ [weak self] (call: FlutterMethodCall, result: @escaping FlutterResult) -> Void in
-      if call.method == "setGoogleMapsApiKey" {
-        if let args = call.arguments as? Dictionary<String, Any>,
-           let apiKey = args["apiKey"] as? String {
-          GMSServices.provideAPIKey(apiKey)
-          result(true)
-        } else {
-          result(FlutterError(code: "UNAVAILABLE", message: "API Key not available", details: nil))
-        }
-      } else {
-        result(FlutterMethodNotImplemented)
-      }
-    })
+    // Đọc API key từ Secrets.plist hoặc Info.plist
+    var apiKey: String? = nil
+    
+    if let path = Bundle.main.path(forResource: "Secrets", ofType: "plist"),
+       let secrets = NSDictionary(contentsOfFile: path),
+       let key = secrets["GOOGLE_MAPS_API_KEY"] as? String {
+        apiKey = key
+    }
+    
+    if apiKey == nil,
+       let key = Bundle.main.object(forInfoDictionaryKey:  "GOOGLE_MAPS_API_KEY") as? String {
+        apiKey = key
+    }
+    
+    // Khởi tạo Google Maps
+    if let apiKey = apiKey, !apiKey.isEmpty {
+        GMSServices.provideAPIKey(apiKey)
+        #if DEBUG
+        print("✅ Google Maps initialized")
+        #endif
+    }
     
     GeneratedPluginRegistrant.register(with: self)
-    return super.application(application, didFinishLaunchingWithOptions:  launchOptions)
+    return super.application(application, didFinishLaunchingWithOptions: launchOptions)
   }
 }

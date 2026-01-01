@@ -47,4 +47,6 @@ app.*.map.json
 # Environment variables
 .env
 
+# Secrets file
+ios/Runner/Secrets.plist
 secrets.properties
