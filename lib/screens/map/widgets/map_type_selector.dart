@@ -212,7 +212,7 @@ class MapTypeSelector extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Positioned(
-      top: 100,
+      top: 110,
       right: 16,
       child: Material(
         elevation: 4,

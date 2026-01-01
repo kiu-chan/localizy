@@ -7,7 +7,7 @@ class DirectionsService {
   static final String _apiKey = dotenv.env['GOOGLE_MAPS_API_KEY'] ?? '';
 
   /// Lấy tuyến đường từ điểm xuất phát đến điểm đến
-  static Future<DirectionsResult? > getDirections({
+  static Future<DirectionsResult?> getDirections({
     required LatLng origin,
     required LatLng destination,
     TravelMode mode = TravelMode.driving,
@@ -15,13 +15,13 @@ class DirectionsService {
   }) async {
     try {
       // Kiểm tra API Key
-      if (_apiKey.isEmpty) {
+      if (_apiKey. isEmpty) {
         print('❌ ERROR:  GOOGLE_MAPS_API_KEY is empty! ');
         print('Please check your .env file');
         return null;
       }
 
-      print('🔑 Using API Key: ${_apiKey. substring(0, 10)}...');
+      print('🔑 Using API Key:  ${_apiKey. substring(0, 10)}...');
       print('📍 Origin: ${origin.latitude}, ${origin.longitude}');
       print('📍 Destination: ${destination.latitude}, ${destination.longitude}');
       print('🚗 Travel Mode: ${_getTravelModeString(mode)}');
@@ -32,11 +32,13 @@ class DirectionsService {
         'maps.googleapis.com',
         '/maps/api/directions/json',
         {
-          'origin': '${origin.latitude},${origin.longitude}',
+          'origin': '${origin. latitude},${origin.longitude}',
           'destination': '${destination.latitude},${destination.longitude}',
           'mode': _getTravelModeString(mode),
           'key': _apiKey,
           'language': language, // Sử dụng language parameter
+          'alternatives': 'false', // Không lấy đường thay thế
+          'units': 'metric', // Sử dụng đơn vị mét
         },
       );
 
@@ -45,25 +47,25 @@ class DirectionsService {
       final response = await http.get(uri);
 
       print('📡 Response Status Code: ${response.statusCode}');
-      print('📄 Response Body: ${response.body}');
+      print('📄 Response Body: ${response. body}');
 
-      if (response. statusCode == 200) {
+      if (response.statusCode == 200) {
         final data = json.decode(response.body);
         
-        print('✅ Status: ${data['status']}');
+        print('✅ Status:  ${data['status']}');
         
         // Kiểm tra các trạng thái lỗi từ API
         if (data['status'] == 'REQUEST_DENIED') {
           print('❌ REQUEST_DENIED: ${data['error_message']}');
           print('Possible reasons:');
           print('1. API Key is invalid');
-          print('2.  Directions API is not enabled');
+          print('2. Directions API is not enabled');
           print('3. Billing is not enabled');
           return null;
         }
         
         if (data['status'] == 'ZERO_RESULTS') {
-          print('❌ ZERO_RESULTS:  No route found between these points');
+          print('❌ ZERO_RESULTS: No route found between these points');
           return null;
         }
         
@@ -73,7 +75,7 @@ class DirectionsService {
         }
         
         if (data['status'] == 'INVALID_REQUEST') {
-          print('❌ INVALID_REQUEST:  The request is invalid');
+          print('❌ INVALID_REQUEST: The request is invalid');
           print('Error message: ${data['error_message']}');
           return null;
         }
@@ -86,17 +88,17 @@ class DirectionsService {
         if (data['status'] == 'OK' && data['routes'].isNotEmpty) {
           print('✅ Route found successfully! ');
           print('📊 Number of routes: ${data['routes']. length}');
-          return DirectionsResult. fromJson(data);
+          return DirectionsResult.fromJson(data);
         }
       } else {
         print('❌ HTTP Error: ${response.statusCode}');
-        print('Response:  ${response.body}');
+        print('Response: ${response.body}');
       }
       
       return null;
     } catch (e, stackTrace) {
       print('❌ Exception in getDirections: $e');
-      print('Stack trace: $stackTrace');
+      print('Stack trace:  $stackTrace');
       return null;
     }
   }
@@ -104,11 +106,11 @@ class DirectionsService {
   /// Chuyển đổi TravelMode thành string cho API
   static String _getTravelModeString(TravelMode mode) {
     switch (mode) {
-      case TravelMode.driving:
+      case TravelMode. driving:
         return 'driving';
-      case TravelMode.walking:
+      case TravelMode. walking:
         return 'walking';
-      case TravelMode.bicycling:
+      case TravelMode. bicycling:
         return 'bicycling';
       case TravelMode.transit:
         return 'transit';
@@ -182,10 +184,24 @@ class DirectionsResult {
     final route = json['routes'][0];
     final leg = route['legs'][0];
     
-    // Giải mã polyline
-    final points = DirectionsService.decodePolyline(
-      route['overview_polyline']['points'],
-    );
+    // CÁCH 1: Sử dụng polyline chi tiết từ từng step (CHÍNH XÁC NHẤT)
+    List<LatLng> allPoints = [];
+    
+    for (var step in leg['steps']) {
+      if (step['polyline'] != null && step['polyline']['points'] != null) {
+        final stepPoints = DirectionsService.decodePolyline(
+          step['polyline']['points'],
+        );
+        allPoints.addAll(stepPoints);
+      }
+    }
+    
+    // CÁCH 2: Fallback về overview_polyline nếu không có step polyline
+    if (allPoints.isEmpty) {
+      allPoints = DirectionsService.decodePolyline(
+        route['overview_polyline']['points'],
+      );
+    }
 
     // Lấy các bước chỉ đường
     final List<DirectionStep> steps = (leg['steps'] as List)
@@ -193,7 +209,7 @@ class DirectionsResult {
         .toList();
 
     return DirectionsResult(
-      polylinePoints: points,
+      polylinePoints: allPoints,
       distance: leg['distance']['text'],
       duration: leg['duration']['text'],
       startAddress: leg['start_address'],
@@ -210,16 +226,26 @@ class DirectionStep {
   final String duration;
   final LatLng startLocation;
   final LatLng endLocation;
+  final List<LatLng> polylinePoints; // Thêm polyline cho từng step
 
   DirectionStep({
     required this.instructions,
     required this.distance,
     required this.duration,
-    required this.startLocation,
-    required this.endLocation,
+    required this. startLocation,
+    required this. endLocation,
+    required this. polylinePoints,
   });
 
   factory DirectionStep.fromJson(Map<String, dynamic> json) {
+    // Giải mã polyline cho step này
+    List<LatLng> stepPoints = [];
+    if (json['polyline'] != null && json['polyline']['points'] != null) {
+      stepPoints = DirectionsService.decodePolyline(
+        json['polyline']['points'],
+      );
+    }
+
     return DirectionStep(
       instructions:  json['html_instructions']
           . toString()
@@ -234,6 +260,7 @@ class DirectionStep {
         json['end_location']['lat'],
         json['end_location']['lng'],
       ),
+      polylinePoints: stepPoints,
     );
   }
 }

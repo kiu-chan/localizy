@@ -11,7 +11,12 @@ import 'package:localizy/screens/map/widgets/address_search_bar.dart';
 import 'package:localizy/configs/map_config.dart';
 
 class MapPage extends StatefulWidget {
-  const MapPage({super.key});
+  final Function(bool)? onNavigationStateChanged; // Thêm callback
+  
+  const MapPage({
+    super.key,
+    this. onNavigationStateChanged,
+  });
 
   @override
   State<MapPage> createState() => _MapPageState();
@@ -27,7 +32,7 @@ class _MapPageState extends State<MapPage> with AutomaticKeepAliveClientMixin {
   bool _isMapReady = false;
   
   DirectionsResult? _directionsResult;
-  LatLng?  _destinationPosition;
+  LatLng? _destinationPosition;
   bool _isSelectingDestination = false;
   TravelMode _selectedTravelMode = TravelMode.driving;
   
@@ -62,13 +67,13 @@ class _MapPageState extends State<MapPage> with AutomaticKeepAliveClientMixin {
   // Helper method để lấy language code từ locale hiện tại
   String _getLanguageCode() {
     final locale = Localizations.localeOf(context);
-    return locale.languageCode;
+    return locale. languageCode;
   }
 
   Future<void> _getCurrentLocation() async {
     if (! mounted) return;
     
-    final l10n = AppLocalizations. of(context);
+    final l10n = AppLocalizations.of(context);
     
     try {
       LocationPermission permission = await Geolocator.checkPermission();
@@ -78,7 +83,7 @@ class _MapPageState extends State<MapPage> with AutomaticKeepAliveClientMixin {
           if (mounted) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
-                content: Text(l10n?.locationPermissionDenied ?? 'Location permission denied'),
+                content:  Text(l10n?.locationPermissionDenied ?? 'Location permission denied'),
                 backgroundColor: Colors.red,
               ),
             );
@@ -123,7 +128,7 @@ class _MapPageState extends State<MapPage> with AutomaticKeepAliveClientMixin {
         _hasLoadedOnce = true;
       });
 
-      _animateToPosition(_currentPosition, zoom: MapConfig.defaultZoom);
+      _animateToPosition(_currentPosition, zoom:  MapConfig.defaultZoom);
     } catch (e) {
       if (mounted) {
         setState(() {
@@ -133,7 +138,7 @@ class _MapPageState extends State<MapPage> with AutomaticKeepAliveClientMixin {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('${l10n?.errorGettingLocation ??  'Error'}: $e'),
-            backgroundColor: Colors. red,
+            backgroundColor:  Colors.red,
           ),
         );
       }
@@ -160,25 +165,28 @@ class _MapPageState extends State<MapPage> with AutomaticKeepAliveClientMixin {
 
   // Bắt đầu navigation
   void _startNavigation() {
-    if (! mounted || _directionsResult == null) return;
+    if (!mounted || _directionsResult == null) return;
 
-    final l10n = AppLocalizations. of(context);
+    final l10n = AppLocalizations.of(context);
 
     setState(() {
       _isNavigating = true;
       _currentStepIndex = 0;
     });
 
+    // Thông báo cho MainPage ẩn bottom navigation
+    widget.onNavigationStateChanged?.call(true);
+
     // Theo dõi vị trí liên tục
     _positionStreamSubscription = Geolocator.getPositionStream(
       locationSettings: LocationSettings(
-        accuracy: LocationAccuracy.high,
+        accuracy:  LocationAccuracy.high,
         distanceFilter: MapConfig.distanceFilter. toInt(),
       ),
     ).listen((Position position) {
       if (!mounted || ! _isNavigating) return;
 
-      final currentPos = LatLng(position. latitude, position.longitude);
+      final currentPos = LatLng(position.latitude, position. longitude);
       
       setState(() {
         _currentPosition = currentPos;
@@ -191,7 +199,7 @@ class _MapPageState extends State<MapPage> with AutomaticKeepAliveClientMixin {
       _updateNavigationStep(currentPos);
     });
 
-    ScaffoldMessenger.of(context).showSnackBar(
+    ScaffoldMessenger. of(context).showSnackBar(
       SnackBar(
         content: Text(l10n?.navigationStarted ?? 'Navigation started'),
         backgroundColor: Colors.green,
@@ -204,7 +212,7 @@ class _MapPageState extends State<MapPage> with AutomaticKeepAliveClientMixin {
   void _stopNavigation() {
     if (!mounted) return;
 
-    final l10n = AppLocalizations. of(context);
+    final l10n = AppLocalizations.of(context);
 
     setState(() {
       _isNavigating = false;
@@ -212,7 +220,10 @@ class _MapPageState extends State<MapPage> with AutomaticKeepAliveClientMixin {
       _distanceToNextStep = null;
     });
 
-    _positionStreamSubscription?.cancel();
+    // Thông báo cho MainPage hiện lại bottom navigation
+    widget.onNavigationStateChanged?.call(false);
+
+    _positionStreamSubscription?. cancel();
     _positionStreamSubscription = null;
     _navigationTimer?.cancel();
     _navigationTimer = null;
@@ -220,7 +231,7 @@ class _MapPageState extends State<MapPage> with AutomaticKeepAliveClientMixin {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(l10n?.navigationStopped ?? 'Navigation stopped'),
-        duration: MapConfig.snackBarDuration,
+        duration: MapConfig. snackBarDuration,
       ),
     );
   }
@@ -232,8 +243,8 @@ class _MapPageState extends State<MapPage> with AutomaticKeepAliveClientMixin {
     }
 
     final l10n = AppLocalizations.of(context);
-    final currentStep = _directionsResult!. steps[_currentStepIndex];
-    final distanceToEnd = _calculateDistance(currentPos, currentStep. endLocation);
+    final currentStep = _directionsResult!.steps[_currentStepIndex];
+    final distanceToEnd = _calculateDistance(currentPos, currentStep.endLocation);
 
     setState(() {
       _distanceToNextStep = distanceToEnd;
@@ -241,18 +252,18 @@ class _MapPageState extends State<MapPage> with AutomaticKeepAliveClientMixin {
 
     // Nếu đã gần đến cuối bước hiện tại
     if (distanceToEnd < MapConfig.stepCompletionDistance) {
-      if (_currentStepIndex < _directionsResult!.steps. length - 1) {
+      if (_currentStepIndex < _directionsResult!.steps.length - 1) {
         setState(() {
           _currentStepIndex++;
         });
 
         // Thông báo bước tiếp theo
-        final nextStep = _directionsResult! .steps[_currentStepIndex];
+        final nextStep = _directionsResult!.steps[_currentStepIndex];
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(nextStep.instructions),
             backgroundColor: Colors.blue,
-            duration: MapConfig.navigationSnackBarDuration,
+            duration: MapConfig. navigationSnackBarDuration,
           ),
         );
       } else {
@@ -260,7 +271,7 @@ class _MapPageState extends State<MapPage> with AutomaticKeepAliveClientMixin {
         _stopNavigation();
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(l10n?.arrivedAtDestination ?? '🎉 You have arrived at your destination! '),
+            content: Text(l10n?. arrivedAtDestination ?? '🎉 You have arrived at your destination! '),
             backgroundColor: Colors.green,
             duration: MapConfig. navigationSnackBarDuration,
           ),
@@ -277,9 +288,9 @@ class _MapPageState extends State<MapPage> with AutomaticKeepAliveClientMixin {
         CameraUpdate.newCameraPosition(
           CameraPosition(
             target: position,
-            zoom: zoom ?? MapConfig. defaultZoom,
+            zoom: zoom ?? MapConfig.defaultZoom,
             bearing: _isNavigating ? MapConfig.navigationBearing : 0,
-            tilt: _isNavigating ?  MapConfig.navigationTilt : MapConfig.normalTilt,
+            tilt: _isNavigating ? MapConfig.navigationTilt : MapConfig.normalTilt,
           ),
         ),
       );
@@ -313,7 +324,7 @@ class _MapPageState extends State<MapPage> with AutomaticKeepAliveClientMixin {
   }
 
   void _onMapCreated(GoogleMapController controller) {
-    if (!mounted) return;
+    if (! mounted) return;
     
     _mapController = controller;
     setState(() {
@@ -336,9 +347,9 @@ class _MapPageState extends State<MapPage> with AutomaticKeepAliveClientMixin {
       _markers.add(
         Marker(
           markerId: const MarkerId('destination'),
-          position:  position,
+          position: position,
           icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueRed),
-          infoWindow: InfoWindow(title: l10n?.destination ??  'Destination'),
+          infoWindow: InfoWindow(title: l10n?.destination ?? 'Destination'),
         ),
       );
       _isSelectingDestination = false;
@@ -350,7 +361,7 @@ class _MapPageState extends State<MapPage> with AutomaticKeepAliveClientMixin {
   Future<void> _getDirections() async {
     if (!mounted || _destinationPosition == null) return;
 
-    final l10n = AppLocalizations.of(context);
+    final l10n = AppLocalizations. of(context);
     final languageCode = _getLanguageCode();
 
     setState(() {
@@ -365,9 +376,9 @@ class _MapPageState extends State<MapPage> with AutomaticKeepAliveClientMixin {
         language: languageCode,
       );
 
-      if (! mounted) return;
+      if (!mounted) return;
 
-      if (result != null && result.polylinePoints.isNotEmpty) {
+      if (result != null && result.polylinePoints. isNotEmpty) {
         setState(() {
           _directionsResult = result;
           _polylines.clear();
@@ -396,7 +407,7 @@ class _MapPageState extends State<MapPage> with AutomaticKeepAliveClientMixin {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text(l10n?. noRouteFound ?? 'Could not find a route'),
+              content: Text(l10n?.noRouteFound ?? 'Could not find a route'),
               backgroundColor: Colors. red,
             ),
           );
@@ -419,7 +430,7 @@ class _MapPageState extends State<MapPage> with AutomaticKeepAliveClientMixin {
   }
 
   void _fitBounds() {
-    if (!mounted || ! _isMapReady || _directionsResult == null || _mapController == null) {
+    if (! mounted || ! _isMapReady || _directionsResult == null || _mapController == null) {
       return;
     }
 
@@ -428,9 +439,9 @@ class _MapPageState extends State<MapPage> with AutomaticKeepAliveClientMixin {
       
       if (points.isEmpty) return;
       
-      double minLat = points.first.latitude;
+      double minLat = points.first. latitude;
       double maxLat = points.first.latitude;
-      double minLng = points.first.longitude;
+      double minLng = points. first.longitude;
       double maxLng = points.first.longitude;
 
       for (final point in points) {
@@ -468,6 +479,9 @@ class _MapPageState extends State<MapPage> with AutomaticKeepAliveClientMixin {
       _currentStepIndex = 0;
       _distanceToNextStep = null;
     });
+
+    // Đảm bảo bottom nav được hiện lại
+    widget.onNavigationStateChanged?.call(false);
   }
 
   void _startSelectingDestination() {
@@ -507,7 +521,7 @@ class _MapPageState extends State<MapPage> with AutomaticKeepAliveClientMixin {
           markerId: const MarkerId('searched'),
           position: position,
           icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueBlue),
-          infoWindow:  InfoWindow(
+          infoWindow: InfoWindow(
             title: address.code,
             snippet: address.address,
           ),
@@ -530,7 +544,11 @@ class _MapPageState extends State<MapPage> with AutomaticKeepAliveClientMixin {
             ),
             const SizedBox(width: 8),
             Expanded(
-              child: Text('${address.code} - ${address.address}'),
+              child: Text(
+                '${address.code} - ${address.address}',
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+              ),
             ),
           ],
         ),
@@ -547,12 +565,12 @@ class _MapPageState extends State<MapPage> with AutomaticKeepAliveClientMixin {
             setState(() {
               _destinationPosition = position;
               _markers.removeWhere((marker) => marker.markerId.value == 'destination');
-              _markers. add(
+              _markers.add(
                 Marker(
                   markerId: const MarkerId('destination'),
                   position: position,
-                  icon:  BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueRed),
-                  infoWindow: InfoWindow(title: address.address),
+                  icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueRed),
+                  infoWindow:  InfoWindow(title: address.address),
                 ),
               );
             });
@@ -568,6 +586,8 @@ class _MapPageState extends State<MapPage> with AutomaticKeepAliveClientMixin {
     _isMapReady = false;
     _positionStreamSubscription?.cancel();
     _navigationTimer?.cancel();
+    // Đảm bảo hiện lại bottom nav khi dispose
+    widget.onNavigationStateChanged?.call(false);
     // Không dispose mapController để giữ state
     // _mapController?.dispose();
     _mapController = null;
@@ -613,7 +633,7 @@ class _MapPageState extends State<MapPage> with AutomaticKeepAliveClientMixin {
                   mapToolbarEnabled: MapConfig.showMapToolbar,
                   minMaxZoomPreference: MinMaxZoomPreference(
                     MapConfig.minZoom,
-                    MapConfig.maxZoom,
+                    MapConfig. maxZoom,
                   ),
                 ),
           
@@ -623,8 +643,8 @@ class _MapPageState extends State<MapPage> with AutomaticKeepAliveClientMixin {
               onAddressSelected:  _onAddressSelected,
             ),
           
-          // Nút chọn loại bản đồ
-          if (! _isLoading)
+          // Nút chọn loại bản đồ - ẩn khi đang điều hướng
+          if (! _isLoading && !_isNavigating)
             MapTypeSelector(
               currentMapType: _currentMapType,
               onMapTypeChanged: _onMapTypeChanged,
@@ -633,7 +653,7 @@ class _MapPageState extends State<MapPage> with AutomaticKeepAliveClientMixin {
           // Panel hiển thị thông tin chỉ đường
           if (_directionsResult != null)
             DirectionsPanel(
-              directionsResult: _directionsResult,
+              directionsResult:  _directionsResult,
               onClose: _clearRoute,
               currentStepIndex: _currentStepIndex,
               distanceToNextStep: _distanceToNextStep,
@@ -667,20 +687,20 @@ class _MapPageState extends State<MapPage> with AutomaticKeepAliveClientMixin {
                   heroTag: 'zoom_in',
                   onPressed:  () => _animateZoom(true),
                   backgroundColor: Colors. white,
-                  child: Icon(Icons.add, color: Colors.green. shade700),
+                  child: Icon(Icons.add, color: Colors.green.shade700),
                 ),
                 const SizedBox(height: 10),
                 FloatingActionButton(
                   heroTag: 'zoom_out',
                   onPressed: () => _animateZoom(false),
-                  backgroundColor: Colors.white,
+                  backgroundColor:  Colors.white,
                   child: Icon(Icons.remove, color: Colors.green.shade700),
                 ),
                 const SizedBox(height: 10),
                 FloatingActionButton(
                   heroTag: 'my_location',
                   onPressed: _getCurrentLocation,
-                  backgroundColor: Colors.green.shade700,
+                  backgroundColor: Colors. green.shade700,
                   child: const Icon(Icons.my_location, color: Colors.white),
                 ),
                 if (_directionsResult != null) const SizedBox(height: 200),

@@ -13,13 +13,16 @@ class MainPage extends StatefulWidget {
 
 class _MainPageState extends State<MainPage> {
   int _currentIndex = 0;
+  bool _hideBottomNav = false; // Thêm biến để kiểm soát việc ẩn/hiện bottom nav
 
-  // Tạo danh sách pages một lần duy nhất, không tạo lại mỗi lần build
-  final List<Widget> _pages = const [
-    HomePage(),
-    MapPage(),
-    SettingsPage(),
-  ];
+  // Callback để MapPage có thể thông báo khi cần ẩn/hiện bottom nav
+  void _setBottomNavVisibility(bool hide) {
+    if (_hideBottomNav != hide) {
+      setState(() {
+        _hideBottomNav = hide;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -30,32 +33,38 @@ class _MainPageState extends State<MainPage> {
       // IndexedStack giữ state của tất cả các pages
       body: IndexedStack(
         index: _currentIndex,
-        children: _pages,
-      ),
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: _currentIndex,
-        onTap: (index) {
-          setState(() {
-            _currentIndex = index;
-          });
-        },
-        selectedItemColor: Colors.green. shade700,
-        unselectedItemColor: Colors.grey,
-        items: [
-          BottomNavigationBarItem(
-            icon: const Icon(Icons.home),
-            label: l10n?.home ??  'Home',
-          ),
-          BottomNavigationBarItem(
-            icon: const Icon(Icons.map),
-            label: l10n?.map ?? 'Map',
-          ),
-          BottomNavigationBarItem(
-            icon: const Icon(Icons. settings),
-            label: l10n?.settings ?? 'Settings',
-          ),
+        children: [
+          const HomePage(),
+          MapPage(onNavigationStateChanged: _setBottomNavVisibility), // Truyền callback
+          const SettingsPage(),
         ],
       ),
+      bottomNavigationBar: _hideBottomNav 
+          ? null // Ẩn hoàn toàn bottom navigation khi đang điều hướng
+          : BottomNavigationBar(
+              currentIndex: _currentIndex,
+              onTap: (index) {
+                setState(() {
+                  _currentIndex = index;
+                });
+              },
+              selectedItemColor: Colors.green. shade700,
+              unselectedItemColor: Colors.grey,
+              items: [
+                BottomNavigationBarItem(
+                  icon: const Icon(Icons.home),
+                  label: l10n?.home ?? 'Home',
+                ),
+                BottomNavigationBarItem(
+                  icon: const Icon(Icons.map),
+                  label: l10n?.map ?? 'Map',
+                ),
+                BottomNavigationBarItem(
+                  icon: const Icon(Icons.settings),
+                  label: l10n?.settings ?? 'Settings',
+                ),
+              ],
+            ),
     );
   }
 }

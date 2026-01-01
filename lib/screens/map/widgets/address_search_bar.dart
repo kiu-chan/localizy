@@ -134,7 +134,7 @@ class _AddressSearchBarState extends State<AddressSearchBar> {
   @override
   Widget build(BuildContext context) {
     return Positioned(
-      top: 30,
+      top: 50,
       left: 16,
       right: 16,
       child: Column(
