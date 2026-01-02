@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'package:localizy/l10n/app_localizations.dart';
+import 'package:localizy/screens/home/parking/vehicle_info_section.dart';
+import 'package:localizy/screens/home/parking/duration_selection_section.dart';
+import 'package:localizy/screens/home/parking/payment_method_section.dart';
 
 class ParkingPaymentPage extends StatefulWidget {
   const ParkingPaymentPage({super.key});
@@ -14,10 +17,8 @@ class _ParkingPaymentPageState extends State<ParkingPaymentPage> {
   final _formKey = GlobalKey<FormState>();
   final _licensePlateController = TextEditingController();
   final _parkingZoneController = TextEditingController();
-  final _licensePlateFocusNode = FocusNode();
-  final _parkingZoneFocusNode = FocusNode();
   
-  String?  _selectedPaymentMethod;
+  String? _selectedPaymentMethod;
   String? _selectedDuration;
   DateTime? _startTime;
   int _parkingFee = 0;
@@ -34,27 +35,19 @@ class _ParkingPaymentPageState extends State<ParkingPaymentPage> {
   void initState() {
     super.initState();
     _startTime = DateTime.now();
-    
-    // Add listeners for focus changes
-    _licensePlateFocusNode.addListener(() => setState(() {}));
-    _parkingZoneFocusNode. addListener(() => setState(() {}));
-    _licensePlateController.addListener(() => setState(() {}));
-    _parkingZoneController.addListener(() => setState(() {}));
   }
 
   @override
   void dispose() {
     _licensePlateController.dispose();
     _parkingZoneController.dispose();
-    _licensePlateFocusNode.dispose();
-    _parkingZoneFocusNode.dispose();
     super.dispose();
   }
 
   void _selectDuration(String duration) {
     setState(() {
       _selectedDuration = duration;
-      _parkingFee = _durationPrices[duration]!['price'] as int;
+      _parkingFee = _durationPrices[duration]! ['price'] as int;
     });
   }
 
@@ -128,7 +121,7 @@ class _ParkingPaymentPageState extends State<ParkingPaymentPage> {
     );
 
     // Simulate payment processing
-    await Future.delayed(const Duration(seconds: 2));
+    await Future. delayed(const Duration(seconds: 2));
 
     if (mounted) {
       Navigator.pop(context); // Close loading dialog
@@ -154,8 +147,8 @@ class _ParkingPaymentPageState extends State<ParkingPaymentPage> {
   }
 
   void _showSuccessDialog() {
-    final l10n = AppLocalizations. of(context)!;
-    final ticketCode = 'PKT${DateTime.now().millisecondsSinceEpoch.toString().substring(5)}';
+    final l10n = AppLocalizations.of(context)!;
+    final ticketCode = 'PKT${DateTime.now().millisecondsSinceEpoch. toString().substring(5)}';
     final endTime = _startTime!.add(_getDurationFromKey(_selectedDuration!));
     
     showDialog(
@@ -179,7 +172,7 @@ class _ParkingPaymentPageState extends State<ParkingPaymentPage> {
                   ),
                   child: Icon(
                     Icons.check_circle,
-                    color: Colors.green. shade600,
+                    color: Colors. green.shade600,
                     size: 56,
                   ),
                 ),
@@ -212,7 +205,7 @@ class _ParkingPaymentPageState extends State<ParkingPaymentPage> {
                   padding: const EdgeInsets.all(20),
                   decoration: BoxDecoration(
                     gradient: LinearGradient(
-                      colors: [Colors.green.shade400, Colors.green.shade700],
+                      colors: [Colors.green. shade400, Colors.green.shade700],
                     ),
                     borderRadius: BorderRadius.circular(16),
                   ),
@@ -264,7 +257,7 @@ class _ParkingPaymentPageState extends State<ParkingPaymentPage> {
                           style: TextStyle(color: Colors.white),
                         ),
                         style: OutlinedButton.styleFrom(
-                          side: const BorderSide(color: Colors. white, width: 2),
+                          side: const BorderSide(color:  Colors.white, width: 2),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(8),
                           ),
@@ -289,7 +282,7 @@ class _ParkingPaymentPageState extends State<ParkingPaymentPage> {
                       _buildDetailRow(
                         Icons.directions_car,
                         'License Plate',
-                        _licensePlateController. text. toUpperCase(),
+                        _licensePlateController.text. toUpperCase(),
                       ),
                       const Divider(height: 20),
                       _buildDetailRow(
@@ -301,7 +294,7 @@ class _ParkingPaymentPageState extends State<ParkingPaymentPage> {
                       _buildDetailRow(
                         Icons.access_time,
                         'Duration',
-                        _durationPrices[_selectedDuration!]!['label'],
+                        _durationPrices[_selectedDuration! ]!['label'],
                       ),
                       const Divider(height: 20),
                       _buildDetailRow(
@@ -340,7 +333,7 @@ class _ParkingPaymentPageState extends State<ParkingPaymentPage> {
                   children: [
                     Expanded(
                       child: OutlinedButton(
-                        onPressed: () {
+                        onPressed:  () {
                           Navigator.pop(context); // Close dialog
                           Navigator.pop(context); // Back to home
                         },
@@ -363,7 +356,7 @@ class _ParkingPaymentPageState extends State<ParkingPaymentPage> {
                     const SizedBox(width: 12),
                     Expanded(
                       child: ElevatedButton(
-                        onPressed: () {
+                        onPressed:  () {
                           Navigator.pop(context);
                           Navigator.pop(context);
                           // TODO: Navigate to ticket details
@@ -371,7 +364,7 @@ class _ParkingPaymentPageState extends State<ParkingPaymentPage> {
                         style: ElevatedButton.styleFrom(
                           padding: const EdgeInsets.symmetric(vertical: 14),
                           backgroundColor: Colors.green.shade700,
-                          foregroundColor:  Colors.white,
+                          foregroundColor: Colors.white,
                           elevation: 0,
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(12),
@@ -404,12 +397,12 @@ class _ParkingPaymentPageState extends State<ParkingPaymentPage> {
           size: 20,
           color: isHighlight ? Colors.green.shade700 : Colors.grey.shade600,
         ),
-        const SizedBox(width: 12),
+        const SizedBox(width:  12),
         Expanded(
           child: Text(
             label,
             style: TextStyle(
-              fontSize:  14,
+              fontSize: 14,
               color: Colors.grey.shade600,
             ),
           ),
@@ -418,7 +411,7 @@ class _ParkingPaymentPageState extends State<ParkingPaymentPage> {
           value,
           style: TextStyle(
             fontSize:  14,
-            fontWeight: isHighlight ? FontWeight.bold : FontWeight.w600,
+            fontWeight: isHighlight ? FontWeight.bold :  FontWeight.w600,
             color: isHighlight ? Colors. green.shade700 : Colors. black87,
           ),
         ),
@@ -489,11 +482,11 @@ class _ParkingPaymentPageState extends State<ParkingPaymentPage> {
                       padding: const EdgeInsets.all(20),
                       decoration:  BoxDecoration(
                         gradient: LinearGradient(
-                          colors: [Colors.green.shade400, Colors.green.shade700],
-                          begin: Alignment. topLeft,
-                          end:  Alignment.bottomRight,
+                          colors: [Colors.green. shade400, Colors.green.shade700],
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
                         ),
-                        borderRadius:  BorderRadius.circular(16),
+                        borderRadius: BorderRadius.circular(16),
                         boxShadow: [
                           BoxShadow(
                             color: Colors.green.shade200,
@@ -512,7 +505,7 @@ class _ParkingPaymentPageState extends State<ParkingPaymentPage> {
                             ),
                             child: const Icon(
                               Icons.local_parking,
-                              color:  Colors.white,
+                              color: Colors.white,
                               size: 32,
                             ),
                           ),
@@ -547,201 +540,26 @@ class _ParkingPaymentPageState extends State<ParkingPaymentPage> {
                     const SizedBox(height: 24),
                     
                     // Vehicle Information Section
-                    _buildSectionTitle('Vehicle Information', Icons.directions_car),
-                    const SizedBox(height: 12),
-                    
-                    Container(
-                      padding: const EdgeInsets.all(16),
-                      decoration: BoxDecoration(
-                        color:  Colors.white,
-                        borderRadius: BorderRadius.circular(16),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withOpacity(0.05),
-                            blurRadius:  10,
-                            offset: const Offset(0, 2),
-                          ),
-                        ],
-                      ),
-                      child: Column(
-                        children: [
-                          TextFormField(
-                            controller:  _licensePlateController,
-                            focusNode: _licensePlateFocusNode,
-                            decoration: InputDecoration(
-                              labelText: 'License Plate',
-                              labelStyle: TextStyle(
-                                color: (_licensePlateFocusNode.hasFocus || _licensePlateController. text.isNotEmpty)
-                                    ? Colors.green.shade700
-                                    :  Colors.grey,
-                              ),
-                              hintText: 'e.g.:  30A-12345',
-                              prefixIcon: Icon(
-                                Icons.directions_car,
-                                color:  _licensePlateFocusNode. hasFocus
-                                    ? Colors.green. shade700
-                                    : Colors.grey,
-                              ),
-                              border: OutlineInputBorder(
-                                borderRadius:  BorderRadius.circular(12),
-                                borderSide: BorderSide(color: Colors.grey.shade300),
-                              ),
-                              enabledBorder: OutlineInputBorder(
-                                borderRadius:  BorderRadius.circular(12),
-                                borderSide: BorderSide(color: Colors.grey. shade300),
-                              ),
-                              focusedBorder:  OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(12),
-                                borderSide: BorderSide(color:  Colors.green.shade700, width: 2),
-                              ),
-                              filled: true,
-                              fillColor: Colors.grey.shade50,
-                            ),
-                            textCapitalization: TextCapitalization. characters,
-                            validator: (value) {
-                              if (value == null || value. isEmpty) {
-                                return 'Please enter license plate';
-                              }
-                              return null;
-                            },
-                          ),
-                          
-                          const SizedBox(height: 16),
-                          
-                          TextFormField(
-                            controller:  _parkingZoneController,
-                            focusNode: _parkingZoneFocusNode,
-                            decoration: InputDecoration(
-                              labelText: 'Parking Zone',
-                              labelStyle: TextStyle(
-                                color: (_parkingZoneFocusNode.hasFocus || _parkingZoneController. text.isNotEmpty)
-                                    ? Colors.green.shade700
-                                    : Colors. grey,
-                              ),
-                              hintText: 'e.g.: A1, B2, C3',
-                              prefixIcon: Icon(
-                                Icons.location_on,
-                                color: _parkingZoneFocusNode.hasFocus
-                                    ? Colors.green.shade700
-                                    : Colors.grey,
-                              ),
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius. circular(12),
-                                borderSide: BorderSide(color: Colors.grey.shade300),
-                              ),
-                              enabledBorder: OutlineInputBorder(
-                                borderRadius:  BorderRadius.circular(12),
-                                borderSide: BorderSide(color: Colors.grey. shade300),
-                              ),
-                              focusedBorder:  OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(12),
-                                borderSide: BorderSide(color:  Colors.green.shade700, width: 2),
-                              ),
-                              filled: true,
-                              fillColor: Colors.grey.shade50,
-                            ),
-                            textCapitalization:  TextCapitalization.characters,
-                            validator: (value) {
-                              if (value == null || value.isEmpty) {
-                                return 'Please enter parking zone';
-                              }
-                              return null;
-                            },
-                          ),
-                        ],
-                      ),
+                    VehicleInfoSection(
+                      licensePlateController: _licensePlateController,
+                      parkingZoneController:  _parkingZoneController,
                     ),
                     
                     const SizedBox(height: 24),
                     
-                    // Duration Selection
-                    _buildSectionTitle('Parking Duration', Icons.schedule),
-                    const SizedBox(height: 12),
-                    
-                    Container(
-                      padding: const EdgeInsets. all(16),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(16),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withOpacity(0.05),
-                            blurRadius: 10,
-                            offset: const Offset(0, 2),
-                          ),
-                        ],
-                      ),
-                      child: Column(
-                        children: _durationPrices.entries.map((entry) {
-                          final isSelected = _selectedDuration == entry.key;
-                          return Padding(
-                            padding: const EdgeInsets.only(bottom: 12),
-                            child: _buildDurationCard(
-                              key: entry.key,
-                              label: entry.value['label'],
-                              price: entry.value['price'],
-                              icon: entry.value['icon'],
-                              isSelected: isSelected,
-                            ),
-                          );
-                        }).toList(),
-                      ),
+                    // Duration Selection Section
+                    DurationSelectionSection(
+                      durationPrices: _durationPrices,
+                      selectedDuration: _selectedDuration,
+                      onSelectDuration: _selectDuration,
                     ),
                     
                     const SizedBox(height: 24),
                     
-                    // Payment Methods
-                    _buildSectionTitle('Payment Method', Icons.payment),
-                    const SizedBox(height: 12),
-                    
-                    Container(
-                      padding: const EdgeInsets.all(16),
-                      decoration: BoxDecoration(
-                        color: Colors. white,
-                        borderRadius:  BorderRadius.circular(16),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withOpacity(0.05),
-                            blurRadius:  10,
-                            offset:  const Offset(0, 2),
-                          ),
-                        ],
-                      ),
-                      child: Column(
-                        children: [
-                          _buildPaymentMethodCard(
-                            method: 'momo',
-                            icon: Icons.account_balance_wallet,
-                            title: l10n.paymentMomo,
-                            description: l10n.paymentMomoDescription,
-                            color: Colors.pink,
-                          ),
-                          const SizedBox(height: 12),
-                          _buildPaymentMethodCard(
-                            method:  'zalopay',
-                            icon: Icons.payment,
-                            title: l10n. paymentZaloPay,
-                            description: l10n. paymentZaloPayDescription,
-                            color:  Colors.blue,
-                          ),
-                          const SizedBox(height: 12),
-                          _buildPaymentMethodCard(
-                            method: 'bank',
-                            icon: Icons.account_balance,
-                            title: l10n.paymentBankTransfer,
-                            description: l10n.paymentBankTransferDescription,
-                            color: Colors. teal,
-                          ),
-                          const SizedBox(height:  12),
-                          _buildPaymentMethodCard(
-                            method: 'card',
-                            icon: Icons.credit_card,
-                            title: l10n.paymentCard,
-                            description: l10n.paymentCardDescription,
-                            color: Colors.orange,
-                          ),
-                        ],
-                      ),
+                    // Payment Method Section
+                    PaymentMethodSection(
+                      selectedPaymentMethod: _selectedPaymentMethod,
+                      onSelectPaymentMethod: _selectPaymentMethod,
                     ),
                     
                     const SizedBox(height: 80),
@@ -761,7 +579,7 @@ class _ParkingPaymentPageState extends State<ParkingPaymentPage> {
                   BoxShadow(
                     color: Colors.black.withOpacity(0.1),
                     blurRadius:  10,
-                    offset:  const Offset(0, -2),
+                    offset: const Offset(0, -2),
                   ),
                 ],
               ),
@@ -770,7 +588,7 @@ class _ParkingPaymentPageState extends State<ParkingPaymentPage> {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Row(
-                      mainAxisAlignment:  MainAxisAlignment.spaceBetween,
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         const Text(
                           'Total Payment',
@@ -812,7 +630,7 @@ class _ParkingPaymentPageState extends State<ParkingPaymentPage> {
                               _selectedPaymentMethod != null
                                   ? 'Pay Now'
                                   : 'Select Payment Method',
-                              style:  const TextStyle(
+                              style: const TextStyle(
                                 fontSize:  18,
                                 fontWeight: FontWeight.w600,
                               ),
@@ -826,191 +644,6 @@ class _ParkingPaymentPageState extends State<ParkingPaymentPage> {
               ),
             ),
         ],
-      ),
-    );
-  }
-
-  Widget _buildSectionTitle(String title, IconData icon) {
-    return Row(
-      children:  [
-        Icon(icon, size: 24, color: Colors.green.shade700),
-        const SizedBox(width: 8),
-        Text(
-          title,
-          style: const TextStyle(
-            fontSize: 18,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildDurationCard({
-    required String key,
-    required String label,
-    required int price,
-    required IconData icon,
-    required bool isSelected,
-  }) {
-    return InkWell(
-      onTap: () => _selectDuration(key),
-      borderRadius: BorderRadius.circular(12),
-      child: Container(
-        padding: const EdgeInsets. all(16),
-        decoration:  BoxDecoration(
-          color:  isSelected ? Colors.green.shade50 : Colors.grey.shade50,
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(
-            color: isSelected ? Colors. green.shade700 : Colors. grey.shade200,
-            width: 2,
-          ),
-        ),
-        child: Row(
-          children: [
-            Container(
-              padding: const EdgeInsets.all(10),
-              decoration: BoxDecoration(
-                color: isSelected ? Colors.green.shade700 : Colors.grey.shade300,
-                borderRadius: BorderRadius.circular(10),
-              ),
-              child:  Icon(
-                icon,
-                color: isSelected ? Colors.white : Colors.grey. shade600,
-                size: 24,
-              ),
-            ),
-            const SizedBox(width:  16),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    label,
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight. bold,
-                      color: isSelected ? Colors.green.shade700 : Colors.black87,
-                    ),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    '${_formatCurrency(price)} VND',
-                    style: TextStyle(
-                      fontSize: 14,
-                      color: isSelected ? Colors.green.shade600 : Colors.grey.shade600,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            Container(
-              width: 24,
-              height: 24,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                border: Border.all(
-                  color: isSelected ? Colors.green.shade700 : Colors.grey.shade400,
-                  width: 2,
-                ),
-                color: isSelected ? Colors.green.shade700 : Colors.transparent,
-              ),
-              child: isSelected
-                  ? const Icon(
-                      Icons.check,
-                      size: 16,
-                      color: Colors. white,
-                    )
-                  : null,
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildPaymentMethodCard({
-    required String method,
-    required IconData icon,
-    required String title,
-    required String description,
-    required Color color,
-  }) {
-    final isSelected = _selectedPaymentMethod == method;
-    
-    return InkWell(
-      onTap: () => _selectPaymentMethod(method),
-      borderRadius: BorderRadius.circular(12),
-      child: Container(
-        padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          color: isSelected ? color. withOpacity(0.1) : Colors.grey.shade50,
-          borderRadius: BorderRadius. circular(12),
-          border: Border.all(
-            color: isSelected ? color : Colors.grey.shade200,
-            width: 2,
-          ),
-        ),
-        child: Row(
-          children:  [
-            Container(
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                color: color. withOpacity(0.15),
-                borderRadius: BorderRadius.circular(10),
-              ),
-              child:  Icon(
-                icon,
-                color: color,
-                size:  24,
-              ),
-            ),
-            const SizedBox(width: 16),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    title,
-                    style:  TextStyle(
-                      fontSize:  16,
-                      fontWeight: FontWeight.bold,
-                      color: isSelected ? color :  Colors.black87,
-                    ),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    description,
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: Colors.grey.shade600,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            Container(
-              width: 24,
-              height: 24,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                border: Border.all(
-                  color: isSelected ? color : Colors.grey.shade400,
-                  width: 2,
-                ),
-                color: isSelected ? color : Colors. transparent,
-              ),
-              child: isSelected
-                  ? const Icon(
-                      Icons.check,
-                      size: 16,
-                      color: Colors. white,
-                    )
-                  : null,
-            ),
-          ],
-        ),
       ),
     );
   }

@@ -11,7 +11,6 @@ class TransactionHistoryPage extends StatefulWidget {
 
 class _TransactionHistoryPageState extends State<TransactionHistoryPage> with SingleTickerProviderStateMixin {
   late TabController _tabController;
-  bool _isLoading = false;
   String _selectedFilter = 'all'; // all, parking, verification
 
   // Mock data - replace with API call
@@ -120,7 +119,6 @@ class _TransactionHistoryPageState extends State<TransactionHistoryPage> with Si
   }
 
   String _formatDate(BuildContext context, DateTime date) {
-    final l10n = AppLocalizations.of(context)!;
     final now = DateTime.now();
     final difference = now.difference(date);
 
@@ -228,10 +226,8 @@ class _TransactionHistoryPageState extends State<TransactionHistoryPage> with Si
   }
 
   Future<void> _refreshTransactions() async {
-    setState(() => _isLoading = true);
     // Simulate API call
     await Future.delayed(const Duration(seconds: 1));
-    setState(() => _isLoading = false);
   }
 
   void _showTransactionDetail(Map<String, dynamic> transaction) {
@@ -244,7 +240,6 @@ class _TransactionHistoryPageState extends State<TransactionHistoryPage> with Si
   }
 
   Widget _buildTransactionDetailSheet(Map<String, dynamic> transaction) {
-    final l10n = AppLocalizations. of(context)!;
     
     return Container(
       height: MediaQuery.of(context).size.height * 0.75,
