@@ -6,7 +6,7 @@ import 'package:localizy/configs/map_config.dart';
 import 'package:localizy/l10n/app_localizations.dart';
 
 class ParkingZoneMapSelector extends StatefulWidget {
-  const ParkingZoneMapSelector({Key? key}) : super(key: key);
+  const ParkingZoneMapSelector({super.key});
 
   @override
   State<ParkingZoneMapSelector> createState() => _ParkingZoneMapSelectorState();
