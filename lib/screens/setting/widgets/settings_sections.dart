@@ -1,19 +1,55 @@
 import 'package:flutter/material.dart';
 import 'package:localizy/l10n/app_localizations.dart';
 import 'package:localizy/screens/home/transaction_history_page.dart';
+import 'package:localizy/screens/home/verification/address_verification_flow.dart';
+import 'package:localizy/screens/setting/about_page.dart';
 import 'package:localizy/utils/language_manager.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 
-class SettingsSections extends StatelessWidget {
+class SettingsSections extends StatefulWidget {
   final LanguageManager languageManager;
   final String currentLanguage;
   final AppLocalizations l10n;
 
   const SettingsSections({
-    Key? key,
+    Key?  key,
     required this.languageManager,
-    required this.currentLanguage,
+    required this. currentLanguage,
     required this.l10n,
   }) : super(key: key);
+
+  @override
+  State<SettingsSections> createState() => _SettingsSectionsState();
+}
+
+class _SettingsSectionsState extends State<SettingsSections> {
+  String _appVersion = 'Loading...';
+  String _buildNumber = '';
+
+  @override
+  void initState() {
+    super.initState();
+    _loadAppInfo();
+  }
+
+  Future<void> _loadAppInfo() async {
+    try {
+      final packageInfo = await PackageInfo. fromPlatform();
+      if (mounted) {
+        setState(() {
+          _appVersion = packageInfo. version;
+          _buildNumber = packageInfo.buildNumber;
+        });
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() {
+          _appVersion = '0.1.0';
+          _buildNumber = '';
+        });
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -40,7 +76,7 @@ class SettingsSections extends StatelessWidget {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder:  (context) => const TransactionHistoryPage(),
+                      builder: (context) => const TransactionHistoryPage(),
                     ),
                   );
                 },
@@ -53,7 +89,12 @@ class SettingsSections extends StatelessWidget {
                 subtitle: 'Manage verified locations',
                 color: Colors.purple,
                 onTap: () {
-                  _showComingSoon(context, 'Verified Addresses');
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const AddressVerificationFlow(),
+                    ),
+                  );
                 },
               ),
               _buildDivider(),
@@ -62,7 +103,7 @@ class SettingsSections extends StatelessWidget {
                 icon: Icons.person_outline,
                 title: 'Account Settings',
                 subtitle: 'Update your profile information',
-                color:  Colors.orange,
+                color: Colors.orange,
                 onTap: () {
                   _showAccountSettings(context);
                 },
@@ -79,40 +120,10 @@ class SettingsSections extends StatelessWidget {
             context,
             [
               _buildLanguageSelector(context),
-              _buildDivider(),
-              _buildSettingItem(
-                context,
-                icon:  Icons.notifications_outlined,
-                title: 'Notifications',
-                subtitle: 'Manage app notifications',
-                color:  Colors.teal,
-                trailing: Switch(
-                  value:  true,
-                  onChanged: (value) {
-                    // TODO: Toggle notifications
-                  },
-                  activeColor: Colors.green. shade700,
-                ),
-              ),
-              _buildDivider(),
-              _buildSettingItem(
-                context,
-                icon: Icons.dark_mode_outlined,
-                title: 'Dark Mode',
-                subtitle: 'Change app theme',
-                color: Colors.indigo,
-                trailing: Switch(
-                  value:  false,
-                  onChanged:  (value) {
-                    // TODO: Toggle dark mode
-                  },
-                  activeColor: Colors.green.shade700,
-                ),
-              ),
             ],
           ),
 
-          const SizedBox(height: 24),
+          const SizedBox(height:  24),
 
           // Support Section
           _buildSectionTitle('Support & About'),
@@ -125,7 +136,7 @@ class SettingsSections extends StatelessWidget {
                 icon: Icons.help_outline,
                 title: 'Help & Support',
                 subtitle: 'Get help and contact us',
-                color: Colors.indigo,
+                color: Colors. indigo,
                 onTap:  () {
                   _showSupportDialog(context);
                 },
@@ -144,23 +155,17 @@ class SettingsSections extends StatelessWidget {
               _buildDivider(),
               _buildSettingItem(
                 context,
-                icon:  Icons.description_outlined,
-                title: 'Terms of Service',
-                subtitle: 'Read our terms and conditions',
-                color: Colors. amber,
-                onTap: () {
-                  _showComingSoon(context, 'Terms of Service');
-                },
-              ),
-              _buildDivider(),
-              _buildSettingItem(
-                context,
-                icon: Icons. info_outline,
+                icon: Icons.info_outline,
                 title: 'About App',
-                subtitle:  'Version 1.0.0',
+                subtitle: 'Version $_appVersion${_buildNumber. isNotEmpty ? ' ($_buildNumber)' : ''}',
                 color: Colors.pink,
                 onTap: () {
-                  _showAboutDialog(context);
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const AboutPage(),
+                    ),
+                  );
                 },
               ),
             ],
@@ -228,10 +233,10 @@ class SettingsSections extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(10),
               decoration: BoxDecoration(
-                color: color.withOpacity(0.1),
-                borderRadius: BorderRadius.circular(12),
+                color: color. withOpacity(0.1),
+                borderRadius: BorderRadius. circular(12),
               ),
-              child:  Icon(icon, color: color, size: 24),
+              child: Icon(icon, color: color, size: 24),
             ),
             const SizedBox(width: 16),
             Expanded(
@@ -241,8 +246,8 @@ class SettingsSections extends StatelessWidget {
                   Text(
                     title,
                     style: const TextStyle(
-                      fontSize:  16,
-                      fontWeight: FontWeight.w600,
+                      fontSize: 16,
+                      fontWeight: FontWeight. w600,
                     ),
                   ),
                   const SizedBox(height: 2),
@@ -250,7 +255,7 @@ class SettingsSections extends StatelessWidget {
                     subtitle,
                     style:  TextStyle(
                       fontSize:  13,
-                      color: Colors. grey.shade600,
+                      color:  Colors.grey.shade600,
                     ),
                   ),
                 ],
@@ -279,18 +284,18 @@ class SettingsSections extends StatelessWidget {
               color: Colors.green.withOpacity(0.1),
               borderRadius: BorderRadius.circular(12),
             ),
-            child: Icon(Icons.language, color: Colors.green.shade700, size: 24),
+            child: Icon(Icons.language, color: Colors.green. shade700, size: 24),
           ),
           const SizedBox(width: 16),
           Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+            child:  Column(
+              crossAxisAlignment:  CrossAxisAlignment.start,
               children: [
                 Text(
-                  l10n.language,
+                  widget.l10n. language,
                   style: const TextStyle(
-                    fontSize:  16,
-                    fontWeight: FontWeight.w600,
+                    fontSize: 16,
+                    fontWeight:  FontWeight.w600,
                   ),
                 ),
                 const SizedBox(height: 2),
@@ -311,43 +316,43 @@ class SettingsSections extends StatelessWidget {
               borderRadius: BorderRadius.circular(8),
               border: Border.all(color: Colors.green.shade200),
             ),
-            child: DropdownButton<String>(
-              value: currentLanguage,
+            child:  DropdownButton<String>(
+              value: widget.currentLanguage,
               underline: const SizedBox(),
-              icon:  Icon(Icons.arrow_drop_down, color: Colors.green.shade700),
+              icon: Icon(Icons.arrow_drop_down, color: Colors.green.shade700),
               isDense: true,
               items: [
                 DropdownMenuItem(
                   value: 'fr',
                   child: Text(
-                    l10n.french,
+                    widget.l10n. french,
                     style: const TextStyle(fontSize: 14),
                   ),
                 ),
                 DropdownMenuItem(
                   value: 'en',
-                  child:  Text(
-                    l10n.english,
+                  child: Text(
+                    widget.l10n.english,
                     style: const TextStyle(fontSize: 14),
                   ),
                 ),
               ],
-              onChanged:  (String? newValue) {
+              onChanged: (String? newValue) {
                 if (newValue != null) {
-                  languageManager.changeLanguage(newValue);
+                  widget.languageManager.changeLanguage(newValue);
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
                       content: Row(
                         children: [
                           const Icon(Icons.check_circle, color: Colors.white),
                           const SizedBox(width: 12),
-                          Text('Language changed to ${languageManager.getLanguageName(newValue)}'),
+                          Text('Language changed to ${widget.languageManager.getLanguageName(newValue)}'),
                         ],
                       ),
                       backgroundColor: Colors.green.shade700,
                       behavior: SnackBarBehavior.floating,
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),
+                        borderRadius: BorderRadius. circular(10),
                       ),
                       duration: const Duration(seconds: 2),
                     ),
@@ -381,25 +386,25 @@ class SettingsSections extends StatelessWidget {
               ),
               title:  Row(
                 children: [
-                  Icon(Icons.logout, color: Colors.red. shade700),
+                  Icon(Icons.logout, color: Colors.red.shade700),
                   const SizedBox(width: 12),
-                  Text(l10n.logout),
+                  Text(widget.l10n.logout),
                 ],
               ),
               content: Text(
-                l10n.logout == 'Logout'
+                widget.l10n.logout == 'Logout'
                     ? 'Are you sure you want to logout?'
-                    : l10n.logout == 'Se déconnecter'
-                        ? 'Êtes-vous sûr de vouloir vous déconnecter? '
-                        : 'Bạn có chắc chắn muốn đăng xuất?',
+                    : widget.l10n.logout == 'Se déconnecter'
+                        ?  'Êtes-vous sûr de vouloir vous déconnecter?'
+                        : 'Bạn có chắc chắn muốn đăng xuất? ',
               ),
               actions: [
                 TextButton(
                   onPressed: () => Navigator.pop(dialogContext),
                   child: Text(
-                    l10n.logout == 'Logout'
+                    widget.l10n.logout == 'Logout'
                         ? 'Cancel'
-                        : l10n.logout == 'Se déconnecter'
+                        : widget.l10n.logout == 'Se déconnecter'
                             ? 'Annuler'
                             : 'Hủy',
                     style: TextStyle(color: Colors.grey.shade700),
@@ -416,7 +421,7 @@ class SettingsSections extends StatelessWidget {
                       borderRadius: BorderRadius.circular(10),
                     ),
                   ),
-                  child: Text(l10n.logout),
+                  child: Text(widget.l10n.logout),
                 ),
               ],
             );
@@ -438,7 +443,7 @@ class SettingsSections extends StatelessWidget {
           const Icon(Icons.logout, size: 20),
           const SizedBox(width: 8),
           Text(
-            l10n.logout,
+            widget.l10n.logout,
             style: const TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.bold,
@@ -457,7 +462,7 @@ class SettingsSections extends StatelessWidget {
       builder: (context) => Container(
         height: MediaQuery.of(context).size.height * 0.65,
         decoration: const BoxDecoration(
-          color: Colors.white,
+          color: Colors. white,
           borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
         ),
         child: Column(
@@ -468,7 +473,7 @@ class SettingsSections extends StatelessWidget {
               width: 40,
               height: 4,
               decoration: BoxDecoration(
-                color: Colors.grey.shade300,
+                color: Colors.grey. shade300,
                 borderRadius: BorderRadius.circular(2),
               ),
             ),
@@ -525,7 +530,7 @@ class SettingsSections extends StatelessWidget {
                     _buildAccountSettingItem(
                       icon: Icons.location_on_outlined,
                       title: 'Address',
-                      value:  'Ho Chi Minh City, Vietnam',
+                      value: 'Ho Chi Minh City, Vietnam',
                       showArrow: true,
                     ),
                     const SizedBox(height: 16),
@@ -560,7 +565,7 @@ class SettingsSections extends StatelessWidget {
                           borderRadius: BorderRadius.circular(12),
                         ),
                         padding: const EdgeInsets.symmetric(vertical: 14),
-                        minimumSize: const Size(double.infinity, 50),
+                        minimumSize: const Size(double. infinity, 50),
                       ),
                     ),
                   ],
@@ -669,7 +674,7 @@ class SettingsSections extends StatelessWidget {
               ),
               Text(
                 subtitle,
-                style: TextStyle(fontSize: 12, color: Colors. grey.shade600),
+                style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
               ),
             ],
           ),
@@ -678,52 +683,14 @@ class SettingsSections extends StatelessWidget {
     );
   }
 
-  void _showAboutDialog(BuildContext context) {
-    showAboutDialog(
-      context: context,
-      applicationName: 'Localizy',
-      applicationVersion: '1.0.0',
-      applicationIcon: Container(
-        padding: const EdgeInsets.all(8),
-        decoration: BoxDecoration(
-          color: Colors.green.shade700,
-          borderRadius: BorderRadius.circular(12),
-        ),
-        child: const Icon(Icons.location_on, color: Colors.white, size: 32),
-      ),
-      children: [
-        const SizedBox(height: 16),
-        const Text(
-          'Localizy is your smart solution for parking management and location verification.',
-        ),
-        const SizedBox(height: 12),
-        const Text(
-          'Features:\n'
-          '• Smart parking payment\n'
-          '• License plate scanning\n'
-          '• Address verification\n'
-          '• Real-time navigation\n'
-          '• Transaction history\n'
-          '• Multi-language support',
-          style: TextStyle(fontSize: 13),
-        ),
-        const SizedBox(height: 12),
-        const Text(
-          '© 2024 Localizy. All rights reserved.',
-          style: TextStyle(fontSize: 12, color: Colors.grey),
-        ),
-      ],
-    );
-  }
-
   void _showDeleteAccountDialog(BuildContext context) {
     showDialog(
       context: context,
-      builder:  (context) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius:  BorderRadius.circular(20)),
+      builder: (context) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         title: Row(
           children: [
-            Icon(Icons.warning_amber_rounded, color: Colors.red.shade700),
+            Icon(Icons.warning_amber_rounded, color: Colors. red.shade700),
             const SizedBox(width: 12),
             const Text('Delete Account'),
           ],
