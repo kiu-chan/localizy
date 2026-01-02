@@ -26,7 +26,7 @@ class MapConfig {
   // UI settings
   static const bool showMyLocationButton = false;
   static const bool showZoomControls = false;
-  static const bool showCompass = true;
+  static const bool showCompass = false;
   static const bool showMapToolbar = false;
   
   // Animation duration
