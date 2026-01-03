@@ -50,7 +50,7 @@ class _DestinationSearchState extends State<DestinationSearch> {
                 child: TextField(
                   controller: _searchController,
                   decoration: InputDecoration(
-                    hintText: 'Tìm kiếm địa điểm.. .',
+                    hintText: 'Search for a location...',
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10),
                     ),
@@ -67,7 +67,7 @@ class _DestinationSearchState extends State<DestinationSearch> {
           const SizedBox(height: 16),
           ListTile(
             leading: Icon(Icons.location_on, color: Colors.green.shade700),
-            title: const Text('Chọn trên bản đồ'),
+            title: const Text('Select on the map'),
             onTap: () {
               Navigator.pop(context);
               // Sẽ chuyển sang chế độ chọn điểm trên bản đồ
