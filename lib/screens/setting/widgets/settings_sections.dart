@@ -3,6 +3,8 @@ import 'package:localizy/l10n/app_localizations.dart';
 import 'package:localizy/screens/home/transaction_history_page.dart';
 import 'package:localizy/screens/home/verification/address_verification_flow.dart';
 import 'package:localizy/screens/setting/about_page.dart';
+import 'package:localizy/screens/setting/account_settings_page.dart';
+import 'package:localizy/screens/account/login_page.dart';
 import 'package:localizy/utils/language_manager.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
@@ -12,9 +14,9 @@ class SettingsSections extends StatefulWidget {
   final AppLocalizations l10n;
 
   const SettingsSections({
-    Key?  key,
-    required this.languageManager,
-    required this. currentLanguage,
+    Key? key,
+    required this. languageManager,
+    required this.currentLanguage,
     required this.l10n,
   }) : super(key: key);
 
@@ -34,7 +36,7 @@ class _SettingsSectionsState extends State<SettingsSections> {
 
   Future<void> _loadAppInfo() async {
     try {
-      final packageInfo = await PackageInfo. fromPlatform();
+      final packageInfo = await PackageInfo.fromPlatform();
       if (mounted) {
         setState(() {
           _appVersion = packageInfo. version;
@@ -103,9 +105,14 @@ class _SettingsSectionsState extends State<SettingsSections> {
                 icon: Icons.person_outline,
                 title: 'Account Settings',
                 subtitle: 'Update your profile information',
-                color: Colors.orange,
+                color:  Colors.orange,
                 onTap: () {
-                  _showAccountSettings(context);
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const AccountSettingsPage(),
+                    ),
+                  );
                 },
               ),
             ],
@@ -136,7 +143,7 @@ class _SettingsSectionsState extends State<SettingsSections> {
                 icon: Icons.help_outline,
                 title: 'Help & Support',
                 subtitle: 'Get help and contact us',
-                color: Colors. indigo,
+                color: Colors.indigo,
                 onTap:  () {
                   _showSupportDialog(context);
                 },
@@ -233,10 +240,10 @@ class _SettingsSectionsState extends State<SettingsSections> {
             Container(
               padding: const EdgeInsets.all(10),
               decoration: BoxDecoration(
-                color: color. withOpacity(0.1),
-                borderRadius: BorderRadius. circular(12),
+                color: color.withOpacity(0.1),
+                borderRadius: BorderRadius.circular(12),
               ),
-              child: Icon(icon, color: color, size: 24),
+              child:  Icon(icon, color: color, size: 24),
             ),
             const SizedBox(width: 16),
             Expanded(
@@ -247,7 +254,7 @@ class _SettingsSectionsState extends State<SettingsSections> {
                     title,
                     style: const TextStyle(
                       fontSize: 16,
-                      fontWeight: FontWeight. w600,
+                      fontWeight: FontWeight.w600,
                     ),
                   ),
                   const SizedBox(height: 2),
@@ -288,11 +295,11 @@ class _SettingsSectionsState extends State<SettingsSections> {
           ),
           const SizedBox(width: 16),
           Expanded(
-            child:  Column(
-              crossAxisAlignment:  CrossAxisAlignment.start,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  widget.l10n. language,
+                  widget.l10n.language,
                   style: const TextStyle(
                     fontSize: 16,
                     fontWeight:  FontWeight.w600,
@@ -310,7 +317,7 @@ class _SettingsSectionsState extends State<SettingsSections> {
             ),
           ),
           Container(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical:  8),
             decoration: BoxDecoration(
               color: Colors.green.shade50,
               borderRadius: BorderRadius.circular(8),
@@ -332,7 +339,7 @@ class _SettingsSectionsState extends State<SettingsSections> {
                 DropdownMenuItem(
                   value: 'en',
                   child: Text(
-                    widget.l10n.english,
+                    widget.l10n. english,
                     style: const TextStyle(fontSize: 14),
                   ),
                 ),
@@ -378,13 +385,13 @@ class _SettingsSectionsState extends State<SettingsSections> {
     return ElevatedButton(
       onPressed: () {
         showDialog(
-          context: context,
+          context:  context,
           builder: (BuildContext dialogContext) {
             return AlertDialog(
               shape: RoundedRectangleBorder(
                 borderRadius:  BorderRadius.circular(20),
               ),
-              title:  Row(
+              title: Row(
                 children: [
                   Icon(Icons.logout, color: Colors.red.shade700),
                   const SizedBox(width: 12),
@@ -396,13 +403,13 @@ class _SettingsSectionsState extends State<SettingsSections> {
                     ? 'Are you sure you want to logout?'
                     : widget.l10n.logout == 'Se déconnecter'
                         ?  'Êtes-vous sûr de vouloir vous déconnecter?'
-                        : 'Bạn có chắc chắn muốn đăng xuất? ',
+                        : 'Bạn có chắc chắn muốn đăng xuất?',
               ),
               actions: [
                 TextButton(
                   onPressed: () => Navigator.pop(dialogContext),
                   child: Text(
-                    widget.l10n.logout == 'Logout'
+                    widget.l10n. logout == 'Logout'
                         ? 'Cancel'
                         : widget.l10n.logout == 'Se déconnecter'
                             ? 'Annuler'
@@ -412,13 +419,19 @@ class _SettingsSectionsState extends State<SettingsSections> {
                 ),
                 ElevatedButton(
                   onPressed: () {
-                    Navigator.of(dialogContext).popUntil((route) => route.isFirst);
+                    Navigator.pop(dialogContext);
+                    Navigator.of(context).pushAndRemoveUntil(
+                      MaterialPageRoute(
+                        builder: (context) => const LoginPage(),
+                      ),
+                      (route) => false,
+                    );
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors. red.shade700,
                     foregroundColor: Colors.white,
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
+                      borderRadius: BorderRadius. circular(10),
                     ),
                   ),
                   child: Text(widget.l10n.logout),
@@ -454,172 +467,10 @@ class _SettingsSectionsState extends State<SettingsSections> {
     );
   }
 
-  void _showAccountSettings(BuildContext context) {
-    showModalBottomSheet(
-      context:  context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      builder: (context) => Container(
-        height: MediaQuery.of(context).size.height * 0.65,
-        decoration: const BoxDecoration(
-          color: Colors. white,
-          borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-        ),
-        child: Column(
-          children: [
-            // Handle bar
-            Container(
-              margin: const EdgeInsets.only(top: 12),
-              width: 40,
-              height: 4,
-              decoration: BoxDecoration(
-                color: Colors.grey. shade300,
-                borderRadius: BorderRadius.circular(2),
-              ),
-            ),
-
-            Expanded(
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.all(24),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      children: [
-                        Icon(Icons.settings, color: Colors.green.shade700, size: 28),
-                        const SizedBox(width: 12),
-                        const Text(
-                          'Account Settings',
-                          style: TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 24),
-
-                    _buildAccountSettingItem(
-                      icon: Icons.person_outline,
-                      title: 'Full Name',
-                      value: 'John Doe',
-                      showArrow: true,
-                    ),
-                    const SizedBox(height: 16),
-                    _buildAccountSettingItem(
-                      icon:  Icons.email_outlined,
-                      title: 'Email',
-                      value: 'john. doe@example.com',
-                      showArrow: true,
-                    ),
-                    const SizedBox(height: 16),
-                    _buildAccountSettingItem(
-                      icon: Icons.phone_outlined,
-                      title: 'Phone',
-                      value: '+84 123 456 789',
-                      showArrow: true,
-                    ),
-                    const SizedBox(height: 16),
-                    _buildAccountSettingItem(
-                      icon:  Icons.cake_outlined,
-                      title:  'Date of Birth',
-                      value:  'January 1, 1990',
-                      showArrow:  true,
-                    ),
-                    const SizedBox(height:  16),
-                    _buildAccountSettingItem(
-                      icon: Icons.location_on_outlined,
-                      title: 'Address',
-                      value: 'Ho Chi Minh City, Vietnam',
-                      showArrow: true,
-                    ),
-                    const SizedBox(height: 16),
-                    _buildAccountSettingItem(
-                      icon: Icons.lock_outline,
-                      title: 'Password',
-                      value: '••••••••',
-                      showArrow: true,
-                    ),
-                    const SizedBox(height: 16),
-                    _buildAccountSettingItem(
-                      icon: Icons.security,
-                      title: 'Two-Factor Authentication',
-                      value: 'Enabled',
-                      showArrow: true,
-                    ),
-
-                    const SizedBox(height: 24),
-
-                    // Delete Account Button
-                    OutlinedButton. icon(
-                      onPressed:  () {
-                        Navigator.pop(context);
-                        _showDeleteAccountDialog(context);
-                      },
-                      icon: const Icon(Icons.delete_outline),
-                      label: const Text('Delete Account'),
-                      style: OutlinedButton.styleFrom(
-                        foregroundColor: Colors.red,
-                        side: const BorderSide(color: Colors.red),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        padding: const EdgeInsets.symmetric(vertical: 14),
-                        minimumSize: const Size(double. infinity, 50),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildAccountSettingItem({
-    required IconData icon,
-    required String title,
-    required String value,
-    bool showArrow = false,
-  }) {
-    return Row(
-      children: [
-        Icon(icon, color: Colors. grey.shade600, size: 24),
-        const SizedBox(width: 16),
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                title,
-                style: TextStyle(
-                  fontSize: 12,
-                  color: Colors. grey.shade600,
-                ),
-              ),
-              const SizedBox(height: 2),
-              Text(
-                value,
-                style: const TextStyle(
-                  fontSize:  16,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-            ],
-          ),
-        ),
-        if (showArrow)
-          Icon(Icons.arrow_forward_ios, size: 16, color: Colors. grey.shade400),
-      ],
-    );
-  }
-
   void _showSupportDialog(BuildContext context) {
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
+      builder:  (context) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         title: Row(
           children: [
@@ -640,7 +491,7 @@ class _SettingsSectionsState extends State<SettingsSections> {
             _buildSupportOption(Icons.email, 'Email Us', 'support@localizy.com'),
             const SizedBox(height: 12),
             _buildSupportOption(Icons.phone, 'Call Us', '+84 123 456 789'),
-            const SizedBox(height:  12),
+            const SizedBox(height: 12),
             _buildSupportOption(Icons.chat, 'Live Chat', 'Available 24/7'),
             const SizedBox(height: 16),
             const Text(
@@ -662,7 +513,7 @@ class _SettingsSectionsState extends State<SettingsSections> {
   Widget _buildSupportOption(IconData icon, String title, String subtitle) {
     return Row(
       children: [
-        Icon(icon, color: Colors.green.shade700, size: 20),
+        Icon(icon, color: Colors. green.shade700, size: 20),
         const SizedBox(width: 12),
         Expanded(
           child: Column(
@@ -674,48 +525,12 @@ class _SettingsSectionsState extends State<SettingsSections> {
               ),
               Text(
                 subtitle,
-                style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
+                style: TextStyle(fontSize: 12, color: Colors. grey.shade600),
               ),
             ],
           ),
         ),
       ],
-    );
-  }
-
-  void _showDeleteAccountDialog(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        title: Row(
-          children: [
-            Icon(Icons.warning_amber_rounded, color: Colors. red.shade700),
-            const SizedBox(width: 12),
-            const Text('Delete Account'),
-          ],
-        ),
-        content: const Text(
-          'Are you sure you want to delete your account? This action cannot be undone and all your data will be permanently deleted.',
-        ),
-        actions: [
-          TextButton(
-            onPressed:  () => Navigator.pop(context),
-            child: const Text('Cancel'),
-          ),
-          ElevatedButton(
-            onPressed:  () {
-              Navigator.pop(context);
-              // TODO: Delete account
-            },
-            style:  ElevatedButton.styleFrom(
-              backgroundColor: Colors.red. shade700,
-              foregroundColor: Colors.white,
-            ),
-            child: const Text('Delete'),
-          ),
-        ],
-      ),
     );
   }
 
@@ -730,7 +545,7 @@ class _SettingsSectionsState extends State<SettingsSections> {
           ],
         ),
         backgroundColor: Colors.blue.shade700,
-        behavior: SnackBarBehavior. floating,
+        behavior: SnackBarBehavior.floating,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
         duration: const Duration(seconds: 2),
       ),

@@ -131,25 +131,6 @@ class ProfileHeaderSection extends StatelessWidget {
                   ],
                 ),
               ),
-
-              const SizedBox(height: 16),
-
-              // Edit Profile Button
-              OutlinedButton. icon(
-                onPressed: () {
-                  // TODO: Navigate to edit profile
-                },
-                icon: const Icon(Icons.edit_outlined, size: 18),
-                label: const Text('Edit Profile'),
-                style: OutlinedButton.styleFrom(
-                  foregroundColor: Colors. white,
-                  side: const BorderSide(color: Colors. white, width: 2),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-                ),
-              ),
             ],
           ),
         ),

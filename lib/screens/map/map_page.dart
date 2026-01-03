@@ -638,17 +638,17 @@ class _MapPageState extends State<MapPage> with AutomaticKeepAliveClientMixin {
                   ),
                 ),
           
-          // Thanh tìm kiếm địa chỉ
-          if (! _isLoading && ! _isNavigating)
-            AddressSearchBar(
-              onAddressSelected:   _onAddressSelected,
-            ),
-          
           // Nút chọn loại bản đồ - ẩn khi đang điều hướng
           if (!_isLoading && !_isNavigating)
             MapTypeSelector(
               currentMapType: _currentMapType,
               onMapTypeChanged: _onMapTypeChanged,
+            ),
+          
+          // Thanh tìm kiếm địa chỉ
+          if (! _isLoading && ! _isNavigating)
+            AddressSearchBar(
+              onAddressSelected:   _onAddressSelected,
             ),
           
           // Panel hiển thị thông tin chỉ đường
