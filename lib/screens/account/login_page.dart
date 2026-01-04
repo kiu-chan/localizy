@@ -3,6 +3,7 @@ import 'package:localizy/l10n/app_localizations.dart';
 import 'register_page.dart';
 import 'forgot_password_page.dart';
 import '../main_page.dart';
+import '../validator/validator_main_page.dart';
 import 'dart:math' as math;
 
 class LoginPage extends StatefulWidget {
@@ -37,13 +38,13 @@ class _LoginPageState extends State<LoginPage> {
     _emailController.addListener(() {
       setState(() {});
     });
-    _passwordController. addListener(() {
+    _passwordController.addListener(() {
       setState(() {});
     });
     _emailFocusNode.addListener(() {
       setState(() {});
     });
-    _passwordFocusNode.addListener(() {
+    _passwordFocusNode. addListener(() {
       setState(() {});
     });
   }
@@ -63,27 +64,38 @@ class _LoginPageState extends State<LoginPage> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content:  Text(AppLocalizations.of(context)!.loginSuccess),
+            content: Text(AppLocalizations.of(context)!.loginSuccess),
             backgroundColor: Colors.green,
           ),
         );
         
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(
-            builder: (context) => const MainPage(),
-          ),
-        );
+        // Kiểm tra nếu là tài khoản admin thì chuyển đến trang Validator
+        if (_emailController.text.trim() == 'admin@gmail.com') {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+              builder:  (context) => const ValidatorMainPage(),
+            ),
+          );
+        } else {
+          // Tài khoản thường chuyển đến MainPage
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+              builder:  (context) => const MainPage(),
+            ),
+          );
+        }
       }
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations. of(context)!;
     
     return Scaffold(
-      body:  Stack(
+      body: Stack(
         children: [
           // Wave Background
           const WaveBackground(),
@@ -92,7 +104,7 @@ class _LoginPageState extends State<LoginPage> {
           SafeArea(
             child: Center(
               child: SingleChildScrollView(
-                padding:  const EdgeInsets.all(24.0),
+                padding: const EdgeInsets.all(24.0),
                 child: Form(
                   key: _formKey,
                   child: Column(
@@ -116,12 +128,12 @@ class _LoginPageState extends State<LoginPage> {
                             'assets/icon/logo.png',
                             width: 80,
                             height: 80,
-                            fit: BoxFit. cover,
+                            fit: BoxFit.cover,
                             errorBuilder: (context, error, stackTrace) {
                               return Icon(
                                 Icons.eco,
                                 size: 60,
-                                color: Colors.green.shade700,
+                                color: Colors. green.shade700,
                               );
                             },
                           ),
@@ -141,7 +153,7 @@ class _LoginPageState extends State<LoginPage> {
                         l10n.loginToContinue,
                         style: const TextStyle(
                           fontSize: 16,
-                          color: Colors. white70,
+                          color: Colors.white70,
                         ),
                       ),
                       const SizedBox(height: 40),
@@ -153,7 +165,7 @@ class _LoginPageState extends State<LoginPage> {
                           boxShadow: [
                             BoxShadow(
                               color: Colors.black.withValues(alpha: 0.1),
-                              blurRadius:  20,
+                              blurRadius: 20,
                               offset: const Offset(0, 10),
                             ),
                           ],
@@ -172,11 +184,11 @@ class _LoginPageState extends State<LoginPage> {
                                       : Colors.grey,
                                 ),
                                 floatingLabelStyle: TextStyle(
-                                  color: (_emailFocusNode.hasFocus || _emailController.text. isNotEmpty)
-                                      ? Colors.black
-                                      : Colors.grey,
+                                  color: (_emailFocusNode.hasFocus || _emailController.text.isNotEmpty)
+                                      ?  Colors.black
+                                      :  Colors.grey,
                                 ),
-                                prefixIcon:  Icon(
+                                prefixIcon: Icon(
                                   Icons.email_outlined,
                                   color:  Colors.green.shade700,
                                 ),
@@ -186,7 +198,7 @@ class _LoginPageState extends State<LoginPage> {
                                 focusedBorder: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(12),
                                   borderSide: BorderSide(
-                                    color: Colors.green.shade700,
+                                    color: Colors.green. shade700,
                                     width: 2,
                                   ),
                                 ),
@@ -195,7 +207,7 @@ class _LoginPageState extends State<LoginPage> {
                                 if (value == null || value.isEmpty) {
                                   return l10n.pleaseEnterEmail;
                                 }
-                                if (!value.contains('@')) {
+                                if (! value.contains('@')) {
                                   return l10n. invalidEmail;
                                 }
                                 return null;
@@ -226,21 +238,21 @@ class _LoginPageState extends State<LoginPage> {
                                   icon: Icon(
                                     _isPasswordVisible
                                         ? Icons.visibility_off
-                                        : Icons.visibility,
-                                    color: Colors.green.shade700,
+                                        : Icons. visibility,
+                                    color:  Colors.green.shade700,
                                   ),
-                                  onPressed:  () {
+                                  onPressed: () {
                                     setState(() {
                                       _isPasswordVisible = !_isPasswordVisible;
                                     });
                                   },
                                 ),
                                 border: OutlineInputBorder(
-                                  borderRadius:  BorderRadius.circular(12),
+                                  borderRadius: BorderRadius.circular(12),
                                 ),
                                 focusedBorder: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(12),
-                                  borderSide:  BorderSide(
+                                  borderSide: BorderSide(
                                     color: Colors.green.shade700,
                                     width: 2,
                                   ),
@@ -250,7 +262,7 @@ class _LoginPageState extends State<LoginPage> {
                                 if (value == null || value.isEmpty) {
                                   return l10n.pleaseEnterPassword;
                                 }
-                                if (value. length < 6) {
+                                if (value.length < 6) {
                                   return l10n.passwordMinLength;
                                 }
                                 return null;
@@ -270,9 +282,9 @@ class _LoginPageState extends State<LoginPage> {
                                   );
                                 },
                                 child: Text(
-                                  l10n. forgotPassword,
+                                  l10n.forgotPassword,
                                   style: TextStyle(
-                                    color: Colors.green.shade700,
+                                    color: Colors. green.shade700,
                                     fontWeight: FontWeight.w600,
                                   ),
                                 ),
@@ -280,23 +292,23 @@ class _LoginPageState extends State<LoginPage> {
                             ),
                             const SizedBox(height: 24),
                             SizedBox(
-                              width: double.infinity,
+                              width:  double.infinity,
                               height: 56,
                               child: ElevatedButton(
-                                onPressed: _isLoading ? null :  _handleLogin,
+                                onPressed: _isLoading ? null : _handleLogin,
                                 style: ElevatedButton.styleFrom(
-                                  backgroundColor: Colors.green.shade700,
-                                  foregroundColor: Colors. white,
-                                  shape:  RoundedRectangleBorder(
+                                  backgroundColor:  Colors.green.shade700,
+                                  foregroundColor: Colors.white,
+                                  shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(12),
                                   ),
                                   elevation: 2,
                                 ),
                                 child: _isLoading
-                                    ?  const SizedBox(
+                                    ? const SizedBox(
                                         height: 24,
                                         width: 24,
-                                        child: CircularProgressIndicator(
+                                        child:  CircularProgressIndicator(
                                           color: Colors.white,
                                           strokeWidth: 2,
                                         ),
@@ -305,7 +317,7 @@ class _LoginPageState extends State<LoginPage> {
                                         l10n.login,
                                         style: const TextStyle(
                                           fontSize: 18,
-                                          fontWeight:  FontWeight.bold,
+                                          fontWeight: FontWeight.bold,
                                         ),
                                       ),
                               ),
@@ -315,15 +327,15 @@ class _LoginPageState extends State<LoginPage> {
                       ),
                       const SizedBox(height: 24),
                       Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
+                        mainAxisAlignment:  MainAxisAlignment.center,
                         children: [
                           Text(
-                            l10n.noAccount,
+                            l10n. noAccount,
                             style: const TextStyle(color: Colors.white70),
                           ),
                           TextButton(
                             onPressed: () {
-                              Navigator.push(
+                              Navigator. push(
                                 context,
                                 MaterialPageRoute(
                                   builder: (context) => const RegisterPage(),
@@ -333,7 +345,7 @@ class _LoginPageState extends State<LoginPage> {
                             child: Text(
                               l10n.register,
                               style: const TextStyle(
-                                color: Colors.white,
+                                color:  Colors.white,
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
@@ -373,7 +385,7 @@ class _WaveBackgroundState extends State<WaveBackground>
     // Tạo 3 animation controller với tốc độ khác nhau
     _controller1 = AnimationController(
       vsync: this,
-      duration: const Duration(seconds: 5),
+      duration:  const Duration(seconds: 5),
     )..repeat();
 
     _controller2 = AnimationController(
@@ -417,7 +429,7 @@ class _WaveBackgroundState extends State<WaveBackground>
               return CustomPaint(
                 painter: WavePainter(
                   animationValue: _controller1.value,
-                  color: Colors.white.withOpacity(0.08),
+                  color: Colors. white.withOpacity(0.08),
                   amplitude: 30,
                   frequency: 1.5,
                   offset: 0,
@@ -454,7 +466,7 @@ class _WaveBackgroundState extends State<WaveBackground>
                   frequency: 1.0,
                   offset: 200,
                 ),
-                size: Size.infinite,
+                size:  Size.infinite,
               );
             },
           ),
@@ -473,10 +485,10 @@ class WavePainter extends CustomPainter {
   final double offset;
 
   WavePainter({
-    required this.animationValue,
+    required this. animationValue,
     required this.color,
-    required this.amplitude,
-    required this. frequency,
+    required this. amplitude,
+    required this.frequency,
     required this.offset,
   });
 
@@ -492,7 +504,7 @@ class WavePainter extends CustomPainter {
     path.moveTo(0, 0);
     
     // Vẽ từ trên xuống với nhiều sóng
-    for (double y = 0; y <= size.height; y += 1) {
+    for (double y = 0; y <= size. height; y += 1) {
       // Tính toán giá trị x với hiệu ứng sóng
       final waveValue = math.sin(
         (y / size.height * 2 * math.pi * frequency) + 
