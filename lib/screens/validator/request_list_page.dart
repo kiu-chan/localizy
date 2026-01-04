@@ -8,40 +8,40 @@ class RequestListPage extends StatefulWidget {
 }
 
 class _RequestListPageState extends State<RequestListPage> {
-  String _selectedFilter = 'Tất cả';
+  String _selectedFilter = 'All';
 
   final List<Map<String, dynamic>> _requests = [
     {
       'id': '001',
-      'title': 'Thêm địa điểm mới - Cà phê Highlands',
-      'location': 'Hà Nội',
+      'title': 'Add new location - Highlands Coffee',
+      'location': 'Hanoi',
       'date': '04/01/2026',
-      'status': 'Chờ xử lý',
-      'type': 'Thêm mới',
+      'status': 'Pending',
+      'type': 'Add New',
     },
     {
       'id': '002',
-      'title': 'Cập nhật thông tin - Nhà hàng ABC',
-      'location': 'TP. Hồ Chí Minh',
+      'title': 'Update information - ABC Restaurant',
+      'location': 'Ho Chi Minh City',
       'date': '03/01/2026',
-      'status': 'Đang xử lý',
-      'type': 'Cập nhật',
+      'status': 'In Progress',
+      'type': 'Update',
     },
     {
       'id': '003',
-      'title': 'Xóa địa điểm - Quán ăn XYZ',
-      'location':  'Đà Nẵng',
+      'title': 'Delete location - XYZ Eatery',
+      'location':  'Da Nang',
       'date': '03/01/2026',
-      'status': 'Đã hoàn thành',
-      'type': 'Xóa',
+      'status': 'Completed',
+      'type': 'Delete',
     },
     {
       'id': '004',
-      'title': 'Thêm địa điểm mới - Siêu thị Mini',
-      'location': 'Hải Phòng',
+      'title': 'Add new location - Mini Mart',
+      'location': 'Hai Phong',
       'date': '02/01/2026',
-      'status': 'Từ chối',
-      'type': 'Thêm mới',
+      'status': 'Rejected',
+      'type': 'Add New',
     },
   ];
 
@@ -51,7 +51,7 @@ class _RequestListPageState extends State<RequestListPage> {
       backgroundColor: Colors.grey.shade100,
       appBar: AppBar(
         title: const Text(
-          'Danh sách yêu cầu',
+          'Request List',
           style: TextStyle(
             fontWeight: FontWeight.bold,
             color: Colors.white,
@@ -62,7 +62,7 @@ class _RequestListPageState extends State<RequestListPage> {
         automaticallyImplyLeading: false,
         actions: [
           IconButton(
-            icon: const Icon(Icons.search, color: Colors.white),
+            icon: const Icon(Icons. search, color: Colors.white),
             onPressed: () {
               // Implement search
             },
@@ -86,11 +86,11 @@ class _RequestListPageState extends State<RequestListPage> {
               scrollDirection: Axis. horizontal,
               padding: const EdgeInsets.symmetric(horizontal: 16),
               children: [
-                _buildFilterChip('Tất cả'),
-                _buildFilterChip('Chờ xử lý'),
-                _buildFilterChip('Đang xử lý'),
-                _buildFilterChip('Đã hoàn thành'),
-                _buildFilterChip('Từ chối'),
+                _buildFilterChip('All'),
+                _buildFilterChip('Pending'),
+                _buildFilterChip('In Progress'),
+                _buildFilterChip('Completed'),
+                _buildFilterChip('Rejected'),
               ],
             ),
           ),
@@ -129,7 +129,7 @@ class _RequestListPageState extends State<RequestListPage> {
           color: isSelected ? Colors.green. shade700 : Colors.grey. shade700,
           fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
         ),
-        checkmarkColor: Colors.green.shade700,
+        checkmarkColor: Colors.green. shade700,
       ),
     );
   }
@@ -137,19 +137,19 @@ class _RequestListPageState extends State<RequestListPage> {
   Widget _buildRequestCard(Map<String, dynamic> request) {
     Color statusColor;
     switch (request['status']) {
-      case 'Chờ xử lý':
+      case 'Pending':
         statusColor = Colors.orange;
         break;
-      case 'Đang xử lý':
-        statusColor = Colors.blue;
+      case 'In Progress':
+        statusColor = Colors. blue;
         break;
-      case 'Đã hoàn thành': 
+      case 'Completed':
         statusColor = Colors.green;
         break;
-      case 'Từ chối': 
+      case 'Rejected':
         statusColor = Colors.red;
         break;
-      default: 
+      default:
         statusColor = Colors.grey;
     }
 
@@ -222,7 +222,7 @@ class _RequestListPageState extends State<RequestListPage> {
                     Icon(
                       Icons.location_on,
                       size: 16,
-                      color: Colors. grey.shade600,
+                      color: Colors.grey.shade600,
                     ),
                     const SizedBox(width: 4),
                     Text(
@@ -235,20 +235,20 @@ class _RequestListPageState extends State<RequestListPage> {
                     const SizedBox(width: 16),
                     Icon(
                       Icons.calendar_today,
-                      size:  16,
-                      color:  Colors.grey.shade600,
+                      size: 16,
+                      color: Colors.grey.shade600,
                     ),
                     const SizedBox(width: 4),
                     Text(
                       request['date'],
-                      style: TextStyle(
-                        fontSize: 14,
-                        color: Colors.grey.shade600,
+                      style:  TextStyle(
+                        fontSize:  14,
+                        color:  Colors.grey.shade600,
                       ),
                     ),
                   ],
                 ),
-                const SizedBox(height:  12),
+                const SizedBox(height: 12),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -289,22 +289,22 @@ class _RequestListPageState extends State<RequestListPage> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Lọc yêu cầu'),
+        title: const Text('Filter Requests'),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             ListTile(
-              title: const Text('Theo trạng thái'),
+              title: const Text('By Status'),
               trailing: const Icon(Icons.arrow_forward_ios, size: 16),
               onTap: () {},
             ),
             ListTile(
-              title: const Text('Theo loại yêu cầu'),
+              title: const Text('By Request Type'),
               trailing: const Icon(Icons.arrow_forward_ios, size: 16),
               onTap: () {},
             ),
             ListTile(
-              title: const Text('Theo địa điểm'),
+              title: const Text('By Location'),
               trailing: const Icon(Icons.arrow_forward_ios, size: 16),
               onTap: () {},
             ),
@@ -313,7 +313,7 @@ class _RequestListPageState extends State<RequestListPage> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Đóng'),
+            child: const Text('Close'),
           ),
         ],
       ),
@@ -357,15 +357,15 @@ class _RequestListPageState extends State<RequestListPage> {
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-                const SizedBox(height:  16),
-                _buildDetailRow('Mã yêu cầu', '#${request['id']}'),
-                _buildDetailRow('Loại yêu cầu', request['type']),
-                _buildDetailRow('Địa điểm', request['location']),
-                _buildDetailRow('Ngày gửi', request['date']),
-                _buildDetailRow('Trạng thái', request['status']),
+                const SizedBox(height: 16),
+                _buildDetailRow('Request ID', '#${request['id']}'),
+                _buildDetailRow('Request Type', request['type']),
+                _buildDetailRow('Location', request['location']),
+                _buildDetailRow('Submission Date', request['date']),
+                _buildDetailRow('Status', request['status']),
                 const SizedBox(height: 24),
                 const Text(
-                  'Mô tả chi tiết',
+                  'Detailed Description',
                   style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
@@ -373,7 +373,7 @@ class _RequestListPageState extends State<RequestListPage> {
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  'Đây là mô tả chi tiết về yêu cầu. Người dùng muốn thêm/cập nhật/xóa địa điểm với các thông tin cụ thể.. .',
+                  'This is a detailed description of the request.  User wants to add/update/delete a location with specific information.. .',
                   style: TextStyle(
                     fontSize: 14,
                     color: Colors. grey.shade700,
@@ -381,7 +381,7 @@ class _RequestListPageState extends State<RequestListPage> {
                   ),
                 ),
                 const SizedBox(height: 24),
-                if (request['status'] == 'Chờ xử lý')
+                if (request['status'] == 'Pending')
                   Row(
                     children: [
                       Expanded(
@@ -391,10 +391,10 @@ class _RequestListPageState extends State<RequestListPage> {
                             _showApproveDialog();
                           },
                           icon: const Icon(Icons.check),
-                          label: const Text('Duyệt'),
-                          style: ElevatedButton. styleFrom(
-                            backgroundColor:  Colors.green.shade700,
-                            foregroundColor: Colors. white,
+                          label: const Text('Approve'),
+                          style:  ElevatedButton.styleFrom(
+                            backgroundColor: Colors.green.shade700,
+                            foregroundColor: Colors.white,
                             padding: const EdgeInsets.symmetric(vertical: 12),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(8),
@@ -410,11 +410,11 @@ class _RequestListPageState extends State<RequestListPage> {
                             _showRejectDialog();
                           },
                           icon: const Icon(Icons.close),
-                          label: const Text('Từ chối'),
-                          style: OutlinedButton. styleFrom(
+                          label: const Text('Reject'),
+                          style:  OutlinedButton.styleFrom(
                             foregroundColor: Colors.red,
                             side: const BorderSide(color: Colors.red),
-                            padding: const EdgeInsets. symmetric(vertical: 12),
+                            padding: const EdgeInsets.symmetric(vertical: 12),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(8),
                             ),
@@ -438,7 +438,7 @@ class _RequestListPageState extends State<RequestListPage> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           SizedBox(
-            width: 120,
+            width: 140,
             child: Text(
               label,
               style: TextStyle(
@@ -465,19 +465,19 @@ class _RequestListPageState extends State<RequestListPage> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Xác nhận duyệt'),
-        content: const Text('Bạn có chắc chắn muốn duyệt yêu cầu này? '),
+        title: const Text('Confirm Approval'),
+        content: const Text('Are you sure you want to approve this request?'),
         actions: [
           TextButton(
-            onPressed:  () => Navigator.pop(context),
-            child: const Text('Hủy'),
+            onPressed: () => Navigator.pop(context),
+            child:  const Text('Cancel'),
           ),
           ElevatedButton(
             onPressed: () {
               Navigator.pop(context);
               ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(
-                  content: Text('Đã duyệt yêu cầu thành công'),
+                  content: Text('Request approved successfully'),
                   backgroundColor: Colors.green,
                 ),
               );
@@ -485,7 +485,7 @@ class _RequestListPageState extends State<RequestListPage> {
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.green.shade700,
             ),
-            child: const Text('Xác nhận'),
+            child: const Text('Confirm'),
           ),
         ],
       ),
@@ -496,19 +496,19 @@ class _RequestListPageState extends State<RequestListPage> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Xác nhận từ chối'),
-        content: const Text('Bạn có chắc chắn muốn từ chối yêu cầu này?'),
+        title: const Text('Confirm Rejection'),
+        content: const Text('Are you sure you want to reject this request?'),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Hủy'),
+            child: const Text('Cancel'),
           ),
           ElevatedButton(
-            onPressed:  () {
+            onPressed: () {
               Navigator.pop(context);
               ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(
-                  content:  Text('Đã từ chối yêu cầu'),
+                  content: Text('Request rejected'),
                   backgroundColor: Colors.red,
                 ),
               );
@@ -516,7 +516,7 @@ class _RequestListPageState extends State<RequestListPage> {
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.red,
             ),
-            child: const Text('Từ chối'),
+            child: const Text('Reject'),
           ),
         ],
       ),

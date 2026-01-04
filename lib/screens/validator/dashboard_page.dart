@@ -7,7 +7,7 @@ class DashboardPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.grey. shade100,
-      appBar: AppBar(
+      appBar:  AppBar(
         title: const Text(
           'Dashboard',
           style: TextStyle(
@@ -20,7 +20,7 @@ class DashboardPage extends StatelessWidget {
         automaticallyImplyLeading: false,
       ),
       body: SingleChildScrollView(
-        child:  Column(
+        child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Header với gradient
@@ -29,7 +29,7 @@ class DashboardPage extends StatelessWidget {
               padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
                 gradient: LinearGradient(
-                  begin:  Alignment.topCenter,
+                  begin: Alignment.topCenter,
                   end: Alignment.bottomCenter,
                   colors: [
                     Colors.green.shade700,
@@ -38,26 +38,26 @@ class DashboardPage extends StatelessWidget {
                 ),
                 borderRadius: const BorderRadius.only(
                   bottomLeft: Radius.circular(30),
-                  bottomRight:  Radius.circular(30),
+                  bottomRight: Radius.circular(30),
                 ),
               ),
-              child:  Column(
+              child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   const Text(
-                    'Xin chào, Validator!',
-                    style: TextStyle(
-                      fontSize: 24,
-                      fontWeight:  FontWeight.bold,
+                    'Hello, Validator!',
+                    style:  TextStyle(
+                      fontSize:  24,
+                      fontWeight: FontWeight.bold,
                       color: Colors.white,
                     ),
                   ),
-                  const SizedBox(height:  8),
+                  const SizedBox(height: 8),
                   Text(
-                    'Chào mừng bạn quay trở lại',
+                    'Welcome back',
                     style: TextStyle(
                       fontSize: 16,
-                      color: Colors.white.withOpacity(0.9),
+                      color: Colors. white.withOpacity(0.9),
                     ),
                   ),
                 ],
@@ -71,7 +71,7 @@ class DashboardPage extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   const Text(
-                    'Thống kê',
+                    'Statistics',
                     style: TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
@@ -83,18 +83,18 @@ class DashboardPage extends StatelessWidget {
                       Expanded(
                         child: _buildStatCard(
                           icon: Icons.pending_actions,
-                          title: 'Chờ xử lý',
+                          title: 'Pending',
                           value: '12',
-                          color: Colors. orange,
+                          color: Colors.orange,
                         ),
                       ),
                       const SizedBox(width: 12),
                       Expanded(
                         child: _buildStatCard(
                           icon: Icons. check_circle,
-                          title: 'Đã hoàn thành',
+                          title: 'Completed',
                           value: '45',
-                          color: Colors. green,
+                          color: Colors.green,
                         ),
                       ),
                     ],
@@ -105,18 +105,18 @@ class DashboardPage extends StatelessWidget {
                       Expanded(
                         child: _buildStatCard(
                           icon: Icons.cancel,
-                          title: 'Từ chối',
+                          title: 'Rejected',
                           value: '3',
-                          color: Colors. red,
+                          color: Colors.red,
                         ),
                       ),
                       const SizedBox(width: 12),
                       Expanded(
                         child: _buildStatCard(
                           icon: Icons.access_time,
-                          title:  'Hôm nay',
+                          title:  'Today',
                           value: '5',
-                          color: Colors. blue,
+                          color: Colors.blue,
                         ),
                       ),
                     ],
@@ -124,7 +124,7 @@ class DashboardPage extends StatelessWidget {
 
                   const SizedBox(height: 24),
                   const Text(
-                    'Hoạt động gần đây',
+                    'Recent Activities',
                     style: TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
@@ -134,24 +134,24 @@ class DashboardPage extends StatelessWidget {
 
                   // Danh sách hoạt động
                   _buildActivityItem(
-                    icon: Icons. location_on,
-                    title:  'Địa điểm mới tại Hà Nội',
-                    subtitle: '2 giờ trước',
-                    status: 'Chờ xử lý',
+                    icon: Icons.location_on,
+                    title:  'New location in Hanoi',
+                    subtitle: '2 hours ago',
+                    status: 'Pending',
                     statusColor: Colors.orange,
                   ),
                   _buildActivityItem(
                     icon: Icons.edit_location,
-                    title: 'Cập nhật thông tin địa điểm',
-                    subtitle: '5 giờ trước',
-                    status: 'Đã duyệt',
+                    title: 'Update location information',
+                    subtitle: '5 hours ago',
+                    status: 'Approved',
                     statusColor: Colors.green,
                   ),
                   _buildActivityItem(
                     icon: Icons.delete_outline,
-                    title: 'Yêu cầu xóa địa điểm',
-                    subtitle: '1 ngày trước',
-                    status: 'Từ chối',
+                    title: 'Delete location request',
+                    subtitle: '1 day ago',
+                    status: 'Rejected',
                     statusColor: Colors.red,
                   ),
                 ],
@@ -172,11 +172,11 @@ class DashboardPage extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors. white,
+        color: Colors.white,
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color:  Colors.black.withOpacity(0.05),
             blurRadius: 10,
             offset: const Offset(0, 2),
           ),
@@ -188,8 +188,8 @@ class DashboardPage extends StatelessWidget {
           Container(
             padding: const EdgeInsets.all(8),
             decoration: BoxDecoration(
-              color: color. withOpacity(0.1),
-              borderRadius: BorderRadius. circular(8),
+              color: color.withOpacity(0.1),
+              borderRadius: BorderRadius.circular(8),
             ),
             child:  Icon(
               icon,
@@ -231,9 +231,9 @@ class DashboardPage extends StatelessWidget {
       decoration: BoxDecoration(
         color: Colors. white,
         borderRadius: BorderRadius.circular(12),
-        boxShadow: [
+        boxShadow:  [
           BoxShadow(
-            color:  Colors.black.withOpacity(0.05),
+            color: Colors.black. withOpacity(0.05),
             blurRadius: 5,
             offset: const Offset(0, 2),
           ),
@@ -253,7 +253,7 @@ class DashboardPage extends StatelessWidget {
               size: 24,
             ),
           ),
-          const SizedBox(width: 16),
+          const SizedBox(width:  16),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -279,8 +279,8 @@ class DashboardPage extends StatelessWidget {
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
             decoration: BoxDecoration(
-              color: statusColor.withOpacity(0.1),
-              borderRadius: BorderRadius.circular(20),
+              color: statusColor. withOpacity(0.1),
+              borderRadius: BorderRadius. circular(20),
             ),
             child:  Text(
               status,

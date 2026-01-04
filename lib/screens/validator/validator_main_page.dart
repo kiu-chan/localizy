@@ -27,9 +27,9 @@ class _ValidatorMainPageState extends State<ValidatorMainPage> {
       body: _pages[_currentIndex],
       bottomNavigationBar: Container(
         decoration: BoxDecoration(
-          boxShadow:  [
+          boxShadow: [
             BoxShadow(
-              color: Colors.black. withOpacity(0.1),
+              color: Colors. black.withOpacity(0.1),
               blurRadius: 10,
               offset: const Offset(0, -2),
             ),
@@ -53,16 +53,16 @@ class _ValidatorMainPageState extends State<ValidatorMainPage> {
               label: 'Dashboard',
             ),
             BottomNavigationBarItem(
-              icon: Icon(Icons.list_alt),
-              label: 'Yêu cầu',
+              icon:  Icon(Icons.list_alt),
+              label: 'Requests',
             ),
             BottomNavigationBarItem(
               icon: Icon(Icons.calendar_today),
-              label: 'Lịch làm việc',
+              label: 'Schedule',
             ),
             BottomNavigationBarItem(
-              icon: Icon(Icons.settings),
-              label: 'Cài đặt',
+              icon: Icon(Icons. settings),
+              label: 'Settings',
             ),
           ],
         ),

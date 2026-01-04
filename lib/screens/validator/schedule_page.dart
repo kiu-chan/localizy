@@ -10,30 +10,30 @@ class SchedulePage extends StatefulWidget {
 
 class _SchedulePageState extends State<SchedulePage> {
   CalendarFormat _calendarFormat = CalendarFormat.month;
-  DateTime _focusedDay = DateTime. now();
+  DateTime _focusedDay = DateTime.now();
   DateTime? _selectedDay;
 
   final Map<DateTime, List<Map<String, dynamic>>> _events = {
     DateTime.utc(2026, 1, 4): [
       {
         'time': '09:00',
-        'title': 'Kiểm tra địa điểm mới',
-        'location': 'Hà Nội',
-        'type': 'Thực địa',
+        'title': 'Inspect new location',
+        'location': 'Hanoi',
+        'type': 'Field Visit',
       },
       {
         'time': '14:00',
-        'title':  'Họp nhóm validator',
+        'title':  'Validator team meeting',
         'location': 'Online',
-        'type': 'Họp',
+        'type': 'Meeting',
       },
     ],
     DateTime.utc(2026, 1, 5): [
       {
         'time': '10:00',
-        'title':  'Xác minh địa điểm',
-        'location': 'TP. HCM',
-        'type':  'Thực địa',
+        'title':  'Verify location',
+        'location': 'Ho Chi Minh City',
+        'type': 'Field Visit',
       },
     ],
   };
@@ -48,8 +48,8 @@ class _SchedulePageState extends State<SchedulePage> {
       backgroundColor: Colors.grey.shade100,
       appBar: AppBar(
         title: const Text(
-          'Lịch làm việc',
-          style:  TextStyle(
+          'Schedule',
+          style: TextStyle(
             fontWeight: FontWeight.bold,
             color: Colors.white,
           ),
@@ -104,7 +104,7 @@ class _SchedulePageState extends State<SchedulePage> {
                   shape: BoxShape.circle,
                 ),
               ),
-              headerStyle:  HeaderStyle(
+              headerStyle: HeaderStyle(
                 titleCentered: true,
                 formatButtonVisible: false,
                 titleTextStyle: const TextStyle(
@@ -113,7 +113,7 @@ class _SchedulePageState extends State<SchedulePage> {
                 ),
                 leftChevronIcon: Icon(
                   Icons.chevron_left,
-                  color: Colors. green.shade700,
+                  color:  Colors.green.shade700,
                 ),
                 rightChevronIcon: Icon(
                   Icons.chevron_right,
@@ -128,7 +128,7 @@ class _SchedulePageState extends State<SchedulePage> {
                 ? _buildEventsList()
                 : Center(
                     child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
+                      mainAxisAlignment:  MainAxisAlignment.center,
                       children: [
                         Icon(
                           Icons.calendar_today,
@@ -137,10 +137,10 @@ class _SchedulePageState extends State<SchedulePage> {
                         ),
                         const SizedBox(height: 16),
                         Text(
-                          'Chọn một ngày để xem lịch',
+                          'Select a day to view schedule',
                           style: TextStyle(
                             fontSize: 16,
-                            color: Colors.grey.shade600,
+                            color: Colors. grey.shade600,
                           ),
                         ),
                       ],
@@ -153,7 +153,7 @@ class _SchedulePageState extends State<SchedulePage> {
   }
 
   Widget _buildEventsList() {
-    final events = _getEventsForDay(_selectedDay!);
+    final events = _getEventsForDay(_selectedDay! );
 
     if (events.isEmpty) {
       return Center(
@@ -163,14 +163,14 @@ class _SchedulePageState extends State<SchedulePage> {
             Icon(
               Icons. event_busy,
               size: 64,
-              color: Colors.grey. shade300,
+              color: Colors. grey.shade300,
             ),
             const SizedBox(height: 16),
             Text(
-              'Không có lịch làm việc',
-              style:  TextStyle(
+              'No schedule for this day',
+              style: TextStyle(
                 fontSize: 16,
-                color: Colors. grey.shade600,
+                color: Colors.grey.shade600,
               ),
             ),
           ],
@@ -180,7 +180,7 @@ class _SchedulePageState extends State<SchedulePage> {
 
     return ListView.builder(
       padding: const EdgeInsets.all(16),
-      itemCount: events. length,
+      itemCount: events.length,
       itemBuilder: (context, index) {
         final event = events[index];
         return _buildEventCard(event);
@@ -193,12 +193,12 @@ class _SchedulePageState extends State<SchedulePage> {
     IconData typeIcon;
 
     switch (event['type']) {
-      case 'Thực địa':
+      case 'Field Visit': 
         typeColor = Colors.blue;
         typeIcon = Icons. location_on;
         break;
-      case 'Họp':
-        typeColor = Colors. orange;
+      case 'Meeting': 
+        typeColor = Colors.orange;
         typeIcon = Icons. groups;
         break;
       default:
@@ -211,9 +211,9 @@ class _SchedulePageState extends State<SchedulePage> {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(12),
-        boxShadow: [
+        boxShadow:  [
           BoxShadow(
-            color:  Colors.black.withOpacity(0.05),
+            color: Colors.black.withOpacity(0.05),
             blurRadius: 5,
             offset: const Offset(0, 2),
           ),
@@ -255,7 +255,7 @@ class _SchedulePageState extends State<SchedulePage> {
                             event['time'],
                             style: TextStyle(
                               fontSize: 14,
-                              color: Colors.grey.shade600,
+                              color: Colors. grey.shade600,
                               fontWeight: FontWeight.w600,
                             ),
                           ),
@@ -276,7 +276,7 @@ class _SchedulePageState extends State<SchedulePage> {
                                   size: 12,
                                   color: typeColor,
                                 ),
-                                const SizedBox(width: 4),
+                                const SizedBox(width:  4),
                                 Text(
                                   event['type'],
                                   style: TextStyle(
@@ -363,19 +363,19 @@ class _SchedulePageState extends State<SchedulePage> {
               ),
             ),
             const SizedBox(height: 16),
-            _buildDetailRow(Icons.access_time, 'Thời gian', event['time']),
-            _buildDetailRow(Icons.category, 'Loại', event['type']),
-            _buildDetailRow(Icons.place, 'Địa điểm', event['location']),
+            _buildDetailRow(Icons.access_time, 'Time', event['time']),
+            _buildDetailRow(Icons.category, 'Type', event['type']),
+            _buildDetailRow(Icons.place, 'Location', event['location']),
             const SizedBox(height: 24),
             Row(
               children: [
                 Expanded(
-                  child:  OutlinedButton. icon(
+                  child: OutlinedButton. icon(
                     onPressed:  () {
                       Navigator.pop(context);
                     },
                     icon: const Icon(Icons.edit),
-                    label: const Text('Chỉnh sửa'),
+                    label: const Text('Edit'),
                     style: OutlinedButton.styleFrom(
                       foregroundColor: Colors.green.shade700,
                       side: BorderSide(color: Colors.green.shade700),
@@ -393,7 +393,7 @@ class _SchedulePageState extends State<SchedulePage> {
                       Navigator.pop(context);
                     },
                     icon:  const Icon(Icons.delete),
-                    label: const Text('Xóa'),
+                    label: const Text('Delete'),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.red,
                       foregroundColor: Colors.white,
@@ -420,7 +420,7 @@ class _SchedulePageState extends State<SchedulePage> {
           Icon(icon, size: 20, color: Colors.grey.shade600),
           const SizedBox(width: 12),
           SizedBox(
-            width: 100,
+            width: 80,
             child: Text(
               label,
               style: TextStyle(
@@ -447,12 +447,12 @@ class _SchedulePageState extends State<SchedulePage> {
     showDialog(
       context: context,
       builder:  (context) => AlertDialog(
-        title: const Text('Thêm lịch làm việc'),
-        content: const Text('Chức năng thêm lịch làm việc đang được phát triển...'),
+        title: const Text('Add Schedule'),
+        content: const Text('Add schedule feature is under development... '),
         actions: [
           TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Đóng'),
+            onPressed:  () => Navigator.pop(context),
+            child: const Text('Close'),
           ),
         ],
       ),

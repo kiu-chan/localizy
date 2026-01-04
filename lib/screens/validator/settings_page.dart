@@ -17,16 +17,16 @@ class _SettingsPageState extends State<SettingsPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey.shade100,
-      appBar: AppBar(
+      backgroundColor: Colors.grey. shade100,
+      appBar:  AppBar(
         title: const Text(
-          'Cài đặt',
+          'Settings',
           style: TextStyle(
-            fontWeight: FontWeight. bold,
-            color: Colors. white,
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
           ),
         ),
-        backgroundColor: Colors.green. shade700,
+        backgroundColor: Colors.green.shade700,
         elevation: 0,
         automaticallyImplyLeading: false,
       ),
@@ -51,7 +51,7 @@ class _SettingsPageState extends State<SettingsPage> {
                 children: [
                   CircleAvatar(
                     radius: 50,
-                    backgroundColor: Colors.white,
+                    backgroundColor: Colors. white,
                     child: Icon(
                       Icons.person,
                       size: 50,
@@ -81,10 +81,10 @@ class _SettingsPageState extends State<SettingsPage> {
                       _showEditProfileDialog();
                     },
                     icon: const Icon(Icons.edit, size: 18),
-                    label: const Text('Chỉnh sửa hồ sơ'),
-                    style: ElevatedButton. styleFrom(
-                      backgroundColor:  Colors.white,
-                      foregroundColor: Colors.green.shade700,
+                    label: const Text('Edit Profile'),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.white,
+                      foregroundColor: Colors.green. shade700,
                       padding: const EdgeInsets.symmetric(
                         horizontal: 24,
                         vertical: 12,
@@ -101,12 +101,12 @@ class _SettingsPageState extends State<SettingsPage> {
             const SizedBox(height: 16),
 
             // Account Settings
-            _buildSectionTitle('Tài khoản'),
+            _buildSectionTitle('Account'),
             _buildSettingsCard([
               _buildSettingsTile(
                 icon: Icons.person_outline,
-                title: 'Thông tin cá nhân',
-                subtitle:  'Cập nhật thông tin cá nhân',
+                title: 'Personal Information',
+                subtitle: 'Update personal information',
                 onTap: () {
                   _showPersonalInfoDialog();
                 },
@@ -114,9 +114,9 @@ class _SettingsPageState extends State<SettingsPage> {
               const Divider(height: 1),
               _buildSettingsTile(
                 icon: Icons. lock_outline,
-                title: 'Đổi mật khẩu',
-                subtitle:  'Thay đổi mật khẩu đăng nhập',
-                onTap: () {
+                title: 'Change Password',
+                subtitle: 'Change login password',
+                onTap:  () {
                   _showChangePasswordDialog();
                 },
               ),
@@ -130,25 +130,25 @@ class _SettingsPageState extends State<SettingsPage> {
             ]),
 
             // Notification Settings
-            _buildSectionTitle('Thông báo'),
+            _buildSectionTitle('Notifications'),
             _buildSettingsCard([
               _buildSwitchTile(
                 icon: Icons.notifications_outlined,
-                title: 'Thông báo đẩy',
-                subtitle: 'Nhận thông báo về yêu cầu mới',
+                title: 'Push Notifications',
+                subtitle: 'Receive notifications about new requests',
                 value: _notificationsEnabled,
-                onChanged: (value) {
+                onChanged:  (value) {
                   setState(() {
                     _notificationsEnabled = value;
                   });
                 },
               ),
-              const Divider(height: 1),
+              const Divider(height:  1),
               _buildSwitchTile(
-                icon: Icons. email_outlined,
-                title:  'Thông báo Email',
-                subtitle: 'Nhận email về hoạt động quan trọng',
-                value:  _emailNotifications,
+                icon: Icons.email_outlined,
+                title: 'Email Notifications',
+                subtitle: 'Receive emails about important activities',
+                value: _emailNotifications,
                 onChanged: (value) {
                   setState(() {
                     _emailNotifications = value;
@@ -158,12 +158,12 @@ class _SettingsPageState extends State<SettingsPage> {
             ]),
 
             // Work Settings
-            _buildSectionTitle('Cài đặt công việc'),
+            _buildSectionTitle('Work Settings'),
             _buildSettingsCard([
               _buildSwitchTile(
                 icon: Icons.auto_awesome,
-                title: 'Tự động duyệt',
-                subtitle:  'Tự động duyệt yêu cầu đơn giản',
+                title: 'Auto Approval',
+                subtitle: 'Automatically approve simple requests',
                 value: _autoApproval,
                 onChanged: (value) {
                   setState(() {
@@ -174,7 +174,7 @@ class _SettingsPageState extends State<SettingsPage> {
               const Divider(height: 1),
               _buildSettingsTile(
                 icon:  Icons.access_time,
-                title: 'Giờ làm việc',
+                title: 'Working Hours',
                 subtitle: '08:00 - 17:00',
                 onTap: () {
                   _showWorkingHoursDialog();
@@ -183,8 +183,8 @@ class _SettingsPageState extends State<SettingsPage> {
               const Divider(height: 1),
               _buildSettingsTile(
                 icon: Icons.bar_chart,
-                title: 'Thống kê',
-                subtitle:  'Xem thống kê công việc',
+                title: 'Statistics',
+                subtitle: 'View work statistics',
                 onTap: () {
                   _showStatisticsDialog();
                 },
@@ -192,12 +192,12 @@ class _SettingsPageState extends State<SettingsPage> {
             ]),
 
             // App Settings
-            _buildSectionTitle('Ứng dụng'),
+            _buildSectionTitle('Application'),
             _buildSettingsCard([
               _buildSwitchTile(
                 icon: Icons.dark_mode_outlined,
-                title: 'Chế độ tối',
-                subtitle: 'Bật chế độ giao diện tối',
+                title: 'Dark Mode',
+                subtitle: 'Enable dark theme',
                 value: _darkMode,
                 onChanged: (value) {
                   setState(() {
@@ -205,11 +205,11 @@ class _SettingsPageState extends State<SettingsPage> {
                   });
                 },
               ),
-              const Divider(height:  1),
+              const Divider(height: 1),
               _buildSettingsTile(
-                icon:  Icons.language,
-                title: 'Ngôn ngữ',
-                subtitle: 'Tiếng Việt',
+                icon: Icons.language,
+                title: 'Language',
+                subtitle: 'English',
                 onTap: () {
                   _showLanguageDialog();
                 },
@@ -217,8 +217,8 @@ class _SettingsPageState extends State<SettingsPage> {
               const Divider(height: 1),
               _buildSettingsTile(
                 icon: Icons.info_outline,
-                title: 'Về ứng dụng',
-                subtitle: 'Phiên bản 1.0.0',
+                title: 'About',
+                subtitle: 'Version 1.0.0',
                 onTap: () {
                   _showAboutDialog();
                 },
@@ -226,31 +226,31 @@ class _SettingsPageState extends State<SettingsPage> {
             ]),
 
             // Support
-            _buildSectionTitle('Hỗ trợ'),
+            _buildSectionTitle('Support'),
             _buildSettingsCard([
               _buildSettingsTile(
-                icon:  Icons.help_outline,
-                title: 'Trợ giúp',
-                subtitle: 'Câu hỏi thường gặp và hướng dẫn',
+                icon: Icons. help_outline,
+                title:  'Help',
+                subtitle: 'FAQ and guides',
                 onTap: () {
                   _showHelpDialog();
                 },
               ),
               const Divider(height: 1),
               _buildSettingsTile(
-                icon: Icons. feedback_outlined,
-                title: 'Phản hồi',
-                subtitle: 'Gửi phản hồi cho chúng tôi',
-                onTap: () {
+                icon: Icons.feedback_outlined,
+                title: 'Feedback',
+                subtitle: 'Send us your feedback',
+                onTap:  () {
                   _showFeedbackDialog();
                 },
               ),
               const Divider(height: 1),
               _buildSettingsTile(
                 icon: Icons.privacy_tip_outlined,
-                title: 'Chính sách bảo mật',
-                subtitle: 'Xem chính sách bảo mật',
-                onTap: () {
+                title: 'Privacy Policy',
+                subtitle:  'View privacy policy',
+                onTap:  () {
                   _showPrivacyPolicyDialog();
                 },
               ),
@@ -267,10 +267,10 @@ class _SettingsPageState extends State<SettingsPage> {
                   },
                   icon:  const Icon(Icons.logout),
                   label: const Text(
-                    'Đăng xuất',
+                    'Logout',
                     style: TextStyle(
                       fontSize: 16,
-                      fontWeight: FontWeight.bold,
+                      fontWeight: FontWeight. bold,
                     ),
                   ),
                   style: ElevatedButton.styleFrom(
@@ -294,7 +294,7 @@ class _SettingsPageState extends State<SettingsPage> {
 
   Widget _buildSectionTitle(String title) {
     return Padding(
-      padding:  const EdgeInsets.fromLTRB(16, 8, 16, 8),
+      padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
       child:  Align(
         alignment: Alignment.centerLeft,
         child: Text(
@@ -340,7 +340,7 @@ class _SettingsPageState extends State<SettingsPage> {
         padding: const EdgeInsets.all(8),
         decoration: BoxDecoration(
           color: Colors.green.shade50,
-          borderRadius: BorderRadius. circular(8),
+          borderRadius: BorderRadius.circular(8),
         ),
         child: Icon(
           icon,
@@ -365,7 +365,7 @@ class _SettingsPageState extends State<SettingsPage> {
       trailing: Icon(
         Icons.arrow_forward_ios,
         size: 16,
-        color:  Colors.grey.shade400,
+        color: Colors. grey.shade400,
       ),
       onTap: onTap,
     );
@@ -408,7 +408,7 @@ class _SettingsPageState extends State<SettingsPage> {
       trailing: Switch(
         value: value,
         onChanged: onChanged,
-        activeColor: Colors. green.shade700,
+        activeColor: Colors.green.shade700,
       ),
     );
   }
@@ -418,21 +418,21 @@ class _SettingsPageState extends State<SettingsPage> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Chỉnh sửa hồ sơ'),
+        title: const Text('Edit Profile'),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             TextField(
               decoration: const InputDecoration(
-                labelText: 'Họ và tên',
+                labelText: 'Full Name',
                 border: OutlineInputBorder(),
               ),
-              controller: TextEditingController(text:  'Validator Admin'),
+              controller: TextEditingController(text: 'Validator Admin'),
             ),
             const SizedBox(height: 16),
             TextField(
               decoration: const InputDecoration(
-                labelText: 'Số điện thoại',
+                labelText: 'Phone Number',
                 border: OutlineInputBorder(),
               ),
               controller: TextEditingController(text: '0123456789'),
@@ -442,14 +442,14 @@ class _SettingsPageState extends State<SettingsPage> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Hủy'),
+            child: const Text('Cancel'),
           ),
           ElevatedButton(
             onPressed: () {
               Navigator.pop(context);
               ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(
-                  content: Text('Đã cập nhật hồ sơ'),
+                  content: Text('Profile updated successfully'),
                   backgroundColor: Colors.green,
                 ),
               );
@@ -457,7 +457,7 @@ class _SettingsPageState extends State<SettingsPage> {
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.green.shade700,
             ),
-            child: const Text('Lưu'),
+            child: const Text('Save'),
           ),
         ],
       ),
@@ -466,24 +466,24 @@ class _SettingsPageState extends State<SettingsPage> {
 
   void _showPersonalInfoDialog() {
     showDialog(
-      context:  context,
+      context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Thông tin cá nhân'),
+        title: const Text('Personal Information'),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _buildInfoRow('Họ và tên:', 'Validator Admin'),
+            _buildInfoRow('Full Name:', 'Validator Admin'),
             _buildInfoRow('Email:', 'admin@gmail.com'),
-            _buildInfoRow('Số điện thoại:', '0123456789'),
-            _buildInfoRow('Vai trò:', 'Validator'),
-            _buildInfoRow('Ngày tham gia:', '01/01/2026'),
+            _buildInfoRow('Phone:', '0123456789'),
+            _buildInfoRow('Role:', 'Validator'),
+            _buildInfoRow('Joined:', '01/01/2026'),
           ],
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Đóng'),
+            child: const Text('Close'),
           ),
         ],
       ),
@@ -497,10 +497,10 @@ class _SettingsPageState extends State<SettingsPage> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           SizedBox(
-            width: 120,
+            width: 100,
             child: Text(
               label,
-              style: TextStyle(
+              style:  TextStyle(
                 fontSize: 14,
                 color: Colors.grey.shade600,
               ),
@@ -524,15 +524,15 @@ class _SettingsPageState extends State<SettingsPage> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Đổi mật khẩu'),
+        title: const Text('Change Password'),
         content: Column(
-          mainAxisSize: MainAxisSize.min,
+          mainAxisSize: MainAxisSize. min,
           children: [
             const TextField(
               obscureText: true,
               decoration: InputDecoration(
-                labelText:  'Mật khẩu hiện tại',
-                border:  OutlineInputBorder(),
+                labelText: 'Current Password',
+                border: OutlineInputBorder(),
                 prefixIcon: Icon(Icons. lock_outline),
               ),
             ),
@@ -540,7 +540,7 @@ class _SettingsPageState extends State<SettingsPage> {
             const TextField(
               obscureText: true,
               decoration: InputDecoration(
-                labelText: 'Mật khẩu mới',
+                labelText:  'New Password',
                 border: OutlineInputBorder(),
                 prefixIcon: Icon(Icons.lock),
               ),
@@ -549,7 +549,7 @@ class _SettingsPageState extends State<SettingsPage> {
             const TextField(
               obscureText: true,
               decoration: InputDecoration(
-                labelText: 'Xác nhận mật khẩu mới',
+                labelText: 'Confirm New Password',
                 border: OutlineInputBorder(),
                 prefixIcon: Icon(Icons.lock),
               ),
@@ -559,22 +559,22 @@ class _SettingsPageState extends State<SettingsPage> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Hủy'),
+            child:  const Text('Cancel'),
           ),
           ElevatedButton(
             onPressed: () {
               Navigator.pop(context);
-              ScaffoldMessenger. of(context).showSnackBar(
+              ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(
-                  content: Text('Đã đổi mật khẩu thành công'),
-                  backgroundColor:  Colors.green,
+                  content: Text('Password changed successfully'),
+                  backgroundColor: Colors.green,
                 ),
               );
             },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.green.shade700,
+            style:  ElevatedButton.styleFrom(
+              backgroundColor: Colors.green. shade700,
             ),
-            child: const Text('Đổi mật khẩu'),
+            child: const Text('Change Password'),
           ),
         ],
       ),
@@ -585,28 +585,28 @@ class _SettingsPageState extends State<SettingsPage> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Giờ làm việc'),
+        title: const Text('Working Hours'),
         content: Column(
-          mainAxisSize: MainAxisSize. min,
+          mainAxisSize: MainAxisSize.min,
           children: [
             ListTile(
-              title: const Text('Giờ bắt đầu'),
+              title: const Text('Start Time'),
               subtitle: const Text('08:00'),
               trailing: const Icon(Icons.access_time),
               onTap: () {},
             ),
             ListTile(
-              title: const Text('Giờ kết thúc'),
+              title: const Text('End Time'),
               subtitle: const Text('17:00'),
               trailing: const Icon(Icons.access_time),
-              onTap:  () {},
+              onTap: () {},
             ),
           ],
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Đóng'),
+            child: const Text('Close'),
           ),
         ],
       ),
@@ -617,23 +617,23 @@ class _SettingsPageState extends State<SettingsPage> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Thống kê công việc'),
+        title:  const Text('Work Statistics'),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            _buildStatRow('Tổng yêu cầu xử lý:', '60'),
-            _buildStatRow('Đã hoàn thành:', '45'),
-            _buildStatRow('Đang xử lý:', '12'),
-            _buildStatRow('Từ chối:', '3'),
+            _buildStatRow('Total Requests:', '60'),
+            _buildStatRow('Completed:', '45'),
+            _buildStatRow('In Progress:', '12'),
+            _buildStatRow('Rejected:', '3'),
             const Divider(),
-            _buildStatRow('Tỷ lệ hoàn thành:', '75%'),
-            _buildStatRow('Thời gian trung bình:', '2. 5 giờ'),
+            _buildStatRow('Completion Rate:', '75%'),
+            _buildStatRow('Average Time:', '2.5 hours'),
           ],
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Đóng'),
+            child: const Text('Close'),
           ),
         ],
       ),
@@ -642,7 +642,7 @@ class _SettingsPageState extends State<SettingsPage> {
 
   Widget _buildStatRow(String label, String value) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8),
+      padding: const EdgeInsets. symmetric(vertical: 8),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children:  [
@@ -666,20 +666,20 @@ class _SettingsPageState extends State<SettingsPage> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Chọn ngôn ngữ'),
+        title: const Text('Select Language'),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             RadioListTile(
-              title: const Text('Tiếng Việt'),
-              value: 'vi',
-              groupValue: 'vi',
+              title:  const Text('English'),
+              value: 'en',
+              groupValue: 'en',
               onChanged:  (value) {},
             ),
             RadioListTile(
-              title: const Text('English'),
-              value: 'en',
-              groupValue: 'vi',
+              title: const Text('Tiếng Việt'),
+              value: 'vi',
+              groupValue: 'en',
               onChanged: (value) {},
             ),
           ],
@@ -687,7 +687,7 @@ class _SettingsPageState extends State<SettingsPage> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Đóng'),
+            child: const Text('Close'),
           ),
         ],
       ),
@@ -698,7 +698,7 @@ class _SettingsPageState extends State<SettingsPage> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Về ứng dụng'),
+        title: const Text('About'),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -712,18 +712,18 @@ class _SettingsPageState extends State<SettingsPage> {
               'Localizy Validator',
               style: TextStyle(
                 fontSize: 18,
-                fontWeight: FontWeight. bold,
+                fontWeight: FontWeight.bold,
               ),
             ),
             const SizedBox(height: 8),
-            const Text('Phiên bản 1.0.0'),
+            const Text('Version 1.0.0'),
             const SizedBox(height: 16),
             Text(
-              'Ứng dụng dành cho Validator quản lý và xác thực địa điểm trên hệ thống Localizy.',
+              'Application for Validators to manage and verify locations on the Localizy system.',
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: 14,
-                color:  Colors.grey.shade600,
+                color: Colors.grey.shade600,
               ),
             ),
           ],
@@ -731,7 +731,7 @@ class _SettingsPageState extends State<SettingsPage> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Đóng'),
+            child: const Text('Close'),
           ),
         ],
       ),
@@ -741,32 +741,32 @@ class _SettingsPageState extends State<SettingsPage> {
   void _showHelpDialog() {
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Trợ giúp'),
+      builder:  (context) => AlertDialog(
+        title: const Text('Help'),
         content: SingleChildScrollView(
           child:  Column(
-            mainAxisSize:  MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment. start,
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const Text(
-                'Câu hỏi thường gặp:',
-                style:  TextStyle(
-                  fontSize:  16,
-                  fontWeight: FontWeight.bold,
+                'Frequently Asked Questions: ',
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight. bold,
                 ),
               ),
-              const SizedBox(height:  12),
+              const SizedBox(height: 12),
               _buildHelpItem(
-                'Làm thế nào để duyệt yêu cầu? ',
-                'Vào mục "Yêu cầu", chọn yêu cầu cần xử lý, sau đó nhấn nút "Duyệt" hoặc "Từ chối".',
+                'How to approve requests?',
+                'Go to "Requests" section, select the request to process, then tap "Approve" or "Reject" button.',
               ),
               _buildHelpItem(
-                'Làm thế nào để thêm lịch làm việc?',
-                'Vào mục "Lịch làm việc", chọn ngày, sau đó nhấn nút "+" để thêm lịch mới.',
+                'How to add work schedule?',
+                'Go to "Schedule" section, select a date, then tap the "+" button to add new schedule.',
               ),
               _buildHelpItem(
-                'Làm thế nào để xem thống kê?',
-                'Vào mục "Dashboard" để xem tổng quan hoặc "Cài đặt" > "Thống kê" để xem chi tiết.',
+                'How to view statistics?',
+                'Go to "Dashboard" for overview or "Settings" > "Statistics" for detailed view.',
               ),
             ],
           ),
@@ -774,7 +774,7 @@ class _SettingsPageState extends State<SettingsPage> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Đóng'),
+            child: const Text('Close'),
           ),
         ],
       ),
@@ -811,20 +811,20 @@ class _SettingsPageState extends State<SettingsPage> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Gửi phản hồi'),
+        title: const Text('Send Feedback'),
         content: Column(
-          mainAxisSize: MainAxisSize. min,
+          mainAxisSize: MainAxisSize.min,
           children: const [
             TextField(
               decoration: InputDecoration(
-                labelText: 'Tiêu đề',
+                labelText: 'Subject',
                 border: OutlineInputBorder(),
               ),
             ),
             SizedBox(height: 16),
             TextField(
-              decoration: InputDecoration(
-                labelText: 'Nội dung phản hồi',
+              decoration:  InputDecoration(
+                labelText: 'Feedback Content',
                 border: OutlineInputBorder(),
                 alignLabelWithHint: true,
               ),
@@ -835,14 +835,14 @@ class _SettingsPageState extends State<SettingsPage> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Hủy'),
+            child: const Text('Cancel'),
           ),
           ElevatedButton(
             onPressed: () {
-              Navigator. pop(context);
-              ScaffoldMessenger.of(context).showSnackBar(
+              Navigator.pop(context);
+              ScaffoldMessenger. of(context).showSnackBar(
                 const SnackBar(
-                  content: Text('Đã gửi phản hồi thành công'),
+                  content: Text('Feedback sent successfully'),
                   backgroundColor: Colors.green,
                 ),
               );
@@ -850,7 +850,7 @@ class _SettingsPageState extends State<SettingsPage> {
             style: ElevatedButton. styleFrom(
               backgroundColor: Colors.green.shade700,
             ),
-            child: const Text('Gửi'),
+            child: const Text('Send'),
           ),
         ],
       ),
@@ -861,21 +861,21 @@ class _SettingsPageState extends State<SettingsPage> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Chính sách bảo mật'),
+        title: const Text('Privacy Policy'),
         content: SingleChildScrollView(
           child: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'Localizy cam kết bảo vệ thông tin cá nhân của bạn. '
-                'Chúng tôi thu thập và sử dụng thông tin của bạn một cách có trách nhiệm.\n\n'
-                '1. Thu thập thông tin\n'
-                'Chúng tôi thu thập thông tin cần thiết để cung cấp dịch vụ tốt nhất.\n\n'
-                '2. Sử dụng thông tin\n'
-                'Thông tin được sử dụng để cải thiện trải nghiệm người dùng.\n\n'
-                '3. Bảo mật\n'
-                'Chúng tôi áp dụng các biện pháp bảo mật tiên tiến.',
+                'Localizy is committed to protecting your personal information. '
+                'We collect and use your information responsibly.\n\n'
+                '1. Information Collection\n'
+                'We collect necessary information to provide the best service.\n\n'
+                '2. Information Usage\n'
+                'Information is used to improve user experience.\n\n'
+                '3. Security\n'
+                'We apply advanced security measures.',
                 style: TextStyle(
                   fontSize: 14,
                   color: Colors.grey. shade700,
@@ -888,7 +888,7 @@ class _SettingsPageState extends State<SettingsPage> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Đóng'),
+            child: const Text('Close'),
           ),
         ],
       ),
@@ -899,12 +899,12 @@ class _SettingsPageState extends State<SettingsPage> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Đăng xuất'),
-        content: const Text('Bạn có chắc chắn muốn đăng xuất? '),
+        title: const Text('Logout'),
+        content: const Text('Are you sure you want to logout?'),
         actions: [
           TextButton(
-            onPressed:  () => Navigator.pop(context),
-            child: const Text('Hủy'),
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancel'),
           ),
           ElevatedButton(
             onPressed: () {
@@ -920,7 +920,7 @@ class _SettingsPageState extends State<SettingsPage> {
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.red,
             ),
-            child: const Text('Đăng xuất'),
+            child: const Text('Logout'),
           ),
         ],
       ),
