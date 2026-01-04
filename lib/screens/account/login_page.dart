@@ -4,6 +4,7 @@ import 'register_page.dart';
 import 'forgot_password_page.dart';
 import '../main_page.dart';
 import '../validator/validator_main_page.dart';
+import '../business/business_main_page.dart';
 import 'dart:math' as math;
 
 class LoginPage extends StatefulWidget {
@@ -44,7 +45,7 @@ class _LoginPageState extends State<LoginPage> {
     _emailFocusNode.addListener(() {
       setState(() {});
     });
-    _passwordFocusNode. addListener(() {
+    _passwordFocusNode.addListener(() {
       setState(() {});
     });
   }
@@ -64,25 +65,36 @@ class _LoginPageState extends State<LoginPage> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(AppLocalizations.of(context)!.loginSuccess),
+            content:  Text(AppLocalizations.of(context)!.loginSuccess),
             backgroundColor: Colors.green,
           ),
         );
         
-        // Kiểm tra nếu là tài khoản admin thì chuyển đến trang Validator
-        if (_emailController.text.trim() == 'admin@gmail.com') {
+        final email = _emailController.text.trim();
+        
+        // Phân quyền dựa trên email
+        if (email == 'admin@gmail.com') {
+          // Tài khoản Validator
           Navigator.pushReplacement(
             context,
             MaterialPageRoute(
-              builder:  (context) => const ValidatorMainPage(),
+              builder: (context) => const ValidatorMainPage(),
+            ),
+          );
+        } else if (email == 'business@gmail.com') {
+          // Tài khoản Business
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+              builder: (context) => const BusinessMainPage(),
             ),
           );
         } else {
-          // Tài khoản thường chuyển đến MainPage
+          // Tài khoản thường
           Navigator.pushReplacement(
             context,
             MaterialPageRoute(
-              builder:  (context) => const MainPage(),
+              builder: (context) => const MainPage(),
             ),
           );
         }
@@ -108,7 +120,7 @@ class _LoginPageState extends State<LoginPage> {
                 child: Form(
                   key: _formKey,
                   child: Column(
-                    mainAxisAlignment:  MainAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Container(
                         padding: const EdgeInsets.all(20),
@@ -117,8 +129,8 @@ class _LoginPageState extends State<LoginPage> {
                           shape: BoxShape.circle,
                           boxShadow: [
                             BoxShadow(
-                              color: Colors.black.withValues(alpha: 0.2),
-                              blurRadius: 20,
+                              color: Colors.black. withValues(alpha: 0.2),
+                              blurRadius:  20,
                               offset: const Offset(0, 10),
                             ),
                           ],
@@ -141,9 +153,9 @@ class _LoginPageState extends State<LoginPage> {
                       ),
                       const SizedBox(height: 40),
                       Text(
-                        l10n.welcomeBack,
+                        l10n. welcomeBack,
                         style:  const TextStyle(
-                          fontSize: 32,
+                          fontSize:  32,
                           fontWeight: FontWeight.bold,
                           color: Colors.white,
                         ),
@@ -151,9 +163,9 @@ class _LoginPageState extends State<LoginPage> {
                       const SizedBox(height: 8),
                       Text(
                         l10n.loginToContinue,
-                        style: const TextStyle(
-                          fontSize: 16,
-                          color: Colors.white70,
+                        style:  const TextStyle(
+                          fontSize:  16,
+                          color:  Colors.white70,
                         ),
                       ),
                       const SizedBox(height: 40),
@@ -179,16 +191,16 @@ class _LoginPageState extends State<LoginPage> {
                               decoration: InputDecoration(
                                 labelText: l10n.email,
                                 labelStyle: TextStyle(
-                                  color: (_emailFocusNode.hasFocus || _emailController.text. isNotEmpty)
+                                  color:  (_emailFocusNode.hasFocus || _emailController.text. isNotEmpty)
                                       ? Colors.black
                                       : Colors.grey,
                                 ),
                                 floatingLabelStyle: TextStyle(
-                                  color: (_emailFocusNode.hasFocus || _emailController.text.isNotEmpty)
-                                      ?  Colors.black
-                                      :  Colors.grey,
+                                  color: (_emailFocusNode.hasFocus || _emailController.text. isNotEmpty)
+                                      ? Colors.black
+                                      : Colors.grey,
                                 ),
-                                prefixIcon: Icon(
+                                prefixIcon:  Icon(
                                   Icons.email_outlined,
                                   color:  Colors.green.shade700,
                                 ),
@@ -198,7 +210,7 @@ class _LoginPageState extends State<LoginPage> {
                                 focusedBorder: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(12),
                                   borderSide: BorderSide(
-                                    color: Colors.green. shade700,
+                                    color: Colors.green.shade700,
                                     width: 2,
                                   ),
                                 ),
@@ -207,8 +219,8 @@ class _LoginPageState extends State<LoginPage> {
                                 if (value == null || value.isEmpty) {
                                   return l10n.pleaseEnterEmail;
                                 }
-                                if (! value.contains('@')) {
-                                  return l10n. invalidEmail;
+                                if (!value.contains('@')) {
+                                  return l10n.invalidEmail;
                                 }
                                 return null;
                               },
@@ -238,21 +250,21 @@ class _LoginPageState extends State<LoginPage> {
                                   icon: Icon(
                                     _isPasswordVisible
                                         ? Icons.visibility_off
-                                        : Icons. visibility,
-                                    color:  Colors.green.shade700,
+                                        : Icons.visibility,
+                                    color: Colors.green.shade700,
                                   ),
-                                  onPressed: () {
+                                  onPressed:  () {
                                     setState(() {
                                       _isPasswordVisible = !_isPasswordVisible;
                                     });
                                   },
                                 ),
                                 border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(12),
+                                  borderRadius:  BorderRadius.circular(12),
                                 ),
                                 focusedBorder: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(12),
-                                  borderSide: BorderSide(
+                                  borderSide:  BorderSide(
                                     color: Colors.green.shade700,
                                     width: 2,
                                   ),
@@ -262,7 +274,7 @@ class _LoginPageState extends State<LoginPage> {
                                 if (value == null || value.isEmpty) {
                                   return l10n.pleaseEnterPassword;
                                 }
-                                if (value.length < 6) {
+                                if (value. length < 6) {
                                   return l10n.passwordMinLength;
                                 }
                                 return null;
@@ -272,8 +284,8 @@ class _LoginPageState extends State<LoginPage> {
                             Align(
                               alignment:  Alignment.centerRight,
                               child: TextButton(
-                                onPressed: () {
-                                  Navigator.push(
+                                onPressed:  () {
+                                  Navigator. push(
                                     context,
                                     MaterialPageRoute(
                                       builder: (context) =>
@@ -282,9 +294,9 @@ class _LoginPageState extends State<LoginPage> {
                                   );
                                 },
                                 child: Text(
-                                  l10n.forgotPassword,
+                                  l10n. forgotPassword,
                                   style: TextStyle(
-                                    color: Colors. green.shade700,
+                                    color: Colors.green.shade700,
                                     fontWeight: FontWeight.w600,
                                   ),
                                 ),
@@ -297,7 +309,7 @@ class _LoginPageState extends State<LoginPage> {
                               child: ElevatedButton(
                                 onPressed: _isLoading ? null : _handleLogin,
                                 style: ElevatedButton.styleFrom(
-                                  backgroundColor:  Colors.green.shade700,
+                                  backgroundColor: Colors.green. shade700,
                                   foregroundColor: Colors.white,
                                   shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(12),
@@ -317,7 +329,7 @@ class _LoginPageState extends State<LoginPage> {
                                         l10n.login,
                                         style: const TextStyle(
                                           fontSize: 18,
-                                          fontWeight: FontWeight.bold,
+                                          fontWeight:  FontWeight.bold,
                                         ),
                                       ),
                               ),
@@ -327,15 +339,15 @@ class _LoginPageState extends State<LoginPage> {
                       ),
                       const SizedBox(height: 24),
                       Column(
-                        mainAxisAlignment:  MainAxisAlignment.center,
+                        mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Text(
-                            l10n. noAccount,
+                            l10n.noAccount,
                             style: const TextStyle(color: Colors.white70),
                           ),
                           TextButton(
                             onPressed: () {
-                              Navigator. push(
+                              Navigator.push(
                                 context,
                                 MaterialPageRoute(
                                   builder: (context) => const RegisterPage(),
@@ -382,10 +394,9 @@ class _WaveBackgroundState extends State<WaveBackground>
   void initState() {
     super.initState();
     
-    // Tạo 3 animation controller với tốc độ khác nhau
     _controller1 = AnimationController(
       vsync: this,
-      duration:  const Duration(seconds: 5),
+      duration: const Duration(seconds:  5),
     )..repeat();
 
     _controller2 = AnimationController(
@@ -394,7 +405,7 @@ class _WaveBackgroundState extends State<WaveBackground>
     )..repeat();
 
     _controller3 = AnimationController(
-      vsync: this,
+      vsync:  this,
       duration: const Duration(seconds: 9),
     )..repeat();
   }
@@ -422,30 +433,28 @@ class _WaveBackgroundState extends State<WaveBackground>
       ),
       child: Stack(
         children: [
-          // Sóng thứ nhất
           AnimatedBuilder(
             animation: _controller1,
             builder: (context, child) {
               return CustomPaint(
                 painter: WavePainter(
                   animationValue: _controller1.value,
-                  color: Colors. white.withOpacity(0.08),
+                  color: Colors.white. withOpacity(0.08),
                   amplitude: 30,
                   frequency: 1.5,
                   offset: 0,
                 ),
-                size: Size.infinite,
+                size: Size. infinite,
               );
             },
           ),
-          // Sóng thứ hai
           AnimatedBuilder(
             animation: _controller2,
             builder: (context, child) {
               return CustomPaint(
                 painter: WavePainter(
-                  animationValue:  _controller2.value,
-                  color: Colors.white.withOpacity(0.06),
+                  animationValue: _controller2.value,
+                  color: Colors. white.withOpacity(0.06),
                   amplitude: 40,
                   frequency: 1.2,
                   offset: 100,
@@ -454,19 +463,18 @@ class _WaveBackgroundState extends State<WaveBackground>
               );
             },
           ),
-          // Sóng thứ ba
           AnimatedBuilder(
             animation: _controller3,
             builder: (context, child) {
               return CustomPaint(
-                painter: WavePainter(
-                  animationValue:  _controller3.value,
+                painter:  WavePainter(
+                  animationValue: _controller3.value,
                   color: Colors.white.withOpacity(0.04),
                   amplitude: 50,
                   frequency: 1.0,
                   offset: 200,
                 ),
-                size:  Size.infinite,
+                size: Size.infinite,
               );
             },
           ),
@@ -476,7 +484,6 @@ class _WaveBackgroundState extends State<WaveBackground>
   }
 }
 
-// Custom Painter để vẽ sóng
 class WavePainter extends CustomPainter {
   final double animationValue;
   final Color color;
@@ -499,13 +506,9 @@ class WavePainter extends CustomPainter {
       ..style = PaintingStyle.fill;
 
     final path = Path();
-    
-    // Bắt đầu từ góc trên bên trái
     path.moveTo(0, 0);
     
-    // Vẽ từ trên xuống với nhiều sóng
-    for (double y = 0; y <= size. height; y += 1) {
-      // Tính toán giá trị x với hiệu ứng sóng
+    for (double y = 0; y <= size.height; y += 1) {
       final waveValue = math.sin(
         (y / size.height * 2 * math.pi * frequency) + 
         (animationValue * 2 * math.pi) + 
@@ -515,7 +518,6 @@ class WavePainter extends CustomPainter {
       path.lineTo(waveValue + size.width / 2, y);
     }
     
-    // Hoàn thành path
     path.lineTo(size.width, size.height);
     path.lineTo(size.width, 0);
     path.close();
