@@ -73,7 +73,7 @@ class _LoginPageState extends State<LoginPage> {
         final email = _emailController.text.trim();
         
         // Phân quyền dựa trên email
-        if (email == 'admin@gmail.com') {
+        if (email == 'validator@gmail.com') {
           // Tài khoản Validator
           Navigator.pushReplacement(
             context,
