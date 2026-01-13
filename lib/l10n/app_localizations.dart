@@ -1399,6 +1399,30 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'Hybride'**
   String get hybrid;
+
+  /// No description provided for @loginFailed.
+  ///
+  /// In fr, this message translates to:
+  /// **'Échec de la connexion'**
+  String get loginFailed;
+
+  /// No description provided for @confirmLogout.
+  ///
+  /// In fr, this message translates to:
+  /// **'Êtes-vous sûr de vouloir vous déconnecter ?'**
+  String get confirmLogout;
+
+  /// No description provided for @ok.
+  ///
+  /// In fr, this message translates to:
+  /// **'OK'**
+  String get ok;
+
+  /// No description provided for @registerFailed.
+  ///
+  /// In fr, this message translates to:
+  /// **'Échec de l\'inscription'**
+  String get registerFailed;
 }
 
 class _AppLocalizationsDelegate

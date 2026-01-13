@@ -2,12 +2,24 @@ import 'dart:convert';
 
 import 'package:http/http.dart' as http;
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class MainApi {
   MainApi._(this.baseUrl);
 
   static MainApi? _instance;
 
+  /// Key used by AuthService / storage to persist token.
+  static const String _tokenKey = 'auth_token';
+
+  /// Secure storage instance used to read token when sending requests.
+  static final FlutterSecureStorage _secureStorage = const FlutterSecureStorage();
+
+  /// Initialize the singleton using API_BASE_URL from .env.
+  /// Will throw if API_BASE_URL is not set or empty.
+  ///
+  /// Make sure dotenv.load(...) has been called (e.g. in ConfigManager.initialize)
+  /// before calling this.
   static void initialize() {
     final base = dotenv.env['API_BASE_URL'];
     if (base == null || base.isEmpty) {
@@ -39,14 +51,35 @@ class MainApi {
     return Uri.parse('$cleanedBase$cleanedPath');
   }
 
-  Future<http.Response> get(String pathOrUrl, {Map<String, String>? headers}) {
-    final uri = _buildUri(pathOrUrl);
-    return http.get(uri, headers: headers);
+  /// Read stored token (if any) and return an Authorization header map.
+  /// If no token is stored, returns an empty map.
+  Future<Map<String, String>> _authHeader() async {
+    try {
+      final token = await _secureStorage.read(key: _tokenKey);
+      if (token != null && token.isNotEmpty) {
+        return {'Authorization': 'Bearer $token'};
+      }
+    } catch (_) {
+      // ignore storage errors and proceed without auth header
+    }
+    return {};
   }
 
-  Future<http.Response> postJson(String pathOrUrl, Object body, {Map<String, String>? headers}) {
+  /// Send GET request. Automatically attaches Authorization header if a token is stored.
+  /// If [headers] are provided they will override default headers (including Authorization).
+  Future<http.Response> get(String pathOrUrl, {Map<String, String>? headers}) async {
     final uri = _buildUri(pathOrUrl);
-    final h = <String, String>{'Content-Type': 'application/json', ...?headers};
+    final auth = await _authHeader();
+    final merged = {...auth, ...?headers};
+    return http.get(uri, headers: merged);
+  }
+
+  /// Send POST request with JSON body. Automatically attaches Authorization header if token is stored.
+  /// If [headers] are provided they will override default headers.
+  Future<http.Response> postJson(String pathOrUrl, Object body, {Map<String, String>? headers}) async {
+    final uri = _buildUri(pathOrUrl);
+    final auth = await _authHeader();
+    final h = <String, String>{'Content-Type': 'application/json', ...auth, ...?headers};
     return http.post(uri, headers: h, body: json.encode(body));
   }
 

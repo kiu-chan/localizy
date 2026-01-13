@@ -1,5 +1,11 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:localizy/api/auth_api.dart';
 import 'package:localizy/l10n/app_localizations.dart';
+import 'package:localizy/screens/main_page.dart';
+import 'package:localizy/screens/validator/validator_main_page.dart';
+import 'package:localizy/screens/business/business_main_page.dart';
 import 'dart:math' as math;
 
 class RegisterPage extends StatefulWidget {
@@ -29,38 +35,83 @@ class _RegisterPageState extends State<RegisterPage> {
     super.dispose();
   }
 
-  void _handleRegister() async {
+  Future<void> _handleRegister() async {
     final l10n = AppLocalizations.of(context)!;
 
-    if (! _agreeToTerms) {
+    if (!_agreeToTerms) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(l10n. pleaseAgreeToTerms),
+          content: Text(l10n.pleaseAgreeToTerms),
           backgroundColor: Colors.red,
         ),
       );
       return;
     }
 
-    if (_formKey.currentState!.validate()) {
-      setState(() {
-        _isLoading = true;
-      });
+    if (!_formKey.currentState!.validate()) return;
 
-      await Future.delayed(const Duration(seconds: 2));
+    setState(() {
+      _isLoading = true;
+    });
 
-      setState(() {
-        _isLoading = false;
-      });
+    try {
+      final email = _emailController.text.trim();
+      final fullName = _nameController.text.trim();
+      final password = _passwordController.text;
 
+      final user = await AuthService.register(
+        email: email,
+        fullName: fullName,
+        password: password,
+      );
+
+      if (!mounted) return;
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(l10n.registerSuccess),
+          backgroundColor: Colors.green,
+        ),
+      );
+
+      final role = user.role.toLowerCase();
+      if (role.contains('validator')) {
+        Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(builder: (_) => const ValidatorMainPage()),
+          (route) => false,
+        );
+      } else if (role.contains('business')) {
+        Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(builder: (_) => const BusinessMainPage()),
+          (route) => false,
+        );
+      } else {
+        Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(builder: (_) => const MainPage()),
+          (route) => false,
+        );
+      }
+      return;
+    } on AuthException catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content:  Text(l10n.registerSuccess),
-            backgroundColor: Colors.green,
-          ),
+          SnackBar(content: Text(e.message), backgroundColor: Colors.red),
         );
-        Navigator.pop(context);
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(l10n.registerFailed), backgroundColor: Colors.red),
+        );
+      }
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
       }
     }
   }
@@ -74,18 +125,18 @@ class _RegisterPageState extends State<RegisterPage> {
         children: [
           // Wave Background
           const WaveBackground(),
-          
+
           // Register Content
           SafeArea(
             child: Column(
               children: [
                 Padding(
-                  padding:  const EdgeInsets.all(16.0),
+                  padding: const EdgeInsets.all(16.0),
                   child: Row(
                     children: [
                       IconButton(
-                        icon: const Icon(Icons. arrow_back, color: Colors. white),
-                        onPressed:  () => Navigator.pop(context),
+                        icon: const Icon(Icons.arrow_back, color: Colors.white),
+                        onPressed: () => Navigator.pop(context),
                       ),
                     ],
                   ),
@@ -93,20 +144,20 @@ class _RegisterPageState extends State<RegisterPage> {
                 Expanded(
                   child: Center(
                     child: SingleChildScrollView(
-                      padding:  const EdgeInsets.all(24.0),
+                      padding: const EdgeInsets.all(24.0),
                       child: Form(
                         key: _formKey,
-                        child:  Column(
+                        child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             Container(
                               padding: const EdgeInsets.all(20),
                               decoration: BoxDecoration(
-                                color: Colors. white,
+                                color: Colors.white,
                                 shape: BoxShape.circle,
                                 boxShadow: [
                                   BoxShadow(
-                                    color: Colors.black. withValues(alpha: 0.2),
+                                    color: Colors.black.withOpacity(0.2),
                                     blurRadius: 20,
                                     offset: const Offset(0, 10),
                                   ),
@@ -117,7 +168,7 @@ class _RegisterPageState extends State<RegisterPage> {
                                   'assets/icon/logo.png',
                                   width: 80,
                                   height: 80,
-                                  fit:  BoxFit.cover,
+                                  fit: BoxFit.cover,
                                   errorBuilder: (context, error, stackTrace) {
                                     return Icon(
                                       Icons.eco,
@@ -147,13 +198,13 @@ class _RegisterPageState extends State<RegisterPage> {
                             ),
                             const SizedBox(height: 40),
                             Container(
-                              padding: const EdgeInsets. all(24),
+                              padding: const EdgeInsets.all(24),
                               decoration: BoxDecoration(
                                 color: Colors.white,
                                 borderRadius: BorderRadius.circular(20),
                                 boxShadow: [
                                   BoxShadow(
-                                    color: Colors.black.withValues(alpha: 0.1),
+                                    color: Colors.black.withOpacity(0.1),
                                     blurRadius: 20,
                                     offset: const Offset(0, 10),
                                   ),
@@ -166,17 +217,17 @@ class _RegisterPageState extends State<RegisterPage> {
                                     controller: _nameController,
                                     decoration: InputDecoration(
                                       labelText: l10n.fullName,
-                                      prefixIcon:  Icon(
+                                      prefixIcon: Icon(
                                         Icons.person_outlined,
                                         color: Colors.green.shade700,
                                       ),
                                       border: OutlineInputBorder(
-                                        borderRadius:  BorderRadius.circular(12),
+                                        borderRadius: BorderRadius.circular(12),
                                       ),
                                       focusedBorder: OutlineInputBorder(
                                         borderRadius: BorderRadius.circular(12),
                                         borderSide: BorderSide(
-                                          color: Colors.green. shade700,
+                                          color: Colors.green.shade700,
                                           width: 2,
                                         ),
                                       ),
@@ -189,12 +240,12 @@ class _RegisterPageState extends State<RegisterPage> {
                                     },
                                   ),
                                   const SizedBox(height: 16),
-                                  
+
                                   // Email Field
                                   TextFormField(
                                     controller: _emailController,
                                     keyboardType: TextInputType.emailAddress,
-                                    decoration:  InputDecoration(
+                                    decoration: InputDecoration(
                                       labelText: l10n.email,
                                       prefixIcon: Icon(
                                         Icons.email_outlined,
@@ -203,10 +254,10 @@ class _RegisterPageState extends State<RegisterPage> {
                                       border: OutlineInputBorder(
                                         borderRadius: BorderRadius.circular(12),
                                       ),
-                                      focusedBorder:  OutlineInputBorder(
-                                        borderRadius: BorderRadius. circular(12),
+                                      focusedBorder: OutlineInputBorder(
+                                        borderRadius: BorderRadius.circular(12),
                                         borderSide: BorderSide(
-                                          color: Colors. green.shade700,
+                                          color: Colors.green.shade700,
                                           width: 2,
                                         ),
                                       ),
@@ -215,29 +266,27 @@ class _RegisterPageState extends State<RegisterPage> {
                                       if (value == null || value.isEmpty) {
                                         return l10n.pleaseEnterEmail;
                                       }
-                                      if (! value.contains('@')) {
+                                      if (!value.contains('@')) {
                                         return l10n.invalidEmail;
                                       }
                                       return null;
                                     },
                                   ),
                                   const SizedBox(height: 16),
-                                  
+
                                   // Password Field
                                   TextFormField(
                                     controller: _passwordController,
                                     obscureText: !_isPasswordVisible,
                                     decoration: InputDecoration(
                                       labelText: l10n.password,
-                                      prefixIcon:  Icon(
-                                        Icons. lock_outlined,
+                                      prefixIcon: Icon(
+                                        Icons.lock_outlined,
                                         color: Colors.green.shade700,
                                       ),
                                       suffixIcon: IconButton(
                                         icon: Icon(
-                                          _isPasswordVisible
-                                              ? Icons.visibility_off
-                                              : Icons.visibility,
+                                          _isPasswordVisible ? Icons.visibility_off : Icons.visibility,
                                           color: Colors.green.shade700,
                                         ),
                                         onPressed: () {
@@ -252,7 +301,7 @@ class _RegisterPageState extends State<RegisterPage> {
                                       focusedBorder: OutlineInputBorder(
                                         borderRadius: BorderRadius.circular(12),
                                         borderSide: BorderSide(
-                                          color:  Colors.green.shade700,
+                                          color: Colors.green.shade700,
                                           width: 2,
                                         ),
                                       ),
@@ -267,23 +316,21 @@ class _RegisterPageState extends State<RegisterPage> {
                                       return null;
                                     },
                                   ),
-                                  const SizedBox(height:  16),
-                                  
+                                  const SizedBox(height: 16),
+
                                   // Confirm Password Field
                                   TextFormField(
                                     controller: _confirmPasswordController,
                                     obscureText: !_isConfirmPasswordVisible,
                                     decoration: InputDecoration(
-                                      labelText: l10n. confirmPassword,
+                                      labelText: l10n.confirmPassword,
                                       prefixIcon: Icon(
                                         Icons.lock_outlined,
                                         color: Colors.green.shade700,
                                       ),
                                       suffixIcon: IconButton(
                                         icon: Icon(
-                                          _isConfirmPasswordVisible
-                                              ? Icons.visibility_off
-                                              : Icons.visibility,
+                                          _isConfirmPasswordVisible ? Icons.visibility_off : Icons.visibility,
                                           color: Colors.green.shade700,
                                         ),
                                         onPressed: () {
@@ -295,10 +342,10 @@ class _RegisterPageState extends State<RegisterPage> {
                                       border: OutlineInputBorder(
                                         borderRadius: BorderRadius.circular(12),
                                       ),
-                                      focusedBorder:  OutlineInputBorder(
-                                        borderRadius: BorderRadius. circular(12),
+                                      focusedBorder: OutlineInputBorder(
+                                        borderRadius: BorderRadius.circular(12),
                                         borderSide: BorderSide(
-                                          color: Colors. green.shade700,
+                                          color: Colors.green.shade700,
                                           width: 2,
                                         ),
                                       ),
@@ -308,27 +355,27 @@ class _RegisterPageState extends State<RegisterPage> {
                                         return l10n.pleaseConfirmPassword;
                                       }
                                       if (value != _passwordController.text) {
-                                        return l10n. passwordsDoNotMatch;
+                                        return l10n.passwordsDoNotMatch;
                                       }
                                       return null;
                                     },
                                   ),
                                   const SizedBox(height: 16),
-                                  
+
                                   // Terms Checkbox
                                   Row(
-                                    children:  [
+                                    children: [
                                       Checkbox(
                                         value: _agreeToTerms,
                                         onChanged: (value) {
                                           setState(() {
-                                            _agreeToTerms = value ??  false;
+                                            _agreeToTerms = value ?? false;
                                           });
                                         },
                                         activeColor: Colors.green.shade700,
                                       ),
                                       Expanded(
-                                        child:  Text(
+                                        child: Text(
                                           l10n.agreeToTerms,
                                           style: const TextStyle(fontSize: 14),
                                         ),
@@ -336,16 +383,16 @@ class _RegisterPageState extends State<RegisterPage> {
                                     ],
                                   ),
                                   const SizedBox(height: 24),
-                                  
+
                                   // Register Button
                                   SizedBox(
                                     width: double.infinity,
                                     height: 56,
                                     child: ElevatedButton(
-                                      onPressed: _isLoading ? null :  _handleRegister,
-                                      style: ElevatedButton. styleFrom(
+                                      onPressed: _isLoading ? null : _handleRegister,
+                                      style: ElevatedButton.styleFrom(
                                         backgroundColor: Colors.green.shade700,
-                                        foregroundColor:  Colors.white,
+                                        foregroundColor: Colors.white,
                                         shape: RoundedRectangleBorder(
                                           borderRadius: BorderRadius.circular(12),
                                         ),
@@ -354,17 +401,17 @@ class _RegisterPageState extends State<RegisterPage> {
                                       child: _isLoading
                                           ? const SizedBox(
                                               height: 24,
-                                              width:  24,
+                                              width: 24,
                                               child: CircularProgressIndicator(
                                                 color: Colors.white,
-                                                strokeWidth:  2,
+                                                strokeWidth: 2,
                                               ),
                                             )
                                           : Text(
                                               l10n.register,
                                               style: const TextStyle(
                                                 fontSize: 18,
-                                                fontWeight:  FontWeight.bold,
+                                                fontWeight: FontWeight.bold,
                                               ),
                                             ),
                                     ),
@@ -381,8 +428,8 @@ class _RegisterPageState extends State<RegisterPage> {
                                   style: const TextStyle(color: Colors.white70),
                                 ),
                                 TextButton(
-                                  onPressed:  () {
-                                    Navigator. pop(context);
+                                  onPressed: () {
+                                    Navigator.pop(context);
                                   },
                                   child: Text(
                                     l10n.login,
@@ -417,8 +464,7 @@ class WaveBackground extends StatefulWidget {
   State<WaveBackground> createState() => _WaveBackgroundState();
 }
 
-class _WaveBackgroundState extends State<WaveBackground>
-    with TickerProviderStateMixin {
+class _WaveBackgroundState extends State<WaveBackground> with TickerProviderStateMixin {
   late AnimationController _controller1;
   late AnimationController _controller2;
   late AnimationController _controller3;
@@ -426,11 +472,11 @@ class _WaveBackgroundState extends State<WaveBackground>
   @override
   void initState() {
     super.initState();
-    
+
     // Tạo 3 animation controller với tốc độ khác nhau
     _controller1 = AnimationController(
       vsync: this,
-      duration:  const Duration(seconds: 5),
+      duration: const Duration(seconds: 5),
     )..repeat();
 
     _controller2 = AnimationController(
@@ -474,12 +520,12 @@ class _WaveBackgroundState extends State<WaveBackground>
               return CustomPaint(
                 painter: WavePainter(
                   animationValue: _controller1.value,
-                  color: Colors.white. withOpacity(0.08),
+                  color: Colors.white.withOpacity(0.08),
                   amplitude: 30,
                   frequency: 1.5,
                   offset: 0,
                 ),
-                size: Size. infinite,
+                size: Size.infinite,
               );
             },
           ),
@@ -489,13 +535,13 @@ class _WaveBackgroundState extends State<WaveBackground>
             builder: (context, child) {
               return CustomPaint(
                 painter: WavePainter(
-                  animationValue:  _controller2.value,
+                  animationValue: _controller2.value,
                   color: Colors.white.withOpacity(0.06),
                   amplitude: 40,
                   frequency: 1.2,
                   offset: 100,
                 ),
-                size:  Size.infinite,
+                size: Size.infinite,
               );
             },
           ),
@@ -505,7 +551,7 @@ class _WaveBackgroundState extends State<WaveBackground>
             builder: (context, child) {
               return CustomPaint(
                 painter: WavePainter(
-                  animationValue:  _controller3.value,
+                  animationValue: _controller3.value,
                   color: Colors.white.withOpacity(0.04),
                   amplitude: 50,
                   frequency: 1.0,
@@ -533,28 +579,26 @@ class WavePainter extends CustomPainter {
     required this.animationValue,
     required this.color,
     required this.amplitude,
-    required this. frequency,
+    required this.frequency,
     required this.offset,
   });
 
   @override
   void paint(Canvas canvas, Size size) {
-    final paint = Paint()
-      ..color = color
-      ..style = PaintingStyle.fill;
+    final paint = Paint()..color = color..style = PaintingStyle.fill;
 
     final path = Path();
-    
+
     // Bắt đầu từ góc trên bên trái
     path.moveTo(0, 0);
-    
+
     // Vẽ từ trên xuống với nhiều sóng
     for (double y = 0; y <= size.height; y += 1) {
       // Tính toán giá trị x với hiệu ứng sóng
       final waveValue = math.sin(
         (y / size.height * 2 * math.pi * frequency) +
             (animationValue * 2 * math.pi) +
-            (offset / 100)
+            (offset / 100),
       ) * amplitude;
 
       path.lineTo(waveValue + size.width / 2, y);

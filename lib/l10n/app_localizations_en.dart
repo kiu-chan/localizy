@@ -688,4 +688,16 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hybrid => 'Hybrid';
+
+  @override
+  String get loginFailed => 'Login failed';
+
+  @override
+  String get confirmLogout => 'Are you sure you want to logout?';
+
+  @override
+  String get ok => 'OK';
+
+  @override
+  String get registerFailed => 'Registration failed';
 }

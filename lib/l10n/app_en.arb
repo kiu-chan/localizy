@@ -228,5 +228,9 @@
   "normal": "Normal",
   "satellite": "Satellite",
   "terrain": "Terrain",
-  "hybrid": "Hybrid"
+  "hybrid": "Hybrid",
+  "loginFailed": "Login failed",
+  "confirmLogout": "Are you sure you want to logout?",
+  "ok": "OK",
+  "registerFailed": "Registration failed"
 } 

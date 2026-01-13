@@ -7,6 +7,7 @@ import 'package:localizy/screens/setting/account_settings_page.dart';
 import 'package:localizy/screens/account/login_page.dart';
 import 'package:localizy/utils/language_manager.dart';
 import 'package:package_info_plus/package_info_plus.dart';
+import 'package:localizy/services/logout_service.dart';
 
 class SettingsSections extends StatefulWidget {
   final LanguageManager languageManager;
@@ -180,7 +181,7 @@ class _SettingsSectionsState extends State<SettingsSections> {
 
           const SizedBox(height: 24),
 
-          // Logout Button
+          // Logout Button (reusable logic in LogoutService)
           _buildLogoutButton(context),
 
           const SizedBox(height:  32),
@@ -382,87 +383,73 @@ class _SettingsSectionsState extends State<SettingsSections> {
   }
 
   Widget _buildLogoutButton(BuildContext context) {
-    return ElevatedButton(
-      onPressed: () {
-        showDialog(
-          context:  context,
-          builder: (BuildContext dialogContext) {
-            return AlertDialog(
-              shape: RoundedRectangleBorder(
-                borderRadius:  BorderRadius.circular(20),
-              ),
-              title: Row(
-                children: [
-                  Icon(Icons.logout, color: Colors.red.shade700),
-                  const SizedBox(width: 12),
-                  Text(widget.l10n.logout),
+    // Full-width logout button that reuses LogoutService for the logout logic.
+    final l10n = widget.l10n;
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 0),
+      child: SizedBox(
+        width: double.infinity,
+        child: ElevatedButton.icon(
+          onPressed: () async {
+            final confirm = await showDialog<bool>(
+              context: context,
+              builder: (ctx) => AlertDialog(
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                title: Row(
+                  children: [
+                    Icon(Icons.logout, color: Colors.red.shade700),
+                    const SizedBox(width: 12),
+                    Text(l10n.logout),
+                  ],
+                ),
+                content: Text(l10n.confirmLogout),
+                actions: [
+                  TextButton(
+                    onPressed: () => Navigator.of(ctx).pop(false),
+                    child: Text(l10n.cancel ?? 'Cancel', style: TextStyle(color: Colors.grey.shade700)),
+                  ),
+                  ElevatedButton(
+                    onPressed: () => Navigator.of(ctx).pop(true),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.red.shade700,
+                      foregroundColor: Colors.white,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                    ),
+                    child: Text(l10n.ok),
+                  ),
                 ],
               ),
-              content: Text(
-                widget.l10n.logout == 'Logout'
-                    ? 'Are you sure you want to logout?'
-                    : widget.l10n.logout == 'Se déconnecter'
-                        ?  'Êtes-vous sûr de vouloir vous déconnecter?'
-                        : 'Bạn có chắc chắn muốn đăng xuất?',
-              ),
-              actions: [
-                TextButton(
-                  onPressed: () => Navigator.pop(dialogContext),
-                  child: Text(
-                    widget.l10n. logout == 'Logout'
-                        ? 'Cancel'
-                        : widget.l10n.logout == 'Se déconnecter'
-                            ? 'Annuler'
-                            : 'Hủy',
-                    style: TextStyle(color: Colors.grey.shade700),
-                  ),
-                ),
-                ElevatedButton(
-                  onPressed: () {
-                    Navigator.pop(dialogContext);
-                    Navigator.of(context).pushAndRemoveUntil(
-                      MaterialPageRoute(
-                        builder: (context) => const LoginPage(),
-                      ),
-                      (route) => false,
-                    );
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors. red.shade700,
-                    foregroundColor: Colors.white,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius. circular(10),
-                    ),
-                  ),
-                  child: Text(widget.l10n.logout),
-                ),
-              ],
             );
+
+            if (confirm == true) {
+              await LogoutService.logoutAndRedirect(
+                context,
+                loginPage: const LoginPage(),
+              );
+            }
           },
-        );
-      },
-      style: ElevatedButton.styleFrom(
-        backgroundColor: Colors.red.shade700,
-        foregroundColor: Colors.white,
-        padding: const EdgeInsets.symmetric(vertical: 16),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
-        ),
-        elevation: 0,
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          const Icon(Icons.logout, size: 20),
-          const SizedBox(width: 8),
-          Text(
-            widget.l10n.logout,
+          icon: const Icon(Icons.logout, size: 20),
+          label: Text(
+            l10n.logout,
             style: const TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.bold,
             ),
           ),
-        ],
+          style: ElevatedButton.styleFrom(
+            backgroundColor: Colors.red.shade700,
+            foregroundColor: Colors.white,
+            padding: const EdgeInsets.symmetric(vertical: 16),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16),
+            ),
+            elevation: 0,
+          ),
+        ),
       ),
     );
   }

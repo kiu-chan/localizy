@@ -710,4 +710,16 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get hybrid => 'Hybride';
+
+  @override
+  String get loginFailed => 'Échec de la connexion';
+
+  @override
+  String get confirmLogout => 'Êtes-vous sûr de vouloir vous déconnecter ?';
+
+  @override
+  String get ok => 'OK';
+
+  @override
+  String get registerFailed => 'Échec de l\'inscription';
 }

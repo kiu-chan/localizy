@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:localizy/api/auth_api.dart';
 import 'package:localizy/l10n/app_localizations.dart';
 import 'register_page.dart';
 import 'forgot_password_page.dart';
@@ -50,54 +51,74 @@ class _LoginPageState extends State<LoginPage> {
     });
   }
 
-  void _handleLogin() async {
-    if (_formKey.currentState!.validate()) {
-      setState(() {
-        _isLoading = true;
-      });
+  Future<void> _handleLogin() async {
+    if (!_formKey.currentState!.validate()) return;
 
-      await Future.delayed(const Duration(seconds: 2));
+    setState(() {
+      _isLoading = true;
+    });
 
-      setState(() {
-        _isLoading = false;
-      });
+    try {
+      final email = _emailController.text.trim();
+      final password = _passwordController.text;
 
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content:  Text(AppLocalizations.of(context)!.loginSuccess),
-            backgroundColor: Colors.green,
+      final user = await AuthService.login(email: email, password: password);
+
+      if (!mounted) return;
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(AppLocalizations.of(context)!.loginSuccess),
+          backgroundColor: Colors.green,
+        ),
+      );
+
+      // Điều hướng dựa trên role trả về từ API (so sánh chữ thường để an toàn)
+      final role = user.role.toLowerCase();
+      if (role.contains('validator')) {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (context) => const ValidatorMainPage(),
           ),
         );
-        
-        final email = _emailController.text.trim();
-        
-        // Phân quyền dựa trên email
-        if (email == 'validator@gmail.com') {
-          // Tài khoản Validator
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(
-              builder: (context) => const ValidatorMainPage(),
-            ),
-          );
-        } else if (email == 'business@gmail.com') {
-          // Tài khoản Business
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(
-              builder: (context) => const BusinessMainPage(),
-            ),
-          );
-        } else {
-          // Tài khoản thường
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(
-              builder: (context) => const MainPage(),
-            ),
-          );
-        }
+      } else if (role.contains('business')) {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (context) => const BusinessMainPage(),
+          ),
+        );
+      } else {
+        // default -> user thường / admin / ...
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (context) => const MainPage(),
+          ),
+        );
+      }
+    } on AuthException catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(e.message),
+          backgroundColor: Colors.red,
+        ),
+      );
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(AppLocalizations.of(context)!.loginFailed),
+          backgroundColor: Colors.red,
+        ),
+      );
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
       }
     }
   }
@@ -129,7 +150,7 @@ class _LoginPageState extends State<LoginPage> {
                           shape: BoxShape.circle,
                           boxShadow: [
                             BoxShadow(
-                              color: Colors.black. withValues(alpha: 0.2),
+                              color: Colors.black. withOpacity(0.2),
                               blurRadius:  20,
                               offset: const Offset(0, 10),
                             ),
@@ -176,7 +197,7 @@ class _LoginPageState extends State<LoginPage> {
                           borderRadius: BorderRadius.circular(20),
                           boxShadow: [
                             BoxShadow(
-                              color: Colors.black.withValues(alpha: 0.1),
+                              color: Colors.black.withOpacity(0.1),
                               blurRadius: 20,
                               offset: const Offset(0, 10),
                             ),
