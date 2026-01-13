@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:localizy/l10n/app_localizations.dart';
 import 'package:localizy/screens/home/verification/address_verification_flow.dart';
@@ -6,7 +8,7 @@ import 'package:localizy/screens/home/payment_check_page.dart';
 import 'package:localizy/screens/home/address_search_page.dart';
 import 'package:localizy/screens/home/transaction_history_page.dart';
 import 'package:localizy/screens/ocr/license_plate_scanner_screen.dart';
-import 'dart:async';
+import 'package:localizy/api/slide_api.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -20,33 +22,54 @@ class _HomePageState extends State<HomePage> {
   Timer? _timer;
   int _currentPage = 0;
 
-  final List<Map<String, dynamic>> _headerSlides = [
-    {
-      'icon': Icons.local_parking,
-      'color': Colors.green,
-      'gradient': [Colors.green. shade400, Colors.green.shade700],
-    },
-    {
-      'icon': Icons.directions_car,
-      'color':  Colors.blue,
-      'gradient': [Colors.blue.shade400, Colors.blue.shade700],
-    },
-    {
-      'icon': Icons.location_on,
-      'color':  Colors.orange,
-      'gradient': [Colors.orange.shade400, Colors. orange.shade700],
-    },
-  ];
+  // Slides loaded from API
+  List<HomeSlide> _apiSlides = [];
+
+  // Loading / empty state flags
+  bool _isLoading = true;
+  bool _noSlides = false;
 
   @override
   void initState() {
     super.initState();
+    _fetchSlides();
     _startAutoSlide();
+  }
+
+  Future<void> _fetchSlides() async {
+    try {
+      final slides = await SlideService.getActiveSlides();
+      if (mounted) {
+        setState(() {
+          _apiSlides = slides;
+          _isLoading = false;
+          _noSlides = slides.isEmpty;
+          if (_apiSlides.isNotEmpty) {
+            _currentPage = 0;
+            if (_pageController.hasClients) {
+              _pageController.jumpToPage(0);
+            }
+          }
+        });
+      }
+    } catch (e) {
+      debugPrint('Error fetching slides: $e');
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+          _noSlides = true;
+          _apiSlides = [];
+        });
+      }
+    }
   }
 
   void _startAutoSlide() {
     _timer = Timer.periodic(const Duration(seconds: 4), (timer) {
-      if (_currentPage < _headerSlides.length - 1) {
+      final slides = _apiSlides;
+      if (slides.isEmpty) return;
+
+      if (_currentPage < slides.length - 1) {
         _currentPage++;
       } else {
         _currentPage = 0;
@@ -56,7 +79,7 @@ class _HomePageState extends State<HomePage> {
         _pageController.animateToPage(
           _currentPage,
           duration: const Duration(milliseconds: 400),
-          curve: Curves. easeInOut,
+          curve: Curves.easeInOut,
         );
       }
     });
@@ -65,54 +88,89 @@ class _HomePageState extends State<HomePage> {
   @override
   void dispose() {
     _timer?.cancel();
-    _pageController. dispose();
+    _pageController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    final slides = _apiSlides;
 
     return Scaffold(
       body: SingleChildScrollView(
-        child:  Column(
+        child: Column(
           children: [
             // Header Section with Slider
             SizedBox(
               height: 280,
               child: Stack(
                 children: [
-                  PageView.builder(
-                    controller: _pageController,
-                    onPageChanged: (index) {
-                      setState(() {
-                        _currentPage = index;
-                      });
-                    },
-                    itemCount: _headerSlides.length,
-                    itemBuilder: (context, index) {
-                      final slide = _headerSlides[index];
-                      return _buildHeaderSlide(
-                        l10n: l10n,
-                        icon: slide['icon'],
-                        gradient:  slide['gradient'],
-                        iconColor: slide['color'],
-                      );
-                    },
-                  ),
-                  // Page Indicator
-                  Positioned(
-                    bottom: 20,
-                    left: 0,
-                    right: 0,
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: List.generate(
-                        _headerSlides.length,
-                        (index) => _buildPageIndicator(index == _currentPage),
+                  // Three states:
+                  // 1) Loading -> show progress indicator
+                  // 2) No slides -> show "Đang cập nhật slide"
+                  // 3) Has slides -> PageView
+                  if (_isLoading)
+                    const Center(
+                      child: CircularProgressIndicator(),
+                    )
+                  else if (_noSlides)
+                    Container(
+                      width: double.infinity,
+                      padding: const EdgeInsets.all(24),
+                      color: Colors.grey.shade200,
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: const [
+                          Icon(
+                            Icons.info_outline,
+                            size: 48,
+                            color: Colors.grey,
+                          ),
+                          SizedBox(height: 12),
+                          Text(
+                            'Đang cập nhật slide',
+                            style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.w600,
+                              color: Colors.black54,
+                            ),
+                          ),
+                        ],
+                      ),
+                    )
+                  else
+                    PageView.builder(
+                      controller: _pageController,
+                      onPageChanged: (index) {
+                        setState(() {
+                          _currentPage = index;
+                        });
+                      },
+                      itemCount: slides.length,
+                      itemBuilder: (context, index) {
+                        final slide = slides[index];
+                        return _buildHeaderSlide(
+                          l10n: l10n,
+                          slide: slide,
+                        );
+                      },
+                    ),
+
+                  // Page Indicator (only when there are slides)
+                  if (!_isLoading && !_noSlides)
+                    Positioned(
+                      bottom: 20,
+                      left: 0,
+                      right: 0,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: List.generate(
+                          slides.length,
+                          (index) => _buildPageIndicator(index == _currentPage),
+                        ),
                       ),
                     ),
-                  ),
                 ],
               ),
             ),
@@ -138,7 +196,7 @@ class _HomePageState extends State<HomePage> {
                   // Main Features Grid
                   GridView.count(
                     shrinkWrap: true,
-                    physics:  const NeverScrollableScrollPhysics(),
+                    physics: const NeverScrollableScrollPhysics(),
                     crossAxisCount: 2,
                     mainAxisSpacing: 12,
                     crossAxisSpacing: 12,
@@ -146,11 +204,11 @@ class _HomePageState extends State<HomePage> {
                     children: [
                       _buildFeatureCard(
                         context: context,
-                        icon: Icons. verified_outlined,
+                        icon: Icons.verified_outlined,
                         title: l10n.addressVerification,
-                        color: Colors. blue,
+                        color: Colors.blue,
                         onTap: () {
-                          Navigator. push(
+                          Navigator.push(
                             context,
                             MaterialPageRoute(
                               builder: (context) => const AddressVerificationFlow(),
@@ -161,7 +219,7 @@ class _HomePageState extends State<HomePage> {
                       _buildFeatureCard(
                         context: context,
                         icon: Icons.payment,
-                        title: l10n. parkingPayment,
+                        title: l10n.parkingPayment,
                         color: Colors.green,
                         onTap: () {
                           Navigator.push(
@@ -173,7 +231,7 @@ class _HomePageState extends State<HomePage> {
                         },
                       ),
                       _buildFeatureCard(
-                        context:  context,
+                        context: context,
                         icon: Icons.receipt_long,
                         title: l10n.paymentCheck,
                         color: Colors.orange,
@@ -220,8 +278,8 @@ class _HomePageState extends State<HomePage> {
                   // Quick Actions
                   _buildActionCard(
                     context: context,
-                    icon:  Icons.map_outlined,
-                    title:  l10n.viewMap,
+                    icon: Icons.map_outlined,
+                    title: l10n.viewMap,
                     description: l10n.findAndViewParkingLots,
                     color: Colors.teal,
                     onTap: () {
@@ -235,12 +293,12 @@ class _HomePageState extends State<HomePage> {
 
                   _buildActionCard(
                     context: context,
-                    icon:  Icons.history,
+                    icon: Icons.history,
                     title: l10n.transactionHistory,
                     description: l10n.viewParkingPaymentHistory,
                     color: Colors.indigo,
                     onTap: () {
-                      Navigator. push(
+                      Navigator.push(
                         context,
                         MaterialPageRoute(
                           builder: (context) => const TransactionHistoryPage(),
@@ -249,14 +307,14 @@ class _HomePageState extends State<HomePage> {
                     },
                   ),
 
-                  const SizedBox(height:  12),
+                  const SizedBox(height: 12),
 
                   _buildActionCard(
-                    context:  context,
+                    context: context,
                     icon: Icons.camera_alt_outlined,
                     title: l10n.licensePlateScannerOCR,
                     description: l10n.automaticLicensePlateRecognition,
-                    color:  Colors.red,
+                    color: Colors.red,
                     onTap: () async {
                       final result = await Navigator.push(
                         context,
@@ -267,7 +325,7 @@ class _HomePageState extends State<HomePage> {
 
                       if (result != null && context.mounted) {
                         ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content:  Text('${l10n.licensePlateScanned}:  $result')),
+                          SnackBar(content: Text('${l10n.licensePlateScanned}:  $result')),
                         );
                       }
                     },
@@ -285,10 +343,52 @@ class _HomePageState extends State<HomePage> {
 
   Widget _buildHeaderSlide({
     required AppLocalizations l10n,
-    required IconData icon,
-    required List<Color> gradient,
-    required Color iconColor,
+    required HomeSlide slide,
   }) {
+    // If the slide contains an imageUrl, show it as background with an overlay and content text.
+    if (slide.imageUrl != null && slide.imageUrl!.isNotEmpty) {
+      return Container(
+        width: double.infinity,
+        decoration: BoxDecoration(
+          image: DecorationImage(
+            image: NetworkImage(slide.imageUrl!),
+            fit: BoxFit.cover,
+          ),
+        ),
+        child: Container(
+          // dark overlay to ensure text is readable
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: [
+                Colors.black.withOpacity(0.35),
+                Colors.black.withOpacity(0.15),
+              ],
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+            ),
+          ),
+          padding: const EdgeInsets.all(24),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(
+                slide.content.isNotEmpty ? slide.content : l10n.welcomeToLocalizy,
+                textAlign: TextAlign.center,
+                style: const TextStyle(
+                  fontSize: 22,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+
+    // Fallback: gradient + icon + text (used when slide has no image)
+    final gradient = [Colors.blue.shade400, Colors.blue.shade700];
+
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(32),
@@ -305,43 +405,34 @@ class _HomePageState extends State<HomePage> {
           AnimatedSwitcher(
             duration: const Duration(milliseconds: 300),
             child: Container(
-              key: ValueKey(icon),
+              key: ValueKey(slide.id),
               padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
                 color: Colors.white,
                 shape: BoxShape.circle,
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.2),
-                    blurRadius:  20,
-                    offset:  const Offset(0, 10),
+                    color: Colors.black.withOpacity(0.2),
+                    blurRadius: 20,
+                    offset: const Offset(0, 10),
                   ),
                 ],
               ),
               child: Icon(
-                icon,
+                Icons.local_parking,
                 size: 60,
-                color:  iconColor,
+                color: Colors.blueAccent,
               ),
             ),
           ),
           const SizedBox(height: 20),
           Text(
-            l10n.welcomeToLocalizy,
+            slide.content.isNotEmpty ? slide.content : l10n.welcomeToLocalizy,
             textAlign: TextAlign.center,
             style: const TextStyle(
               fontSize: 28,
               fontWeight: FontWeight.bold,
               color: Colors.white,
-            ),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            l10n.smartParkingManagement,
-            textAlign: TextAlign.center,
-            style: const TextStyle(
-              fontSize:  16,
-              color: Colors.white70,
             ),
           ),
         ],
@@ -351,12 +442,12 @@ class _HomePageState extends State<HomePage> {
 
   Widget _buildPageIndicator(bool isActive) {
     return Container(
-      margin: const EdgeInsets. symmetric(horizontal: 5),
+      margin: const EdgeInsets.symmetric(horizontal: 5),
       width: 8,
       height: 8,
       decoration: BoxDecoration(
-        color: isActive ? Colors. white : Colors.white.withValues(alpha: 0.5),
-        shape: BoxShape. circle,
+        color: isActive ? Colors.white : Colors.white.withOpacity(0.5),
+        shape: BoxShape.circle,
       ),
     );
   }
@@ -371,7 +462,7 @@ class _HomePageState extends State<HomePage> {
     return Card(
       elevation: 3,
       shape: RoundedRectangleBorder(
-        borderRadius:  BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(16),
       ),
       child: InkWell(
         onTap: onTap,
@@ -385,7 +476,7 @@ class _HomePageState extends State<HomePage> {
               Container(
                 padding: const EdgeInsets.all(14),
                 decoration: BoxDecoration(
-                  color: color. withValues(alpha: 0.1),
+                  color: color.withOpacity(0.1),
                   shape: BoxShape.circle,
                 ),
                 child: Icon(
@@ -394,7 +485,7 @@ class _HomePageState extends State<HomePage> {
                   color: color,
                 ),
               ),
-              const SizedBox(height:  10),
+              const SizedBox(height: 10),
               Flexible(
                 child: Text(
                   title,
@@ -402,7 +493,7 @@ class _HomePageState extends State<HomePage> {
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
                   style: const TextStyle(
-                    fontSize:  13,
+                    fontSize: 13,
                     fontWeight: FontWeight.w600,
                   ),
                 ),
@@ -437,10 +528,10 @@ class _HomePageState extends State<HomePage> {
               Container(
                 padding: const EdgeInsets.all(14),
                 decoration: BoxDecoration(
-                  color:  color.withValues(alpha: 0.1),
+                  color: color.withOpacity(0.1),
                   borderRadius: BorderRadius.circular(12),
                 ),
-                child:  Icon(
+                child: Icon(
                   icon,
                   size: 28,
                   color: color,
@@ -449,12 +540,12 @@ class _HomePageState extends State<HomePage> {
               const SizedBox(width: 16),
               Expanded(
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment. start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
                       title,
                       style: const TextStyle(
-                        fontSize:  16,
+                        fontSize: 16,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
@@ -463,7 +554,7 @@ class _HomePageState extends State<HomePage> {
                       description,
                       style: TextStyle(
                         fontSize: 13,
-                        color: Colors. grey[600],
+                        color: Colors.grey[600],
                       ),
                     ),
                   ],
