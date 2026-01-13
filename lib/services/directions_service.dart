@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -15,17 +16,17 @@ class DirectionsService {
   }) async {
     try {
       // Kiểm tra API Key
-      if (_apiKey. isEmpty) {
-        print('❌ ERROR:  GOOGLE_MAPS_API_KEY is empty! ');
-        print('Please check your .env file');
+      if (_apiKey.isEmpty) {
+        debugPrint('❌ ERROR:  GOOGLE_MAPS_API_KEY is empty! ');
+        debugPrint('Please check your .env file');
         return null;
       }
 
-      print('🔑 Using API Key:  ${_apiKey. substring(0, 10)}...');
-      print('📍 Origin: ${origin.latitude}, ${origin.longitude}');
-      print('📍 Destination: ${destination.latitude}, ${destination.longitude}');
-      print('🚗 Travel Mode: ${_getTravelModeString(mode)}');
-      print('🌐 Language: $language');
+      debugPrint('🔑 Using API Key:  ${_apiKey.substring(0, 10)}...');
+      debugPrint('📍 Origin: ${origin.latitude}, ${origin.longitude}');
+      debugPrint('📍 Destination: ${destination.latitude}, ${destination.longitude}');
+      debugPrint('🚗 Travel Mode: ${_getTravelModeString(mode)}');
+      debugPrint('🌐 Language: $language');
 
       // Sử dụng Uri. https và queryParameters với language parameter
       final uri = Uri.https(
@@ -42,63 +43,63 @@ class DirectionsService {
         },
       );
 
-      print('🌐 Request URL: $uri');
+      debugPrint('🌐 Request URL: $uri');
 
       final response = await http.get(uri);
 
-      print('📡 Response Status Code: ${response.statusCode}');
-      print('📄 Response Body: ${response. body}');
+      debugPrint('📡 Response Status Code: ${response.statusCode}');
+      debugPrint('📄 Response Body: ${response. body}');
 
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
         
-        print('✅ Status:  ${data['status']}');
+        debugPrint('✅ Status:  ${data['status']}');
         
         // Kiểm tra các trạng thái lỗi từ API
         if (data['status'] == 'REQUEST_DENIED') {
-          print('❌ REQUEST_DENIED: ${data['error_message']}');
-          print('Possible reasons:');
-          print('1. API Key is invalid');
-          print('2. Directions API is not enabled');
-          print('3. Billing is not enabled');
+          debugPrint('❌ REQUEST_DENIED: ${data['error_message']}');
+          debugPrint('Possible reasons:');
+          debugPrint('1. API Key is invalid');
+          debugPrint('2. Directions API is not enabled');
+          debugPrint('3. Billing is not enabled');
           return null;
         }
         
         if (data['status'] == 'ZERO_RESULTS') {
-          print('❌ ZERO_RESULTS: No route found between these points');
+          debugPrint('❌ ZERO_RESULTS: No route found between these points');
           return null;
         }
         
         if (data['status'] == 'OVER_QUERY_LIMIT') {
-          print('❌ OVER_QUERY_LIMIT: You have exceeded your quota');
+          debugPrint('❌ OVER_QUERY_LIMIT: You have exceeded your quota');
           return null;
         }
         
         if (data['status'] == 'INVALID_REQUEST') {
-          print('❌ INVALID_REQUEST: The request is invalid');
-          print('Error message: ${data['error_message']}');
+          debugPrint('❌ INVALID_REQUEST: The request is invalid');
+          debugPrint('Error message: ${data['error_message']}');
           return null;
         }
         
         if (data['status'] == 'UNKNOWN_ERROR') {
-          print('❌ UNKNOWN_ERROR: Server error, try again');
+          debugPrint('❌ UNKNOWN_ERROR: Server error, try again');
           return null;
         }
         
         if (data['status'] == 'OK' && data['routes'].isNotEmpty) {
-          print('✅ Route found successfully! ');
-          print('📊 Number of routes: ${data['routes']. length}');
+          debugPrint('✅ Route found successfully! ');
+          debugPrint('📊 Number of routes: ${data['routes']. length}');
           return DirectionsResult.fromJson(data);
         }
       } else {
-        print('❌ HTTP Error: ${response.statusCode}');
-        print('Response: ${response.body}');
+        debugPrint('❌ HTTP Error: ${response.statusCode}');
+        debugPrint('Response: ${response.body}');
       }
       
       return null;
     } catch (e, stackTrace) {
-      print('❌ Exception in getDirections: $e');
-      print('Stack trace:  $stackTrace');
+      debugPrint('❌ Exception in getDirections: $e');
+      debugPrint('Stack trace:  $stackTrace');
       return null;
     }
   }

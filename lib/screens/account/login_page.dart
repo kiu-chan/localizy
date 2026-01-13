@@ -150,7 +150,7 @@ class _LoginPageState extends State<LoginPage> {
                           shape: BoxShape.circle,
                           boxShadow: [
                             BoxShadow(
-                              color: Colors.black. withOpacity(0.2),
+                              color: Colors.black.withValues(alpha: 0.2),
                               blurRadius:  20,
                               offset: const Offset(0, 10),
                             ),
@@ -197,7 +197,7 @@ class _LoginPageState extends State<LoginPage> {
                           borderRadius: BorderRadius.circular(20),
                           boxShadow: [
                             BoxShadow(
-                              color: Colors.black.withOpacity(0.1),
+                              color: Colors.black.withValues(alpha: 0.1),
                               blurRadius: 20,
                               offset: const Offset(0, 10),
                             ),
@@ -460,12 +460,12 @@ class _WaveBackgroundState extends State<WaveBackground>
               return CustomPaint(
                 painter: WavePainter(
                   animationValue: _controller1.value,
-                  color: Colors.white. withOpacity(0.08),
+                  color: Colors.white.withValues(alpha: 0.08),
                   amplitude: 30,
                   frequency: 1.5,
                   offset: 0,
                 ),
-                size: Size. infinite,
+                size: Size.infinite,
               );
             },
           ),
@@ -475,12 +475,12 @@ class _WaveBackgroundState extends State<WaveBackground>
               return CustomPaint(
                 painter: WavePainter(
                   animationValue: _controller2.value,
-                  color: Colors. white.withOpacity(0.06),
+                  color: Colors.white.withValues(alpha: 0.06),
                   amplitude: 40,
                   frequency: 1.2,
                   offset: 100,
                 ),
-                size:  Size.infinite,
+                size: Size.infinite,
               );
             },
           ),
@@ -490,7 +490,7 @@ class _WaveBackgroundState extends State<WaveBackground>
               return CustomPaint(
                 painter:  WavePainter(
                   animationValue: _controller3.value,
-                  color: Colors.white.withOpacity(0.04),
+                  color: Colors.white.withValues(alpha: 0.04),
                   amplitude: 50,
                   frequency: 1.0,
                   offset: 200,

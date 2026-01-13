@@ -383,12 +383,12 @@ class _WaveBackgroundState extends State<WaveBackground>
               return CustomPaint(
                 painter: WavePainter(
                   animationValue: _controller1.value,
-                  color: Colors.white. withOpacity(0.08),
+                  color: Colors.white.withValues(alpha: 0.08),
                   amplitude: 30,
                   frequency: 1.5,
                   offset: 0,
                 ),
-                size: Size. infinite,
+                size: Size.infinite,
               );
             },
           ),
@@ -399,7 +399,7 @@ class _WaveBackgroundState extends State<WaveBackground>
               return CustomPaint(
                 painter: WavePainter(
                   animationValue:  _controller2.value,
-                  color: Colors.white.withOpacity(0.06),
+                  color: Colors.white.withValues(alpha: 0.06),
                   amplitude: 40,
                   frequency: 1.2,
                   offset: 100,
@@ -415,7 +415,7 @@ class _WaveBackgroundState extends State<WaveBackground>
               return CustomPaint(
                 painter: WavePainter(
                   animationValue:  _controller3.value,
-                  color: Colors.white.withOpacity(0.04),
+                  color: Colors.white.withValues(alpha: 0.04),
                   amplitude: 50,
                   frequency: 1.0,
                   offset: 200,

@@ -37,7 +37,6 @@ class _PaymentPageState extends State<PaymentPage> {
     final localizations = AppLocalizations.of(context)!;
     
     if (_selectedPaymentMethod != null) {
-      // TODO: Implement actual payment processing
       showDialog(
         context: context,
         barrierDismissible: false,
@@ -55,8 +54,10 @@ class _PaymentPageState extends State<PaymentPage> {
 
       // Simulate payment processing
       Future.delayed(const Duration(seconds: 2), () {
-        Navigator.pop(context); // Close loading dialog
-        widget.onNext(_selectedPaymentMethod!);
+        if(mounted) {
+          Navigator.pop(context); // Close loading dialog
+          widget.onNext(_selectedPaymentMethod!);
+        }
       });
     }
   }

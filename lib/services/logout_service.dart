@@ -8,8 +8,6 @@ class LogoutService {
   static Future<void> logout() async {
     // hiện tại AuthService.logout() đã xoá token trong flutter_secure_storage
     await AuthService.logout();
-
-    // TODO: nếu cần xoá cache, subscription, local DB, hoặc gọi API logout, thêm ở đây
   }
 
   /// Xoá session rồi điều hướng về trang login (caller truyền loginPage).

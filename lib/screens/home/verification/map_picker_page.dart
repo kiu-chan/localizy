@@ -60,7 +60,7 @@ class _MapPickerPageState extends State<MapPickerPage> {
 
       _centerLocation = LatLng(position.latitude, position.longitude);
     } catch (e) {
-      print('Error: $e');
+      debugPrint('Error: $e');
     }
   }
 
@@ -94,7 +94,7 @@ class _MapPickerPageState extends State<MapPickerPage> {
         ),
       );
     } catch (e) {
-      print('Error: $e');
+      debugPrint('Error: $e');
     }
   }
 

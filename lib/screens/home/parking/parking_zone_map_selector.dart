@@ -172,7 +172,7 @@ class _ParkingZoneMapSelectorState extends State<ParkingZoneMapSelector> {
                 ? Colors.blue 
                 : isAvailable 
                     ? Colors.green 
-                    : Colors.red).withOpacity(0.2),
+                    : Colors.red).withValues(alpha:0.2),
             strokeColor: isSelected 
                 ? Colors.blue 
                 : isAvailable 
@@ -307,7 +307,7 @@ class _ParkingZoneMapSelectorState extends State<ParkingZoneMapSelector> {
                 borderRadius: BorderRadius.circular(12),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.1),
+                    color: Colors.black.withValues(alpha: 0.1),
                     blurRadius: 8,
                     offset: const Offset(0, 2),
                   ),

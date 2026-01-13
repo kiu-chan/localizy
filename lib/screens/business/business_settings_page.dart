@@ -368,7 +368,7 @@ class _BusinessSettingsPageState extends State<BusinessSettingsPage> {
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
-            color:  Colors.black.withOpacity(0.05),
+            color:  Colors.black.withValues(alpha: 0.05),
             blurRadius: 5,
             offset: const Offset(0, 2),
           ),
@@ -459,7 +459,7 @@ class _BusinessSettingsPageState extends State<BusinessSettingsPage> {
       trailing: Switch(
         value: value,
         onChanged: onChanged,
-        activeColor: Colors.blue.shade700,
+        activeThumbColor: Colors.blue.shade700,
       ),
     );
   }
@@ -806,7 +806,7 @@ class _BusinessSettingsPageState extends State<BusinessSettingsPage> {
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 8, vertical:  4),
                   decoration:  BoxDecoration(
-                    color: color.withOpacity(0.1),
+                    color: color.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Text(
@@ -1127,7 +1127,7 @@ class _BusinessSettingsPageState extends State<BusinessSettingsPage> {
       margin: const EdgeInsets.only(bottom: 12),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.1),
+        color: color.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(8),
       ),
       child: Row(

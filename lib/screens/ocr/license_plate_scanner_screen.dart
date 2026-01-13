@@ -8,7 +8,7 @@ import '../../services/plate_recognition_service.dart';
 import '../../widgets/scanner_overlay_painter.dart';
 
 class LicensePlateScannerScreen extends StatefulWidget {
-  const LicensePlateScannerScreen({Key? key}) : super(key: key);
+  const LicensePlateScannerScreen({super.key});
 
   @override
   State<LicensePlateScannerScreen> createState() => _LicensePlateScannerScreenState();

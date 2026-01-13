@@ -67,7 +67,7 @@ class _AccountSettingsPageState extends State<AccountSettingsPage> {
                           shape: BoxShape.circle,
                           boxShadow: [
                             BoxShadow(
-                              color: Colors.black.withOpacity(0.2),
+                              color: Colors.black.withValues(alpha: 0.2),
                               blurRadius:  10,
                               offset: const Offset(0, 5),
                             ),
@@ -116,7 +116,7 @@ class _AccountSettingsPageState extends State<AccountSettingsPage> {
                     _emailController.text,
                     style: TextStyle(
                       fontSize: 14,
-                      color: Colors. white.withOpacity(0.9),
+                      color: Colors. white.withValues(alpha: 0.9),
                     ),
                   ),
                 ],
@@ -253,7 +253,7 @@ class _AccountSettingsPageState extends State<AccountSettingsPage> {
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withValues(alpha: 0.05),
             blurRadius: 10,
             offset: const Offset(0, 2),
           ),
@@ -383,7 +383,7 @@ class _AccountSettingsPageState extends State<AccountSettingsPage> {
             Container(
               padding: const EdgeInsets.all(10),
               decoration: BoxDecoration(
-                color: color. withOpacity(0.1),
+                color: color. withValues(alpha: 0.1),
                 borderRadius: BorderRadius. circular(12),
               ),
               child: Icon(icon, color: color, size: 24),
@@ -412,7 +412,7 @@ class _AccountSettingsPageState extends State<AccountSettingsPage> {
                 ],
               ),
             ),
-            Icon(Icons.arrow_forward_ios, size: 16, color: color. withOpacity(0.5)),
+            Icon(Icons.arrow_forward_ios, size: 16, color: color. withValues(alpha: 0.5)),
           ],
         ),
       ),
@@ -532,7 +532,7 @@ class _AccountSettingsPageState extends State<AccountSettingsPage> {
       setState(() {
         _dateOfBirth = '${picked.month}/${picked.day}/${picked.year}';
       });
-      if (mounted) {
+      if (mounted && context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: const Row(
@@ -542,7 +542,7 @@ class _AccountSettingsPageState extends State<AccountSettingsPage> {
                 Text('Date of birth updated'),
               ],
             ),
-            backgroundColor: Colors.green. shade700,
+            backgroundColor: Colors.green.shade700,
             behavior: SnackBarBehavior.floating,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(10),
@@ -741,7 +741,6 @@ class _AccountSettingsPageState extends State<AccountSettingsPage> {
           ElevatedButton(
             onPressed: () {
               Navigator.pop(context);
-              // TODO: Implement account deletion
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
                   content: const Row(

@@ -83,7 +83,6 @@ class _AppointmentPageState extends State<AppointmentPage> {
           );
         }
       } catch (e) {
-        print('Error parsing time slot: $e');
         _selectedTime = const TimeOfDay(hour: 8, minute: 0);
       }
     });

@@ -15,11 +15,11 @@ class SettingsSections extends StatefulWidget {
   final AppLocalizations l10n;
 
   const SettingsSections({
-    Key? key,
+    super.key,
     required this. languageManager,
     required this.currentLanguage,
     required this.l10n,
-  }) : super(key: key);
+  });
 
   @override
   State<SettingsSections> createState() => _SettingsSectionsState();
@@ -212,7 +212,7 @@ class _SettingsSectionsState extends State<SettingsSections> {
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color:  Colors.black.withOpacity(0.05),
+            color:  Colors.black.withValues(alpha: 0.05),
             blurRadius: 10,
             offset: const Offset(0, 2),
           ),
@@ -241,7 +241,7 @@ class _SettingsSectionsState extends State<SettingsSections> {
             Container(
               padding: const EdgeInsets.all(10),
               decoration: BoxDecoration(
-                color: color.withOpacity(0.1),
+                color: color.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(12),
               ),
               child:  Icon(icon, color: color, size: 24),
@@ -289,7 +289,7 @@ class _SettingsSectionsState extends State<SettingsSections> {
           Container(
             padding: const EdgeInsets.all(10),
             decoration: BoxDecoration(
-              color: Colors.green.withOpacity(0.1),
+              color: Colors.green.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(12),
             ),
             child: Icon(Icons.language, color: Colors.green. shade700, size: 24),
@@ -408,7 +408,7 @@ class _SettingsSectionsState extends State<SettingsSections> {
                 actions: [
                   TextButton(
                     onPressed: () => Navigator.of(ctx).pop(false),
-                    child: Text(l10n.cancel ?? 'Cancel', style: TextStyle(color: Colors.grey.shade700)),
+                    child: Text(l10n.cancel, style: TextStyle(color: Colors.grey.shade700)),
                   ),
                   ElevatedButton(
                     onPressed: () => Navigator.of(ctx).pop(true),
@@ -425,7 +425,7 @@ class _SettingsSectionsState extends State<SettingsSections> {
               ),
             );
 
-            if (confirm == true) {
+            if (confirm == true && context.mounted) {
               await LogoutService.logoutAndRedirect(
                 context,
                 loginPage: const LoginPage(),

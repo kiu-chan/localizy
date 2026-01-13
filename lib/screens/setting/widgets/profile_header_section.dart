@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class ProfileHeaderSection extends StatelessWidget {
-  const ProfileHeaderSection({Key? key}) : super(key: key);
+  const ProfileHeaderSection({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -46,7 +46,6 @@ class ProfileHeaderSection extends StatelessWidget {
                     right: 0,
                     child: InkWell(
                       onTap: () {
-                        // TODO: Edit profile picture
                       },
                       child: Container(
                         padding: const EdgeInsets.all(8),
@@ -55,7 +54,7 @@ class ProfileHeaderSection extends StatelessWidget {
                           shape: BoxShape.circle,
                           boxShadow: [
                             BoxShadow(
-                              color: Colors.black.withOpacity(0.2),
+                              color: Colors.black.withValues(alpha: 0.2),
                               blurRadius:  8,
                               offset: const Offset(0, 2),
                             ),
@@ -64,7 +63,7 @@ class ProfileHeaderSection extends StatelessWidget {
                         child: Icon(
                           Icons.edit,
                           size: 16,
-                          color: Colors. green. shade700,
+                          color: Colors.green.shade700,
                         ),
                       ),
                     ),
@@ -91,7 +90,7 @@ class ProfileHeaderSection extends StatelessWidget {
                 'john.doe@example.com',
                 style: TextStyle(
                   fontSize:  14,
-                  color: Colors. white.withOpacity(0.9),
+                  color: Colors. white.withValues(alpha: 0.9),
                 ),
               ),
 
@@ -102,7 +101,7 @@ class ProfileHeaderSection extends StatelessWidget {
                 '+84 123 456 789',
                 style: TextStyle(
                   fontSize: 13,
-                  color: Colors. white.withOpacity(0.8),
+                  color: Colors. white.withValues(alpha: 0.8),
                 ),
               ),
 
@@ -112,9 +111,9 @@ class ProfileHeaderSection extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                 decoration: BoxDecoration(
-                  color: Colors.white. withOpacity(0.2),
+                  color: Colors.white. withValues(alpha: 0.2),
                   borderRadius: BorderRadius.circular(20),
-                  border: Border. all(color: Colors.white. withOpacity(0.3)),
+                  border: Border. all(color: Colors.white. withValues(alpha: 0.3)),
                 ),
                 child: const Row(
                   mainAxisSize: MainAxisSize.min,

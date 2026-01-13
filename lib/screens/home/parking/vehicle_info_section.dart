@@ -7,10 +7,10 @@ class VehicleInfoSection extends StatefulWidget {
   final TextEditingController parkingZoneController;
 
   const VehicleInfoSection({
-    Key? key,
+    super.key,
     required this.licensePlateController,
     required this.parkingZoneController,
-  }) : super(key: key);
+  });
 
   @override
   State<VehicleInfoSection> createState() => _VehicleInfoSectionState();
@@ -93,7 +93,7 @@ class _VehicleInfoSectionState extends State<VehicleInfoSection> {
             borderRadius: BorderRadius.circular(16),
             boxShadow:  [
               BoxShadow(
-                color: Colors.black. withOpacity(0.05),
+                color: Colors.black.withValues(alpha: 0.05),
                 blurRadius: 10,
                 offset: const Offset(0, 2),
               ),

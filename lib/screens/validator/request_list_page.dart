@@ -160,7 +160,7 @@ class _RequestListPageState extends State<RequestListPage> {
         borderRadius: BorderRadius.circular(12),
         boxShadow:  [
           BoxShadow(
-            color: Colors.black. withOpacity(0.05),
+            color: Colors.black.withValues(alpha: 0.05),
             blurRadius: 5,
             offset: const Offset(0, 2),
           ),
@@ -258,7 +258,7 @@ class _RequestListPageState extends State<RequestListPage> {
                         vertical: 6,
                       ),
                       decoration: BoxDecoration(
-                        color: statusColor.withOpacity(0.1),
+                        color: statusColor.withValues(alpha: 0.1),
                         borderRadius:  BorderRadius.circular(20),
                       ),
                       child:  Text(

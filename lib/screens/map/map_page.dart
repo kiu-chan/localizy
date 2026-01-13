@@ -34,7 +34,7 @@ class _MapPageState extends State<MapPage> with AutomaticKeepAliveClientMixin {
   DirectionsResult? _directionsResult;
   LatLng? _destinationPosition;
   bool _isSelectingDestination = false;
-  TravelMode _selectedTravelMode = TravelMode.driving;
+  final TravelMode _selectedTravelMode = TravelMode.driving;
   
   // Navigation tracking
   bool _isNavigating = false;
@@ -50,10 +50,6 @@ class _MapPageState extends State<MapPage> with AutomaticKeepAliveClientMixin {
   @override
   bool get wantKeepAlive => true;
 
-  @override
-  void initState() {
-    super.initState();
-  }
 
   @override
   void didChangeDependencies() {

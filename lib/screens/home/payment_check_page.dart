@@ -182,7 +182,7 @@ class _PaymentCheckPageState extends State<PaymentCheckPage> {
                     Container(
                       padding: const EdgeInsets.all(16),
                       decoration: BoxDecoration(
-                        color: Colors.white. withOpacity(0.2),
+                        color: Colors.white.withValues(alpha: 0.2),
                         borderRadius: BorderRadius.circular(12),
                       ),
                       child: const Icon(
@@ -225,12 +225,12 @@ class _PaymentCheckPageState extends State<PaymentCheckPage> {
               Container(
                 padding: const EdgeInsets.all(4),
                 decoration: BoxDecoration(
-                  color: Colors. white,
+                  color: Colors.white,
                   borderRadius: BorderRadius.circular(12),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black. withOpacity(0.05),
-                      blurRadius:  10,
+                      color: Colors.black.withValues(alpha: 0.05),
+                      blurRadius: 10,
                       offset: const Offset(0, 2),
                     ),
                   ],
@@ -265,7 +265,7 @@ class _PaymentCheckPageState extends State<PaymentCheckPage> {
                   borderRadius: BorderRadius.circular(16),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withOpacity(0.05),
+                      color: Colors.black.withValues(alpha: 0.05),
                       blurRadius: 10,
                       offset: const Offset(0, 2),
                     ),
@@ -495,7 +495,7 @@ class _PaymentCheckPageState extends State<PaymentCheckPage> {
             borderRadius: BorderRadius. circular(16),
             boxShadow: [
               BoxShadow(
-                color: statusColor.withOpacity(0.3),
+                color: statusColor.withValues(alpha: 0.3),
                 blurRadius: 10,
                 offset: const Offset(0, 4),
               ),
@@ -541,7 +541,7 @@ class _PaymentCheckPageState extends State<PaymentCheckPage> {
             borderRadius: BorderRadius.circular(16),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.05),
+                color: Colors.black.withValues(alpha: 0.05),
                 blurRadius: 10,
                 offset: const Offset(0, 2),
               ),
@@ -647,7 +647,6 @@ class _PaymentCheckPageState extends State<PaymentCheckPage> {
             Expanded(
               child: ElevatedButton.icon(
                 onPressed: () {
-                  // TODO: Extend parking time
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(content: Text('Extension feature in development')),
                   );
@@ -657,7 +656,7 @@ class _PaymentCheckPageState extends State<PaymentCheckPage> {
                 style: ElevatedButton.styleFrom(
                   padding: const EdgeInsets.symmetric(vertical: 14),
                   backgroundColor: Colors.orange.shade700,
-                  foregroundColor:  Colors.white,
+                  foregroundColor: Colors.white,
                   elevation: 0,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),

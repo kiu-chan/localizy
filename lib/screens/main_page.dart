@@ -44,7 +44,7 @@ class _MainPageState extends State<MainPage> {
                 color: colorScheme.surface,
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black. withOpacity(0.08),
+                    color: Colors.black.withValues(alpha: 0.08),
                     blurRadius:  8,
                     offset:  const Offset(0, -2),
                   ),
@@ -77,7 +77,7 @@ class _MainPageState extends State<MainPage> {
                       activeIcon: Container(
                         padding: const EdgeInsets.all(8),
                         decoration: BoxDecoration(
-                          color: Colors.green.shade700.withOpacity(0.15),
+                          color: Colors.green.shade700.withValues(alpha: 0.15),
                           borderRadius: BorderRadius.circular(12),
                         ),
                         child: const Icon(Icons.home),
@@ -89,7 +89,7 @@ class _MainPageState extends State<MainPage> {
                       activeIcon: Container(
                         padding:  const EdgeInsets.all(8),
                         decoration: BoxDecoration(
-                          color: Colors.green.shade700.withOpacity(0.15),
+                          color: Colors.green.shade700.withValues(alpha: 0.15),
                           borderRadius: BorderRadius.circular(12),
                         ),
                         child: const Icon(Icons.map),
@@ -101,7 +101,7 @@ class _MainPageState extends State<MainPage> {
                       activeIcon: Container(
                         padding:  const EdgeInsets.all(8),
                         decoration: BoxDecoration(
-                          color: Colors.green.shade700.withOpacity(0.15),
+                          color: Colors.green.shade700.withValues(alpha: 0.15),
                           borderRadius: BorderRadius.circular(12),
                         ),
                         child: const Icon(Icons.settings),

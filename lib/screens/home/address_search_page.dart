@@ -166,7 +166,6 @@ class _AddressSearchPageState extends State<AddressSearchPage> {
   }
 
   void _openInMap(Map<String, dynamic> address) {
-    // TODO: Open in Google Maps or navigation
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(content: Text('Opening map.. .')),
     );
@@ -196,7 +195,7 @@ class _AddressSearchPageState extends State<AddressSearchPage> {
               color: Colors.white,
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.05),
+                  color: Colors.black.withValues(alpha: 0.05),
                   blurRadius:  10,
                   offset:  const Offset(0, 2),
                 ),
@@ -806,7 +805,6 @@ class _AddressSearchPageState extends State<AddressSearchPage> {
                     width: double.infinity,
                     child: ElevatedButton.icon(
                       onPressed: () {
-                        // TODO: Navigate to parking payment
                         ScaffoldMessenger.of(context).showSnackBar(
                           const SnackBar(
                             content: Text('Navigating to payment...'),

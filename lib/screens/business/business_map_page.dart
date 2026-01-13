@@ -160,7 +160,7 @@ class _BusinessMapPageState extends State<BusinessMapPage> {
                 borderRadius: BorderRadius.circular(24),
                 boxShadow:  [
                   BoxShadow(
-                    color: Colors. black.withOpacity(0.1),
+                    color: Colors. black.withValues(alpha: 0.1),
                     blurRadius: 10,
                     offset: const Offset(0, 2),
                   ),
@@ -198,7 +198,7 @@ class _BusinessMapPageState extends State<BusinessMapPage> {
                 borderRadius: BorderRadius.circular(8),
                 boxShadow:  [
                   BoxShadow(
-                    color: Colors. black.withOpacity(0.1),
+                    color: Colors. black.withValues(alpha: 0.1),
                     blurRadius: 10,
                     offset: const Offset(0, 2),
                   ),
@@ -228,8 +228,8 @@ class _BusinessMapPageState extends State<BusinessMapPage> {
                 _showLocationsList();
               },
               backgroundColor: Colors.white,
-              child: Icon(Icons.list, color: Colors.blue.shade700),
               heroTag: 'list',
+              child: Icon(Icons.list, color: Colors.blue.shade700),
             ),
           ),
 
@@ -490,7 +490,7 @@ class _BusinessMapPageState extends State<BusinessMapPage> {
         border: Border.all(color: Colors.grey.shade200),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withValues(alpha: 0.05),
             blurRadius: 5,
             offset: const Offset(0, 2),
           ),
@@ -519,7 +519,7 @@ class _BusinessMapPageState extends State<BusinessMapPage> {
                 Container(
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
-                    color:  typeColor. withOpacity(0.1),
+                    color:  typeColor. withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Icon(
@@ -550,7 +550,7 @@ class _BusinessMapPageState extends State<BusinessMapPage> {
                               vertical: 4,
                             ),
                             decoration: BoxDecoration(
-                              color: statusColor. withOpacity(0.1),
+                              color: statusColor. withValues(alpha: 0.1),
                               borderRadius: BorderRadius.circular(12),
                             ),
                             child: Text(
@@ -593,7 +593,7 @@ class _BusinessMapPageState extends State<BusinessMapPage> {
                           vertical: 2,
                         ),
                         decoration: BoxDecoration(
-                          color: typeColor.withOpacity(0.1),
+                          color: typeColor.withValues(alpha: 0.1),
                           borderRadius:  BorderRadius.circular(4),
                         ),
                         child: Text(

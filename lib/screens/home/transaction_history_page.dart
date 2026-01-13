@@ -272,7 +272,7 @@ class _TransactionHistoryPageState extends State<TransactionHistoryPage> with Si
                       Container(
                         padding: const EdgeInsets.all(12),
                         decoration: BoxDecoration(
-                          color: _getTypeColor(transaction['type']).withOpacity(0.1),
+                          color: _getTypeColor(transaction['type']).withValues(alpha: 0.1),
                           borderRadius: BorderRadius.circular(12),
                         ),
                         child: Icon(
@@ -515,7 +515,7 @@ class _TransactionHistoryPageState extends State<TransactionHistoryPage> with Si
                   Container(
                     padding: const EdgeInsets.all(10),
                     decoration: BoxDecoration(
-                      color: _getTypeColor(transaction['type']).withOpacity(0.1),
+                      color: _getTypeColor(transaction['type']).withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(10),
                     ),
                     child: Icon(
