@@ -722,4 +722,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get registerFailed => 'Échec de l\'inscription';
+
+  @override
+  String get pleaseSelectLocation => 'Veuillez sélectionner un emplacement';
 }

@@ -232,5 +232,6 @@
   "loginFailed": "Échec de la connexion",
   "confirmLogout": "Êtes-vous sûr de vouloir vous déconnecter ?",
   "ok": "OK",
-  "registerFailed": "Échec de l'inscription"
+  "registerFailed": "Échec de l'inscription",
+  "pleaseSelectLocation": "Veuillez sélectionner un emplacement"
 }

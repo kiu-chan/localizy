@@ -700,4 +700,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get registerFailed => 'Registration failed';
+
+  @override
+  String get pleaseSelectLocation => 'Please select a location';
 }

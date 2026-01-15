@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:localizy/api/verification_api.dart';
 import 'package:localizy/l10n/app_localizations.dart';
 import 'package:localizy/screens/home/verification/appointment_page.dart';
 import 'package:localizy/screens/home/verification/completion_page.dart';
@@ -35,7 +36,7 @@ class _AddressVerificationFlowState extends State<AddressVerificationFlow> {
       localizations.confirmLocation,
       localizations.payment,
       localizations.selectAppointment,
-      localizations. complete,
+      localizations.complete,
     ];
   }
 
@@ -53,7 +54,7 @@ class _AddressVerificationFlowState extends State<AddressVerificationFlow> {
           break;
         case 1:
           // Map location data
-          _location = data as Map<String, double>? ;
+          _location = data as Map<String, double>?;
           break;
         case 2:
           // Payment data
@@ -86,8 +87,78 @@ class _AddressVerificationFlowState extends State<AddressVerificationFlow> {
     });
   }
 
-  void _completeVerification() {
-    Navigator.of(context).pop(); // Return to home
+  Future<void> _completeVerification() async {
+    final localizations = AppLocalizations.of(context)!;
+
+    // Basic validation before sending
+    if (_location == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(localizations.pleaseSelectLocation)),
+      );
+      setState(() {
+        _currentStep = 1;
+      });
+      return;
+    }
+
+    // Show a loading dialog
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (ctx) => const Center(child: CircularProgressIndicator()),
+    );
+
+    try {
+      final attachments = <File>[];
+      if (_idDocument != null) attachments.add(_idDocument!);
+      if (_addressProof != null) attachments.add(_addressProof!);
+
+      final photosProvided = _idDocument != null;
+      final documentsProvided = _addressProof != null;
+      final attachmentsCount = attachments.length;
+
+      // Use VerificationService to create the request
+      final resp = await VerificationApi.createVerificationRequest(
+        addressId: '', // If you have an addressId, set it here
+        requestType: 'NewAddress',
+        priority: 'Medium',
+        idType: _idType.toUpperCase(),
+        notes: '',
+        photosProvided: photosProvided,
+        documentsProvided: documentsProvided,
+        attachmentsCount: attachmentsCount,
+        latitude: _location!['lat']!,
+        longitude: _location!['lng']!,
+        paymentMethod: _paymentMethod ?? 'momo',
+        paymentAmount: 100000, // amount used in app (adjust as needed)
+        appointmentDate: _appointmentDate,
+        appointmentTimeSlot: _timeSlot,
+        attachments: attachments,
+      );
+
+      // Close loading
+      if (context.mounted) Navigator.of(context).pop();
+
+      // Show success and return to previous screen (or home)
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(localizations.requestSubmitted)),
+        );
+      }
+
+      // Optionally pass result back or simply pop
+      if (context.mounted) Navigator.of(context).pop(resp);
+    } catch (e) {
+      // Close loading
+      if (context.mounted) Navigator.of(context).pop();
+
+      final msg = e.toString();
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(msg)),
+        );
+      }
+    }
   }
 
   @override
@@ -105,7 +176,7 @@ class _AddressVerificationFlowState extends State<AddressVerificationFlow> {
       child:  Scaffold(
         appBar: AppBar(
           title: Text(localizations.addressVerification),
-          backgroundColor: Colors.green. shade700,
+          backgroundColor: Colors.green.shade700,
           foregroundColor: Colors.white,
           leading: IconButton(
             icon:  const Icon(Icons.arrow_back),
@@ -143,7 +214,7 @@ class _AddressVerificationFlowState extends State<AddressVerificationFlow> {
         color: Colors.white,
         boxShadow: [
           BoxShadow(
-            color: Colors. grey.withValues(alpha: 0.1),
+            color: Colors.grey.withOpacity(0.1),
             blurRadius: 4,
             offset: const Offset(0, 2),
           ),
@@ -166,7 +237,7 @@ class _AddressVerificationFlowState extends State<AddressVerificationFlow> {
           const SizedBox(height: 12),
           // Step title
           Text(
-            localizations. stepProgress(_currentStep + 1, 5, stepTitles[_currentStep]),
+            localizations.stepProgress(_currentStep + 1, 5, stepTitles[_currentStep]),
             style:  const TextStyle(
               fontSize:  16,
               fontWeight:  FontWeight.bold,
@@ -194,12 +265,12 @@ class _AddressVerificationFlowState extends State<AddressVerificationFlow> {
       width: 32,
       height: 32,
       decoration: BoxDecoration(
-        shape: BoxShape. circle,
+        shape: BoxShape.circle,
         color: isCompleted
-            ? Colors.green. shade700
+            ? Colors.green.shade700
             : isCurrent
                 ? Colors.green.shade700
-                : Colors.grey. shade300,
+                : Colors.grey.shade300,
         border: Border.all(
           color: isCurrent ?  Colors.green.shade900 :  Colors.transparent,
           width: 2,
@@ -211,7 +282,7 @@ class _AddressVerificationFlowState extends State<AddressVerificationFlow> {
             : Text(
                 '${index + 1}',
                 style: TextStyle(
-                  color: isCurrent ? Colors.white : Colors. grey[600],
+                  color: isCurrent ? Colors.white : Colors.grey[600],
                   fontWeight: FontWeight.bold,
                   fontSize: 14,
                 ),

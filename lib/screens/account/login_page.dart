@@ -51,77 +51,73 @@ class _LoginPageState extends State<LoginPage> {
     });
   }
 
-  Future<void> _handleLogin() async {
-    if (!_formKey.currentState!.validate()) return;
+Future<void> _handleLogin() async {
+  if (!_formKey.currentState!.validate()) return;
 
-    setState(() {
-      _isLoading = true;
-    });
+  setState(() {
+    _isLoading = true;
+  });
 
-    try {
-      final email = _emailController.text.trim();
-      final password = _passwordController.text;
+  try {
+    final email = _emailController.text.trim();
+    final password = _passwordController.text;
 
-      final user = await AuthService.login(email: email, password: password);
+    // Debug: print request info (không in password ra log thực tế nếu sensitive)
+    debugPrint('Attempt login: $email');
 
-      if (!mounted) return;
+    final user = await AuthService.login(email: email, password: password);
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(AppLocalizations.of(context)!.loginSuccess),
-          backgroundColor: Colors.green,
-        ),
-      );
+    if (!mounted) return;
 
-      // Điều hướng dựa trên role trả về từ API (so sánh chữ thường để an toàn)
-      final role = user.role.toLowerCase();
-      if (role.contains('validator')) {
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(
-            builder: (context) => const ValidatorMainPage(),
-          ),
-        );
-      } else if (role.contains('business')) {
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(
-            builder: (context) => const BusinessMainPage(),
-          ),
-        );
-      } else {
-        // default -> user thường / admin / ...
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(
-            builder: (context) => const MainPage(),
-          ),
-        );
-      }
-    } on AuthException catch (e) {
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(e.message),
-          backgroundColor: Colors.red,
-        ),
-      );
-    } catch (e) {
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(AppLocalizations.of(context)!.loginFailed),
-          backgroundColor: Colors.red,
-        ),
-      );
-    } finally {
-      if (mounted) {
-        setState(() {
-          _isLoading = false;
-        });
-      }
+    debugPrint('Login success: ${user.email} role=${user.role}');
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(AppLocalizations.of(context)!.loginSuccess),
+        backgroundColor: Colors.green,
+      ),
+    );
+
+    final role = user.role.toLowerCase();
+    if (role.contains('validator')) {
+      Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => const ValidatorMainPage()));
+    } else if (role.contains('business')) {
+      Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => const BusinessMainPage()));
+    } else {
+      Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => const MainPage()));
+    }
+  } on AuthException catch (e, st) {
+    debugPrint('AuthException: ${e.message}\n$st');
+    if (!mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(e.message), backgroundColor: Colors.red),
+    );
+  } catch (e, st) {
+    // Log full error and stacktrace for debugging
+    debugPrint('Login error: $e\n$st');
+
+    // If it's a network issue, show a clearer message
+    final errMsg = e.toString();
+    final l10n = AppLocalizations.of(context)!;
+    String showMsg = l10n.loginFailed; // generic
+
+    if (errMsg.contains('Failed host lookup') || errMsg.contains('SocketException')) {
+      showMsg = 'Network error: cannot reach API. Check API_BASE_URL and network.'; // temporary for dev
+    } else if (errMsg.contains('API_BASE_URL') || errMsg.contains('is not set')) {
+      showMsg = 'Configuration error: API_BASE_URL not set or MainApi not initialized.';
+    }
+
+    if (!mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(showMsg), backgroundColor: Colors.red),
+    );
+  } finally {
+    if (mounted) {
+      setState(() {
+        _isLoading = false;
+      });
     }
   }
+}
 
   @override
   Widget build(BuildContext context) {

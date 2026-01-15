@@ -1423,6 +1423,12 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'Échec de l\'inscription'**
   String get registerFailed;
+
+  /// No description provided for @pleaseSelectLocation.
+  ///
+  /// In fr, this message translates to:
+  /// **'Veuillez sélectionner un emplacement'**
+  String get pleaseSelectLocation;
 }
 
 class _AppLocalizationsDelegate

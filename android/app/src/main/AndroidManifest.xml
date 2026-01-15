@@ -6,7 +6,7 @@
     <uses-permission android:name="android.permission. READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <application
-        android:label="localizy"
+        android:label="Citizen"
         android:name="android.app.Application"
         android:icon="@mipmap/ic_launcher">
         <meta-data

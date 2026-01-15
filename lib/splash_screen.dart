@@ -14,7 +14,7 @@ class SplashScreen extends StatefulWidget {
 class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderStateMixin {
   late AnimationController _animationController;
   late Animation<double> _logoAnimation;
-  final String appName = 'Localizy';
+  final String appName = 'Citizen';
   final List<bool> _visibleLetters = [];
 
   @override
