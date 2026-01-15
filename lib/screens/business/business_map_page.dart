@@ -12,6 +12,7 @@ class BusinessMapPage extends StatefulWidget {
 class _BusinessMapPageState extends State<BusinessMapPage> {
   late GoogleMapController _mapController;
   final Completer<GoogleMapController> _controller = Completer();
+  MapType _currentMapType = MapType.normal;
 
   // Vị trí trung tâm tại Paris, France
   static const CameraPosition _initialPosition = CameraPosition(
@@ -139,7 +140,7 @@ class _BusinessMapPageState extends State<BusinessMapPage> {
         children: [
           // Google Map
           GoogleMap(
-            mapType: MapType.normal,
+            mapType: _currentMapType,
             initialCameraPosition: _initialPosition,
             onMapCreated: _onMapCreated,
             markers: _markers,
@@ -269,15 +270,19 @@ class _BusinessMapPageState extends State<BusinessMapPage> {
               leading: const Icon(Icons.map),
               title: const Text('Normal'),
               onTap: () {
-                _mapController.setMapStyle(null);
+                setState(() {
+                  _currentMapType = MapType.normal;
+                });
                 Navigator.pop(context);
               },
             ),
             ListTile(
               leading: const Icon(Icons.satellite),
               title: const Text('Satellite'),
-              onTap: () async {
-                await _mapController.setMapStyle('[]');
+              onTap: () {
+                setState(() {
+                  _currentMapType = MapType.satellite;
+                });
                 Navigator.pop(context);
               },
             ),
@@ -285,6 +290,9 @@ class _BusinessMapPageState extends State<BusinessMapPage> {
               leading: const Icon(Icons.terrain),
               title: const Text('Terrain'),
               onTap:  () {
+                setState(() {
+                  _currentMapType = MapType.terrain;
+                });
                 Navigator.pop(context);
               },
             ),

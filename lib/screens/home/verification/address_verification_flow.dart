@@ -88,13 +88,17 @@ class _AddressVerificationFlowState extends State<AddressVerificationFlow> {
   }
 
   Future<void> _completeVerification() async {
+    if (!mounted) return;
+    
     final localizations = AppLocalizations.of(context)!;
 
     // Basic validation before sending
     if (_location == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(localizations.pleaseSelectLocation)),
-      );
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(localizations.pleaseSelectLocation)),
+        );
+      }
       setState(() {
         _currentStep = 1;
       });
@@ -102,11 +106,13 @@ class _AddressVerificationFlowState extends State<AddressVerificationFlow> {
     }
 
     // Show a loading dialog
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (ctx) => const Center(child: CircularProgressIndicator()),
-    );
+    if (mounted) {
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (ctx) => const Center(child: CircularProgressIndicator()),
+      );
+    }
 
     try {
       final attachments = <File>[];
@@ -137,23 +143,23 @@ class _AddressVerificationFlowState extends State<AddressVerificationFlow> {
       );
 
       // Close loading
-      if (context.mounted) Navigator.of(context).pop();
+      if (mounted) Navigator.of(context).pop();
 
       // Show success and return to previous screen (or home)
-      if (context.mounted) {
+      if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text(localizations.requestSubmitted)),
         );
       }
 
       // Optionally pass result back or simply pop
-      if (context.mounted) Navigator.of(context).pop(resp);
+      if (mounted) Navigator.of(context).pop(resp);
     } catch (e) {
       // Close loading
-      if (context.mounted) Navigator.of(context).pop();
+      if (mounted) Navigator.of(context).pop();
 
       final msg = e.toString();
-      if (context.mounted) {
+      if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text(msg)),
         );
@@ -165,13 +171,12 @@ class _AddressVerificationFlowState extends State<AddressVerificationFlow> {
   Widget build(BuildContext context) {
     final localizations = AppLocalizations.of(context)!;
     
-    return WillPopScope(
-      onWillPop: () async {
-        if (_currentStep > 0) {
+    return PopScope(
+      canPop: _currentStep == 0,
+      onPopInvokedWithResult: (bool didPop, dynamic result) {
+        if (!didPop && _currentStep > 0) {
           _previousStep();
-          return false;
         }
-        return true;
       },
       child:  Scaffold(
         appBar: AppBar(
@@ -214,7 +219,7 @@ class _AddressVerificationFlowState extends State<AddressVerificationFlow> {
         color: Colors.white,
         boxShadow: [
           BoxShadow(
-            color: Colors.grey.withOpacity(0.1),
+            color: Colors.grey.withValues(alpha: 0.1),
             blurRadius: 4,
             offset: const Offset(0, 2),
           ),
