@@ -55,7 +55,9 @@ class _MapPickerPageState extends State<MapPickerPage> {
       }
 
       Position position = await Geolocator.getCurrentPosition(
-        desiredAccuracy: LocationAccuracy.high,
+        locationSettings: const LocationSettings(
+          accuracy: LocationAccuracy.high,
+        ),
       );
 
       _centerLocation = LatLng(position.latitude, position.longitude);
@@ -82,7 +84,9 @@ class _MapPickerPageState extends State<MapPickerPage> {
   void _moveToMyLocation() async {
     try {
       Position position = await Geolocator.getCurrentPosition(
-        desiredAccuracy: LocationAccuracy.high,
+        locationSettings: const LocationSettings(
+          accuracy: LocationAccuracy.high,
+        ),
       );
       
       _mapController?.animateCamera(

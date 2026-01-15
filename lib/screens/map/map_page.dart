@@ -113,7 +113,9 @@ class _MapPageState extends State<MapPage> with AutomaticKeepAliveClientMixin {
       }
 
       Position position = await Geolocator.getCurrentPosition(
-        desiredAccuracy: LocationAccuracy.high,
+        locationSettings: const LocationSettings(
+          accuracy: LocationAccuracy.high,
+        ),
       );
 
       if (! mounted) return;
