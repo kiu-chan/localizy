@@ -13,18 +13,19 @@ class AddressVerificationFlow extends StatefulWidget {
   const AddressVerificationFlow({super.key});
 
   @override
-  State<AddressVerificationFlow> createState() => _AddressVerificationFlowState();
+  State<AddressVerificationFlow> createState() =>
+      _AddressVerificationFlowState();
 }
 
 class _AddressVerificationFlowState extends State<AddressVerificationFlow> {
   int _currentStep = 0;
-  
+
   // Data from steps
   File? _idDocument;
   File? _addressProof;
   String _idType = 'cmnd';
   Map<String, double>? _location;
-  String?  _paymentMethod;
+  String? _paymentMethod;
   DateTime? _appointmentDate;
   TimeOfDay? _appointmentTime;
   String? _timeSlot;
@@ -69,7 +70,7 @@ class _AddressVerificationFlowState extends State<AddressVerificationFlow> {
           }
           break;
       }
-      
+
       if (_currentStep < 4) {
         _currentStep++;
       } else {
@@ -89,10 +90,9 @@ class _AddressVerificationFlowState extends State<AddressVerificationFlow> {
 
   Future<void> _completeVerification() async {
     if (!mounted) return;
-    
+
     final localizations = AppLocalizations.of(context)!;
 
-    // Basic validation before sending
     if (_location == null) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -105,7 +105,6 @@ class _AddressVerificationFlowState extends State<AddressVerificationFlow> {
       return;
     }
 
-    // Show a loading dialog
     if (mounted) {
       showDialog(
         context: context,
@@ -115,54 +114,42 @@ class _AddressVerificationFlowState extends State<AddressVerificationFlow> {
     }
 
     try {
-      final attachments = <File>[];
-      if (_idDocument != null) attachments.add(_idDocument!);
-      if (_addressProof != null) attachments.add(_addressProof!);
-
-      final photosProvided = _idDocument != null;
-      final documentsProvided = _addressProof != null;
-      final attachmentsCount = attachments.length;
-
-      // Use VerificationService to create the request
       final resp = await VerificationApi.createVerificationRequest(
-        addressId: '', // If you have an addressId, set it here
+        addressId: null,
         requestType: 'NewAddress',
         priority: 'Medium',
         idType: _idType.toUpperCase(),
-        notes: '',
-        photosProvided: photosProvided,
-        documentsProvided: documentsProvided,
-        attachmentsCount: attachmentsCount,
+        photosProvided: _idDocument != null,
+        documentsProvided: _addressProof != null,
+        attachmentsCount:
+            (_idDocument != null ? 1 : 0) + (_addressProof != null ? 1 : 0),
         latitude: _location!['lat']!,
         longitude: _location!['lng']!,
         paymentMethod: _paymentMethod ?? 'momo',
-        paymentAmount: 100000, // amount used in app (adjust as needed)
+        paymentAmount: 100000,
         appointmentDate: _appointmentDate,
         appointmentTimeSlot: _timeSlot,
-        attachments: attachments,
+        idDocument: _idDocument,
+        addressProof: _addressProof,
       );
 
-      // Close loading
       if (mounted) Navigator.of(context).pop();
 
-      // Show success and return to previous screen (or home)
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(localizations.requestSubmitted)),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(localizations.requestSubmitted)));
       }
 
-      // Optionally pass result back or simply pop
       if (mounted) Navigator.of(context).pop(resp);
     } catch (e) {
-      // Close loading
       if (mounted) Navigator.of(context).pop();
 
       final msg = e.toString();
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(msg)),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(msg)));
       }
     }
   }
@@ -170,7 +157,7 @@ class _AddressVerificationFlowState extends State<AddressVerificationFlow> {
   @override
   Widget build(BuildContext context) {
     final localizations = AppLocalizations.of(context)!;
-    
+
     return PopScope(
       canPop: _currentStep == 0,
       onPopInvokedWithResult: (bool didPop, dynamic result) {
@@ -178,13 +165,13 @@ class _AddressVerificationFlowState extends State<AddressVerificationFlow> {
           _previousStep();
         }
       },
-      child:  Scaffold(
+      child: Scaffold(
         appBar: AppBar(
           title: Text(localizations.addressVerification),
           backgroundColor: Colors.green.shade700,
           foregroundColor: Colors.white,
           leading: IconButton(
-            icon:  const Icon(Icons.arrow_back),
+            icon: const Icon(Icons.arrow_back),
             onPressed: () {
               if (_currentStep > 0) {
                 _previousStep();
@@ -195,14 +182,12 @@ class _AddressVerificationFlowState extends State<AddressVerificationFlow> {
           ),
         ),
         body: Column(
-          children:  [
+          children: [
             // Progress Stepper
             _buildProgressStepper(),
-            
+
             // Current Step Content
-            Expanded(
-              child: _buildStepContent(),
-            ),
+            Expanded(child: _buildStepContent()),
           ],
         ),
       ),
@@ -212,7 +197,7 @@ class _AddressVerificationFlowState extends State<AddressVerificationFlow> {
   Widget _buildProgressStepper() {
     final localizations = AppLocalizations.of(context)!;
     final stepTitles = _getStepTitles(context);
-    
+
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -242,20 +227,20 @@ class _AddressVerificationFlowState extends State<AddressVerificationFlow> {
           const SizedBox(height: 12),
           // Step title
           Text(
-            localizations.stepProgress(_currentStep + 1, 5, stepTitles[_currentStep]),
-            style:  const TextStyle(
-              fontSize:  16,
-              fontWeight:  FontWeight.bold,
+            localizations.stepProgress(
+              _currentStep + 1,
+              5,
+              stepTitles[_currentStep],
             ),
+            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 4),
           // Progress percentage
           Text(
-            localizations.percentComplete((((_currentStep + 1) / 5) * 100).toInt()),
-            style: TextStyle(
-              fontSize: 14,
-              color: Colors.grey[600],
+            localizations.percentComplete(
+              (((_currentStep + 1) / 5) * 100).toInt(),
             ),
+            style: TextStyle(fontSize: 14, color: Colors.grey[600]),
           ),
         ],
       ),
@@ -265,7 +250,7 @@ class _AddressVerificationFlowState extends State<AddressVerificationFlow> {
   Widget _buildStepDot(int index) {
     final isCompleted = index < _currentStep;
     final isCurrent = index == _currentStep;
-    
+
     return Container(
       width: 32,
       height: 32,
@@ -274,10 +259,10 @@ class _AddressVerificationFlowState extends State<AddressVerificationFlow> {
         color: isCompleted
             ? Colors.green.shade700
             : isCurrent
-                ? Colors.green.shade700
-                : Colors.grey.shade300,
+            ? Colors.green.shade700
+            : Colors.grey.shade300,
         border: Border.all(
-          color: isCurrent ?  Colors.green.shade900 :  Colors.transparent,
+          color: isCurrent ? Colors.green.shade900 : Colors.transparent,
           width: 2,
         ),
       ),
@@ -298,9 +283,9 @@ class _AddressVerificationFlowState extends State<AddressVerificationFlow> {
 
   Widget _buildStepLine(int index) {
     final isCompleted = index < _currentStep;
-    
+
     return Container(
-      width:  40,
+      width: 40,
       height: 2,
       color: isCompleted ? Colors.green.shade700 : Colors.grey.shade300,
     );
@@ -316,7 +301,7 @@ class _AddressVerificationFlowState extends State<AddressVerificationFlow> {
           onDocumentsUploaded: (idDoc, addressDoc, idType) {
             _nextStep({
               'idDocument': idDoc,
-              'addressProof':  addressDoc,
+              'addressProof': addressDoc,
               'idType': idType,
             });
           },
@@ -336,7 +321,7 @@ class _AddressVerificationFlowState extends State<AddressVerificationFlow> {
       case 3:
         return AppointmentPage(
           initialDate: _appointmentDate,
-          initialTime:  _appointmentTime,
+          initialTime: _appointmentTime,
           onNext: _nextStep,
           onPrevious: _previousStep,
         );
