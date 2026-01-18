@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:localizy/l10n/app_localizations.dart';
-import 'package:localizy/screens/home/transaction_history_page.dart';
+import 'package:localizy/screens/home/history/transaction_history_page.dart';
 import 'package:localizy/screens/home/verification/address_verification_flow.dart';
 import 'package:localizy/screens/setting/about_page.dart';
 import 'package:localizy/screens/setting/account_settings_page.dart';
