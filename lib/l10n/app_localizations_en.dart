@@ -709,4 +709,22 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get close => 'Close';
+
+  @override
+  String get description => 'Description';
+
+  @override
+  String get phone => 'Phone';
+
+  @override
+  String get website => 'Website';
+
+  @override
+  String get openingHours => 'Opening Hours';
+
+  @override
+  String get createdAt => 'Created at';
+
+  @override
+  String get address => 'Address';
 }

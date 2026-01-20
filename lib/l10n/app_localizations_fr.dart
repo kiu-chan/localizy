@@ -731,4 +731,22 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get close => 'Fermer';
+
+  @override
+  String get description => 'Description';
+
+  @override
+  String get phone => 'Téléphone';
+
+  @override
+  String get website => 'Site internet';
+
+  @override
+  String get openingHours => 'Horaires d\'ouverture';
+
+  @override
+  String get createdAt => 'Créé le';
+
+  @override
+  String get address => 'Adresse';
 }

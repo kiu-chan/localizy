@@ -235,5 +235,11 @@
   "registerFailed": "Registration failed",
   "pleaseSelectLocation": "Please select a location",
   "getDirections": "Get Directions",
-  "close": "Close"
+  "close": "Close",
+  "description": "Description",
+  "phone": "Phone",
+  "website": "Website",
+  "openingHours": "Opening Hours",
+  "createdAt": "Created at",
+  "address": "Address"
 } 

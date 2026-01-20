@@ -1441,6 +1441,42 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'Fermer'**
   String get close;
+
+  /// No description provided for @description.
+  ///
+  /// In fr, this message translates to:
+  /// **'Description'**
+  String get description;
+
+  /// No description provided for @phone.
+  ///
+  /// In fr, this message translates to:
+  /// **'Téléphone'**
+  String get phone;
+
+  /// No description provided for @website.
+  ///
+  /// In fr, this message translates to:
+  /// **'Site internet'**
+  String get website;
+
+  /// No description provided for @openingHours.
+  ///
+  /// In fr, this message translates to:
+  /// **'Horaires d\'ouverture'**
+  String get openingHours;
+
+  /// No description provided for @createdAt.
+  ///
+  /// In fr, this message translates to:
+  /// **'Créé le'**
+  String get createdAt;
+
+  /// No description provided for @address.
+  ///
+  /// In fr, this message translates to:
+  /// **'Adresse'**
+  String get address;
 }
 
 class _AppLocalizationsDelegate

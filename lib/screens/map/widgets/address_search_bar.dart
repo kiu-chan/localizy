@@ -97,7 +97,6 @@ class _AddressSearchBarState extends State<AddressSearchBar> {
     widget.onAddressSelected(
       AddressResult(
         id: address.id,
-        code: address.id,
         name: address.name,
         address: address.address,
         type: address.type,
@@ -133,6 +132,32 @@ class _AddressSearchBarState extends State<AddressSearchBar> {
         return Icons.train;
       case 'airport':
         return Icons.flight;
+      case 'cafe':
+        return Icons.local_cafe;
+      case 'bank':
+        return Icons.account_balance_wallet;
+      case 'atm':
+        return Icons.atm;
+      case 'pharmacy':
+        return Icons.local_pharmacy;
+      case 'gas_station':
+        return Icons.local_gas_station;
+      case 'parking':
+        return Icons.local_parking;
+      case 'gym':
+        return Icons.fitness_center;
+      case 'cinema':
+        return Icons.movie;
+      case 'museum':
+        return Icons.museum;
+      case 'library':
+        return Icons.local_library;
+      case 'church':
+        return Icons.church;
+      case 'mosque':
+        return Icons.mosque;
+      case 'temple':
+        return Icons.temple_buddhist;
       default:
         return Icons.location_on;
     }
@@ -365,7 +390,7 @@ class _AddressSearchBarState extends State<AddressSearchBar> {
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
               ),
-              const SizedBox(height: 2),
+              const SizedBox(height: 4),
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                 decoration: BoxDecoration(
@@ -395,9 +420,9 @@ class _AddressSearchBarState extends State<AddressSearchBar> {
   }
 }
 
+/// Model kết quả địa chỉ được chọn
 class AddressResult {
   final String id;
-  final String code;
   final String name;
   final String address;
   final String type;
@@ -406,7 +431,6 @@ class AddressResult {
 
   AddressResult({
     required this.id,
-    required this.code,
     required this.name,
     required this.address,
     required this.type,
@@ -414,9 +438,7 @@ class AddressResult {
     required this.lng,
   });
 
-  // Getter để tương thích ngược với code cũ
+  // Getters để tương thích với code cũ
+  String get code => id;
   bool get verified => true;
-  String get district => '';
-  String get city => '';
-  String get country => '';
 }

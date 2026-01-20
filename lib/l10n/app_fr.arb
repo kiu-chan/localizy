@@ -235,5 +235,11 @@
   "registerFailed": "Échec de l'inscription",
   "pleaseSelectLocation": "Veuillez sélectionner un emplacement",
   "getDirections": "Obtenir l'itinéraire",
-  "close": "Fermer"
+  "close": "Fermer",
+  "description": "Description",
+  "phone": "Téléphone",
+  "website": "Site internet",
+  "openingHours": "Horaires d'ouverture",
+  "createdAt": "Créé le",
+  "address": "Adresse"
 }

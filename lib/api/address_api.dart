@@ -36,6 +36,20 @@ class AddressApi {
     }
     throw Exception('Failed to search addresses: ${resp.statusCode}');
   }
+
+  // Lấy chi tiết địa chỉ theo ID
+  static Future<AddressDetail> getDetail(String id) async {
+    final resp = await MainApi.instance.get(
+      '/api/Addresses/detail/$id',
+      headers: {'accept': 'text/plain'},
+    );
+    
+    if (resp.statusCode == 200) {
+      final raw = json.decode(resp.body);
+      return AddressDetail.fromJson(raw);
+    }
+    throw Exception('Failed to get address detail: ${resp.statusCode}');
+  }
 }
 
 /// Model đơn giản hoá chỉ chứa id và coordinates
@@ -89,30 +103,68 @@ class AddressSearchResult {
       lng: (coords['lng'] ?? 0).toDouble(),
     );
   }
+}
 
-  /// Lấy icon theo loại địa chỉ
-  String get typeIcon {
-    switch (type.toLowerCase()) {
-      case 'landmark':
-        return '🏛️';
-      case 'restaurant':
-        return '🍽️';
-      case 'hotel':
-        return '🏨';
-      case 'hospital':
-        return '🏥';
-      case 'school':
-        return '🏫';
-      case 'shop':
-        return '🛒';
-      case 'park':
-        return '🌳';
-      case 'station':
-        return '🚉';
-      case 'airport':
-        return '✈️';
-      default:
-        return '📍';
-    }
+/// Model chi tiết địa chỉ
+class AddressDetail {
+  final String id;
+  final String name;
+  final String address;
+  final String type;
+  final String? category;
+  final String? description;
+  final double lat;
+  final double lng;
+  final String? phone;
+  final String? website;
+  final String? openingHours;
+  final DateTime? createdAt;
+
+  AddressDetail({
+    required this.id,
+    required this.name,
+    required this.address,
+    required this.type,
+    this.category,
+    this.description,
+    required this.lat,
+    required this.lng,
+    this.phone,
+    this.website,
+    this.openingHours,
+    this.createdAt,
+  });
+
+  factory AddressDetail.fromJson(Map<String, dynamic> json) {
+    final coords = json['coordinates'] ?? {};
+    return AddressDetail(
+      id: json['id'] ?? '',
+      name: json['name'] ?? '',
+      address: json['address'] ?? '',
+      type: json['type'] ?? '',
+      category: json['category'],
+      description: json['description'],
+      lat: (coords['lat'] ?? 0).toDouble(),
+      lng: (coords['lng'] ?? 0).toDouble(),
+      phone: json['phone'],
+      website: json['website'],
+      openingHours: json['openingHours'],
+      createdAt: json['createdAt'] != null 
+          ? DateTime.tryParse(json['createdAt']) 
+          : null,
+    );
+  }
+
+  /// Format toạ độ đẹp hơn
+  String get formattedCoordinates {
+    final latDir = lat >= 0 ? 'N' : 'S';
+    final lngDir = lng >= 0 ? 'E' : 'W';
+    return '${lat.abs().toStringAsFixed(6)}° $latDir, ${lng.abs().toStringAsFixed(6)}° $lngDir';
+  }
+
+  /// Format ngày tạo
+  String? get formattedCreatedAt {
+    if (createdAt == null) return null;
+    return '${createdAt!.day.toString().padLeft(2, '0')}/${createdAt!.month.toString().padLeft(2, '0')}/${createdAt!.year}';
   }
 }
