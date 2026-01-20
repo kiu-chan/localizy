@@ -233,5 +233,7 @@
   "confirmLogout": "Êtes-vous sûr de vouloir vous déconnecter ?",
   "ok": "OK",
   "registerFailed": "Échec de l'inscription",
-  "pleaseSelectLocation": "Veuillez sélectionner un emplacement"
+  "pleaseSelectLocation": "Veuillez sélectionner un emplacement",
+  "getDirections": "Obtenir l'itinéraire",
+  "close": "Fermer"
 }

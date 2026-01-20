@@ -8,11 +8,13 @@ import 'package:localizy/services/directions_service.dart';
 import 'package:localizy/screens/map/widgets/directions_panel.dart';
 import 'package:localizy/screens/map/widgets/map_type_selector.dart';
 import 'package:localizy/screens/map/widgets/address_search_bar.dart';
+import 'package:localizy/screens/map/widgets/address_cluster_manager.dart';
+import 'package:localizy/screens/map/widgets/address_detail_bottom_sheet.dart';
 import 'package:localizy/configs/map_config.dart';
 import 'package:localizy/api/address_api.dart';
 
 class MapPage extends StatefulWidget {
-  final Function(bool)? onNavigationStateChanged; // Thêm callback
+  final Function(bool)? onNavigationStateChanged;
 
   const MapPage({
     super.key,
@@ -27,8 +29,8 @@ class _MapPageState extends State<MapPage> with AutomaticKeepAliveClientMixin {
   GoogleMapController? _mapController;
   LatLng _currentPosition = MapConfig.defaultPosition;
   bool _isLoading = true;
-  bool _hasLoadedOnce = false; // Thêm flag để track đã load lần đầu chưa
-  final Set<Marker> _markers = {};
+  bool _hasLoadedOnce = false;
+  Set<Marker> _markers = {};
   final Set<Polyline> _polylines = {};
   bool _isMapReady = false;
 
@@ -47,12 +49,71 @@ class _MapPageState extends State<MapPage> with AutomaticKeepAliveClientMixin {
   // Map type selection
   MapType _currentMapType = MapConfig.defaultMapType;
 
-  // Danh sách địa chỉ lấy từ API
-  List<AddressCoordinate> _apiAddresses = [];
+  // Cluster Manager
+  late AddressClusterManager _addressClusterManager;
 
-  // Giữ state của widget khi chuyển tab
+  // Marker không thuộc cluster (destination, searched, etc.)
+  final Set<Marker> _nonClusterMarkers = {};
+
   @override
   bool get wantKeepAlive => true;
+
+  @override
+  void initState() {
+    super.initState();
+    _initClusterManager();
+  }
+
+  void _initClusterManager() {
+    _addressClusterManager = AddressClusterManager(
+      onMarkersUpdated: _onClusterMarkersUpdated,
+      onAddressTapped: _onAddressTapped,
+      onClusterTapped: _onClusterTapped,
+      initialZoom: MapConfig.defaultZoom,
+    );
+  }
+
+  void _onClusterMarkersUpdated(Set<Marker> clusterMarkers) {
+    if (!mounted) return;
+    setState(() {
+      _markers = clusterMarkers.union(_nonClusterMarkers);
+    });
+  }
+
+  void _onAddressTapped(AddressCoordinate address) {
+    final position = LatLng(address.lat, address.lng);
+    _animateToPosition(position, zoom: 17.0);
+
+    AddressDetailBottomSheet.show(
+      context,
+      address: address,
+      onGetDirections: _setDestinationAndGetDirections,
+    );
+  }
+
+  void _onClusterTapped(LatLng position, double currentZoom) {
+    _animateToPosition(position, zoom: currentZoom + 2);
+  }
+
+  void _setDestinationAndGetDirections(AddressCoordinate address) {
+    final position = LatLng(address.lat, address.lng);
+
+    setState(() {
+      _destinationPosition = position;
+      _nonClusterMarkers.removeWhere((marker) => marker.markerId.value == 'destination');
+      _nonClusterMarkers.add(
+        Marker(
+          markerId: const MarkerId('destination'),
+          position: position,
+          icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueRed),
+          infoWindow: InfoWindow(title: address.id),
+        ),
+      );
+    });
+
+    _addressClusterManager.updateMap();
+    _getDirections();
+  }
 
   @override
   void didChangeDependencies() {
@@ -63,7 +124,6 @@ class _MapPageState extends State<MapPage> with AutomaticKeepAliveClientMixin {
     }
   }
 
-  // Helper method để lấy language code từ locale hiện tại
   String _getLanguageCode() {
     final locale = Localizations.localeOf(context);
     return locale.languageCode;
@@ -149,44 +209,15 @@ class _MapPageState extends State<MapPage> with AutomaticKeepAliveClientMixin {
   Future<void> _fetchApiAddresses() async {
     try {
       final list = await AddressApi.fetchCoordinates();
-      setState(() {
-        _apiAddresses = list;
-        // Xoá hết marker id là api_*
-        _markers.removeWhere((marker) => marker.markerId.value.startsWith('api_'));
-        _markers.addAll(
-          list.map(
-            (a) => Marker(
-              markerId: MarkerId('api_${a.id}'),
-              position: LatLng(a.lat, a.lng),
-              icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueGreen),
-              infoWindow: InfoWindow(title: a.id),
-              onTap: () {
-                // Center map và có thể chọn làm đích chỉ đường nếu muốn
-                _onApiAddressTapped(a);
-              },
-            ),
-          ),
-        );
-      });
+      _addressClusterManager.setAddresses(list);
     } catch (e) {
       debugPrint('Failed to fetch API addresses: $e');
     }
   }
 
-  void _onApiAddressTapped(AddressCoordinate address) {
-    _animateToPosition(LatLng(address.lat, address.lng), zoom: 17.0);
-    // Bạn có thể hiện bottom sheet/thông báo để chọn directions ở đây nếu muốn
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('Selected ${address.id}'),
-        duration: const Duration(seconds: 2),
-      ),
-    );
-  }
-
-  // =================== Navigation, Directions và UI giữ nguyên ===================
+  // =================== Navigation Methods ===================
   double _calculateDistance(LatLng point1, LatLng point2) {
-    const double earthRadius = 6371000; // meters
+    const double earthRadius = 6371000;
 
     final lat1 = point1.latitude * math.pi / 180;
     final lat2 = point2.latitude * math.pi / 180;
@@ -307,6 +338,7 @@ class _MapPageState extends State<MapPage> with AutomaticKeepAliveClientMixin {
     }
   }
 
+  // =================== Camera Methods ===================
   Future<void> _animateToPosition(LatLng position, {double? zoom}) async {
     if (!mounted || !_isMapReady || _mapController == null) return;
 
@@ -350,10 +382,13 @@ class _MapPageState extends State<MapPage> with AutomaticKeepAliveClientMixin {
     }
   }
 
+  // =================== Map Callbacks ===================
   void _onMapCreated(GoogleMapController controller) {
     if (!mounted) return;
 
     _mapController = controller;
+    _addressClusterManager.setMapId(controller.mapId);
+
     setState(() {
       _isMapReady = true;
     });
@@ -363,6 +398,14 @@ class _MapPageState extends State<MapPage> with AutomaticKeepAliveClientMixin {
     }
   }
 
+  void _onCameraMove(CameraPosition position) {
+    _addressClusterManager.onCameraMove(position);
+  }
+
+  void _onCameraIdle() {
+    _addressClusterManager.updateMap();
+  }
+
   void _onMapTap(LatLng position) {
     if (!mounted || !_isSelectingDestination) return;
 
@@ -370,8 +413,8 @@ class _MapPageState extends State<MapPage> with AutomaticKeepAliveClientMixin {
 
     setState(() {
       _destinationPosition = position;
-      _markers.removeWhere((marker) => marker.markerId.value == 'destination');
-      _markers.add(
+      _nonClusterMarkers.removeWhere((marker) => marker.markerId.value == 'destination');
+      _nonClusterMarkers.add(
         Marker(
           markerId: const MarkerId('destination'),
           position: position,
@@ -382,9 +425,11 @@ class _MapPageState extends State<MapPage> with AutomaticKeepAliveClientMixin {
       _isSelectingDestination = false;
     });
 
+    _addressClusterManager.updateMap();
     _getDirections();
   }
 
+  // =================== Directions Methods ===================
   Future<void> _getDirections() async {
     if (!mounted || _destinationPosition == null) return;
 
@@ -457,10 +502,7 @@ class _MapPageState extends State<MapPage> with AutomaticKeepAliveClientMixin {
   }
 
   void _fitBounds() {
-    if (!mounted ||
-        !_isMapReady ||
-        _directionsResult == null ||
-        _mapController == null) {
+    if (!mounted || !_isMapReady || _directionsResult == null || _mapController == null) {
       return;
     }
 
@@ -503,12 +545,15 @@ class _MapPageState extends State<MapPage> with AutomaticKeepAliveClientMixin {
       _directionsResult = null;
       _destinationPosition = null;
       _polylines.clear();
-      _markers.removeWhere((marker) => marker.markerId.value == 'destination' || marker.markerId.value == 'searched');
+      _nonClusterMarkers.removeWhere((marker) =>
+          marker.markerId.value == 'destination' ||
+          marker.markerId.value == 'searched');
       _isSelectingDestination = false;
       _currentStepIndex = 0;
       _distanceToNextStep = null;
     });
 
+    _addressClusterManager.updateMap();
     widget.onNavigationStateChanged?.call(false);
   }
 
@@ -539,9 +584,8 @@ class _MapPageState extends State<MapPage> with AutomaticKeepAliveClientMixin {
     final position = LatLng(address.lat, address.lng);
 
     setState(() {
-      _markers.removeWhere((marker) => marker.markerId.value == 'searched');
-
-      _markers.add(
+      _nonClusterMarkers.removeWhere((marker) => marker.markerId.value == 'searched');
+      _nonClusterMarkers.add(
         Marker(
           markerId: const MarkerId('searched'),
           position: position,
@@ -554,6 +598,7 @@ class _MapPageState extends State<MapPage> with AutomaticKeepAliveClientMixin {
       );
     });
 
+    _addressClusterManager.updateMap();
     _animateToPosition(position, zoom: 17.0);
 
     ScaffoldMessenger.of(context).showSnackBar(
@@ -588,8 +633,8 @@ class _MapPageState extends State<MapPage> with AutomaticKeepAliveClientMixin {
           onPressed: () {
             setState(() {
               _destinationPosition = position;
-              _markers.removeWhere((marker) => marker.markerId.value == 'destination');
-              _markers.add(
+              _nonClusterMarkers.removeWhere((marker) => marker.markerId.value == 'destination');
+              _nonClusterMarkers.add(
                 Marker(
                   markerId: const MarkerId('destination'),
                   position: position,
@@ -598,6 +643,7 @@ class _MapPageState extends State<MapPage> with AutomaticKeepAliveClientMixin {
                 ),
               );
             });
+            _addressClusterManager.updateMap();
             _getDirections();
           },
         ),
@@ -633,13 +679,15 @@ class _MapPageState extends State<MapPage> with AutomaticKeepAliveClientMixin {
                         color: Colors.green.shade700,
                       ),
                       const SizedBox(height: 16),
-                      Text(l10n?.loadingMap ?? 'Loading map... '),
+                      Text(l10n?.loadingMap ?? 'Loading map...'),
                     ],
                   ),
                 )
               : GoogleMap(
                   onMapCreated: _onMapCreated,
                   onTap: _onMapTap,
+                  onCameraMove: _onCameraMove,
+                  onCameraIdle: _onCameraIdle,
                   initialCameraPosition: CameraPosition(
                     target: _currentPosition,
                     zoom: MapConfig.defaultZoom,

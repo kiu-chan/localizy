@@ -725,4 +725,10 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get pleaseSelectLocation => 'Veuillez sélectionner un emplacement';
+
+  @override
+  String get getDirections => 'Obtenir l\'itinéraire';
+
+  @override
+  String get close => 'Fermer';
 }

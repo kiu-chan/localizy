@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:localizy/api/address_api.dart';
 
@@ -16,15 +17,17 @@ class AddressSearchBar extends StatefulWidget {
 class _AddressSearchBarState extends State<AddressSearchBar> {
   final TextEditingController _searchController = TextEditingController();
   final FocusNode _searchFocusNode = FocusNode();
-  List<AddressCoordinate> _apiAddresses = [];
-  List<AddressCoordinate> _searchResults = [];
+  List<AddressSearchResult> _searchResults = [];
   bool _isSearching = false;
   bool _showResults = false;
+  String? _errorMessage;
+  
+  // Debounce timer để tránh gọi API quá nhiều
+  Timer? _debounceTimer;
 
   @override
   void initState() {
     super.initState();
-    _fetchApiAddresses();
     _searchFocusNode.addListener(() {
       setState(() {
         _showResults = _searchFocusNode.hasFocus && _searchController.text.isNotEmpty;
@@ -36,66 +39,128 @@ class _AddressSearchBarState extends State<AddressSearchBar> {
   void dispose() {
     _searchController.dispose();
     _searchFocusNode.dispose();
+    _debounceTimer?.cancel();
     super.dispose();
   }
 
-  Future<void> _fetchApiAddresses() async {
-    try {
-      final coords = await AddressApi.fetchCoordinates();
-      setState(() {
-        _apiAddresses = coords;
-      });
-    } catch (e) {
-      debugPrint('Failed to fetch addresses for search: $e');
-    }
-  }
-
-  Future<void> _performSearch(String query) async {
+  void _onSearchChanged(String query) {
+    // Cancel timer cũ nếu có
+    _debounceTimer?.cancel();
+    
     if (query.isEmpty) {
       setState(() {
         _searchResults = [];
         _showResults = false;
+        _errorMessage = null;
       });
       return;
     }
+
     setState(() {
-      _isSearching = true;
       _showResults = true;
+      _isSearching = true;
+      _errorMessage = null;
     });
 
-    // Lọc theo id (hoặc mở rộng sang các trường khác nếu muốn)
-    final searchLower = query.toLowerCase();
-    final results = _apiAddresses.where((a) =>
-      a.id.toLowerCase().contains(searchLower) ||
-      a.lat.toString().contains(searchLower) ||
-      a.lng.toString().contains(searchLower)
-    ).toList();
-
-    setState(() {
-      _searchResults = results;
-      _isSearching = false;
+    // Debounce 500ms trước khi gọi API
+    _debounceTimer = Timer(const Duration(milliseconds: 500), () {
+      _performSearch(query);
     });
   }
 
-  void _selectAddress(AddressCoordinate address) {
+  Future<void> _performSearch(String query) async {
+    if (query.isEmpty) return;
+
+    try {
+      final results = await AddressApi.search(query);
+      
+      if (!mounted) return;
+      
+      setState(() {
+        _searchResults = results;
+        _isSearching = false;
+        _errorMessage = null;
+      });
+    } catch (e) {
+      if (!mounted) return;
+      
+      setState(() {
+        _searchResults = [];
+        _isSearching = false;
+        _errorMessage = 'Search failed. Please try again.';
+      });
+      debugPrint('Search error: $e');
+    }
+  }
+
+  void _selectAddress(AddressSearchResult address) {
     widget.onAddressSelected(
       AddressResult(
         id: address.id,
         code: address.id,
-        address: '',
-        district: '',
-        city: '',
-        country: '',
+        name: address.name,
+        address: address.address,
+        type: address.type,
         lat: address.lat,
         lng: address.lng,
-        verified: true,
       ),
     );
     _searchController.clear();
     _searchFocusNode.unfocus();
     setState(() {
       _showResults = false;
+      _searchResults = [];
     });
+  }
+
+  IconData _getTypeIcon(String type) {
+    switch (type.toLowerCase()) {
+      case 'landmark':
+        return Icons.account_balance;
+      case 'restaurant':
+        return Icons.restaurant;
+      case 'hotel':
+        return Icons.hotel;
+      case 'hospital':
+        return Icons.local_hospital;
+      case 'school':
+        return Icons.school;
+      case 'shop':
+        return Icons.shopping_cart;
+      case 'park':
+        return Icons.park;
+      case 'station':
+        return Icons.train;
+      case 'airport':
+        return Icons.flight;
+      default:
+        return Icons.location_on;
+    }
+  }
+
+  Color _getTypeColor(String type) {
+    switch (type.toLowerCase()) {
+      case 'landmark':
+        return Colors.purple;
+      case 'restaurant':
+        return Colors.orange;
+      case 'hotel':
+        return Colors.blue;
+      case 'hospital':
+        return Colors.red;
+      case 'school':
+        return Colors.amber;
+      case 'shop':
+        return Colors.teal;
+      case 'park':
+        return Colors.green;
+      case 'station':
+        return Colors.indigo;
+      case 'airport':
+        return Colors.cyan;
+      default:
+        return Colors.green.shade700;
+    }
   }
 
   @override
@@ -118,9 +183,9 @@ class _AddressSearchBarState extends State<AddressSearchBar> {
               child: TextField(
                 controller: _searchController,
                 focusNode: _searchFocusNode,
-                onChanged: _performSearch,
+                onChanged: _onSearchChanged,
                 decoration: InputDecoration(
-                  hintText: 'Search by address id or coordinate',
+                  hintText: 'Search for places, addresses...',
                   hintStyle: TextStyle(
                     color: Colors.grey.shade400,
                     fontSize: 14,
@@ -134,9 +199,11 @@ class _AddressSearchBarState extends State<AddressSearchBar> {
                           icon: const Icon(Icons.clear, size: 20),
                           onPressed: () {
                             _searchController.clear();
+                            _debounceTimer?.cancel();
                             setState(() {
                               _searchResults = [];
                               _showResults = false;
+                              _errorMessage = null;
                             });
                           },
                         )
@@ -154,7 +221,7 @@ class _AddressSearchBarState extends State<AddressSearchBar> {
           if (_showResults)
             Container(
               margin: const EdgeInsets.only(top: 8),
-              constraints: const BoxConstraints(maxHeight: 300),
+              constraints: const BoxConstraints(maxHeight: 350),
               decoration: BoxDecoration(
                 color: Colors.white,
                 borderRadius: BorderRadius.circular(12),
@@ -166,77 +233,164 @@ class _AddressSearchBarState extends State<AddressSearchBar> {
                   ),
                 ],
               ),
-              child: _isSearching
-                  ? const Center(
-                      child: Padding(
-                        padding: EdgeInsets.all(20),
-                        child: CircularProgressIndicator(),
-                      ),
-                    )
-                  : _searchResults.isEmpty
-                      ? Padding(
-                          padding: const EdgeInsets.all(20),
-                          child: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Icon(
-                                Icons.search_off,
-                                size: 48,
-                                color: Colors.grey.shade400,
-                              ),
-                              const SizedBox(height: 8),
-                              Text(
-                                'Address not found',
-                                style: TextStyle(
-                                  color: Colors.grey.shade600,
-                                  fontSize: 14,
-                                ),
-                              ),
-                            ],
-                          ),
-                        )
-                      : ListView.separated(
-                          shrinkWrap: true,
-                          padding: const EdgeInsets.symmetric(vertical: 8),
-                          itemCount: _searchResults.length,
-                          separatorBuilder: (context, index) => Divider(
-                            height: 1,
-                            color: Colors.grey.shade200,
-                          ),
-                          itemBuilder: (context, index) {
-                            final address = _searchResults[index];
-                            return ListTile(
-                              onTap: () => _selectAddress(address),
-                              leading: Container(
-                                padding: const EdgeInsets.all(8),
-                                decoration: BoxDecoration(
-                                  color: Colors.green.shade50,
-                                  borderRadius: BorderRadius.circular(8),
-                                ),
-                                child: Icon(
-                                  Icons.location_on,
-                                  color: Colors.green.shade700,
-                                  size: 20,
-                                ),
-                              ),
-                              title: Text(
-                                address.id,
-                                style: const TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                              subtitle: Text("Lat: ${address.lat}, Lng: ${address.lng}",
-                                  style: const TextStyle(fontSize: 13)),
-                              trailing: const Icon(
-                                Icons.arrow_forward_ios,
-                                size: 16,
-                              ),
-                            );
-                          },
-                        ),
+              child: _buildSearchResults(),
             ),
         ],
       ),
+    );
+  }
+
+  Widget _buildSearchResults() {
+    // Loading state
+    if (_isSearching) {
+      return const Center(
+        child: Padding(
+          padding: EdgeInsets.all(20),
+          child: CircularProgressIndicator(),
+        ),
+      );
+    }
+
+    // Error state
+    if (_errorMessage != null) {
+      return Padding(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              Icons.error_outline,
+              size: 48,
+              color: Colors.red.shade400,
+            ),
+            const SizedBox(height: 8),
+            Text(
+              _errorMessage!,
+              style: TextStyle(
+                color: Colors.red.shade600,
+                fontSize: 14,
+              ),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 12),
+            TextButton(
+              onPressed: () => _performSearch(_searchController.text),
+              child: const Text('Retry'),
+            ),
+          ],
+        ),
+      );
+    }
+
+    // Empty state
+    if (_searchResults.isEmpty) {
+      return Padding(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              Icons.search_off,
+              size: 48,
+              color: Colors.grey.shade400,
+            ),
+            const SizedBox(height: 8),
+            Text(
+              'No results found',
+              style: TextStyle(
+                color: Colors.grey.shade600,
+                fontSize: 14,
+              ),
+            ),
+            const SizedBox(height: 4),
+            Text(
+              'Try different keywords',
+              style: TextStyle(
+                color: Colors.grey.shade400,
+                fontSize: 12,
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+
+    // Results list
+    return ListView.separated(
+      shrinkWrap: true,
+      padding: const EdgeInsets.symmetric(vertical: 8),
+      itemCount: _searchResults.length,
+      separatorBuilder: (context, index) => Divider(
+        height: 1,
+        color: Colors.grey.shade200,
+      ),
+      itemBuilder: (context, index) {
+        final result = _searchResults[index];
+        final typeColor = _getTypeColor(result.type);
+        
+        return ListTile(
+          onTap: () => _selectAddress(result),
+          leading: Container(
+            width: 44,
+            height: 44,
+            decoration: BoxDecoration(
+              color: typeColor.withOpacity(0.1),
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: Icon(
+              _getTypeIcon(result.type),
+              color: typeColor,
+              size: 22,
+            ),
+          ),
+          title: Text(
+            result.name,
+            style: const TextStyle(
+              fontWeight: FontWeight.w600,
+              fontSize: 15,
+            ),
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+          ),
+          subtitle: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const SizedBox(height: 2),
+              Text(
+                result.address,
+                style: TextStyle(
+                  fontSize: 13,
+                  color: Colors.grey.shade600,
+                ),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
+              const SizedBox(height: 2),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                decoration: BoxDecoration(
+                  color: typeColor.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(4),
+                ),
+                child: Text(
+                  result.type,
+                  style: TextStyle(
+                    fontSize: 10,
+                    color: typeColor,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          trailing: Icon(
+            Icons.arrow_forward_ios,
+            size: 14,
+            color: Colors.grey.shade400,
+          ),
+          contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+        );
+      },
     );
   }
 }
@@ -244,35 +398,25 @@ class _AddressSearchBarState extends State<AddressSearchBar> {
 class AddressResult {
   final String id;
   final String code;
+  final String name;
   final String address;
-  final String district;
-  final String city;
-  final String country;
+  final String type;
   final double lat;
   final double lng;
-  final bool verified;
 
   AddressResult({
     required this.id,
     required this.code,
+    required this.name,
     required this.address,
-    required this.district,
-    required this.city,
-    required this.country,
+    required this.type,
     required this.lat,
     required this.lng,
-    required this.verified,
   });
-}
 
-// AddressCoordinate class được lấy từ lib/api/address_api.dart
-// class AddressCoordinate {
-//   final String id;
-//   final double lat;
-//   final double lng;
-//   AddressCoordinate({
-//     required this.id,
-//     required this.lat,
-//     required this.lng,
-//   });
-// }
+  // Getter để tương thích ngược với code cũ
+  bool get verified => true;
+  String get district => '';
+  String get city => '';
+  String get country => '';
+}

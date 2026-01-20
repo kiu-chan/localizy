@@ -703,4 +703,10 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get pleaseSelectLocation => 'Please select a location';
+
+  @override
+  String get getDirections => 'Get Directions';
+
+  @override
+  String get close => 'Close';
 }

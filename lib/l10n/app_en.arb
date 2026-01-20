@@ -233,5 +233,7 @@
   "confirmLogout": "Are you sure you want to logout?",
   "ok": "OK",
   "registerFailed": "Registration failed",
-  "pleaseSelectLocation": "Please select a location"
+  "pleaseSelectLocation": "Please select a location",
+  "getDirections": "Get Directions",
+  "close": "Close"
 } 

@@ -1429,6 +1429,18 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'Veuillez sélectionner un emplacement'**
   String get pleaseSelectLocation;
+
+  /// No description provided for @getDirections.
+  ///
+  /// In fr, this message translates to:
+  /// **'Obtenir l\'itinéraire'**
+  String get getDirections;
+
+  /// No description provided for @close.
+  ///
+  /// In fr, this message translates to:
+  /// **'Fermer'**
+  String get close;
 }
 
 class _AppLocalizationsDelegate
