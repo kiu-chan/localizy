@@ -80,7 +80,7 @@ Future<void> _handleLogin() async {
     final role = user.role.toLowerCase();
     if (role.contains('validator')) {
       Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => const ValidatorMainPage()));
-    } else if (role.contains('business')) {
+    } else if (role.contains('business') || role.contains('subaccount')) {
       Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => const BusinessMainPage()));
     } else {
       Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => const MainPage()));

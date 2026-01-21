@@ -1,4 +1,7 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
+import 'package:localizy/api/sub_account_api.dart';
 
 class SubAccountManagementPage extends StatefulWidget {
   const SubAccountManagementPage({super.key});
@@ -8,321 +11,175 @@ class SubAccountManagementPage extends StatefulWidget {
 }
 
 class _SubAccountManagementPageState extends State<SubAccountManagementPage> {
-  final List<Map<String, dynamic>> _subAccounts = [
-    {
-      'id': '001',
-      'name': 'John Manager',
-      'email': 'john. manager@business.com',
-      'role': 'Manager',
-      'status': 'Active',
-      'locations': 5,
-      'createdDate': '01/01/2026',
-    },
-    {
-      'id': '002',
-      'name': 'Sarah Editor',
-      'email': 'sarah.editor@business.com',
-      'role': 'Editor',
-      'status': 'Active',
-      'locations': 3,
-      'createdDate': '15/01/2026',
-    },
-    {
-      'id': '003',
-      'name': 'Mike Viewer',
-      'email': 'mike.viewer@business.com',
-      'role': 'Viewer',
-      'status': 'Inactive',
-      'locations': 0,
-      'createdDate':  '20/12/2025',
-    },
-  ];
+  List<SubAccount> _subAccounts = [];
+  bool _isLoading = false;
+  String? _error;
 
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.grey.shade100,
-      appBar: AppBar(
-        title: const Text(
-          'Sub Account Management',
-          style: TextStyle(
-            fontWeight: FontWeight.bold,
-            color: Colors.white,
-          ),
-        ),
-        backgroundColor: Colors.blue.shade700,
-        elevation: 0,
-        automaticallyImplyLeading: false,
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.search, color: Colors.white),
-            onPressed: () {},
-          ),
-        ],
-      ),
-      floatingActionButton: FloatingActionButton. extended(
-        onPressed: () {
-          _showAddAccountDialog();
-        },
-        backgroundColor: Colors.blue.shade700,
-        icon: const Icon(Icons.person_add),
-        label: const Text('Add Account'),
-      ),
-      body: ListView.builder(
-        padding: const EdgeInsets.all(16),
-        itemCount: _subAccounts.length,
-        itemBuilder: (context, index) {
-          final account = _subAccounts[index];
-          return _buildAccountCard(account);
-        },
-      ),
-    );
+  void initState() {
+    super.initState();
+    _loadSubAccounts();
   }
 
-  Widget _buildAccountCard(Map<String, dynamic> account) {
-    Color statusColor = account['status'] == 'Active' ? Colors.green : Colors.grey;
-    Color roleColor;
-    
-    switch (account['role']) {
-      case 'Manager':
-        roleColor = Colors. purple;
-        break;
-      case 'Editor':
-        roleColor = Colors.blue;
-        break;
-      case 'Viewer':
-        roleColor = Colors.orange;
-        break;
-      default:
-        roleColor = Colors. grey;
+  Future<void> _loadSubAccounts() async {
+    setState(() {
+      _isLoading = true;
+      _error = null;
+    });
+    try {
+      final list = await SubAccountApi.getMySubAccounts();
+      if (mounted) {
+        setState(() {
+          _subAccounts = list;
+        });
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() {
+          _error = e.toString();
+        });
+      }
+    } finally {
+      if (mounted) {
+        setState(() => _isLoading = false);
+      }
     }
+  }
 
-    return Container(
-      margin: const EdgeInsets.only(bottom: 12),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        boxShadow:  [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.05),
-            blurRadius: 5,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          borderRadius: BorderRadius.circular(12),
-          onTap: () {
-            _showAccountDetail(account);
-          },
-          child:  Padding(
-            padding: const EdgeInsets.all(16),
+  Future<void> _showAddAccountDialog() async {
+    final _formKey = GlobalKey<FormState>();
+    final emailController = TextEditingController();
+    final fullNameController = TextEditingController();
+    final passwordController = TextEditingController();
+    final phoneController = TextEditingController();
+    final locationController = TextEditingController();
+
+    final result = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Add New Sub Account'),
+        content: SingleChildScrollView(
+          child: Form(
+            key: _formKey,
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
               children: [
-                Row(
-                  children: [
-                    CircleAvatar(
-                      radius: 25,
-                      backgroundColor: Colors.blue.shade100,
-                      child: Text(
-                        account['name']. substring(0, 1).toUpperCase(),
-                        style: TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.blue.shade700,
-                        ),
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            account['name'],
-                            style: const TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          const SizedBox(height: 4),
-                          Text(
-                            account['email'],
-                            style: TextStyle(
-                              fontSize: 13,
-                              color: Colors. grey.shade600,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 12,
-                        vertical: 6,
-                      ),
-                      decoration: BoxDecoration(
-                        color: statusColor.withValues(alpha: 0.1),
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                      child: Text(
-                        account['status'],
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: statusColor,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ),
-                  ],
+                TextFormField(
+                  controller: fullNameController,
+                  decoration: const InputDecoration(
+                    labelText: 'Full Name',
+                    border: OutlineInputBorder(),
+                    prefixIcon: Icon(Icons.person),
+                  ),
+                  validator: (v) => (v == null || v.trim().isEmpty) ? 'Please enter full name' : null,
                 ),
                 const SizedBox(height: 12),
-                const Divider(height: 1),
+                TextFormField(
+                  controller: emailController,
+                  decoration: const InputDecoration(
+                    labelText: 'Email',
+                    border: OutlineInputBorder(),
+                    prefixIcon: Icon(Icons.email),
+                  ),
+                  keyboardType: TextInputType.emailAddress,
+                  validator: (v) {
+                    if (v == null || v.trim().isEmpty) return 'Please enter email';
+                    if (!v.contains('@')) return 'Invalid email';
+                    return null;
+                  },
+                ),
                 const SizedBox(height: 12),
-                Row(
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 8,
-                        vertical: 4,
-                      ),
-                      decoration: BoxDecoration(
-                        color: roleColor.withValues(alpha: 0.1),
-                        borderRadius: BorderRadius.circular(4),
-                      ),
-                      child: Row(
-                        children: [
-                          Icon(
-                            Icons.badge,
-                            size: 14,
-                            color: roleColor,
-                          ),
-                          const SizedBox(width: 4),
-                          Text(
-                            account['role'],
-                            style: TextStyle(
-                              fontSize: 12,
-                              color: roleColor,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-                    Icon(
-                      Icons.location_on,
-                      size:  16,
-                      color: Colors. grey.shade600,
-                    ),
-                    const SizedBox(width: 4),
-                    Text(
-                      '${account['locations']} locations',
-                      style: TextStyle(
-                        fontSize: 13,
-                        color: Colors. grey.shade600,
-                      ),
-                    ),
-                    const Spacer(),
-                    Icon(
-                      Icons.calendar_today,
-                      size:  14,
-                      color: Colors. grey.shade600,
-                    ),
-                    const SizedBox(width: 4),
-                    Text(
-                      account['createdDate'],
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: Colors.grey.shade600,
-                      ),
-                    ),
-                  ],
+                TextFormField(
+                  controller: passwordController,
+                  decoration: const InputDecoration(
+                    labelText: 'Password',
+                    border: OutlineInputBorder(),
+                    prefixIcon: Icon(Icons.lock),
+                  ),
+                  obscureText: true,
+                  validator: (v) {
+                    if (v == null || v.isEmpty) return 'Please enter password';
+                    if (v.length < 6) return 'Password must be at least 6 characters';
+                    return null;
+                  },
+                ),
+                const SizedBox(height: 12),
+                TextFormField(
+                  controller: phoneController,
+                  decoration: const InputDecoration(
+                    labelText: 'Phone (optional)',
+                    border: OutlineInputBorder(),
+                    prefixIcon: Icon(Icons.phone),
+                  ),
+                ),
+                const SizedBox(height: 12),
+                TextFormField(
+                  controller: locationController,
+                  decoration: const InputDecoration(
+                    labelText: 'Location (optional)',
+                    border: OutlineInputBorder(),
+                    prefixIcon: Icon(Icons.location_on),
+                  ),
                 ),
               ],
             ),
           ),
         ),
-      ),
-    );
-  }
-
-  void _showAddAccountDialog() {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Add New Sub Account'),
-        content: SingleChildScrollView(
-          child: Column(
-            mainAxisSize: MainAxisSize. min,
-            children: [
-              const TextField(
-                decoration: InputDecoration(
-                  labelText: 'Full Name',
-                  border: OutlineInputBorder(),
-                  prefixIcon: Icon(Icons. person),
-                ),
-              ),
-              const SizedBox(height: 16),
-              const TextField(
-                decoration: InputDecoration(
-                  labelText:  'Email',
-                  border: OutlineInputBorder(),
-                  prefixIcon: Icon(Icons.email),
-                ),
-              ),
-              const SizedBox(height: 16),
-              DropdownButtonFormField<String>(
-                decoration: const InputDecoration(
-                  labelText: 'Role',
-                  border: OutlineInputBorder(),
-                  prefixIcon: Icon(Icons. badge),
-                ),
-                items: const [
-                  DropdownMenuItem(value: 'Manager', child: Text('Manager')),
-                  DropdownMenuItem(value:  'Editor', child: Text('Editor')),
-                  DropdownMenuItem(value: 'Viewer', child: Text('Viewer')),
-                ],
-                onChanged: (value) {},
-              ),
-            ],
-          ),
-        ),
         actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
-          ),
+          TextButton(onPressed: () => Navigator.pop(context, false), child: const Text('Cancel')),
           ElevatedButton(
-            onPressed: () {
-              Navigator.pop(context);
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text('Sub account created successfully'),
-                  backgroundColor: Colors.green,
-                ),
-              );
+            onPressed: () async {
+              if (!_formKey.currentState!.validate()) return;
+              Navigator.pop(context, true);
             },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.blue.shade700,
-            ),
             child: const Text('Create'),
           ),
         ],
       ),
     );
+
+    if (result == true) {
+      try {
+        // show simple loading dialog
+        showDialog<void>(
+          context: context,
+          barrierDismissible: false,
+          builder: (context) => const Center(child: CircularProgressIndicator()),
+        );
+
+        final newAccount = await SubAccountApi.createSubAccount(
+          email: emailController.text.trim(),
+          fullName: fullNameController.text.trim(),
+          password: passwordController.text,
+          phone: phoneController.text.trim(),
+          location: locationController.text.trim(),
+        );
+
+        if (mounted) {
+          Navigator.pop(context); // close loading
+          setState(() {
+            _subAccounts.insert(0, newAccount);
+          });
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Sub account created successfully'), backgroundColor: Colors.green),
+          );
+        }
+      } catch (e) {
+        if (mounted) {
+          Navigator.pop(context); // close loading
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Error creating sub account: $e'), backgroundColor: Colors.red),
+          );
+        }
+      }
+    }
   }
 
-  void _showAccountDetail(Map<String, dynamic> account) {
+  void _showAccountDetail(SubAccount account) {
     showModalBottomSheet(
-      context:  context,
+      context: context,
       isScrollControlled: true,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
+      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
       builder: (context) => Padding(
         padding: const EdgeInsets.all(24),
         child: Column(
@@ -330,94 +187,61 @@ class _SubAccountManagementPageState extends State<SubAccountManagementPage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Center(
-              child: Container(
-                width: 40,
-                height: 4,
-                decoration: BoxDecoration(
-                  color:  Colors.grey.shade300,
-                  borderRadius: BorderRadius. circular(2),
-                ),
-              ),
+              child: Container(width: 40, height: 4, decoration: BoxDecoration(color: Colors.grey.shade300, borderRadius: BorderRadius.circular(2))),
             ),
             const SizedBox(height: 24),
             Row(
               children: [
                 CircleAvatar(
                   radius: 30,
-                  backgroundColor: Colors. blue.shade100,
+                  backgroundColor: Colors.blue.shade100,
                   child: Text(
-                    account['name'].substring(0, 1).toUpperCase(),
-                    style: TextStyle(
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.blue.shade700,
-                    ),
+                    account.fullName.isNotEmpty ? account.fullName.substring(0, 1).toUpperCase() : '?',
+                    style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.blue.shade700),
                   ),
                 ),
                 const SizedBox(width: 16),
                 Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        account['name'],
-                        style: const TextStyle(
-                          fontSize:  20,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      Text(
-                        account['email'],
-                        style: TextStyle(
-                          fontSize: 14,
-                          color: Colors.grey.shade600,
-                        ),
-                      ),
-                    ],
-                  ),
+                  child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                    Text(account.fullName, style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+                    Text(account.email, style: TextStyle(fontSize: 14, color: Colors.grey.shade600)),
+                  ]),
                 ),
               ],
             ),
             const SizedBox(height: 24),
-            _buildDetailRow('Account ID', '#${account['id']}'),
-            _buildDetailRow('Role', account['role']),
-            _buildDetailRow('Status', account['status']),
-            _buildDetailRow('Managed Locations', '${account['locations']}'),
-            _buildDetailRow('Created Date', account['createdDate']),
+            _buildDetailRow('Account ID', '#${account.id}'),
+            // Role removed intentionally (single-role page)
+            _buildDetailRow('Status', account.isActive ? 'Active' : 'Inactive'),
+            _buildDetailRow('Managed Locations', account.location.isNotEmpty ? account.location : '${account.parentBusinessName}'),
+            _buildDetailRow('Created Date', _formatDate(account.createdAt)),
             const SizedBox(height: 24),
-            Row(
-              children: [
-                Expanded(
-                  child:  OutlinedButton. icon(
-                    onPressed:  () {
-                      Navigator.pop(context);
-                    },
-                    icon: const Icon(Icons.edit),
-                    label: const Text('Edit'),
-                    style: OutlinedButton.styleFrom(
-                      foregroundColor: Colors.blue.shade700,
-                      side: BorderSide(color: Colors.blue.shade700),
-                      padding: const EdgeInsets.symmetric(vertical: 12),
-                    ),
+            Row(children: [
+              Expanded(
+                child: OutlinedButton.icon(
+                  onPressed: () => Navigator.pop(context),
+                  icon: const Icon(Icons.edit),
+                  label: const Text('Edit'),
+                  style: OutlinedButton.styleFrom(
+                    foregroundColor: Colors.blue.shade700,
+                    side: BorderSide(color: Colors.blue.shade700),
+                    padding: const EdgeInsets.symmetric(vertical: 12),
                   ),
                 ),
-                const SizedBox(width:  12),
-                Expanded(
-                  child: ElevatedButton.icon(
-                    onPressed: () {
-                      Navigator.pop(context);
-                      _showDeleteConfirmDialog(account);
-                    },
-                    icon: const Icon(Icons.delete),
-                    label: const Text('Delete'),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.red,
-                      padding: const EdgeInsets.symmetric(vertical: 12),
-                    ),
-                  ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: ElevatedButton.icon(
+                  onPressed: () {
+                    Navigator.pop(context);
+                    _showDeleteConfirmDialog(account);
+                  },
+                  icon: const Icon(Icons.delete),
+                  label: const Text('Delete'),
+                  style: ElevatedButton.styleFrom(backgroundColor: Colors.red, padding: const EdgeInsets.symmetric(vertical: 12)),
                 ),
-              ],
-            ),
+              ),
+            ]),
           ],
         ),
       ),
@@ -427,60 +251,154 @@ class _SubAccountManagementPageState extends State<SubAccountManagementPage> {
   Widget _buildDetailRow(String label, String value) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 12),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          SizedBox(
-            width: 140,
-            child: Text(
-              label,
-              style: TextStyle(
-                fontSize: 14,
-                color: Colors.grey.shade600,
-              ),
-            ),
-          ),
-          Expanded(
-            child: Text(
-              value,
-              style:  const TextStyle(
-                fontSize:  14,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
+      child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
+        SizedBox(width: 140, child: Text(label, style: TextStyle(fontSize: 14, color: Colors.grey.shade600))),
+        Expanded(child: Text(value, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600))),
+      ]),
+    );
+  }
+
+  void _showDeleteConfirmDialog(SubAccount account) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Delete Account'),
+        content: Text('Are you sure you want to delete ${account.fullName}?'),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(context), child: const Text('Cancel')),
+          ElevatedButton(
+            onPressed: () {
+              Navigator.pop(context);
+              setState(() {
+                _subAccounts.removeWhere((a) => a.id == account.id);
+              });
+              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Account deleted'), backgroundColor: Colors.red));
+            },
+            style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+            child: const Text('Delete'),
           ),
         ],
       ),
     );
   }
 
-  void _showDeleteConfirmDialog(Map<String, dynamic> account) {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Delete Account'),
-        content: Text('Are you sure you want to delete ${account['name']}?'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              Navigator.pop(context);
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text('Account deleted'),
-                  backgroundColor: Colors.red,
+  Widget _buildAccountCard(SubAccount account) {
+    final statusColor = account.isActive ? Colors.green : Colors.grey;
+
+    return Container(
+      margin: const EdgeInsets.only(bottom: 12),
+      decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(12), boxShadow: [
+        BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 5, offset: const Offset(0, 2)),
+      ]),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          borderRadius: BorderRadius.circular(12),
+          onTap: () => _showAccountDetail(account),
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+              Row(children: [
+                CircleAvatar(
+                  radius: 25,
+                  backgroundColor: Colors.blue.shade100,
+                  child: Text(
+                    account.fullName.isNotEmpty ? account.fullName.substring(0, 1).toUpperCase() : '?',
+                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.blue.shade700),
+                  ),
                 ),
-              );
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.red,
-            ),
-            child: const Text('Delete'),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                    Text(account.fullName, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                    const SizedBox(height: 4),
+                    Text(account.email, style: TextStyle(fontSize: 13, color: Colors.grey.shade600)),
+                  ]),
+                ),
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  decoration: BoxDecoration(color: statusColor.withOpacity(0.12), borderRadius: BorderRadius.circular(20)),
+                  child: Text(account.isActive ? 'Active' : 'Inactive', style: TextStyle(fontSize: 12, color: statusColor, fontWeight: FontWeight.w600)),
+                ),
+              ]),
+              const SizedBox(height: 12),
+              const Divider(height: 1),
+              const SizedBox(height: 12),
+              Row(
+                children: [
+                  const Icon(Icons.location_on, size: 16, color: Colors.grey),
+                  const SizedBox(width: 6),
+                  // location text: allow truncation to avoid vertical wrapping / overflow
+                  Expanded(
+                    child: Text(
+                      account.location.isNotEmpty ? account.location : 'No location',
+                      style: TextStyle(fontSize: 13, color: Colors.grey.shade600),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  const Icon(Icons.calendar_today, size: 14, color: Colors.grey),
+                  const SizedBox(width: 6),
+                  Text(
+                    _formatDate(account.createdAt),
+                    style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ],
+              ),
+            ]),
           ),
+        ),
+      ),
+    );
+  }
+
+  String _formatDate(String raw) {
+    if (raw.isEmpty) return '-';
+    // If ISO like "2026-01-21T17:13:08.839...", take date part
+    try {
+      if (raw.contains('T')) {
+        return raw.split('T').first;
+      }
+      return raw;
+    } catch (_) {
+      return raw;
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.grey.shade100,
+      appBar: AppBar(
+        title: const Text('Sub Account Management', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white)),
+        backgroundColor: Colors.blue.shade700,
+        elevation: 0,
+        automaticallyImplyLeading: false,
+        actions: [
+          IconButton(icon: const Icon(Icons.refresh, color: Colors.white), onPressed: _loadSubAccounts),
         ],
+      ),
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: _showAddAccountDialog,
+        backgroundColor: Colors.blue.shade700,
+        icon: const Icon(Icons.person_add),
+        label: const Text('Add Account'),
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(16),
+        child: _isLoading
+            ? const Center(child: CircularProgressIndicator())
+            : _error != null
+                ? Center(child: Text('Error: $_error'))
+                : _subAccounts.isEmpty
+                    ? const Center(child: Text('No sub accounts found'))
+                    : ListView.builder(
+                        itemCount: _subAccounts.length,
+                        itemBuilder: (context, index) => _buildAccountCard(_subAccounts[index]),
+                      ),
       ),
     );
   }
