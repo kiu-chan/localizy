@@ -1,16 +1,83 @@
 import 'package:flutter/material.dart';
+import 'package:localizy/api/auth_api.dart';
+import 'package:localizy/api/user_profile_service.dart';
+import 'package:localizy/api/main_api.dart';
 
-class ProfileHeaderSection extends StatelessWidget {
+class ProfileHeaderSection extends StatefulWidget {
   const ProfileHeaderSection({super.key});
 
   @override
+  State<ProfileHeaderSection> createState() => _ProfileHeaderSectionState();
+}
+
+class _ProfileHeaderSectionState extends State<ProfileHeaderSection> {
+  Map<String, dynamic>? _profile;
+  bool _loading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadProfile();
+  }
+
+  Future<void> _loadProfile() async {
+    setState(() {
+      _loading = true;
+    });
+
+    // First, try to read stored user (quick)
+    final stored = await AuthService.getStoredUser();
+    if (stored != null) {
+      setState(() {
+        _profile = {
+          'fullName': stored.fullName,
+          'email': stored.email,
+        };
+      });
+    }
+
+    // Then try to fetch fresh profile from API
+    try {
+      final fetched = await UserProfileService.fetchCurrentUserProfile();
+      if (mounted) {
+        setState(() {
+          _profile = fetched;
+        });
+      }
+    } catch (e) {
+      // ignore - keep stored values
+    } finally {
+      if (mounted) {
+        setState(() {
+          _loading = false;
+        });
+      }
+    }
+  }
+
+  String? _avatarUrl(String? avatarPath) {
+    if (avatarPath == null || avatarPath.isEmpty) return null;
+    if (avatarPath.toLowerCase().startsWith('http')) return avatarPath;
+    final base = MainApi.instance.baseUrl.endsWith('/')
+        ? MainApi.instance.baseUrl.substring(0, MainApi.instance.baseUrl.length - 1)
+        : MainApi.instance.baseUrl;
+    return '$base$avatarPath';
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final name = _profile?['fullName'] as String? ?? 'John Doe';
+    final email = _profile?['email'] as String? ?? 'john.doe@example.com';
+    final phone = _profile?['phone'] as String? ?? '+84 123 456 789';
+    final avatar = _profile?['avatar'] as String?;
+    final avatarUrl = _avatarUrl(avatar);
+
     return Container(
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: [Colors.green.shade700, Colors.green.shade500],
-          begin: Alignment. topLeft,
-          end:  Alignment.bottomRight,
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
         ),
         borderRadius: const BorderRadius.only(
           bottomLeft: Radius.circular(30),
@@ -18,7 +85,7 @@ class ProfileHeaderSection extends StatelessWidget {
         ),
       ),
       child: SafeArea(
-        child:  Padding(
+        child: Padding(
           padding: const EdgeInsets.fromLTRB(24, 20, 24, 32),
           child: Column(
             children: [
@@ -31,14 +98,17 @@ class ProfileHeaderSection extends StatelessWidget {
                       shape: BoxShape.circle,
                       border: Border.all(color: Colors.white, width: 3),
                     ),
-                    child: const CircleAvatar(
+                    child: CircleAvatar(
                       radius: 50,
-                      backgroundColor: Colors. white,
-                      child: Icon(
-                        Icons.person,
-                        size: 50,
-                        color: Colors. green,
-                      ),
+                      backgroundColor: Colors.white,
+                      backgroundImage: avatarUrl != null ? NetworkImage(avatarUrl) : null,
+                      child: avatarUrl == null
+                          ? const Icon(
+                              Icons.person,
+                              size: 50,
+                              color: Colors.green,
+                            )
+                          : null,
                     ),
                   ),
                   Positioned(
@@ -46,16 +116,17 @@ class ProfileHeaderSection extends StatelessWidget {
                     right: 0,
                     child: InkWell(
                       onTap: () {
+                        // Optionally navigate to profile edit or trigger avatar change flow
                       },
                       child: Container(
                         padding: const EdgeInsets.all(8),
                         decoration: BoxDecoration(
-                          color:  Colors.white,
+                          color: Colors.white,
                           shape: BoxShape.circle,
                           boxShadow: [
                             BoxShadow(
-                              color: Colors.black.withValues(alpha: 0.2),
-                              blurRadius:  8,
+                              color: Colors.black.withOpacity(0.2),
+                              blurRadius: 8,
                               offset: const Offset(0, 2),
                             ),
                           ],
@@ -74,9 +145,9 @@ class ProfileHeaderSection extends StatelessWidget {
               const SizedBox(height: 16),
 
               // User Name
-              const Text(
-                'John Doe',
-                style: TextStyle(
+              Text(
+                name,
+                style: const TextStyle(
                   fontSize: 24,
                   fontWeight: FontWeight.bold,
                   color: Colors.white,
@@ -87,21 +158,21 @@ class ProfileHeaderSection extends StatelessWidget {
 
               // User Email
               Text(
-                'john.doe@example.com',
+                email,
                 style: TextStyle(
-                  fontSize:  14,
-                  color: Colors. white.withValues(alpha: 0.9),
+                  fontSize: 14,
+                  color: Colors.white.withOpacity(0.9),
                 ),
               ),
 
-              const SizedBox(height:  4),
+              const SizedBox(height: 4),
 
               // Phone Number
               Text(
-                '+84 123 456 789',
+                phone,
                 style: TextStyle(
                   fontSize: 13,
-                  color: Colors. white.withValues(alpha: 0.8),
+                  color: Colors.white.withOpacity(0.8),
                 ),
               ),
 
@@ -111,9 +182,9 @@ class ProfileHeaderSection extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                 decoration: BoxDecoration(
-                  color: Colors.white. withValues(alpha: 0.2),
+                  color: Colors.white.withOpacity(0.2),
                   borderRadius: BorderRadius.circular(20),
-                  border: Border. all(color: Colors.white. withValues(alpha: 0.3)),
+                  border: Border.all(color: Colors.white.withOpacity(0.3)),
                 ),
                 child: const Row(
                   mainAxisSize: MainAxisSize.min,
