@@ -749,4 +749,22 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get address => 'Adresse';
+
+  @override
+  String get retake => 'Reprendre';
+
+  @override
+  String get scannerHelpTitle => 'Comment utiliser';
+
+  @override
+  String get scannerHelpTip1 =>
+      'Pointez la caméra sur la plaque, puis appuyez sur le bouton de capture';
+
+  @override
+  String get scannerHelpTip2 =>
+      'Vous pouvez aussi choisir une photo depuis la galerie';
+
+  @override
+  String get scannerHelpTip3 =>
+      'Après la détection, vous pouvez modifier le numéro si nécessaire';
 }

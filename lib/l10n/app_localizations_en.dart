@@ -727,4 +727,21 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get address => 'Address';
+
+  @override
+  String get retake => 'Retake';
+
+  @override
+  String get scannerHelpTitle => 'How to use';
+
+  @override
+  String get scannerHelpTip1 =>
+      'Point the camera at the license plate, then tap the capture button';
+
+  @override
+  String get scannerHelpTip2 => 'You can also pick a photo from the gallery';
+
+  @override
+  String get scannerHelpTip3 =>
+      'After detection, you can edit the plate number if needed';
 }

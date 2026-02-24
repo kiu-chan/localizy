@@ -241,5 +241,10 @@
   "website": "Site internet",
   "openingHours": "Horaires d'ouverture",
   "createdAt": "Créé le",
-  "address": "Adresse"
+  "address": "Adresse",
+  "retake": "Reprendre",
+  "scannerHelpTitle": "Comment utiliser",
+  "scannerHelpTip1": "Pointez la caméra sur la plaque, puis appuyez sur le bouton de capture",
+  "scannerHelpTip2": "Vous pouvez aussi choisir une photo depuis la galerie",
+  "scannerHelpTip3": "Après la détection, vous pouvez modifier le numéro si nécessaire"
 }

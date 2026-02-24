@@ -1477,6 +1477,36 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'Adresse'**
   String get address;
+
+  /// No description provided for @retake.
+  ///
+  /// In fr, this message translates to:
+  /// **'Reprendre'**
+  String get retake;
+
+  /// No description provided for @scannerHelpTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Comment utiliser'**
+  String get scannerHelpTitle;
+
+  /// No description provided for @scannerHelpTip1.
+  ///
+  /// In fr, this message translates to:
+  /// **'Pointez la caméra sur la plaque, puis appuyez sur le bouton de capture'**
+  String get scannerHelpTip1;
+
+  /// No description provided for @scannerHelpTip2.
+  ///
+  /// In fr, this message translates to:
+  /// **'Vous pouvez aussi choisir une photo depuis la galerie'**
+  String get scannerHelpTip2;
+
+  /// No description provided for @scannerHelpTip3.
+  ///
+  /// In fr, this message translates to:
+  /// **'Après la détection, vous pouvez modifier le numéro si nécessaire'**
+  String get scannerHelpTip3;
 }
 
 class _AppLocalizationsDelegate

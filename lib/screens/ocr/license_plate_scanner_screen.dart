@@ -5,7 +5,9 @@ import 'package:image_picker/image_picker.dart';
 import 'package:localizy/l10n/app_localizations.dart';
 import 'package:localizy/models/plate_country.dart';
 import '../../services/plate_recognition_service.dart';
-import '../../widgets/scanner_overlay_painter.dart';
+import 'widgets/scanner_camera_view.dart';
+import 'widgets/scanner_captured_image_view.dart';
+import 'widgets/scanner_help_bottom_sheet.dart';
 
 class LicensePlateScannerScreen extends StatefulWidget {
   const LicensePlateScannerScreen({super.key});
@@ -22,19 +24,18 @@ class _LicensePlateScannerScreenState extends State<LicensePlateScannerScreen> {
   String _detectedText = '';
   final ImagePicker _imagePicker = ImagePicker();
   final PlateRecognitionService _recognitionService = PlateRecognitionService();
-  Rect? _scanArea;
   bool _isSetupCameraCalled = false;
+  String? _capturedImagePath;
+  bool _isGalleryImage = false;
 
   @override
   void initState() {
     super.initState();
-    // Không gọi _setupCamera() ở đây nữa
   }
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    // Chỉ setup camera một lần khi dependencies đã sẵn sàng
     if (!_isSetupCameraCalled) {
       _isSetupCameraCalled = true;
       _setupCamera();
@@ -43,190 +44,122 @@ class _LicensePlateScannerScreenState extends State<LicensePlateScannerScreen> {
 
   Future<void> _setupCamera() async {
     final l10n = AppLocalizations.of(context)!;
-    
     try {
       final cameras = await availableCameras();
       if (cameras.isEmpty) {
-        if (mounted) {
-          setState(() {
-            _errorText = l10n.noCameraFound;
-          });
-        }
+        if (mounted) setState(() { _errorText = l10n.noCameraFound; });
         return;
       }
-
       final backCamera = cameras.firstWhere(
         (c) => c.lensDirection == CameraLensDirection.back,
         orElse: () => cameras.first,
       );
-
       _controller = CameraController(
-        backCamera,
-        ResolutionPreset.high,
-        enableAudio: false,
-        imageFormatGroup: ImageFormatGroup.jpeg,
+        backCamera, ResolutionPreset.high,
+        enableAudio: false, imageFormatGroup: ImageFormatGroup.jpeg,
       );
-
       _initializeControllerFuture = _controller!.initialize();
       await _initializeControllerFuture;
+      await _controller!.setFlashMode(FlashMode.off);
       if (mounted) setState(() {});
     } on CameraException catch (e) {
-      if (mounted) {
-        setState(() {
-          _errorText = '${l10n.cameraError}: ${e.code} ${e.description}';
-        });
-      }
+      if (mounted) setState(() { _errorText = '${l10n.cameraError}: ${e.code} ${e.description}'; });
     } catch (e) {
-      if (mounted) {
-        setState(() {
-          _errorText = '${l10n.errorInitializingCamera}: $e';
-        });
-      }
+      if (mounted) setState(() { _errorText = '${l10n.errorInitializingCamera}: $e'; });
     }
   }
 
-  void _calculateScanArea(Size screenSize) {
-    final scanWidth = screenSize.width * 0.85;
-    final scanHeight = screenSize.height * 0.3;
-    final left = (screenSize.width - scanWidth) / 2;
-    final top = (screenSize.height - scanHeight) / 2;
-    
-    _scanArea = Rect.fromLTWH(left, top, scanWidth, scanHeight);
+  void _retake() {
+    if (_capturedImagePath != null && !_isGalleryImage) {
+      try { File(_capturedImagePath!).deleteSync(); } catch (_) {}
+    }
+    setState(() {
+      _capturedImagePath = null;
+      _detectedText = '';
+      _isGalleryImage = false;
+    });
   }
 
   Future<void> _captureAndProcessImage() async {
     final l10n = AppLocalizations.of(context)!;
-    
-    if (_controller == null || !_controller!.value.isInitialized) {
-      return;
-    }
-
+    if (_controller == null || !_controller!.value.isInitialized) return;
     if (_isProcessing) return;
 
-    setState(() {
-      _isProcessing = true;
-      _detectedText = l10n.recognizing;
-    });
-
+    setState(() { _isProcessing = true; });
     try {
       final XFile picture = await _controller!.takePicture();
-      
-      final detectedPlate = await _recognitionService.recognizeFromImage(
-        picture.path,
-        PlateCountry.auto,
-      );
-      
-      try {
-        await File(picture.path).delete();
-      } catch (e) {
-        debugPrint('${l10n.cannotDeleteFile}: $e');
-      }
-      
+
       if (mounted) {
-        if (detectedPlate. isNotEmpty) {
-          setState(() {
-            _detectedText = detectedPlate;
-          });
+        setState(() { _capturedImagePath = picture.path; _isProcessing = false; });
+        await WidgetsBinding.instance.endOfFrame;
+      }
+      if (mounted) setState(() { _isProcessing = true; _detectedText = l10n.recognizing; });
+
+      final detectedPlate = await _recognitionService.recognizeFromImage(picture.path, PlateCountry.auto);
+
+      if (mounted) {
+        if (detectedPlate.isNotEmpty) {
+          setState(() { _detectedText = detectedPlate; });
           _showEditDialog(detectedPlate);
         } else {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(l10n.noLicensePlateDetected),
-              duration: const Duration(seconds: 2),
-            ),
+            SnackBar(content: Text(l10n.noLicensePlateDetected), duration: const Duration(seconds: 2)),
           );
-          setState(() {
-            _detectedText = '';
-          });
+          setState(() { _detectedText = ''; });
         }
       }
-      
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('${l10n. error}: $e')),
-        );
-        setState(() {
-          _detectedText = '';
-        });
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('${l10n.error}: $e')));
+        setState(() { _detectedText = ''; _capturedImagePath = null; });
       }
     } finally {
-      if (mounted) {
-        setState(() {
-          _isProcessing = false;
-        });
-      }
+      if (mounted) setState(() { _isProcessing = false; });
     }
   }
 
   Future<void> _pickImageFromGallery() async {
     final l10n = AppLocalizations.of(context)!;
-    
-    setState(() {
-      _isProcessing = true;
-      _detectedText = l10n.processing;
-    });
-
     try {
-      final XFile?  image = await _imagePicker. pickImage(
-        source: ImageSource.gallery,
-      );
+      final XFile? image = await _imagePicker.pickImage(source: ImageSource.gallery);
+      if (image == null) return;
 
-      if (image != null) {
-        final detectedPlate = await _recognitionService.recognizeFromImage(
-          image.path,
-          PlateCountry.auto,
-        );
-        
-        if (mounted) {
-          if (detectedPlate.isNotEmpty) {
-            setState(() {
-              _detectedText = detectedPlate;
-            });
-            _showEditDialog(detectedPlate);
-          } else {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(l10n.noLicensePlateDetected),
-                duration: const Duration(seconds: 2),
-              ),
-            );
-            setState(() {
-              _detectedText = '';
-            });
-          }
+      if (mounted) {
+        setState(() { _capturedImagePath = image.path; _isGalleryImage = true; _isProcessing = false; });
+        await WidgetsBinding.instance.endOfFrame;
+      }
+      if (mounted) setState(() { _isProcessing = true; _detectedText = l10n.processing; });
+
+      final detectedPlate = await _recognitionService.recognizeFromImage(image.path, PlateCountry.auto);
+
+      if (mounted) {
+        if (detectedPlate.isNotEmpty) {
+          setState(() { _detectedText = detectedPlate; });
+          _showEditDialog(detectedPlate);
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(l10n.noLicensePlateDetected), duration: const Duration(seconds: 2)),
+          );
+          setState(() { _detectedText = ''; });
         }
-      } else {
-        setState(() {
-          _detectedText = '';
-        });
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('${l10n. error}: $e')),
-        );
-        setState(() {
-          _detectedText = '';
-        });
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('${l10n.error}: $e')));
+        setState(() { _detectedText = ''; _capturedImagePath = null; _isGalleryImage = false; });
       }
     } finally {
-      if (mounted) {
-        setState(() {
-          _isProcessing = false;
-        });
-      }
+      if (mounted) setState(() { _isProcessing = false; });
     }
   }
 
   void _showEditDialog(String detectedPlate) {
-    final l10n = AppLocalizations. of(context)!;
-    final TextEditingController controller = TextEditingController(text: detectedPlate);
-    
+    final l10n = AppLocalizations.of(context)!;
+    final controller = TextEditingController(text: detectedPlate);
     showDialog(
       context: context,
       barrierDismissible: false,
-      builder: (BuildContext dialogContext) => AlertDialog(
+      builder: (dialogContext) => AlertDialog(
         title: Row(
           children: [
             const Icon(Icons.edit, color: Colors.blue, size: 28),
@@ -238,13 +171,7 @@ class _LicensePlateScannerScreenState extends State<LicensePlateScannerScreen> {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              l10n.detectedLicensePlate,
-              style: const TextStyle(
-                fontSize: 14,
-                color: Colors.grey,
-              ),
-            ),
+            Text(l10n.detectedLicensePlate, style: const TextStyle(fontSize: 14, color: Colors.grey)),
             const SizedBox(height: 12),
             TextField(
               controller: controller,
@@ -252,27 +179,23 @@ class _LicensePlateScannerScreenState extends State<LicensePlateScannerScreen> {
                 hintText: l10n.enterLicensePlate,
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
-                  borderSide:  BorderSide(color: Colors.blue.shade200, width: 2),
+                  borderSide: BorderSide(color: Colors.blue.shade200, width: 2),
                 ),
                 enabledBorder: OutlineInputBorder(
-                  borderRadius:  BorderRadius.circular(12),
-                  borderSide: BorderSide(color: Colors.blue. shade200, width: 2),
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide(color: Colors.blue.shade200, width: 2),
                 ),
                 focusedBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
-                  borderSide: const BorderSide(color: Colors. blue, width: 2),
+                  borderSide: const BorderSide(color: Colors.blue, width: 2),
                 ),
                 filled: true,
                 fillColor: Colors.blue.shade50,
                 prefixIcon: Icon(Icons.directions_car, color: Colors.blue.shade700),
               ),
-              style: const TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-                letterSpacing: 1.2,
-              ),
+              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, letterSpacing: 1.2),
               textAlign: TextAlign.center,
-              textCapitalization: TextCapitalization. characters,
+              textCapitalization: TextCapitalization.characters,
               autofocus: true,
               maxLines: 2,
             ),
@@ -280,19 +203,14 @@ class _LicensePlateScannerScreenState extends State<LicensePlateScannerScreen> {
         ),
         actions: [
           TextButton.icon(
-            onPressed: () {
-              Navigator.pop(dialogContext);
-              setState(() {
-                _detectedText = '';
-              });
-            },
+            onPressed: () { Navigator.pop(dialogContext); _retake(); },
             icon: const Icon(Icons.close),
             label: Text(l10n.cancel),
           ),
-          ElevatedButton. icon(
+          ElevatedButton.icon(
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.green,
-              foregroundColor: Colors. white,
+              foregroundColor: Colors.white,
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
             ),
             onPressed: () {
@@ -316,45 +234,27 @@ class _LicensePlateScannerScreenState extends State<LicensePlateScannerScreen> {
 
   @override
   void dispose() {
-    _controller?. dispose();
+    _controller?.dispose();
     _recognitionService.dispose();
+    if (_capturedImagePath != null && !_isGalleryImage) {
+      try { File(_capturedImagePath!).deleteSync(); } catch (_) {}
+    }
     super.dispose();
   }
 
-  Widget _buildCameraPreview() {
-    if (_controller == null || !_controller!.value.isInitialized) {
-      return Container();
-    }
-
-    final size = MediaQuery.of(context).size;
-    var scale = size.aspectRatio * _controller!.value.aspectRatio;
-    if (scale < 1) scale = 1 / scale;
-
-    return Transform. scale(
-      scale: scale,
-      child: Center(
-        child: CameraPreview(_controller!),
-      ),
-    );
-  }
-
   Widget _buildBody() {
-    final l10n = AppLocalizations. of(context)!;
-    
+    final l10n = AppLocalizations.of(context)!;
+
     if (_errorText != null) {
       return Center(
-        child:  Column(
-          mainAxisAlignment:  MainAxisAlignment.center,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
             const Icon(Icons.error_outline, size: 64, color: Colors.red),
-            const SizedBox(height:  16),
+            const SizedBox(height: 16),
             Padding(
               padding: const EdgeInsets.all(16.0),
-              child: Text(
-                _errorText!,
-                style: const TextStyle(color: Colors.red),
-                textAlign: TextAlign.center,
-              ),
+              child: Text(_errorText!, style: const TextStyle(color: Colors.red), textAlign: TextAlign.center),
             ),
           ],
         ),
@@ -369,163 +269,35 @@ class _LicensePlateScannerScreenState extends State<LicensePlateScannerScreen> {
       future: _initializeControllerFuture,
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.done) {
-          WidgetsBinding.instance.addPostFrameCallback((_) {
-            if (_scanArea == null) {
-              _calculateScanArea(MediaQuery.of(context).size);
-            }
-          });
-
-          return Stack(
-            fit: StackFit.expand,
-            children: [
-              _buildCameraPreview(),
-              
-              CustomPaint(
-                painter: ScannerOverlayPainter(),
-                child: Container(),
-              ),
-              
-              Positioned(
-                top: 40,
-                left: 0,
-                right: 0,
-                child: Container(
-                  padding: const EdgeInsets.all(16),
-                  margin: const EdgeInsets.symmetric(horizontal: 20),
-                  decoration: BoxDecoration(
-                    color: Colors.black87,
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Column(
-                    children: [
-                      const Icon(Icons.camera_alt, color: Colors.white, size: 32),
-                      const SizedBox(height: 8),
-                      Text(
-                        l10n.placeLicensePlateInFrame,
-                        textAlign: TextAlign.center,
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      const SizedBox(height: 4),
-                    ],
-                  ),
-                ),
-              ),
-              
-              if (_detectedText.isNotEmpty)
-                Positioned(
-                  bottom: 180,
-                  left: 0,
-                  right: 0,
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 20),
-                    margin: const EdgeInsets.symmetric(horizontal: 32),
-                    decoration: BoxDecoration(
-                      color: _detectedText.contains(l10n.recognizing) || _detectedText.contains(l10n.processing) 
-                          ? Colors.orange 
-                          : Colors.green,
-                      borderRadius: BorderRadius.circular(12),
-                      boxShadow: const [
-                        BoxShadow(
-                          color: Colors. black26,
-                          blurRadius:  10,
-                          offset: Offset(0, 4),
-                        ),
-                      ],
-                    ),
-                    child: Column(
-                      children: [
-                        Icon(
-                          _detectedText.contains(l10n.recognizing) || _detectedText.contains(l10n.processing) 
-                              ? Icons.search 
-                              : Icons.check_circle,
-                          color: Colors.white,
-                          size: 24,
-                        ),
-                        const SizedBox(height: 8),
-                        Text(
-                          _detectedText,
-                          textAlign: TextAlign.center,
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                            letterSpacing: 1.2,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              
-              Positioned(
-                bottom: 40,
-                left: 0,
-                right: 0,
-                child: Row(
-                  mainAxisAlignment:  MainAxisAlignment.spaceEvenly,
-                  children: [
-                    FloatingActionButton(
-                      heroTag: 'gallery',
-                      onPressed: _isProcessing ? null : _pickImageFromGallery,
-                      backgroundColor: Colors.white,
-                      child: const Icon(Icons.photo_library, color: Colors.blue),
-                    ),
-                    
-                    Container(
-                      decoration: const BoxDecoration(
-                        shape: BoxShape.circle,
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black26,
-                            blurRadius: 10,
-                            offset: Offset(0, 4),
-                          ),
-                        ],
-                      ),
-                      child: FloatingActionButton. large(
-                        heroTag: 'capture',
-                        onPressed: _isProcessing ? null : _captureAndProcessImage,
-                        backgroundColor: Colors.white,
-                        child: _isProcessing
-                            ? const CircularProgressIndicator()
-                            : const Icon(Icons.camera_alt, size: 40, color: Colors.red),
-                      ),
-                    ),
-                    
-                    FloatingActionButton(
-                      heroTag: 'flash',
-                      onPressed: () async {
-                        if (_controller != null) {
-                          final currentFlashMode = _controller!.value. flashMode;
-                          await _controller!.setFlashMode(
-                            currentFlashMode == FlashMode.off 
-                                ? FlashMode. torch 
-                                : FlashMode.off
-                          );
-                          setState(() {});
-                        }
-                      },
-                      backgroundColor: Colors.white,
-                      child: Icon(
-                        _controller?. value.flashMode == FlashMode.torch
-                            ? Icons.flash_on
-                            : Icons.flash_off,
-                        color: Colors.amber,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
+          if (_capturedImagePath != null) {
+            return ScannerCapturedImageView(
+              imagePath: _capturedImagePath!,
+              isProcessing: _isProcessing,
+              detectedText: _detectedText,
+              onRetake: _retake,
+            );
+          }
+          return ScannerCameraView(
+            controller: _controller!,
+            isProcessing: _isProcessing,
+            detectedText: _detectedText,
+            onCapture: _captureAndProcessImage,
+            onGallery: _pickImageFromGallery,
+            onHelp: () => ScannerHelpBottomSheet.show(context),
+            onFlashToggle: () async {
+              if (_controller != null) {
+                final mode = _controller!.value.flashMode;
+                await _controller!.setFlashMode(
+                  mode == FlashMode.off ? FlashMode.torch : FlashMode.off,
+                );
+                setState(() {});
+              }
+            },
           );
         } else if (snapshot.hasError) {
           return Center(
-            child:  Column(
-              mainAxisAlignment:  MainAxisAlignment.center,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 const Icon(Icons.error_outline, size: 64, color: Colors.red),
                 const SizedBox(height: 16),
@@ -548,11 +320,10 @@ class _LicensePlateScannerScreenState extends State<LicensePlateScannerScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations. of(context)!;
-    
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       appBar: AppBar(
-        title: Text(l10n. licensePlateScanner),
+        title: Text(l10n.licensePlateScanner),
         backgroundColor: Colors.red,
         foregroundColor: Colors.white,
       ),

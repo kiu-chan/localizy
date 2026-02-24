@@ -1,6 +1,9 @@
+import 'dart:io';
 import 'package:google_mlkit_text_recognition/google_mlkit_text_recognition.dart';
 import 'package:flutter/foundation.dart';
+import 'package:image/image.dart' as img;
 import 'package:localizy/models/plate_country.dart';
+import 'package:path_provider/path_provider.dart';
 
 class PlateRecognitionService {
   final TextRecognizer _textRecognizer = TextRecognizer();
@@ -8,21 +11,42 @@ class PlateRecognitionService {
   Future<String> recognizeFromImage(String imagePath, PlateCountry country) async {
     try {
       debugPrint('=== Nhận diện text từ ảnh ===');
-      
-      final inputImage = InputImage.fromFilePath(imagePath);
-      final recognizedText = await _textRecognizer.processImage(inputImage);
-      
-      debugPrint('Số blocks: ${recognizedText.blocks.length}');
-      
-      String detectedPlate = _extractLicensePlate(recognizedText, country);
-      
-      if (detectedPlate.isNotEmpty) {
-        debugPrint('✓ Biển số phát hiện: $detectedPlate');
-      } else {
-        debugPrint('✗ Không tìm thấy biển số');
+
+      final bytes = await File(imagePath).readAsBytes();
+      final decoded = img.decodeImage(bytes);
+      if (decoded == null) {
+        debugPrint('Không thể decode ảnh');
+        return '';
       }
-      
-      return detectedPlate;
+
+      // Áp dụng EXIF orientation trước
+      final oriented = img.bakeOrientation(decoded);
+      final tempDir = await getTemporaryDirectory();
+
+      // Thử OCR ở 4 góc xoay
+      for (final angle in [0, 90, 270, 180]) {
+        final rotated = angle == 0 ? oriented : img.copyRotate(oriented, angle: angle);
+        final tempPath = '${tempDir.path}/plate_scan_$angle.jpg';
+        await File(tempPath).writeAsBytes(img.encodeJpg(rotated, quality: 90));
+
+        try {
+          final inputImage = InputImage.fromFilePath(tempPath);
+          final recognizedText = await _textRecognizer.processImage(inputImage);
+
+          debugPrint('Góc $angle° - Số blocks: ${recognizedText.blocks.length}');
+
+          final plate = _extractLicensePlate(recognizedText, country);
+          if (plate.isNotEmpty) {
+            debugPrint('✓ Biển số phát hiện ở góc $angle°: $plate');
+            return plate;
+          }
+        } finally {
+          try { await File(tempPath).delete(); } catch (_) {}
+        }
+      }
+
+      debugPrint('✗ Không tìm thấy biển số');
+      return '';
     } catch (e) {
       debugPrint('Lỗi nhận diện text: $e');
       return '';
@@ -54,35 +78,35 @@ class PlateRecognitionService {
         String vnPlate = _tryExtractVietnameseFromBlock(blockText);
         if (vnPlate.isNotEmpty) {
           debugPrint('✓ Tìm thấy VN trong block: $vnPlate');
-          return '🇻🇳 $vnPlate';
+          return vnPlate;
         }
-        
+
         String frPlate = _tryExtractFrenchFromBlock(blockText);
         if (frPlate. isNotEmpty) {
           debugPrint('✓ Tìm thấy FR trong block: $frPlate');
-          return '🇫🇷 $frPlate';
+          return frPlate;
         }
-        
+
         String cmPlate = _tryExtractCameroonFromBlock(blockText);
         if (cmPlate. isNotEmpty) {
           debugPrint('✓ Tìm thấy CM trong block: $cmPlate');
-          return '🇨🇲 $cmPlate';
+          return cmPlate;
         }
       }
       
       String vnPlate = _extractVietnamesePlate(allLines, fullText);
       if (vnPlate.isNotEmpty) {
-        return '🇻🇳 $vnPlate';
+        return vnPlate;
       }
-      
+
       String frPlate = _extractFrenchPlate(allLines, fullText);
       if (frPlate.isNotEmpty) {
-        return '🇫🇷 $frPlate';
+        return frPlate;
       }
-      
+
       String cmPlate = _extractCameroonPlate(allLines, fullText);
       if (cmPlate.isNotEmpty) {
-        return '🇨🇲 $cmPlate';
+        return cmPlate;
       }
       
       // Nếu không tìm thấy pattern chính xác, lấy text gần giống (chỉ IN HOA)
