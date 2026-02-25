@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:localizy/api/sub_account_api.dart';
+import 'package:localizy/l10n/app_localizations.dart';
 
 class SubAccountManagementPage extends StatefulWidget {
   const SubAccountManagementPage({super.key});
@@ -47,7 +48,8 @@ class _SubAccountManagementPageState extends State<SubAccountManagementPage> {
   }
 
   Future<void> _showAddAccountDialog() async {
-    final _formKey = GlobalKey<FormState>();
+    final l10n = AppLocalizations.of(context)!;
+    final formKey = GlobalKey<FormState>();
     final emailController = TextEditingController();
     final fullNameController = TextEditingController();
     final passwordController = TextEditingController();
@@ -57,68 +59,68 @@ class _SubAccountManagementPageState extends State<SubAccountManagementPage> {
     final result = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Add New Sub Account'),
+        title: Text(l10n.addNewSubAccount),
         content: SingleChildScrollView(
           child: Form(
-            key: _formKey,
+            key: formKey,
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
                 TextFormField(
                   controller: fullNameController,
-                  decoration: const InputDecoration(
-                    labelText: 'Full Name',
-                    border: OutlineInputBorder(),
-                    prefixIcon: Icon(Icons.person),
+                  decoration: InputDecoration(
+                    labelText: l10n.fullName,
+                    border: const OutlineInputBorder(),
+                    prefixIcon: const Icon(Icons.person),
                   ),
-                  validator: (v) => (v == null || v.trim().isEmpty) ? 'Please enter full name' : null,
+                  validator: (v) => (v == null || v.trim().isEmpty) ? l10n.pleaseEnterFullName : null,
                 ),
                 const SizedBox(height: 12),
                 TextFormField(
                   controller: emailController,
-                  decoration: const InputDecoration(
-                    labelText: 'Email',
-                    border: OutlineInputBorder(),
-                    prefixIcon: Icon(Icons.email),
+                  decoration: InputDecoration(
+                    labelText: l10n.email,
+                    border: const OutlineInputBorder(),
+                    prefixIcon: const Icon(Icons.email),
                   ),
                   keyboardType: TextInputType.emailAddress,
                   validator: (v) {
-                    if (v == null || v.trim().isEmpty) return 'Please enter email';
-                    if (!v.contains('@')) return 'Invalid email';
+                    if (v == null || v.trim().isEmpty) return l10n.pleaseEnterEmail;
+                    if (!v.contains('@')) return l10n.invalidEmail;
                     return null;
                   },
                 ),
                 const SizedBox(height: 12),
                 TextFormField(
                   controller: passwordController,
-                  decoration: const InputDecoration(
-                    labelText: 'Password',
-                    border: OutlineInputBorder(),
-                    prefixIcon: Icon(Icons.lock),
+                  decoration: InputDecoration(
+                    labelText: l10n.password,
+                    border: const OutlineInputBorder(),
+                    prefixIcon: const Icon(Icons.lock),
                   ),
                   obscureText: true,
                   validator: (v) {
-                    if (v == null || v.isEmpty) return 'Please enter password';
-                    if (v.length < 6) return 'Password must be at least 6 characters';
+                    if (v == null || v.isEmpty) return l10n.pleaseEnterPassword;
+                    if (v.length < 6) return l10n.passwordMinLength;
                     return null;
                   },
                 ),
                 const SizedBox(height: 12),
                 TextFormField(
                   controller: phoneController,
-                  decoration: const InputDecoration(
-                    labelText: 'Phone (optional)',
-                    border: OutlineInputBorder(),
-                    prefixIcon: Icon(Icons.phone),
+                  decoration: InputDecoration(
+                    labelText: l10n.phoneOptional,
+                    border: const OutlineInputBorder(),
+                    prefixIcon: const Icon(Icons.phone),
                   ),
                 ),
                 const SizedBox(height: 12),
                 TextFormField(
                   controller: locationController,
-                  decoration: const InputDecoration(
-                    labelText: 'Location (optional)',
-                    border: OutlineInputBorder(),
-                    prefixIcon: Icon(Icons.location_on),
+                  decoration: InputDecoration(
+                    labelText: l10n.locationOptional,
+                    border: const OutlineInputBorder(),
+                    prefixIcon: const Icon(Icons.location_on),
                   ),
                 ),
               ],
@@ -126,13 +128,13 @@ class _SubAccountManagementPageState extends State<SubAccountManagementPage> {
           ),
         ),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(context, false), child: const Text('Cancel')),
+          TextButton(onPressed: () => Navigator.pop(context, false), child: Text(l10n.cancel)),
           ElevatedButton(
             onPressed: () async {
-              if (!_formKey.currentState!.validate()) return;
+              if (!formKey.currentState!.validate()) return;
               Navigator.pop(context, true);
             },
-            child: const Text('Create'),
+            child: Text(l10n.create),
           ),
         ],
       ),
@@ -140,7 +142,6 @@ class _SubAccountManagementPageState extends State<SubAccountManagementPage> {
 
     if (result == true) {
       try {
-        // show simple loading dialog
         showDialog<void>(
           context: context,
           barrierDismissible: false,
@@ -161,14 +162,20 @@ class _SubAccountManagementPageState extends State<SubAccountManagementPage> {
             _subAccounts.insert(0, newAccount);
           });
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Sub account created successfully'), backgroundColor: Colors.green),
+            SnackBar(
+              content: Text(AppLocalizations.of(context)!.subAccountCreatedSuccessfully),
+              backgroundColor: Colors.green,
+            ),
           );
         }
       } catch (e) {
         if (mounted) {
           Navigator.pop(context); // close loading
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Error creating sub account: $e'), backgroundColor: Colors.red),
+            SnackBar(
+              content: Text(AppLocalizations.of(context)!.errorCreatingSubAccount(e)),
+              backgroundColor: Colors.red,
+            ),
           );
         }
       }
@@ -176,6 +183,7 @@ class _SubAccountManagementPageState extends State<SubAccountManagementPage> {
   }
 
   void _showAccountDetail(SubAccount account) {
+    final l10n = AppLocalizations.of(context)!;
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -210,18 +218,17 @@ class _SubAccountManagementPageState extends State<SubAccountManagementPage> {
               ],
             ),
             const SizedBox(height: 24),
-            _buildDetailRow('Account ID', '#${account.id}'),
-            // Role removed intentionally (single-role page)
-            _buildDetailRow('Status', account.isActive ? 'Active' : 'Inactive'),
-            _buildDetailRow('Managed Locations', account.location.isNotEmpty ? account.location : '${account.parentBusinessName}'),
-            _buildDetailRow('Created Date', _formatDate(account.createdAt)),
+            _buildDetailRow(l10n.accountId, '#${account.id}'),
+            _buildDetailRow(l10n.statusLabel, account.isActive ? l10n.active : l10n.inactive),
+            _buildDetailRow(l10n.managedLocations, account.location.isNotEmpty ? account.location : account.parentBusinessName),
+            _buildDetailRow(l10n.createdDate, _formatDate(account.createdAt)),
             const SizedBox(height: 24),
             Row(children: [
               Expanded(
                 child: OutlinedButton.icon(
                   onPressed: () => Navigator.pop(context),
                   icon: const Icon(Icons.edit),
-                  label: const Text('Edit'),
+                  label: Text(l10n.edit),
                   style: OutlinedButton.styleFrom(
                     foregroundColor: Colors.blue.shade700,
                     side: BorderSide(color: Colors.blue.shade700),
@@ -237,7 +244,7 @@ class _SubAccountManagementPageState extends State<SubAccountManagementPage> {
                     _showDeleteConfirmDialog(account);
                   },
                   icon: const Icon(Icons.delete),
-                  label: const Text('Delete'),
+                  label: Text(l10n.delete),
                   style: ElevatedButton.styleFrom(backgroundColor: Colors.red, padding: const EdgeInsets.symmetric(vertical: 12)),
                 ),
               ),
@@ -259,23 +266,26 @@ class _SubAccountManagementPageState extends State<SubAccountManagementPage> {
   }
 
   void _showDeleteConfirmDialog(SubAccount account) {
+    final l10n = AppLocalizations.of(context)!;
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Delete Account'),
-        content: Text('Are you sure you want to delete ${account.fullName}?'),
+        title: Text(l10n.deleteAccount),
+        content: Text(l10n.confirmDeleteAccount(account.fullName)),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(context), child: const Text('Cancel')),
+          TextButton(onPressed: () => Navigator.pop(context), child: Text(l10n.cancel)),
           ElevatedButton(
             onPressed: () {
               Navigator.pop(context);
               setState(() {
                 _subAccounts.removeWhere((a) => a.id == account.id);
               });
-              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Account deleted'), backgroundColor: Colors.red));
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text(l10n.accountDeleted), backgroundColor: Colors.red),
+              );
             },
             style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-            child: const Text('Delete'),
+            child: Text(l10n.delete),
           ),
         ],
       ),
@@ -283,12 +293,13 @@ class _SubAccountManagementPageState extends State<SubAccountManagementPage> {
   }
 
   Widget _buildAccountCard(SubAccount account) {
+    final l10n = AppLocalizations.of(context)!;
     final statusColor = account.isActive ? Colors.green : Colors.grey;
 
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(12), boxShadow: [
-        BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 5, offset: const Offset(0, 2)),
+        BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 5, offset: const Offset(0, 2)),
       ]),
       child: Material(
         color: Colors.transparent,
@@ -317,8 +328,11 @@ class _SubAccountManagementPageState extends State<SubAccountManagementPage> {
                 ),
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                  decoration: BoxDecoration(color: statusColor.withOpacity(0.12), borderRadius: BorderRadius.circular(20)),
-                  child: Text(account.isActive ? 'Active' : 'Inactive', style: TextStyle(fontSize: 12, color: statusColor, fontWeight: FontWeight.w600)),
+                  decoration: BoxDecoration(color: statusColor.withValues(alpha: 0.12), borderRadius: BorderRadius.circular(20)),
+                  child: Text(
+                    account.isActive ? l10n.active : l10n.inactive,
+                    style: TextStyle(fontSize: 12, color: statusColor, fontWeight: FontWeight.w600),
+                  ),
                 ),
               ]),
               const SizedBox(height: 12),
@@ -328,10 +342,9 @@ class _SubAccountManagementPageState extends State<SubAccountManagementPage> {
                 children: [
                   const Icon(Icons.location_on, size: 16, color: Colors.grey),
                   const SizedBox(width: 6),
-                  // location text: allow truncation to avoid vertical wrapping / overflow
                   Expanded(
                     child: Text(
-                      account.location.isNotEmpty ? account.location : 'No location',
+                      account.location.isNotEmpty ? account.location : l10n.noLocation,
                       style: TextStyle(fontSize: 13, color: Colors.grey.shade600),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
@@ -357,7 +370,6 @@ class _SubAccountManagementPageState extends State<SubAccountManagementPage> {
 
   String _formatDate(String raw) {
     if (raw.isEmpty) return '-';
-    // If ISO like "2026-01-21T17:13:08.839...", take date part
     try {
       if (raw.contains('T')) {
         return raw.split('T').first;
@@ -370,10 +382,11 @@ class _SubAccountManagementPageState extends State<SubAccountManagementPage> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       backgroundColor: Colors.grey.shade100,
       appBar: AppBar(
-        title: const Text('Sub Account Management', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white)),
+        title: Text(l10n.subAccountManagement, style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.white)),
         backgroundColor: Colors.blue.shade700,
         elevation: 0,
         automaticallyImplyLeading: false,
@@ -385,7 +398,7 @@ class _SubAccountManagementPageState extends State<SubAccountManagementPage> {
         onPressed: _showAddAccountDialog,
         backgroundColor: Colors.blue.shade700,
         icon: const Icon(Icons.person_add),
-        label: const Text('Add Account'),
+        label: Text(l10n.addAccount),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16),
@@ -394,7 +407,7 @@ class _SubAccountManagementPageState extends State<SubAccountManagementPage> {
             : _error != null
                 ? Center(child: Text('Error: $_error'))
                 : _subAccounts.isEmpty
-                    ? const Center(child: Text('No sub accounts found'))
+                    ? Center(child: Text(l10n.noSubAccountsFound))
                     : ListView.builder(
                         itemCount: _subAccounts.length,
                         itemBuilder: (context, index) => _buildAccountCard(_subAccounts[index]),

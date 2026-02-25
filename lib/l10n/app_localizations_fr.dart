@@ -9,7 +9,7 @@ class AppLocalizationsFr extends AppLocalizations {
   AppLocalizationsFr([String locale = 'fr']) : super(locale);
 
   @override
-  String get appTitle => 'Localizy';
+  String get appTitle => 'Citizen';
 
   @override
   String get welcomeBack => 'Bon retour! ';
@@ -767,4 +767,91 @@ class AppLocalizationsFr extends AppLocalizations {
   @override
   String get scannerHelpTip3 =>
       'Après la détection, vous pouvez modifier le numéro si nécessaire';
+
+  @override
+  String get dashboard => 'Tableau de bord';
+
+  @override
+  String get subAccounts => 'Sous-comptes';
+
+  @override
+  String get preferences => 'Préférences';
+
+  @override
+  String get supportAndAbout => 'Support & À propos';
+
+  @override
+  String get businessAccount => 'Compte entreprise';
+
+  @override
+  String languageChangedTo(Object language) {
+    return 'Langue changée en $language';
+  }
+
+  @override
+  String get subAccountManagement => 'Gestion des sous-comptes';
+
+  @override
+  String get addAccount => 'Ajouter un compte';
+
+  @override
+  String get addNewSubAccount => 'Ajouter un nouveau sous-compte';
+
+  @override
+  String get pleaseEnterFullName => 'Veuillez entrer le nom complet';
+
+  @override
+  String get phoneOptional => 'Téléphone (optionnel)';
+
+  @override
+  String get locationOptional => 'Emplacement (optionnel)';
+
+  @override
+  String get create => 'Créer';
+
+  @override
+  String get subAccountCreatedSuccessfully => 'Sous-compte créé avec succès';
+
+  @override
+  String errorCreatingSubAccount(Object error) {
+    return 'Erreur lors de la création du sous-compte: $error';
+  }
+
+  @override
+  String get accountId => 'ID du compte';
+
+  @override
+  String get statusLabel => 'Statut';
+
+  @override
+  String get active => 'Actif';
+
+  @override
+  String get inactive => 'Inactif';
+
+  @override
+  String get managedLocations => 'Emplacements gérés';
+
+  @override
+  String get createdDate => 'Date de création';
+
+  @override
+  String get edit => 'Modifier';
+
+  @override
+  String get deleteAccount => 'Supprimer le compte';
+
+  @override
+  String confirmDeleteAccount(Object name) {
+    return 'Êtes-vous sûr de vouloir supprimer $name?';
+  }
+
+  @override
+  String get accountDeleted => 'Compte supprimé';
+
+  @override
+  String get noLocation => 'Aucun emplacement';
+
+  @override
+  String get noSubAccountsFound => 'Aucun sous-compte trouvé';
 }

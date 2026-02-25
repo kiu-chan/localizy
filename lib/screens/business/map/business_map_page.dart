@@ -110,32 +110,6 @@ class _BusinessMapPageState extends State<BusinessMapPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.grey.shade100,
-      appBar: AppBar(
-        title: const Text(
-          'Business Map',
-          style: TextStyle(
-            fontWeight: FontWeight.bold,
-            color: Colors.white,
-          ),
-        ),
-        backgroundColor: Colors.blue.shade700,
-        elevation: 0,
-        automaticallyImplyLeading: false,
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.my_location, color: Colors.white),
-            onPressed: () {
-              _goToInitialPosition();
-            },
-          ),
-          IconButton(
-            icon: const Icon(Icons.filter_list, color: Colors.white),
-            onPressed: () {
-              _showFilterDialog();
-            },
-          ),
-        ],
-      ),
       body: Stack(
         children: [
           // Google Map
@@ -152,7 +126,7 @@ class _BusinessMapPageState extends State<BusinessMapPage> {
 
           // Location count badge
           Positioned(
-            top: 16,
+            top: 60,
             left: 16,
             child:  Container(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
@@ -191,7 +165,7 @@ class _BusinessMapPageState extends State<BusinessMapPage> {
 
           // Map type selector
           Positioned(
-            top: 16,
+            top: 60,
             right:  16,
             child: Container(
               decoration: BoxDecoration(
@@ -253,10 +227,6 @@ class _BusinessMapPageState extends State<BusinessMapPage> {
     );
   }
 
-  void _goToInitialPosition() async {
-    final GoogleMapController controller = await _controller.future;
-    controller.animateCamera(CameraUpdate.newCameraPosition(_initialPosition));
-  }
 
   void _showMapTypeDialog() {
     showDialog(
@@ -302,84 +272,6 @@ class _BusinessMapPageState extends State<BusinessMapPage> {
     );
   }
 
-  void _showFilterDialog() {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Filter Locations'),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            CheckboxListTile(
-              title: const Text('Active Locations'),
-              value: true,
-              onChanged: (value) {},
-              activeColor: Colors.blue.shade700,
-            ),
-            CheckboxListTile(
-              title:  const Text('Pending Review'),
-              value: true,
-              onChanged: (value) {},
-              activeColor: Colors.blue.shade700,
-            ),
-            CheckboxListTile(
-              title: const Text('Inactive'),
-              value: false,
-              onChanged: (value) {},
-              activeColor: Colors.blue. shade700,
-            ),
-            const Divider(),
-            const Text(
-              'Location Type',
-              style: TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight. bold,
-              ),
-            ),
-            CheckboxListTile(
-              title: const Text('Café'),
-              value: true,
-              onChanged: (value) {},
-              activeColor: Colors.blue.shade700,
-            ),
-            CheckboxListTile(
-              title: const Text('Restaurant'),
-              value: true,
-              onChanged: (value) {},
-              activeColor: Colors. blue.shade700,
-            ),
-            CheckboxListTile(
-              title: const Text('Retail'),
-              value: true,
-              onChanged: (value) {},
-              activeColor: Colors. blue.shade700,
-            ),
-          ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              Navigator.pop(context);
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text('Filters applied'),
-                  backgroundColor: Colors.green,
-                ),
-              );
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.blue.shade700,
-            ),
-            child: const Text('Apply'),
-          ),
-        ],
-      ),
-    );
-  }
 
   void _showLocationsList() {
     showModalBottomSheet(

@@ -1,7 +1,7 @@
 {
   "@@locale": "fr",
   
-  "appTitle": "Localizy",
+  "appTitle": "Citizen",
   
   "welcomeBack": "Bon retour! ",
   "loginToContinue": "Connectez-vous pour continuer",
@@ -246,5 +246,35 @@
   "scannerHelpTitle": "Comment utiliser",
   "scannerHelpTip1": "Pointez la caméra sur la plaque, puis appuyez sur le bouton de capture",
   "scannerHelpTip2": "Vous pouvez aussi choisir une photo depuis la galerie",
-  "scannerHelpTip3": "Après la détection, vous pouvez modifier le numéro si nécessaire"
+  "scannerHelpTip3": "Après la détection, vous pouvez modifier le numéro si nécessaire",
+
+  "dashboard": "Tableau de bord",
+  "subAccounts": "Sous-comptes",
+
+  "preferences": "Préférences",
+  "supportAndAbout": "Support & À propos",
+  "businessAccount": "Compte entreprise",
+  "languageChangedTo": "Langue changée en {language}",
+
+  "subAccountManagement": "Gestion des sous-comptes",
+  "addAccount": "Ajouter un compte",
+  "addNewSubAccount": "Ajouter un nouveau sous-compte",
+  "pleaseEnterFullName": "Veuillez entrer le nom complet",
+  "phoneOptional": "Téléphone (optionnel)",
+  "locationOptional": "Emplacement (optionnel)",
+  "create": "Créer",
+  "subAccountCreatedSuccessfully": "Sous-compte créé avec succès",
+  "errorCreatingSubAccount": "Erreur lors de la création du sous-compte: {error}",
+  "accountId": "ID du compte",
+  "statusLabel": "Statut",
+  "active": "Actif",
+  "inactive": "Inactif",
+  "managedLocations": "Emplacements gérés",
+  "createdDate": "Date de création",
+  "edit": "Modifier",
+  "deleteAccount": "Supprimer le compte",
+  "confirmDeleteAccount": "Êtes-vous sûr de vouloir supprimer {name}?",
+  "accountDeleted": "Compte supprimé",
+  "noLocation": "Aucun emplacement",
+  "noSubAccountsFound": "Aucun sous-compte trouvé"
 }

@@ -101,7 +101,7 @@ abstract class AppLocalizations {
   /// No description provided for @appTitle.
   ///
   /// In fr, this message translates to:
-  /// **'Localizy'**
+  /// **'Citizen'**
   String get appTitle;
 
   /// No description provided for @welcomeBack.
@@ -1507,6 +1507,168 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'Après la détection, vous pouvez modifier le numéro si nécessaire'**
   String get scannerHelpTip3;
+
+  /// No description provided for @dashboard.
+  ///
+  /// In fr, this message translates to:
+  /// **'Tableau de bord'**
+  String get dashboard;
+
+  /// No description provided for @subAccounts.
+  ///
+  /// In fr, this message translates to:
+  /// **'Sous-comptes'**
+  String get subAccounts;
+
+  /// No description provided for @preferences.
+  ///
+  /// In fr, this message translates to:
+  /// **'Préférences'**
+  String get preferences;
+
+  /// No description provided for @supportAndAbout.
+  ///
+  /// In fr, this message translates to:
+  /// **'Support & À propos'**
+  String get supportAndAbout;
+
+  /// No description provided for @businessAccount.
+  ///
+  /// In fr, this message translates to:
+  /// **'Compte entreprise'**
+  String get businessAccount;
+
+  /// No description provided for @languageChangedTo.
+  ///
+  /// In fr, this message translates to:
+  /// **'Langue changée en {language}'**
+  String languageChangedTo(Object language);
+
+  /// No description provided for @subAccountManagement.
+  ///
+  /// In fr, this message translates to:
+  /// **'Gestion des sous-comptes'**
+  String get subAccountManagement;
+
+  /// No description provided for @addAccount.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ajouter un compte'**
+  String get addAccount;
+
+  /// No description provided for @addNewSubAccount.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ajouter un nouveau sous-compte'**
+  String get addNewSubAccount;
+
+  /// No description provided for @pleaseEnterFullName.
+  ///
+  /// In fr, this message translates to:
+  /// **'Veuillez entrer le nom complet'**
+  String get pleaseEnterFullName;
+
+  /// No description provided for @phoneOptional.
+  ///
+  /// In fr, this message translates to:
+  /// **'Téléphone (optionnel)'**
+  String get phoneOptional;
+
+  /// No description provided for @locationOptional.
+  ///
+  /// In fr, this message translates to:
+  /// **'Emplacement (optionnel)'**
+  String get locationOptional;
+
+  /// No description provided for @create.
+  ///
+  /// In fr, this message translates to:
+  /// **'Créer'**
+  String get create;
+
+  /// No description provided for @subAccountCreatedSuccessfully.
+  ///
+  /// In fr, this message translates to:
+  /// **'Sous-compte créé avec succès'**
+  String get subAccountCreatedSuccessfully;
+
+  /// No description provided for @errorCreatingSubAccount.
+  ///
+  /// In fr, this message translates to:
+  /// **'Erreur lors de la création du sous-compte: {error}'**
+  String errorCreatingSubAccount(Object error);
+
+  /// No description provided for @accountId.
+  ///
+  /// In fr, this message translates to:
+  /// **'ID du compte'**
+  String get accountId;
+
+  /// No description provided for @statusLabel.
+  ///
+  /// In fr, this message translates to:
+  /// **'Statut'**
+  String get statusLabel;
+
+  /// No description provided for @active.
+  ///
+  /// In fr, this message translates to:
+  /// **'Actif'**
+  String get active;
+
+  /// No description provided for @inactive.
+  ///
+  /// In fr, this message translates to:
+  /// **'Inactif'**
+  String get inactive;
+
+  /// No description provided for @managedLocations.
+  ///
+  /// In fr, this message translates to:
+  /// **'Emplacements gérés'**
+  String get managedLocations;
+
+  /// No description provided for @createdDate.
+  ///
+  /// In fr, this message translates to:
+  /// **'Date de création'**
+  String get createdDate;
+
+  /// No description provided for @edit.
+  ///
+  /// In fr, this message translates to:
+  /// **'Modifier'**
+  String get edit;
+
+  /// No description provided for @deleteAccount.
+  ///
+  /// In fr, this message translates to:
+  /// **'Supprimer le compte'**
+  String get deleteAccount;
+
+  /// No description provided for @confirmDeleteAccount.
+  ///
+  /// In fr, this message translates to:
+  /// **'Êtes-vous sûr de vouloir supprimer {name}?'**
+  String confirmDeleteAccount(Object name);
+
+  /// No description provided for @accountDeleted.
+  ///
+  /// In fr, this message translates to:
+  /// **'Compte supprimé'**
+  String get accountDeleted;
+
+  /// No description provided for @noLocation.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucun emplacement'**
+  String get noLocation;
+
+  /// No description provided for @noSubAccountsFound.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucun sous-compte trouvé'**
+  String get noSubAccountsFound;
 }
 
 class _AppLocalizationsDelegate

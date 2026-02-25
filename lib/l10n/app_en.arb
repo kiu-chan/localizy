@@ -1,7 +1,7 @@
 {
   "@@locale": "en",
   
-  "appTitle": "Localizy",
+  "appTitle": "Citizen",
   
   "welcomeBack":  "Welcome back!",
   "loginToContinue": "Login to continue",
@@ -246,5 +246,35 @@
   "scannerHelpTitle": "How to use",
   "scannerHelpTip1": "Point the camera at the license plate, then tap the capture button",
   "scannerHelpTip2": "You can also pick a photo from the gallery",
-  "scannerHelpTip3": "After detection, you can edit the plate number if needed"
-} 
+  "scannerHelpTip3": "After detection, you can edit the plate number if needed",
+
+  "dashboard": "Dashboard",
+  "subAccounts": "Sub Accounts",
+
+  "preferences": "Preferences",
+  "supportAndAbout": "Support & About",
+  "businessAccount": "Business Account",
+  "languageChangedTo": "Language changed to {language}",
+
+  "subAccountManagement": "Sub Account Management",
+  "addAccount": "Add Account",
+  "addNewSubAccount": "Add New Sub Account",
+  "pleaseEnterFullName": "Please enter full name",
+  "phoneOptional": "Phone (optional)",
+  "locationOptional": "Location (optional)",
+  "create": "Create",
+  "subAccountCreatedSuccessfully": "Sub account created successfully",
+  "errorCreatingSubAccount": "Error creating sub account: {error}",
+  "accountId": "Account ID",
+  "statusLabel": "Status",
+  "active": "Active",
+  "inactive": "Inactive",
+  "managedLocations": "Managed Locations",
+  "createdDate": "Created Date",
+  "edit": "Edit",
+  "deleteAccount": "Delete Account",
+  "confirmDeleteAccount": "Are you sure you want to delete {name}?",
+  "accountDeleted": "Account deleted",
+  "noLocation": "No location",
+  "noSubAccountsFound": "No sub accounts found"
+}

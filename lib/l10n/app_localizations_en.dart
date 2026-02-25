@@ -9,7 +9,7 @@ class AppLocalizationsEn extends AppLocalizations {
   AppLocalizationsEn([String locale = 'en']) : super(locale);
 
   @override
-  String get appTitle => 'Localizy';
+  String get appTitle => 'Citizen';
 
   @override
   String get welcomeBack => 'Welcome back!';
@@ -744,4 +744,92 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get scannerHelpTip3 =>
       'After detection, you can edit the plate number if needed';
+
+  @override
+  String get dashboard => 'Dashboard';
+
+  @override
+  String get subAccounts => 'Sub Accounts';
+
+  @override
+  String get preferences => 'Preferences';
+
+  @override
+  String get supportAndAbout => 'Support & About';
+
+  @override
+  String get businessAccount => 'Business Account';
+
+  @override
+  String languageChangedTo(Object language) {
+    return 'Language changed to $language';
+  }
+
+  @override
+  String get subAccountManagement => 'Sub Account Management';
+
+  @override
+  String get addAccount => 'Add Account';
+
+  @override
+  String get addNewSubAccount => 'Add New Sub Account';
+
+  @override
+  String get pleaseEnterFullName => 'Please enter full name';
+
+  @override
+  String get phoneOptional => 'Phone (optional)';
+
+  @override
+  String get locationOptional => 'Location (optional)';
+
+  @override
+  String get create => 'Create';
+
+  @override
+  String get subAccountCreatedSuccessfully =>
+      'Sub account created successfully';
+
+  @override
+  String errorCreatingSubAccount(Object error) {
+    return 'Error creating sub account: $error';
+  }
+
+  @override
+  String get accountId => 'Account ID';
+
+  @override
+  String get statusLabel => 'Status';
+
+  @override
+  String get active => 'Active';
+
+  @override
+  String get inactive => 'Inactive';
+
+  @override
+  String get managedLocations => 'Managed Locations';
+
+  @override
+  String get createdDate => 'Created Date';
+
+  @override
+  String get edit => 'Edit';
+
+  @override
+  String get deleteAccount => 'Delete Account';
+
+  @override
+  String confirmDeleteAccount(Object name) {
+    return 'Are you sure you want to delete $name?';
+  }
+
+  @override
+  String get accountDeleted => 'Account deleted';
+
+  @override
+  String get noLocation => 'No location';
+
+  @override
+  String get noSubAccountsFound => 'No sub accounts found';
 }

@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
-import 'business_dashboard_page.dart';
-import 'sub_account_management_page.dart';
-import 'business_map_page.dart';
-import 'business_settings_page.dart';
+import 'package:localizy/l10n/app_localizations.dart';
+import 'dashboard/business_dashboard_page.dart';
+import 'account/sub_account_management_page.dart';
+import 'map/business_map_page.dart';
+import 'setting/business_settings_page.dart';
 
 class BusinessMainPage extends StatefulWidget {
   const BusinessMainPage({super.key});
@@ -23,11 +24,12 @@ class _BusinessMainPageState extends State<BusinessMainPage> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       body: _pages[_currentIndex],
       bottomNavigationBar: Container(
         decoration: BoxDecoration(
-          boxShadow:  [
+          boxShadow: [
             BoxShadow(
               color: Colors.black.withValues(alpha: 0.1),
               blurRadius: 10,
@@ -47,22 +49,22 @@ class _BusinessMainPageState extends State<BusinessMainPage> {
           unselectedItemColor: Colors.grey,
           selectedFontSize: 12,
           unselectedFontSize: 12,
-          items: const [
+          items: [
             BottomNavigationBarItem(
-              icon: Icon(Icons.dashboard),
-              label: 'Dashboard',
+              icon: const Icon(Icons.dashboard),
+              label: l10n.dashboard,
             ),
             BottomNavigationBarItem(
-              icon: Icon(Icons.people),
-              label: 'Sub Accounts',
+              icon: const Icon(Icons.people),
+              label: l10n.subAccounts,
             ),
             BottomNavigationBarItem(
-              icon: Icon(Icons.map),
-              label: 'Map',
+              icon: const Icon(Icons.map),
+              label: l10n.map,
             ),
             BottomNavigationBarItem(
-              icon: Icon(Icons.settings),
-              label: 'Settings',
+              icon: const Icon(Icons.settings),
+              label: l10n.settings,
             ),
           ],
         ),

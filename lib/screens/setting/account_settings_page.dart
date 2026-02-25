@@ -115,7 +115,7 @@ class _AccountSettingsPageState extends State<AccountSettingsPage> {
     });
 
     try {
-      final updated = await UserProfileService.updateProfile(
+      await UserProfileService.updateProfile(
         fullName: _nameController.text.trim().isEmpty ? null : _nameController.text.trim(),
         email: _emailController.text.trim().isEmpty ? null : _emailController.text.trim(),
         phone: _phoneController.text.trim().isEmpty ? null : _phoneController.text.trim(),
