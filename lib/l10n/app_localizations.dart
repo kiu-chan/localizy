@@ -1669,6 +1669,216 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'Aucun sous-compte trouvé'**
   String get noSubAccountsFound;
+
+  /// No description provided for @mapSearchHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Rechercher des lieux...'**
+  String get mapSearchHint;
+
+  /// No description provided for @mapNoSearchResults.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucun résultat trouvé'**
+  String get mapNoSearchResults;
+
+  /// No description provided for @mapSelectLocationTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Sélectionner l\'emplacement sur la carte'**
+  String get mapSelectLocationTitle;
+
+  /// No description provided for @mapTapMapToPin.
+  ///
+  /// In fr, this message translates to:
+  /// **'Appuyez sur la carte pour épingler un emplacement'**
+  String get mapTapMapToPin;
+
+  /// No description provided for @mapLocationServiceDisabled.
+  ///
+  /// In fr, this message translates to:
+  /// **'Le service de localisation n\'est pas activé.'**
+  String get mapLocationServiceDisabled;
+
+  /// No description provided for @mapGetLocationError.
+  ///
+  /// In fr, this message translates to:
+  /// **'Impossible d\'obtenir la position : {error}'**
+  String mapGetLocationError(String error);
+
+  /// No description provided for @mapNoCoordinates.
+  ///
+  /// In fr, this message translates to:
+  /// **'Pas de coordonnées — appuyez sur la carte ou utilisez le GPS'**
+  String get mapNoCoordinates;
+
+  /// No description provided for @mapMyLocation.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ma position'**
+  String get mapMyLocation;
+
+  /// No description provided for @mapConfirm.
+  ///
+  /// In fr, this message translates to:
+  /// **'Confirmer'**
+  String get mapConfirm;
+
+  /// No description provided for @mapCityCode.
+  ///
+  /// In fr, this message translates to:
+  /// **'Code de ville'**
+  String get mapCityCode;
+
+  /// No description provided for @mapCoordinates.
+  ///
+  /// In fr, this message translates to:
+  /// **'Coordonnées'**
+  String get mapCoordinates;
+
+  /// No description provided for @mapAddedBy.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ajouté par'**
+  String get mapAddedBy;
+
+  /// No description provided for @mapCreated.
+  ///
+  /// In fr, this message translates to:
+  /// **'Créé'**
+  String get mapCreated;
+
+  /// No description provided for @mapYourLocations.
+  ///
+  /// In fr, this message translates to:
+  /// **'Vos emplacements'**
+  String get mapYourLocations;
+
+  /// No description provided for @mapLocationCount.
+  ///
+  /// In fr, this message translates to:
+  /// **'{count} emplacements'**
+  String mapLocationCount(int count);
+
+  /// No description provided for @mapNoLocationsYet.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucun emplacement ajouté'**
+  String get mapNoLocationsYet;
+
+  /// No description provided for @mapAddLocation.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ajouter un emplacement'**
+  String get mapAddLocation;
+
+  /// No description provided for @mapAddLocationSubtitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Remplissez les détails du nouvel emplacement'**
+  String get mapAddLocationSubtitle;
+
+  /// No description provided for @mapLocationNameLabel.
+  ///
+  /// In fr, this message translates to:
+  /// **'Nom de l\'emplacement'**
+  String get mapLocationNameLabel;
+
+  /// No description provided for @mapLocationNameHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'ex. Restaurant Pho Bac'**
+  String get mapLocationNameHint;
+
+  /// No description provided for @mapLocationNameRequired.
+  ///
+  /// In fr, this message translates to:
+  /// **'Veuillez entrer un nom'**
+  String get mapLocationNameRequired;
+
+  /// No description provided for @mapFullAddressLabel.
+  ///
+  /// In fr, this message translates to:
+  /// **'Adresse complète'**
+  String get mapFullAddressLabel;
+
+  /// No description provided for @mapFullAddressHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'ex. 123 Nguyen Trai, Thanh Xuan, Hanoi'**
+  String get mapFullAddressHint;
+
+  /// No description provided for @mapFullAddressRequired.
+  ///
+  /// In fr, this message translates to:
+  /// **'Veuillez entrer l\'adresse'**
+  String get mapFullAddressRequired;
+
+  /// No description provided for @mapAddressCode.
+  ///
+  /// In fr, this message translates to:
+  /// **'Code d\'adresse'**
+  String get mapAddressCode;
+
+  /// No description provided for @mapFieldRequired.
+  ///
+  /// In fr, this message translates to:
+  /// **'Requis'**
+  String get mapFieldRequired;
+
+  /// No description provided for @mapFieldInvalid.
+  ///
+  /// In fr, this message translates to:
+  /// **'Invalide'**
+  String get mapFieldInvalid;
+
+  /// No description provided for @mapPickFromMap.
+  ///
+  /// In fr, this message translates to:
+  /// **'Carte'**
+  String get mapPickFromMap;
+
+  /// No description provided for @mapSourceFromMap.
+  ///
+  /// In fr, this message translates to:
+  /// **'Depuis la carte'**
+  String get mapSourceFromMap;
+
+  /// No description provided for @mapSourceMyLocation.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ma position'**
+  String get mapSourceMyLocation;
+
+  /// No description provided for @mapSourceManual.
+  ///
+  /// In fr, this message translates to:
+  /// **'Saisie manuelle'**
+  String get mapSourceManual;
+
+  /// No description provided for @mapLatitude.
+  ///
+  /// In fr, this message translates to:
+  /// **'Latitude'**
+  String get mapLatitude;
+
+  /// No description provided for @mapLongitude.
+  ///
+  /// In fr, this message translates to:
+  /// **'Longitude'**
+  String get mapLongitude;
+
+  /// No description provided for @mapAddLocationSuccess.
+  ///
+  /// In fr, this message translates to:
+  /// **'Emplacement ajouté avec succès'**
+  String get mapAddLocationSuccess;
+
+  /// No description provided for @mapErrorMessage.
+  ///
+  /// In fr, this message translates to:
+  /// **'Erreur : {error}'**
+  String mapErrorMessage(String error);
 }
 
 class _AppLocalizationsDelegate

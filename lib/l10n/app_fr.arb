@@ -276,5 +276,56 @@
   "confirmDeleteAccount": "Êtes-vous sûr de vouloir supprimer {name}?",
   "accountDeleted": "Compte supprimé",
   "noLocation": "Aucun emplacement",
-  "noSubAccountsFound": "Aucun sous-compte trouvé"
+  "noSubAccountsFound": "Aucun sous-compte trouvé",
+
+  "mapSearchHint": "Rechercher des lieux...",
+  "mapNoSearchResults": "Aucun résultat trouvé",
+  "mapSelectLocationTitle": "Sélectionner l'emplacement sur la carte",
+  "mapTapMapToPin": "Appuyez sur la carte pour épingler un emplacement",
+  "mapLocationServiceDisabled": "Le service de localisation n'est pas activé.",
+  "mapGetLocationError": "Impossible d'obtenir la position : {error}",
+  "@mapGetLocationError": {
+    "placeholders": {
+      "error": {"type": "String"}
+    }
+  },
+  "mapNoCoordinates": "Pas de coordonnées — appuyez sur la carte ou utilisez le GPS",
+  "mapMyLocation": "Ma position",
+  "mapConfirm": "Confirmer",
+  "mapCityCode": "Code de ville",
+  "mapCoordinates": "Coordonnées",
+  "mapAddedBy": "Ajouté par",
+  "mapCreated": "Créé",
+  "mapYourLocations": "Vos emplacements",
+  "mapLocationCount": "{count} emplacements",
+  "@mapLocationCount": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "mapNoLocationsYet": "Aucun emplacement ajouté",
+  "mapAddLocation": "Ajouter un emplacement",
+  "mapAddLocationSubtitle": "Remplissez les détails du nouvel emplacement",
+  "mapLocationNameLabel": "Nom de l'emplacement",
+  "mapLocationNameHint": "ex. Restaurant Pho Bac",
+  "mapLocationNameRequired": "Veuillez entrer un nom",
+  "mapFullAddressLabel": "Adresse complète",
+  "mapFullAddressHint": "ex. 123 Nguyen Trai, Thanh Xuan, Hanoi",
+  "mapFullAddressRequired": "Veuillez entrer l'adresse",
+  "mapAddressCode": "Code d'adresse",
+  "mapFieldRequired": "Requis",
+  "mapFieldInvalid": "Invalide",
+  "mapPickFromMap": "Carte",
+  "mapSourceFromMap": "Depuis la carte",
+  "mapSourceMyLocation": "Ma position",
+  "mapSourceManual": "Saisie manuelle",
+  "mapLatitude": "Latitude",
+  "mapLongitude": "Longitude",
+  "mapAddLocationSuccess": "Emplacement ajouté avec succès",
+  "mapErrorMessage": "Erreur : {error}",
+  "@mapErrorMessage": {
+    "placeholders": {
+      "error": {"type": "String"}
+    }
+  }
 }

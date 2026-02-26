@@ -276,5 +276,56 @@
   "confirmDeleteAccount": "Are you sure you want to delete {name}?",
   "accountDeleted": "Account deleted",
   "noLocation": "No location",
-  "noSubAccountsFound": "No sub accounts found"
+  "noSubAccountsFound": "No sub accounts found",
+
+  "mapSearchHint": "Search locations...",
+  "mapNoSearchResults": "No results found",
+  "mapSelectLocationTitle": "Select location on map",
+  "mapTapMapToPin": "Tap the map to pin a location",
+  "mapLocationServiceDisabled": "Location service is not enabled.",
+  "mapGetLocationError": "Could not get location: {error}",
+  "@mapGetLocationError": {
+    "placeholders": {
+      "error": {"type": "String"}
+    }
+  },
+  "mapNoCoordinates": "No coordinates — tap map or use GPS",
+  "mapMyLocation": "My location",
+  "mapConfirm": "Confirm",
+  "mapCityCode": "City Code",
+  "mapCoordinates": "Coordinates",
+  "mapAddedBy": "Added by",
+  "mapCreated": "Created",
+  "mapYourLocations": "Your Locations",
+  "mapLocationCount": "{count} locations",
+  "@mapLocationCount": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "mapNoLocationsYet": "No locations added yet",
+  "mapAddLocation": "Add Location",
+  "mapAddLocationSubtitle": "Fill in the new location details",
+  "mapLocationNameLabel": "Location Name",
+  "mapLocationNameHint": "e.g. Pho Bac Restaurant",
+  "mapLocationNameRequired": "Please enter a name",
+  "mapFullAddressLabel": "Full Address",
+  "mapFullAddressHint": "e.g. 123 Nguyen Trai, Thanh Xuan, Hanoi",
+  "mapFullAddressRequired": "Please enter address",
+  "mapAddressCode": "Address Code",
+  "mapFieldRequired": "Required",
+  "mapFieldInvalid": "Invalid",
+  "mapPickFromMap": "Map",
+  "mapSourceFromMap": "From map",
+  "mapSourceMyLocation": "My location",
+  "mapSourceManual": "Manual entry",
+  "mapLatitude": "Latitude",
+  "mapLongitude": "Longitude",
+  "mapAddLocationSuccess": "Location added successfully",
+  "mapErrorMessage": "Error: {error}",
+  "@mapErrorMessage": {
+    "placeholders": {
+      "error": {"type": "String"}
+    }
+  }
 }

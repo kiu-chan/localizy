@@ -854,4 +854,120 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get noSubAccountsFound => 'Aucun sous-compte trouvé';
+
+  @override
+  String get mapSearchHint => 'Rechercher des lieux...';
+
+  @override
+  String get mapNoSearchResults => 'Aucun résultat trouvé';
+
+  @override
+  String get mapSelectLocationTitle =>
+      'Sélectionner l\'emplacement sur la carte';
+
+  @override
+  String get mapTapMapToPin =>
+      'Appuyez sur la carte pour épingler un emplacement';
+
+  @override
+  String get mapLocationServiceDisabled =>
+      'Le service de localisation n\'est pas activé.';
+
+  @override
+  String mapGetLocationError(String error) {
+    return 'Impossible d\'obtenir la position : $error';
+  }
+
+  @override
+  String get mapNoCoordinates =>
+      'Pas de coordonnées — appuyez sur la carte ou utilisez le GPS';
+
+  @override
+  String get mapMyLocation => 'Ma position';
+
+  @override
+  String get mapConfirm => 'Confirmer';
+
+  @override
+  String get mapCityCode => 'Code de ville';
+
+  @override
+  String get mapCoordinates => 'Coordonnées';
+
+  @override
+  String get mapAddedBy => 'Ajouté par';
+
+  @override
+  String get mapCreated => 'Créé';
+
+  @override
+  String get mapYourLocations => 'Vos emplacements';
+
+  @override
+  String mapLocationCount(int count) {
+    return '$count emplacements';
+  }
+
+  @override
+  String get mapNoLocationsYet => 'Aucun emplacement ajouté';
+
+  @override
+  String get mapAddLocation => 'Ajouter un emplacement';
+
+  @override
+  String get mapAddLocationSubtitle =>
+      'Remplissez les détails du nouvel emplacement';
+
+  @override
+  String get mapLocationNameLabel => 'Nom de l\'emplacement';
+
+  @override
+  String get mapLocationNameHint => 'ex. Restaurant Pho Bac';
+
+  @override
+  String get mapLocationNameRequired => 'Veuillez entrer un nom';
+
+  @override
+  String get mapFullAddressLabel => 'Adresse complète';
+
+  @override
+  String get mapFullAddressHint => 'ex. 123 Nguyen Trai, Thanh Xuan, Hanoi';
+
+  @override
+  String get mapFullAddressRequired => 'Veuillez entrer l\'adresse';
+
+  @override
+  String get mapAddressCode => 'Code d\'adresse';
+
+  @override
+  String get mapFieldRequired => 'Requis';
+
+  @override
+  String get mapFieldInvalid => 'Invalide';
+
+  @override
+  String get mapPickFromMap => 'Carte';
+
+  @override
+  String get mapSourceFromMap => 'Depuis la carte';
+
+  @override
+  String get mapSourceMyLocation => 'Ma position';
+
+  @override
+  String get mapSourceManual => 'Saisie manuelle';
+
+  @override
+  String get mapLatitude => 'Latitude';
+
+  @override
+  String get mapLongitude => 'Longitude';
+
+  @override
+  String get mapAddLocationSuccess => 'Emplacement ajouté avec succès';
+
+  @override
+  String mapErrorMessage(String error) {
+    return 'Erreur : $error';
+  }
 }

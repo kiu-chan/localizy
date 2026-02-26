@@ -1,6 +1,54 @@
 import 'dart:convert';
 import 'package:localizy/api/main_api.dart';
 
+/// Model địa chỉ dùng cho map page (Business/SubAccount)
+class MyAddress {
+  final String id;
+  final String code;
+  final String name;
+  final String fullAddress;
+  final String userId;
+  final String userName;
+  final double latitude;
+  final double longitude;
+  final String cityCode;
+  final String status;
+  final String comments;
+  final String createdAt;
+
+  MyAddress({
+    required this.id,
+    required this.code,
+    required this.name,
+    required this.fullAddress,
+    required this.userId,
+    required this.userName,
+    required this.latitude,
+    required this.longitude,
+    required this.cityCode,
+    required this.status,
+    required this.comments,
+    required this.createdAt,
+  });
+
+  factory MyAddress.fromJson(Map<String, dynamic> json) {
+    return MyAddress(
+      id: json['id']?.toString() ?? '',
+      code: json['code'] ?? '',
+      name: json['name'] ?? '',
+      fullAddress: json['fullAddress'] ?? '',
+      userId: json['userId']?.toString() ?? '',
+      userName: json['userName'] ?? '',
+      latitude: (json['latitude'] ?? 0).toDouble(),
+      longitude: (json['longitude'] ?? 0).toDouble(),
+      cityCode: json['cityCode'] ?? '',
+      status: json['status'] ?? '',
+      comments: json['comments'] ?? '',
+      createdAt: json['createdAt'] ?? '',
+    );
+  }
+}
+
 class AddressApi {
   // Lấy danh sách địa chỉ có id và toạ độ từ endpoint mới
   static Future<List<AddressCoordinate>> fetchCoordinates() async {
@@ -35,6 +83,56 @@ class AddressApi {
       }
     }
     throw Exception('Failed to search addresses: ${resp.statusCode}');
+  }
+
+  /// GET /api/addresses/my-addresses
+  /// Lấy danh sách địa chỉ của user hiện tại (Business/SubAccount)
+  static Future<List<MyAddress>> getMyAddresses() async {
+    final data = await MainApi.instance.getJson('api/addresses/my-addresses');
+    if (data is List) {
+      return data.map((e) => MyAddress.fromJson(e as Map<String, dynamic>)).toList();
+    }
+    throw Exception('Unexpected response format: expected list');
+  }
+
+  /// POST /api/addresses
+  /// Thêm địa chỉ mới (Business/SubAccount → status = Reviewed ngay lập tức)
+  static Future<MyAddress> addAddress({
+    required String code,
+    required String name,
+    required String fullAddress,
+    required double latitude,
+    required double longitude,
+    required String cityCode,
+  }) async {
+    final body = <String, dynamic>{
+      'code': code,
+      'name': name,
+      'fullAddress': fullAddress,
+      'latitude': latitude,
+      'longitude': longitude,
+      'cityCode': cityCode,
+      'extraDocs': null,
+    };
+
+    final resp = await MainApi.instance.postJson('api/addresses', body);
+
+    if (resp.statusCode == 201 || resp.statusCode == 200) {
+      final data = json.decode(resp.body);
+      if (data is Map<String, dynamic>) {
+        return MyAddress.fromJson(data);
+      }
+      throw Exception('Unexpected response format');
+    }
+
+    String message = 'Failed to add address';
+    try {
+      final parsed = json.decode(resp.body);
+      if (parsed is Map && parsed['message'] != null) {
+        message = parsed['message'].toString();
+      }
+    } catch (_) {}
+    throw Exception('Error ${resp.statusCode}: $message');
   }
 
   // Lấy chi tiết địa chỉ theo ID

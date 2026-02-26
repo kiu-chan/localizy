@@ -832,4 +832,115 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get noSubAccountsFound => 'No sub accounts found';
+
+  @override
+  String get mapSearchHint => 'Search locations...';
+
+  @override
+  String get mapNoSearchResults => 'No results found';
+
+  @override
+  String get mapSelectLocationTitle => 'Select location on map';
+
+  @override
+  String get mapTapMapToPin => 'Tap the map to pin a location';
+
+  @override
+  String get mapLocationServiceDisabled => 'Location service is not enabled.';
+
+  @override
+  String mapGetLocationError(String error) {
+    return 'Could not get location: $error';
+  }
+
+  @override
+  String get mapNoCoordinates => 'No coordinates — tap map or use GPS';
+
+  @override
+  String get mapMyLocation => 'My location';
+
+  @override
+  String get mapConfirm => 'Confirm';
+
+  @override
+  String get mapCityCode => 'City Code';
+
+  @override
+  String get mapCoordinates => 'Coordinates';
+
+  @override
+  String get mapAddedBy => 'Added by';
+
+  @override
+  String get mapCreated => 'Created';
+
+  @override
+  String get mapYourLocations => 'Your Locations';
+
+  @override
+  String mapLocationCount(int count) {
+    return '$count locations';
+  }
+
+  @override
+  String get mapNoLocationsYet => 'No locations added yet';
+
+  @override
+  String get mapAddLocation => 'Add Location';
+
+  @override
+  String get mapAddLocationSubtitle => 'Fill in the new location details';
+
+  @override
+  String get mapLocationNameLabel => 'Location Name';
+
+  @override
+  String get mapLocationNameHint => 'e.g. Pho Bac Restaurant';
+
+  @override
+  String get mapLocationNameRequired => 'Please enter a name';
+
+  @override
+  String get mapFullAddressLabel => 'Full Address';
+
+  @override
+  String get mapFullAddressHint => 'e.g. 123 Nguyen Trai, Thanh Xuan, Hanoi';
+
+  @override
+  String get mapFullAddressRequired => 'Please enter address';
+
+  @override
+  String get mapAddressCode => 'Address Code';
+
+  @override
+  String get mapFieldRequired => 'Required';
+
+  @override
+  String get mapFieldInvalid => 'Invalid';
+
+  @override
+  String get mapPickFromMap => 'Map';
+
+  @override
+  String get mapSourceFromMap => 'From map';
+
+  @override
+  String get mapSourceMyLocation => 'My location';
+
+  @override
+  String get mapSourceManual => 'Manual entry';
+
+  @override
+  String get mapLatitude => 'Latitude';
+
+  @override
+  String get mapLongitude => 'Longitude';
+
+  @override
+  String get mapAddLocationSuccess => 'Location added successfully';
+
+  @override
+  String mapErrorMessage(String error) {
+    return 'Error: $error';
+  }
 }
