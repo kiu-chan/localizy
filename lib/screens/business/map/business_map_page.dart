@@ -32,6 +32,7 @@ class _BusinessMapPageState extends State<BusinessMapPage> {
   List<MyAddress> _addresses = [];
   bool _isLoading = false;
   String? _error;
+  bool _showMineOnly = false;
 
   // ── Picking mode ──────────────────────────────────────────────────────────
   bool _isPickingLocation = false;
@@ -54,7 +55,9 @@ class _BusinessMapPageState extends State<BusinessMapPage> {
       _error = null;
     });
     try {
-      final list = await AddressApi.getMyAddresses();
+      final list = _showMineOnly
+          ? await AddressApi.getBusinessMineAddresses()
+          : await AddressApi.getBusinessAddresses();
       if (mounted) {
         setState(() => _addresses = list);
         _rebuildAddressMarkers();
@@ -64,6 +67,11 @@ class _BusinessMapPageState extends State<BusinessMapPage> {
     } finally {
       if (mounted) setState(() => _isLoading = false);
     }
+  }
+
+  void _toggleMineOnly() {
+    setState(() => _showMineOnly = !_showMineOnly);
+    _loadAddresses();
   }
 
 
@@ -335,9 +343,11 @@ class _BusinessMapPageState extends State<BusinessMapPage> {
                 addresses: _addresses,
                 isLoading: _isLoading,
                 error: _error,
+                showMineOnly: _showMineOnly,
                 onRefresh: _loadAddresses,
                 onDismissError: () => setState(() => _error = null),
                 onShowMapType: _showMapTypeDialog,
+                onToggleMineOnly: _toggleMineOnly,
                 onSuggestionTap: (address) =>
                     _flyTo(LatLng(address.latitude, address.longitude)),
                 onShowList: () => showLocationListSheet(

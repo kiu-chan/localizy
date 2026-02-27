@@ -817,6 +817,24 @@ class AppLocalizationsEn extends AppLocalizations {
   String get edit => 'Edit';
 
   @override
+  String get save => 'Save';
+
+  @override
+  String get retry => 'Retry';
+
+  @override
+  String get editSubAccount => 'Edit Sub Account';
+
+  @override
+  String get subAccountUpdatedSuccessfully =>
+      'Sub account updated successfully';
+
+  @override
+  String errorUpdatingSubAccount(Object error) {
+    return 'Error updating sub account: $error';
+  }
+
+  @override
   String get deleteAccount => 'Delete Account';
 
   @override
@@ -938,6 +956,12 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get mapAddLocationSuccess => 'Location added successfully';
+
+  @override
+  String get mapAllAddresses => 'All';
+
+  @override
+  String get mapMineOnly => 'Mine';
 
   @override
   String mapErrorMessage(String error) {

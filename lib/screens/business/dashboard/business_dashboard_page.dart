@@ -107,28 +107,6 @@ class BusinessDashboardPage extends StatelessWidget {
                       ),
                     ],
                   ),
-                  const SizedBox(height: 12),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: _buildStatCard(
-                          icon: Icons.visibility,
-                          title: 'Total Views',
-                          value: '1. 2K',
-                          color: Colors. green,
-                        ),
-                      ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: _buildStatCard(
-                          icon: Icons.star,
-                          title: 'Avg Rating',
-                          value: '4.5',
-                          color: Colors. amber,
-                        ),
-                      ),
-                    ],
-                  ),
 
                   const SizedBox(height: 24),
                   const Text(

@@ -272,6 +272,16 @@
   "managedLocations": "Managed Locations",
   "createdDate": "Created Date",
   "edit": "Edit",
+  "save": "Save",
+  "retry": "Retry",
+  "editSubAccount": "Edit Sub Account",
+  "subAccountUpdatedSuccessfully": "Sub account updated successfully",
+  "errorUpdatingSubAccount": "Error updating sub account: {error}",
+  "@errorUpdatingSubAccount": {
+    "placeholders": {
+      "error": {"type": "Object"}
+    }
+  },
   "deleteAccount": "Delete Account",
   "confirmDeleteAccount": "Are you sure you want to delete {name}?",
   "accountDeleted": "Account deleted",
@@ -322,6 +332,8 @@
   "mapLatitude": "Latitude",
   "mapLongitude": "Longitude",
   "mapAddLocationSuccess": "Location added successfully",
+  "mapAllAddresses": "All",
+  "mapMineOnly": "Mine",
   "mapErrorMessage": "Error: {error}",
   "@mapErrorMessage": {
     "placeholders": {

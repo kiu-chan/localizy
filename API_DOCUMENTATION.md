@@ -8,6 +8,7 @@ Tài liệu chi tiết về tất cả API endpoints của Localizy Server.
 - [Error Handling](#error-handling)
 - [Auth APIs](#auth-apis)
 - [User APIs](#user-apis)
+- [Business APIs](#business-apis)
 - [Address APIs](#address-apis)
 - [Validation APIs](#validation-apis)
 - [City APIs](#city-apis)
@@ -71,7 +72,8 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
 | **Admin** | Chỉ role Admin |
 | **Validator** | Chỉ role Validator |
 | **Admin,Validator** | Admin hoặc Validator |
-| **User** | Chỉ role User thường |
+| **Business** | Chỉ role Business |
+| **Business,SubAccount** | Business hoặc SubAccount |
 
 ### User Roles
 
@@ -189,11 +191,14 @@ POST /api/auth/login
   "phone": "0901234567",
   "email": "user@example.com",
   "documents": "[\"doc1.pdf\", \"doc2.pdf\"]",
-  "role": "User",
+  "role": "SubAccount",
+  "parentBusinessId": "a1b2c3d4-5717-4562-b3fc-2c963f66afa6",
   "createdAt": "2024-01-10T10:30:00Z",
   "updatedAt": null
 }
 ```
+
+> **Lưu ý:** `parentBusinessId` chỉ có giá trị khi `role = "SubAccount"`. Với các role khác, trường này là `null`.
 
 ---
 
@@ -383,6 +388,218 @@ POST /api/users/{id}/change-password
 **Errors:**
 - `400` - Mật khẩu hiện tại không đúng
 - `404` - User không tồn tại
+
+---
+
+## 🏢 Business APIs
+
+Quản lý tài khoản con (SubAccount) và xem địa chỉ theo nhóm doanh nghiệp.
+
+> **Lưu ý:** Tài khoản `SubAccount` có đầy đủ quyền thêm địa chỉ như `Business` (status tự động = `Reviewed`).
+
+---
+
+### 1. Trang chủ doanh nghiệp (Dashboard)
+
+Trả về tổng quan và hoạt động gần đây của nhóm doanh nghiệp.
+
+```http
+GET /api/business/dashboard
+```
+
+**Authorization:** Business, SubAccount
+
+**Hành vi theo role:**
+| Role | Kết quả trả về |
+|------|----------------|
+| `Business` | Thống kê của business + tất cả sub-accounts |
+| `SubAccount` | Thống kê của toàn nhóm (parent business + các sub-accounts) |
+
+**Response:** `200 OK`
+```json
+{
+  "totalLocations": 24,
+  "subAccountCount": 8,
+  "recentActivities": [
+    {
+      "type": "LocationAdded",
+      "title": "New location added",
+      "subtitle": "Coffee Shop",
+      "timestamp": "2026-02-27T10:00:00Z",
+      "actorName": "Nhân viên A"
+    },
+    {
+      "type": "SubAccountCreated",
+      "title": "New sub account created",
+      "subtitle": "Manager Account",
+      "timestamp": "2026-02-27T07:00:00Z",
+      "actorName": null
+    },
+    {
+      "type": "LocationUpdated",
+      "title": "Location updated",
+      "subtitle": "Restaurant",
+      "timestamp": "2026-02-26T10:00:00Z",
+      "actorName": "Nhân viên B"
+    }
+  ]
+}
+```
+
+**Activity Types:**
+| Type | Mô tả | actorName |
+|------|--------|-----------|
+| `LocationAdded` | Địa chỉ mới được thêm | Tên người thêm |
+| `LocationUpdated` | Địa chỉ được cập nhật | Tên người sở hữu |
+| `SubAccountCreated` | Tài khoản con được tạo | `null` |
+
+> `recentActivities` trả về tối đa **10 hoạt động gần nhất** sắp xếp theo thời gian mới nhất.
+
+---
+
+### 2. Lấy danh sách tài khoản con
+
+```http
+GET /api/business/sub-accounts
+```
+
+**Authorization:** Business
+
+**Response:** `200 OK`
+```json
+[
+  {
+    "id": "a1b2c3d4-5717-4562-b3fc-2c963f66afa6",
+    "name": "Nhân viên A",
+    "phone": "0901234567",
+    "email": "staff.a@company.com",
+    "documents": null,
+    "role": "SubAccount",
+    "parentBusinessId": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+    "createdAt": "2026-01-10T10:30:00Z",
+    "updatedAt": null
+  }
+]
+```
+
+---
+
+### 3. Tạo tài khoản con mới
+
+```http
+POST /api/business/sub-accounts
+```
+
+**Authorization:** Business
+
+**Request Body:**
+```json
+{
+  "name": "Nhân viên B",
+  "email": "staff.b@company.com",
+  "password": "Password123",
+  "phone": "0912345678",
+  "dateOfBirth": null,
+  "documents": null
+}
+```
+
+> Role tự động được gán là `SubAccount`. Tài khoản con thuộc về Business đang đăng nhập.
+
+**Response:** `201 Created` - User object với `role: "SubAccount"` và `parentBusinessId` trỏ về Business
+
+**Errors:**
+- `400` - Email đã được sử dụng
+- `400` - Tài khoản doanh nghiệp không tồn tại
+
+---
+
+### 4. Cập nhật tài khoản con
+
+```http
+PUT /api/business/sub-accounts/{id}
+```
+
+**Authorization:** Business
+
+**Path Parameters:**
+- `id`: ID của tài khoản con (phải thuộc Business đang đăng nhập)
+
+**Request Body:** (tất cả fields đều optional)
+```json
+{
+  "name": "Nhân viên B (đã đổi tên)",
+  "phone": "0987654321",
+  "email": "staff.b.new@company.com",
+  "dateOfBirth": "1998-05-20T00:00:00Z",
+  "documents": null
+}
+```
+
+> Role của tài khoản con không thể thay đổi qua API này.
+
+**Response:** `200 OK` - User object đã cập nhật
+
+**Errors:**
+- `400` - Email đã được sử dụng
+- `404` - Tài khoản con không tồn tại hoặc không thuộc doanh nghiệp này
+
+---
+
+### 5. Lấy tất cả địa chỉ của nhóm doanh nghiệp
+
+Trả về địa chỉ của **cả doanh nghiệp lẫn tất cả tài khoản con**.
+
+```http
+GET /api/business/addresses
+```
+
+**Authorization:** Business, SubAccount
+
+**Hành vi theo role:**
+| Role | Kết quả trả về |
+|------|----------------|
+| `Business` | Địa chỉ của business + tất cả sub-accounts |
+| `SubAccount` | Địa chỉ của parent business + tất cả sub-accounts cùng cấp (bao gồm bản thân) |
+
+**Response:** `200 OK` - Array of Address objects
+
+```json
+[
+  {
+    "id": "3fa85f64-...",
+    "code": "BIZ-001",
+    "name": "Văn phòng chính",
+    "userId": "3fa85f64-...",
+    "userName": "Công ty ABC",
+    "status": "Reviewed",
+    ...
+  },
+  {
+    "id": "a1b2c3d4-...",
+    "code": "BIZ-002",
+    "name": "Chi nhánh Q.1",
+    "userId": "a1b2c3d4-...",
+    "userName": "Nhân viên A",
+    "status": "Reviewed",
+    ...
+  }
+]
+```
+
+---
+
+### 6. Lấy địa chỉ do tài khoản hiện tại thêm
+
+Chỉ trả về địa chỉ mà **chính tài khoản đang đăng nhập** đã thêm (không bao gồm sub-accounts hay parent).
+
+```http
+GET /api/business/addresses/mine
+```
+
+**Authorization:** Business, SubAccount
+
+**Response:** `200 OK` - Array of Address objects
 
 ---
 
@@ -1335,7 +1552,39 @@ DELETE /api/settings/{id}               # Xóa (Admin)
 
 ---
 
-### Flow 3: Admin xác minh trực tiếp (không qua validator)
+### Flow 3: Business quản lý tài khoản con
+
+```
+1. Business đăng nhập
+   POST /api/auth/login
+
+2. Tạo tài khoản con cho nhân viên
+   POST /api/business/sub-accounts
+   { "name": "Nhân viên A", "email": "staff.a@company.com", "password": "Pass@123", "phone": "0901234567" }
+
+3. Nhân viên (SubAccount) đăng nhập và thêm địa chỉ
+   POST /api/auth/login  (dùng tài khoản sub-account)
+   POST /api/addresses
+   { "code": "BIZ-BRANCH-001", "name": "Chi nhánh Q.3", ... }
+   → Status = Reviewed ngay lập tức
+
+4. Business xem tất cả địa chỉ của nhóm (cả mình lẫn sub-accounts)
+   GET /api/business/addresses
+
+5. Business chỉ xem địa chỉ mà mình đã thêm
+   GET /api/business/addresses/mine
+
+6. SubAccount xem tất cả địa chỉ trong nhóm (bao gồm địa chỉ của parent và các sub-account cùng cấp)
+   GET /api/business/addresses  (dùng token của SubAccount)
+
+7. Business cập nhật thông tin tài khoản con
+   PUT /api/business/sub-accounts/{subAccountId}
+   { "phone": "0912345678" }
+```
+
+---
+
+### Flow 4: Admin xác minh trực tiếp (không qua validator)
 
 ```
 1. Admin xem danh sách yêu cầu pending
@@ -1350,7 +1599,7 @@ DELETE /api/settings/{id}               # Xóa (Admin)
 
 ---
 
-### Flow 4: Tìm kiếm địa chỉ
+### Flow 5: Tìm kiếm địa chỉ
 
 ```
 # Tìm theo code, name, fullAddress hoặc cityCode

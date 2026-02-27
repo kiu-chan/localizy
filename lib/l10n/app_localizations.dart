@@ -1640,6 +1640,36 @@ abstract class AppLocalizations {
   /// **'Modifier'**
   String get edit;
 
+  /// No description provided for @save.
+  ///
+  /// In fr, this message translates to:
+  /// **'Enregistrer'**
+  String get save;
+
+  /// No description provided for @retry.
+  ///
+  /// In fr, this message translates to:
+  /// **'Réessayer'**
+  String get retry;
+
+  /// No description provided for @editSubAccount.
+  ///
+  /// In fr, this message translates to:
+  /// **'Modifier le sous-compte'**
+  String get editSubAccount;
+
+  /// No description provided for @subAccountUpdatedSuccessfully.
+  ///
+  /// In fr, this message translates to:
+  /// **'Sous-compte mis à jour avec succès'**
+  String get subAccountUpdatedSuccessfully;
+
+  /// No description provided for @errorUpdatingSubAccount.
+  ///
+  /// In fr, this message translates to:
+  /// **'Erreur lors de la mise à jour: {error}'**
+  String errorUpdatingSubAccount(Object error);
+
   /// No description provided for @deleteAccount.
   ///
   /// In fr, this message translates to:
@@ -1873,6 +1903,18 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'Emplacement ajouté avec succès'**
   String get mapAddLocationSuccess;
+
+  /// No description provided for @mapAllAddresses.
+  ///
+  /// In fr, this message translates to:
+  /// **'Tous'**
+  String get mapAllAddresses;
+
+  /// No description provided for @mapMineOnly.
+  ///
+  /// In fr, this message translates to:
+  /// **'Les miens'**
+  String get mapMineOnly;
 
   /// No description provided for @mapErrorMessage.
   ///

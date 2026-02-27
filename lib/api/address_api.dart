@@ -95,6 +95,28 @@ class AddressApi {
     throw Exception('Unexpected response format: expected list');
   }
 
+  /// GET /api/business/addresses
+  /// Lấy địa chỉ của cả nhóm doanh nghiệp (Business + tất cả SubAccounts)
+  /// - Role Business: địa chỉ của business + tất cả sub-accounts
+  /// - Role SubAccount: địa chỉ của parent business + tất cả sub-accounts cùng cấp
+  static Future<List<MyAddress>> getBusinessAddresses() async {
+    final data = await MainApi.instance.getJson('api/business/addresses');
+    if (data is List) {
+      return data.map((e) => MyAddress.fromJson(e as Map<String, dynamic>)).toList();
+    }
+    throw Exception('Unexpected response format: expected list');
+  }
+
+  /// GET /api/business/addresses/mine
+  /// Chỉ trả về địa chỉ mà chính tài khoản đang đăng nhập đã thêm
+  static Future<List<MyAddress>> getBusinessMineAddresses() async {
+    final data = await MainApi.instance.getJson('api/business/addresses/mine');
+    if (data is List) {
+      return data.map((e) => MyAddress.fromJson(e as Map<String, dynamic>)).toList();
+    }
+    throw Exception('Unexpected response format: expected list');
+  }
+
   /// POST /api/addresses
   /// Thêm địa chỉ mới (Business/SubAccount → status = Reviewed ngay lập tức)
   static Future<MyAddress> addAddress({

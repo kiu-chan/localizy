@@ -7,9 +7,11 @@ class MapNormalOverlay extends StatefulWidget {
   final List<MyAddress> addresses;
   final bool isLoading;
   final String? error;
+  final bool showMineOnly;
   final VoidCallback onRefresh;
   final VoidCallback onDismissError;
   final VoidCallback onShowMapType;
+  final VoidCallback onToggleMineOnly;
   final VoidCallback onShowList;
   final VoidCallback onAddLocation;
   final ValueChanged<MyAddress>? onSuggestionTap;
@@ -19,9 +21,11 @@ class MapNormalOverlay extends StatefulWidget {
     required this.addresses,
     required this.isLoading,
     this.error,
+    this.showMineOnly = false,
     required this.onRefresh,
     required this.onDismissError,
     required this.onShowMapType,
+    required this.onToggleMineOnly,
     required this.onShowList,
     required this.onAddLocation,
     this.onSuggestionTap,
@@ -311,7 +315,7 @@ class _MapNormalOverlayState extends State<MapNormalOverlay> {
           ),
         ),
 
-        // ── Location count badge ───────────────────────────────────────────
+        // ── Location count badge + filter toggle ───────────────────────────
         Positioned(
           top: top + searchTop + searchH + 12,
           left: 16,
@@ -319,39 +323,93 @@ class _MapNormalOverlayState extends State<MapNormalOverlay> {
             valueListenable: _searching,
             builder: (_, active, _) => Offstage(
               offstage: active,
-              child: GestureDetector(
-                onTap: widget.onRefresh,
-                child: Container(
-                  padding: const EdgeInsets.symmetric(
-                      horizontal: 12, vertical: 8),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(20),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withValues(alpha: 0.1),
-                        blurRadius: 8,
-                        offset: const Offset(0, 2),
+              child: Row(
+                children: [
+                  // Count badge
+                  GestureDetector(
+                    onTap: widget.onRefresh,
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 12, vertical: 8),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(20),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withValues(alpha: 0.1),
+                            blurRadius: 8,
+                            offset: const Offset(0, 2),
+                          ),
+                        ],
                       ),
-                    ],
-                  ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(Icons.location_on,
-                          color: Colors.blue.shade700, size: 16),
-                      const SizedBox(width: 6),
-                      Text(
-                        '${widget.addresses.length}',
-                        style: TextStyle(
-                          fontSize: 13,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.blue.shade700,
-                        ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(Icons.location_on,
+                              color: Colors.blue.shade700, size: 16),
+                          const SizedBox(width: 6),
+                          Text(
+                            '${widget.addresses.length}',
+                            style: TextStyle(
+                              fontSize: 13,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.blue.shade700,
+                            ),
+                          ),
+                        ],
                       ),
-                    ],
+                    ),
                   ),
-                ),
+                  const SizedBox(width: 8),
+                  // Mine only toggle chip
+                  GestureDetector(
+                    onTap: widget.onToggleMineOnly,
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 12, vertical: 8),
+                      decoration: BoxDecoration(
+                        color: widget.showMineOnly
+                            ? Colors.blue.shade700
+                            : Colors.white,
+                        borderRadius: BorderRadius.circular(20),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withValues(alpha: 0.1),
+                            blurRadius: 8,
+                            offset: const Offset(0, 2),
+                          ),
+                        ],
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(
+                            widget.showMineOnly
+                                ? Icons.person
+                                : Icons.group,
+                            color: widget.showMineOnly
+                                ? Colors.white
+                                : Colors.grey.shade600,
+                            size: 15,
+                          ),
+                          const SizedBox(width: 6),
+                          Text(
+                            widget.showMineOnly
+                                ? l10n.mapMineOnly
+                                : l10n.mapAllAddresses,
+                            style: TextStyle(
+                              fontSize: 13,
+                              fontWeight: FontWeight.w600,
+                              color: widget.showMineOnly
+                                  ? Colors.white
+                                  : Colors.grey.shade700,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ),
           ),
