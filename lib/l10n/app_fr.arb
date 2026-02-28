@@ -185,7 +185,7 @@
   "documentUploadIntro": "Veuillez télécharger les documents nécessaires pour vérifier votre adresse",
   "idDocumentSection":  "1. Document d'identité",
   "documentType": "Type de document:",
-  "idCardCCCD":  "Carte d'identité/CCCD",
+  "idCardCCCD":  "Carte d'identité",
   "passport":  "Passeport",
   "idDocumentDescription": "Prenez des photos claires des deux côtés du document",
   "addressProofSection": "2. Document de preuve d'adresse",

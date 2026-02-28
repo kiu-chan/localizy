@@ -12,7 +12,6 @@ class ProfileHeaderSection extends StatefulWidget {
 
 class _ProfileHeaderSectionState extends State<ProfileHeaderSection> {
   Map<String, dynamic>? _profile;
-  bool _loading = true;
 
   @override
   void initState() {
@@ -22,7 +21,6 @@ class _ProfileHeaderSectionState extends State<ProfileHeaderSection> {
 
   Future<void> _loadProfile() async {
     setState(() {
-      _loading = true;
     });
 
     // First, try to read stored user (quick)
@@ -49,7 +47,6 @@ class _ProfileHeaderSectionState extends State<ProfileHeaderSection> {
     } finally {
       if (mounted) {
         setState(() {
-          _loading = false;
         });
       }
     }

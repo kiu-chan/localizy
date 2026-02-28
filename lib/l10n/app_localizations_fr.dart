@@ -575,7 +575,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get documentType => 'Type de document:';
 
   @override
-  String get idCardCCCD => 'Carte d\'identité/CCCD';
+  String get idCardCCCD => 'Carte d\'identité';
 
   @override
   String get passport => 'Passeport';

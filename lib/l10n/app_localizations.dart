@@ -1151,7 +1151,7 @@ abstract class AppLocalizations {
   /// No description provided for @idCardCCCD.
   ///
   /// In fr, this message translates to:
-  /// **'Carte d\'identité/CCCD'**
+  /// **'Carte d\'identité'**
   String get idCardCCCD;
 
   /// No description provided for @passport.

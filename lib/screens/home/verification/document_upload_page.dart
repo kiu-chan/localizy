@@ -350,9 +350,14 @@ class _DocumentUploadPageState extends State<DocumentUploadPage> {
         value: value,
         groupValue: groupValue,
         onChanged: onChanged,
-        title: Text(
-          label,
-          style: const TextStyle(fontSize: 14),
+        title: FittedBox(
+          fit: BoxFit.scaleDown,
+          alignment: Alignment.centerLeft,
+          child: Text(
+            label,
+            style: const TextStyle(fontSize: 14),
+            maxLines: 1,
+          ),
         ),
         dense: true,
         contentPadding: const EdgeInsets.symmetric(horizontal: 4),
