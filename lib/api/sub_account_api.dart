@@ -3,6 +3,60 @@ import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:localizy/api/main_api.dart';
 
+// ─── Business Dashboard ──────────────────────────────────────────────────────
+
+class RecentActivity {
+  final String type;
+  final String title;
+  final String subtitle;
+  final DateTime timestamp;
+  final String? actorName;
+
+  RecentActivity({
+    required this.type,
+    required this.title,
+    required this.subtitle,
+    required this.timestamp,
+    this.actorName,
+  });
+
+  factory RecentActivity.fromJson(Map<String, dynamic> json) {
+    return RecentActivity(
+      type: json['type'] ?? '',
+      title: json['title'] ?? '',
+      subtitle: json['subtitle'] ?? '',
+      timestamp: DateTime.tryParse(json['timestamp'] ?? '') ?? DateTime.now(),
+      actorName: json['actorName'] as String?,
+    );
+  }
+}
+
+class BusinessDashboard {
+  final int totalLocations;
+  final int subAccountCount;
+  final List<RecentActivity> recentActivities;
+
+  BusinessDashboard({
+    required this.totalLocations,
+    required this.subAccountCount,
+    required this.recentActivities,
+  });
+
+  factory BusinessDashboard.fromJson(Map<String, dynamic> json) {
+    final rawActivities = json['recentActivities'];
+    final activities = rawActivities is List
+        ? rawActivities
+            .map((e) => RecentActivity.fromJson(e as Map<String, dynamic>))
+            .toList()
+        : <RecentActivity>[];
+    return BusinessDashboard(
+      totalLocations: (json['totalLocations'] ?? 0) as int,
+      subAccountCount: (json['subAccountCount'] ?? 0) as int,
+      recentActivities: activities,
+    );
+  }
+}
+
 class SubAccount {
   final String id;
   final String email;
@@ -53,6 +107,19 @@ class SubAccount {
       parentBusinessId: parentBusinessId,
       createdAt: createdAt,
     );
+  }
+}
+
+class BusinessApi {
+  /// GET /api/business/dashboard
+  /// Lấy tổng quan và hoạt động gần đây của nhóm doanh nghiệp
+  static Future<BusinessDashboard> getDashboard() async {
+    debugPrint('BusinessApi: GET api/business/dashboard');
+    final data = await MainApi.instance.getJson('api/business/dashboard');
+    if (data is Map<String, dynamic>) {
+      return BusinessDashboard.fromJson(data);
+    }
+    throw Exception('Unexpected response format');
   }
 }
 
