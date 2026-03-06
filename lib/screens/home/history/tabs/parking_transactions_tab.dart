@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:localizy/api/parking_api.dart';
 import 'package:localizy/l10n/app_localizations.dart';
 
 class ParkingTransactionsTab extends StatefulWidget {
@@ -10,54 +11,93 @@ class ParkingTransactionsTab extends StatefulWidget {
 }
 
 class _ParkingTransactionsTabState extends State<ParkingTransactionsTab> {
-  bool _isLoading = false;
+  bool _isLoading = true;
+  String? _error;
+  List<Map<String, dynamic>> _transactions = [];
 
-  final List<Map<String, dynamic>> _transactions = [
-    {
-      'id': 'TXN001234567',
-      'title': 'Parking Payment',
-      'location': 'Parking Lot A1',
-      'licensePlate': '30A-12345',
-      'amount': 35000,
-      'status': 'success',
-      'date': DateTime.now().subtract(const Duration(hours: 2)),
-      'paymentMethod': 'momo',
-      'duration': '4 hours',
-    },
-    {
-      'id': 'TXN001234565',
-      'title': 'Parking Payment',
-      'location': 'Parking Lot B2',
-      'licensePlate': '51G-98765',
-      'amount': 50000,
-      'status': 'success',
-      'date': DateTime.now().subtract(const Duration(days: 2)),
-      'paymentMethod': 'bank',
-      'duration': '6 hours',
-    },
-    {
-      'id': 'TXN001234564',
-      'title': 'Parking Payment',
-      'location': 'Parking Lot C3',
-      'licensePlate': '30A-12345',
-      'amount': 25000,
-      'status': 'failed',
-      'date': DateTime.now().subtract(const Duration(days: 3)),
-      'paymentMethod': 'card',
-      'duration': '3 hours',
-    },
-  ];
+  @override
+  void initState() {
+    super.initState();  
+    _loadTransactions();
+  }
+
+  Future<void> _loadTransactions() async {
+    setState(() {
+      _isLoading = true;
+      _error = null;
+    });
+
+    try {
+      final items = await ParkingApi.getMyTickets();
+      setState(() {
+        _transactions = items.map((t) => {
+          'id': t.ticketCode.isNotEmpty ? t.ticketCode : t.id,
+          'title': 'Parking Payment',
+          'location': t.parkingZone,
+          'licensePlate': t.licensePlate,
+          'amount': t.amount,
+          'status': t.uiStatus,
+          'date': t.startTime,
+          'paymentMethod': t.paymentMethod,
+          'duration': t.duration,
+        }).toList();
+        _isLoading = false;
+      });
+    } catch (e) {
+      setState(() {
+        _error = e.toString();
+        _isLoading = false;
+      });
+    }
+  }
 
   Future<void> _refreshTransactions() async {
-    setState(() => _isLoading = true);
-    await Future.delayed(const Duration(seconds: 1));
-    setState(() => _isLoading = false);
+    await _loadTransactions();
   }
 
   @override
   Widget build(BuildContext context) {
     if (_isLoading) {
       return const Center(child: CircularProgressIndicator());
+    }
+
+    if (_error != null) {
+      return Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(Icons.error_outline, size: 64, color: Colors.red.shade300),
+            const SizedBox(height: 16),
+            Text(
+              'Error loading data',
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                color: Colors.grey.shade700,
+              ),
+            ),
+            const SizedBox(height: 8),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 32),
+              child: Text(
+                _error!,
+                textAlign: TextAlign.center,
+                style: TextStyle(fontSize: 14, color: Colors.grey.shade600),
+              ),
+            ),
+            const SizedBox(height: 16),
+            ElevatedButton.icon(
+              onPressed: _loadTransactions,
+              icon: const Icon(Icons.refresh),
+              label: const Text('Retry'),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.green.shade700,
+                foregroundColor: Colors.white,
+              ),
+            ),
+          ],
+        ),
+      );
     }
 
     return RefreshIndicator(

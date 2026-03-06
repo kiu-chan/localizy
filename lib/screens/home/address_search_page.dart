@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:localizy/api/address_api.dart';
 import 'package:localizy/l10n/app_localizations.dart';
 
 class AddressSearchPage extends StatefulWidget {
@@ -19,64 +20,6 @@ class _AddressSearchPageState extends State<AddressSearchPage> {
   Map<String, dynamic>? _selectedAddress;
   GoogleMapController? _mapController;
   
-  // Mock data - replace with real API
-  final List<Map<String, dynamic>> _mockAddresses = [
-    {
-      'id': '1',
-      'address': '123 Nguyen Hue, District 1, HCMC',
-      'district': 'District 1',
-      'city': 'Ho Chi Minh City',
-      'lat': 10.7769,
-      'lng': 106.7009,
-      'verified': true,
-      'parkingAvailable': true,
-      'parkingSpots': 15,
-    },
-    {
-      'id': '2',
-      'address': '456 Le Loi, District 1, HCMC',
-      'district': 'District 1',
-      'city': 'Ho Chi Minh City',
-      'lat': 10.7740,
-      'lng': 106.6990,
-      'verified': true,
-      'parkingAvailable':  true,
-      'parkingSpots': 8,
-    },
-    {
-      'id': '3',
-      'address': '789 Tran Hung Dao, District 5, HCMC',
-      'district': 'District 5',
-      'city': 'Ho Chi Minh City',
-      'lat': 10.7550,
-      'lng': 106.6770,
-      'verified': false,
-      'parkingAvailable': false,
-      'parkingSpots': 0,
-    },
-    {
-      'id': '4',
-      'address': '234 Vo Van Tan, District 3, HCMC',
-      'district': 'District 3',
-      'city': 'Ho Chi Minh City',
-      'lat': 10.7830,
-      'lng': 106.6920,
-      'verified': true,
-      'parkingAvailable':  true,
-      'parkingSpots': 20,
-    },
-    {
-      'id': '5',
-      'address': '567 Hai Ba Trung, District 3, HCMC',
-      'district': 'District 3',
-      'city': 'Ho Chi Minh City',
-      'lat': 10.7880,
-      'lng': 106.6950,
-      'verified': true,
-      'parkingAvailable': false,
-      'parkingSpots': 0,
-    },
-  ];
 
   @override
   void initState() {
@@ -102,25 +45,31 @@ class _AddressSearchPageState extends State<AddressSearchPage> {
       return;
     }
 
-    setState(() {
-      _isSearching = true;
-    });
+    setState(() => _isSearching = true);
 
-    // Simulate API call
-    await Future. delayed(const Duration(milliseconds: 500));
+    try {
+      final items = await AddressApi.searchItems(query);
 
-    // Filter mock data
-    final results = _mockAddresses.where((address) {
-      final searchLower = query.toLowerCase();
-      return address['address'].toString().toLowerCase().contains(searchLower) ||
-             address['district'].toString().toLowerCase().contains(searchLower) ||
-             address['city'].toString().toLowerCase().contains(searchLower);
-    }).toList();
-
-    setState(() {
-      _searchResults = results;
-      _isSearching = false;
-    });
+      setState(() {
+        _searchResults = items.map((a) => {
+          'id': a.id,
+          'address': a.fullAddress,
+          'district': a.district,
+          'city': a.cityCode,
+          'lat': a.latitude,
+          'lng': a.longitude,
+          'verified': a.isVerified,
+          'parkingAvailable': a.parkingAvailable,
+          'parkingSpots': a.parkingSpots,
+        }).toList();
+        _isSearching = false;
+      });
+    } catch (e) {
+      setState(() {
+        _searchResults = [];
+        _isSearching = false;
+      });
+    }
   }
 
   void _selectAddress(Map<String, dynamic> address) {

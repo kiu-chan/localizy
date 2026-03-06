@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
+import 'package:localizy/api/parking_api.dart';
 import 'package:localizy/l10n/app_localizations.dart';
 import 'package:localizy/screens/home/parking/vehicle_info_section.dart';
 import 'package:localizy/screens/home/parking/duration_selection_section.dart';
@@ -20,7 +21,6 @@ class _ParkingPaymentPageState extends State<ParkingPaymentPage> {
   
   String? _selectedPaymentMethod;
   String? _selectedDuration;
-  DateTime? _startTime;
   int _parkingFee = 0;
   
   final Map<String, Map<String, dynamic>> _durationPrices = {
@@ -30,12 +30,6 @@ class _ParkingPaymentPageState extends State<ParkingPaymentPage> {
     '8h': {'price': 65000, 'label': '8 hours', 'icon': Icons.schedule},
     '1day': {'price': 100000, 'label': '1 day', 'icon': Icons.today},
   };
-
-  @override
-  void initState() {
-    super.initState();
-    _startTime = DateTime.now();
-  }
 
   @override
   void dispose() {
@@ -111,7 +105,7 @@ class _ParkingPaymentPageState extends State<ParkingPaymentPage> {
                 'Please wait a moment',
                 style: TextStyle(
                   fontSize: 14,
-                  color: Colors. grey.shade600,
+                  color: Colors.grey.shade600,
                 ),
               ),
             ],
@@ -120,12 +114,21 @@ class _ParkingPaymentPageState extends State<ParkingPaymentPage> {
       ),
     );
 
-    // Simulate payment processing
-    await Future. delayed(const Duration(seconds: 2));
+    try {
+      final ticket = await ParkingApi.createTicket(
+        licensePlate: _licensePlateController.text.trim(),
+        parkingZone: _parkingZoneController.text.trim(),
+        duration: _selectedDuration!,
+        paymentMethod: _selectedPaymentMethod!,
+      );
 
-    if (mounted) {
+      if (!mounted) return;
       Navigator.pop(context); // Close loading dialog
-      _showSuccessDialog();
+      _showSuccessDialog(ticket);
+    } catch (e) {
+      if (!mounted) return;
+      Navigator.pop(context); // Close loading dialog
+      _showErrorSnackBar(e.toString().replaceFirst('Exception: ', ''));
     }
   }
 
@@ -146,10 +149,15 @@ class _ParkingPaymentPageState extends State<ParkingPaymentPage> {
     );
   }
 
-  void _showSuccessDialog() {
+  void _showSuccessDialog(ParkingTicket ticket) {
     final l10n = AppLocalizations.of(context)!;
-    final ticketCode = 'PKT${DateTime.now().millisecondsSinceEpoch. toString().substring(5)}';
-    final endTime = _startTime!.add(_getDurationFromKey(_selectedDuration!));
+    final ticketCode = ticket.ticketCode;
+    final startTime = ticket.startTime;
+    final endTime = ticket.endTime;
+    final amount = ticket.amount;
+    final licensePlate = ticket.licensePlate;
+    final parkingZone = ticket.parkingZone;
+    final paymentMethod = ticket.paymentMethod;
     
     showDialog(
       context: context,
@@ -282,25 +290,25 @@ class _ParkingPaymentPageState extends State<ParkingPaymentPage> {
                       _buildDetailRow(
                         Icons.directions_car,
                         'License Plate',
-                        _licensePlateController.text. toUpperCase(),
+                        licensePlate.toUpperCase(),
                       ),
                       const Divider(height: 20),
                       _buildDetailRow(
                         Icons.location_on,
                         'Zone',
-                        _parkingZoneController.text.toUpperCase(),
+                        parkingZone.toUpperCase(),
                       ),
                       const Divider(height: 20),
                       _buildDetailRow(
                         Icons.access_time,
                         'Duration',
-                        _durationPrices[_selectedDuration! ]!['label'],
+                        _durationPrices[_selectedDuration!]!['label'],
                       ),
                       const Divider(height: 20),
                       _buildDetailRow(
                         Icons.schedule,
                         'Start Time',
-                        DateFormat('HH:mm - dd/MM/yyyy').format(_startTime!),
+                        DateFormat('HH:mm - dd/MM/yyyy').format(startTime),
                       ),
                       const Divider(height: 20),
                       _buildDetailRow(
@@ -312,14 +320,14 @@ class _ParkingPaymentPageState extends State<ParkingPaymentPage> {
                       _buildDetailRow(
                         Icons.payments,
                         'Payment',
-                        _getPaymentMethodName(l10n, _selectedPaymentMethod!),
+                        _getPaymentMethodName(l10n, paymentMethod),
                         isHighlight: true,
                       ),
                       const Divider(height: 20),
                       _buildDetailRow(
                         Icons.attach_money,
                         'Amount',
-                        '${_formatCurrency(_parkingFee)} VND',
+                        '${_formatCurrency(amount)} VND',
                         isHighlight: true,
                       ),
                     ],
@@ -416,23 +424,6 @@ class _ParkingPaymentPageState extends State<ParkingPaymentPage> {
         ),
       ],
     );
-  }
-
-  Duration _getDurationFromKey(String key) {
-    switch (key) {
-      case '1h': 
-        return const Duration(hours: 1);
-      case '2h':
-        return const Duration(hours: 2);
-      case '4h':
-        return const Duration(hours:  4);
-      case '8h':
-        return const Duration(hours: 8);
-      case '1day':
-        return const Duration(days: 1);
-      default:
-        return const Duration(hours: 1);
-    }
   }
 
   String _getPaymentMethodName(AppLocalizations l10n, String method) {

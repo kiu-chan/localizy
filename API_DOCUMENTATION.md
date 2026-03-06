@@ -11,6 +11,8 @@ Tài liệu chi tiết về tất cả API endpoints của Localizy Server.
 - [Business APIs](#business-apis)
 - [Address APIs](#address-apis)
 - [Validation APIs](#validation-apis)
+- [Parking APIs](#parking-apis)
+- [Transaction APIs](#transaction-apis)
 - [City APIs](#city-apis)
 - [Setting APIs](#setting-apis)
 - [Common Use Cases](#common-use-cases)
@@ -625,16 +627,22 @@ Quản lý danh sách địa chỉ (`AddressCodes`).
   "code": "VN-HN-001",
   "name": "Nhà hàng Phở Bắc",
   "fullAddress": "123 Nguyễn Trãi, P. Thượng Đình, Q. Thanh Xuân, Hà Nội",
+  "district": "Thanh Xuân",
   "userId": "a1b2c3d4-...",
   "userName": "Nguyen Van A",
   "latitude": 21.0285,
   "longitude": 105.8542,
   "cityCode": "VN-HN",
   "status": "Reviewed",
+  "isVerified": true,
   "validatorId": "b2c3d4e5-...",
   "validatorName": "Tran Van B",
   "comments": "Đã xác minh tại thực địa",
   "extraDocs": "[\"photo1.jpg\"]",
+  "parkingAvailable": true,
+  "totalParkingSpots": 20,
+  "availableSpots": 15,
+  "pricePerHour": 10000,
   "createdAt": "2024-01-10T10:30:00Z",
   "updatedAt": "2024-01-11T08:00:00Z"
 }
@@ -671,7 +679,7 @@ GET /api/addresses/search?searchTerm={term}
 **Authorization:** Public
 
 **Query Parameters:**
-- `searchTerm` (string): Tìm theo `code`, `name`, `fullAddress` hoặc `cityCode`
+- `searchTerm` (string): Tìm theo `code`, `name`, `fullAddress`, `district` hoặc `cityCode`
 
 **Response:** `200 OK`
 ```json
@@ -681,10 +689,16 @@ GET /api/addresses/search?searchTerm={term}
     "code": "VN-HN-001",
     "name": "Nhà hàng Phở Bắc",
     "fullAddress": "123 Nguyễn Trãi, P. Thượng Đình, Q. Thanh Xuân",
+    "district": "Thanh Xuân",
     "latitude": 21.0285,
     "longitude": 105.8542,
     "cityCode": "VN-HN",
-    "status": "Reviewed"
+    "status": "Reviewed",
+    "isVerified": true,
+    "parkingAvailable": false,
+    "totalParkingSpots": 0,
+    "availableSpots": 0,
+    "pricePerHour": 0
   }
 ]
 ```
@@ -806,10 +820,14 @@ POST /api/addresses
   "code": "VN-HN-001",
   "name": "Nhà hàng Phở Bắc",
   "fullAddress": "123 Nguyễn Trãi, P. Thượng Đình, Q. Thanh Xuân, Hà Nội",
+  "district": "Thanh Xuân",
   "latitude": 21.0285,
   "longitude": 105.8542,
   "cityCode": "VN-HN",
-  "extraDocs": null
+  "extraDocs": null,
+  "parkingAvailable": false,
+  "totalParkingSpots": 0,
+  "pricePerHour": 0
 }
 ```
 
@@ -842,12 +860,16 @@ PUT /api/addresses/{id}
   "code": "VN-HN-001-UPDATED",
   "name": "Nhà hàng Phở Bắc (đã đổi tên)",
   "fullAddress": "456 Lê Duẩn, P. Điện Biên, Q. Ba Đình, Hà Nội",
+  "district": "Ba Đình",
   "latitude": 21.0290,
   "longitude": 105.8550,
   "cityCode": "VN-HN",
   "validatorId": "b2c3d4e5-...",
   "comments": "Ghi chú cập nhật",
-  "extraDocs": "[\"newdoc.pdf\"]"
+  "extraDocs": "[\"newdoc.pdf\"]",
+  "parkingAvailable": true,
+  "totalParkingSpots": 20,
+  "pricePerHour": 10000
 }
 ```
 
@@ -902,6 +924,40 @@ POST /api/addresses/{id}/reject
 ```
 
 **Response:** `200 OK` - Address object với `status: "Rejected"`
+
+---
+
+### 15. Lấy danh sách bãi đỗ xe
+
+Trả về các địa chỉ có `parkingAvailable = true` và `status = Reviewed`. `availableSpots` được tính động theo số vé đang active.
+
+```http
+GET /api/addresses/parking-zones
+```
+
+**Authorization:** Public
+
+**Response:** `200 OK`
+```json
+[
+  {
+    "id": "3fa85f64-...",
+    "code": "PKZ-001",
+    "name": "Bãi đỗ xe Trần Duy Hưng",
+    "fullAddress": "123 Trần Duy Hưng, Q. Cầu Giấy, Hà Nội",
+    "district": "Cầu Giấy",
+    "latitude": 21.0075,
+    "longitude": 105.7989,
+    "cityCode": "VN-HN",
+    "status": "Reviewed",
+    "isVerified": true,
+    "parkingAvailable": true,
+    "totalParkingSpots": 50,
+    "availableSpots": 35,
+    "pricePerHour": 10000
+  }
+]
+```
 
 ---
 
@@ -1347,7 +1403,267 @@ GET /api/validations/my-validations
 
 **Authorization:** Authenticated
 
-**Response:** `200 OK` - Array of Validation objects
+**Response:** `200 OK`
+```json
+[
+  {
+    "id": "3fa85f64-...",
+    "requestId": "VAL-2024-042",
+    "status": "Pending",
+    "createdAt": "2024-01-10T10:30:00Z",
+    "notes": "New address verification request",
+    "paymentInfo": {
+      "amount": 150000,
+      "method": "momo",
+      "status": "Pending"
+    },
+    "locationInfo": {
+      "latitude": 21.0285,
+      "longitude": 105.8542
+    },
+    "documentFiles": {
+      "idType": "CCCD",
+      "idDocumentUrl": "/uploads/verifications/cccd_xxx.jpg",
+      "addressProofUrl": "/uploads/verifications/proof_xxx.pdf"
+    },
+    "appointmentInfo": {
+      "date": "2024-02-15T09:00:00Z",
+      "timeSlot": "9:00-11:00"
+    }
+  }
+]
+```
+
+> **Lưu ý:** `appointmentInfo` là `null` nếu chưa có lịch hẹn.
+
+---
+
+## 🅿️ Parking APIs
+
+Quản lý vé đỗ xe. Địa điểm đỗ xe là các địa chỉ có `parkingAvailable = true` và `status = Reviewed`.
+
+### Parking Ticket Status
+
+| Status | Mô tả |
+|--------|-------|
+| `Active` | Vé đang có hiệu lực |
+| `Expired` | Vé đã hết hạn |
+| `Cancelled` | Vé đã bị hủy |
+
+### Duration & Price
+
+| Duration | Giá (VND) |
+|----------|-----------|
+| `1h` | 10,000 |
+| `2h` | 18,000 |
+| `4h` | 35,000 |
+| `8h` | 65,000 |
+| `1day` | 100,000 |
+
+### Parking Ticket Response Object
+
+```json
+{
+  "id": "3fa85f64-...",
+  "ticketCode": "PKT12345678",
+  "licensePlate": "30A-12345",
+  "parkingZone": "Bãi đỗ xe Trần Duy Hưng",
+  "duration": "4h",
+  "startTime": "2024-01-10T10:00:00Z",
+  "endTime": "2024-01-10T14:00:00Z",
+  "amount": 35000,
+  "paymentMethod": "momo",
+  "status": "Active",
+  "paidAt": "2024-01-10T10:00:00Z",
+  "userId": "a1b2c3d4-...",
+  "addressId": "b2c3d4e5-...",
+  "createdAt": "2024-01-10T10:00:00Z"
+}
+```
+
+---
+
+### 1. Tạo vé đỗ xe
+
+```http
+POST /api/parking
+```
+
+**Authorization:** Public (không bắt buộc đăng nhập)
+
+**Request Body:**
+```json
+{
+  "licensePlate": "30A-12345",
+  "addressId": "3fa85f64-...",
+  "duration": "4h",
+  "paymentMethod": "momo",
+  "startTime": null
+}
+```
+
+| Field | Type | Required | Mô tả |
+|-------|------|----------|-------|
+| `licensePlate` | string | **Có** | Biển số xe |
+| `addressId` | Guid | Không | ID bãi đỗ xe (ưu tiên) |
+| `parkingZone` | string | Không | Tên khu vực (fallback nếu không có addressId) |
+| `duration` | string | **Có** | `1h` \| `2h` \| `4h` \| `8h` \| `1day` |
+| `paymentMethod` | string | **Có** | `momo` \| `zalopay` \| `bank` \| `card` \| `cash` |
+| `startTime` | datetime | Không | Thời gian bắt đầu (mặc định: UtcNow) |
+
+**Response:** `201 Created` - Parking Ticket object
+
+**Errors:**
+- `400` - Duration không hợp lệ
+- `400` - Bãi đỗ xe không chấp nhận đỗ xe
+- `400` - Bãi đỗ xe đã đầy (không còn chỗ)
+
+---
+
+### 2. Lấy vé theo ID
+
+```http
+GET /api/parking/{id}
+```
+
+**Authorization:** Public
+
+**Response:** `200 OK` - Parking Ticket object
+
+**Errors:**
+- `404` - Vé không tồn tại
+
+---
+
+### 3. Lấy vé theo Ticket Code
+
+```http
+GET /api/parking/ticket/{ticketCode}
+```
+
+**Authorization:** Public
+
+**Example:** `GET /api/parking/ticket/PKT12345678`
+
+**Response:** `200 OK` - Parking Ticket object (với trạng thái đã đồng bộ)
+
+**Errors:**
+- `404` - Mã vé không tồn tại
+
+---
+
+### 4. Lấy vé mới nhất theo biển số
+
+Trả về vé gần đây nhất của một biển số xe (dùng cho trang kiểm tra thanh toán).
+
+```http
+GET /api/parking/license/{licensePlate}
+```
+
+**Authorization:** Public
+
+**Example:** `GET /api/parking/license/30A-12345`
+
+**Response:** `200 OK` - Parking Ticket object
+
+**Errors:**
+- `404` - Không có vé nào cho biển số này
+
+---
+
+### 5. Lấy vé của user hiện tại
+
+```http
+GET /api/parking/my-tickets
+```
+
+**Authorization:** Authenticated
+
+**Response:** `200 OK` - Array of Parking Ticket objects
+
+---
+
+### 6. Lấy tất cả vé (Admin)
+
+```http
+GET /api/parking
+```
+
+**Authorization:** Admin
+
+**Response:** `200 OK` - Array of Parking Ticket objects
+
+---
+
+### 7. Gia hạn vé đỗ xe
+
+```http
+POST /api/parking/{id}/extend
+```
+
+**Authorization:** Public
+
+**Request Body:**
+```json
+{
+  "duration": "2h",
+  "paymentMethod": "momo"
+}
+```
+
+**Response:** `200 OK` - Parking Ticket object với `endTime` đã được cộng thêm
+
+**Errors:**
+- `400` - Không thể gia hạn vé đã hết hạn hoặc bị hủy
+- `404` - Vé không tồn tại
+
+---
+
+## 🔄 Transaction APIs
+
+Lịch sử giao dịch tổng hợp (đỗ xe + xác minh địa chỉ).
+
+### Transaction Response Object
+
+```json
+{
+  "id": "PKT12345678",
+  "type": "parking",
+  "title": "Parking Payment",
+  "location": "Bãi đỗ xe Trần Duy Hưng",
+  "licensePlate": "30A-12345",
+  "amount": 35000,
+  "status": "success",
+  "date": "2024-01-10T10:00:00Z",
+  "paymentMethod": "momo",
+  "duration": "4h"
+}
+```
+
+| Field | Mô tả |
+|-------|-------|
+| `type` | `parking` hoặc `verification` |
+| `status` | `success` \| `failed` \| `pending` |
+| `licensePlate` | Chỉ có khi `type = parking` |
+| `duration` | Chỉ có khi `type = parking` |
+
+**Mapping trạng thái:**
+- Parking: `Active/Expired` → `success`, `Cancelled` → `failed`
+- Verification: `Verified` → `success`, `Rejected` → `failed`, còn lại → `pending`
+
+---
+
+### 1. Lấy lịch sử giao dịch của user hiện tại
+
+Trả về tổng hợp vé đỗ xe + yêu cầu xác minh địa chỉ, sắp xếp theo thời gian mới nhất.
+
+```http
+GET /api/transactions/my-transactions
+```
+
+**Authorization:** Authenticated
+
+**Response:** `200 OK` - Array of Transaction objects (sắp xếp theo `date` giảm dần)
 
 ---
 
@@ -1602,14 +1918,57 @@ DELETE /api/settings/{id}               # Xóa (Admin)
 ### Flow 5: Tìm kiếm địa chỉ
 
 ```
-# Tìm theo code, name, fullAddress hoặc cityCode
+# Tìm theo code, name, fullAddress, district hoặc cityCode
 GET /api/addresses/search?searchTerm=VN-HN
 GET /api/addresses/search?searchTerm=Phở+Bắc
-GET /api/addresses/search?searchTerm=Nguyễn+Trãi
+GET /api/addresses/search?searchTerm=Thanh+Xuân
 
 # Lấy tất cả tọa độ để hiển thị trên map
 GET /api/addresses/coordinates
 
 # Lọc theo status
 GET /api/addresses/filter/status/Reviewed
+```
+
+---
+
+### Flow 6: Đăng ký và kiểm tra vé đỗ xe
+
+```
+1. Lấy danh sách bãi đỗ xe để hiển thị trên map
+   GET /api/addresses/parking-zones
+
+2. Đăng ký vé đỗ xe (có thể không cần đăng nhập)
+   POST /api/parking
+   { "licensePlate": "30A-12345", "addressId": "3fa85f64-...", "duration": "4h", "paymentMethod": "momo" }
+   → Trả về ticketCode: "PKT12345678"
+
+3. Kiểm tra vé theo mã vé
+   GET /api/parking/ticket/PKT12345678
+
+4. Kiểm tra vé theo biển số (vé mới nhất)
+   GET /api/parking/license/30A-12345
+
+5. Gia hạn vé
+   POST /api/parking/{id}/extend
+   { "duration": "2h", "paymentMethod": "momo" }
+
+6. User đã đăng nhập xem lịch sử vé đỗ xe
+   GET /api/parking/my-tickets
+```
+
+---
+
+### Flow 7: Xem lịch sử giao dịch tổng hợp
+
+```
+1. Lấy tất cả giao dịch (đỗ xe + xác minh) của user hiện tại
+   GET /api/transactions/my-transactions
+   → Trả về list sắp xếp theo ngày giảm dần, gồm cả type "parking" và "verification"
+
+2. Chỉ xem lịch sử vé đỗ xe
+   GET /api/parking/my-tickets
+
+3. Chỉ xem lịch sử xác minh địa chỉ
+   GET /api/validations/my-validations
 ```

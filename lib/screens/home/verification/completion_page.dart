@@ -65,29 +65,11 @@ class CompletionPage extends StatelessWidget {
     }
   }
 
-  void _copyAddressCode(BuildContext context, String code) {
-    final localizations = AppLocalizations.of(context)!;
-    
-    Clipboard.setData(ClipboardData(text: code));
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Row(
-          children: [
-            const Icon(Icons.check_circle, color: Colors.white),
-            const SizedBox(width: 12),
-            Text(localizations. addressCodeCopied),
-          ],
-        ),
-        backgroundColor: Colors.green,
-        duration: const Duration(seconds: 2),
-      ),
-    );
-  }
 
   @override
   Widget build(BuildContext context) {
     final localizations = AppLocalizations.of(context)!;
-    final addressCode = _generateAddressCode();
+    _generateAddressCode();
     
     return SingleChildScrollView(
       padding:  const EdgeInsets.all(16.0),
@@ -127,73 +109,6 @@ class CompletionPage extends StatelessWidget {
             style: TextStyle(
               fontSize: 14,
               color: Colors.grey[600],
-            ),
-          ),
-          
-          const SizedBox(height: 32),
-          
-          // Address code
-          Container(
-            padding: const EdgeInsets.all(20),
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: [Colors.green. shade400, Colors.green.shade700],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-              ),
-              borderRadius: BorderRadius.circular(16),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.green.withValues(alpha: 0.3),
-                  blurRadius: 8,
-                  offset: const Offset(0, 4),
-                ),
-              ],
-            ),
-            child: Column(
-              children: [
-                const Icon(
-                  Icons.qr_code,
-                  size: 48,
-                  color: Colors.white,
-                ),
-                const SizedBox(height: 12),
-                Text(
-                  localizations.yourAddressCode,
-                  style: const TextStyle(
-                    fontSize: 14,
-                    color: Colors.white70,
-                    letterSpacing: 1.5,
-                  ),
-                ),
-                const SizedBox(height: 8),
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: Text(
-                    addressCode,
-                    style: TextStyle(
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.green.shade700,
-                      letterSpacing: 2,
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 12),
-                OutlinedButton. icon(
-                  onPressed:  () => _copyAddressCode(context, addressCode),
-                  icon: const Icon(Icons.copy, size: 18),
-                  label: Text(localizations.copyCode),
-                  style: OutlinedButton.styleFrom(
-                    foregroundColor: Colors.white,
-                    side: const BorderSide(color: Colors. white),
-                  ),
-                ),
-              ],
             ),
           ),
           
@@ -351,22 +266,6 @@ class CompletionPage extends StatelessWidget {
           // Action buttons
           Row(
             children: [
-              Expanded(
-                child: OutlinedButton.icon(
-                  onPressed: () => _copyAddressCode(context, addressCode),
-                  icon: const Icon(Icons.share),
-                  label: Text(localizations.share),
-                  style: OutlinedButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(vertical: 14),
-                    side: BorderSide(color: Colors.green.shade700),
-                    foregroundColor: Colors.green. shade700,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                  ),
-                ),
-              ),
-              const SizedBox(width:  12),
               Expanded(
                 flex: 2,
                 child:  ElevatedButton.icon(

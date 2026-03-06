@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:localizy/api/address_api.dart';
 import 'package:localizy/configs/map_config.dart';
 import 'package:localizy/l10n/app_localizations.dart';
 
@@ -20,59 +21,34 @@ class _ParkingZoneMapSelectorState extends State<ParkingZoneMapSelector> {
   final Set<Marker> _markers = {};
   final Set<Circle> _circles = {};
   
-  // Mock data - Danh sách các khu vực đỗ xe
-  final List<ParkingZone> _parkingZones = [
-    ParkingZone(
-      id: '1',
-      code: 'A1',
-      name: 'Parking Zone A1',
-      position: const LatLng(10.7769, 106.7009),
-      availableSpots: 15,
-      totalSpots: 20,
-      pricePerHour: 10000,
-    ),
-    ParkingZone(
-      id: '2',
-      code: 'A2',
-      name: 'Parking Zone A2',
-      position: const LatLng(10.7740, 106.6990),
-      availableSpots:  8,
-      totalSpots: 15,
-      pricePerHour: 10000,
-    ),
-    ParkingZone(
-      id: '3',
-      code:  'B1',
-      name: 'Parking Zone B1',
-      position: const LatLng(10.7750, 106.7020),
-      availableSpots:  20,
-      totalSpots: 25,
-      pricePerHour: 12000,
-    ),
-    ParkingZone(
-      id: '4',
-      code: 'B2',
-      name: 'Parking Zone B2',
-      position: const LatLng(10.7780, 106.7000),
-      availableSpots:  0,
-      totalSpots: 18,
-      pricePerHour: 12000,
-    ),
-    ParkingZone(
-      id: '5',
-      code:  'C1',
-      name: 'Parking Zone C1',
-      position: const LatLng(10.7730, 106.7030),
-      availableSpots:  12,
-      totalSpots: 15,
-      pricePerHour: 15000,
-    ),
-  ];
+  List<ParkingZone> _parkingZones = [];
 
   @override
   void initState() {
     super.initState();
     _getCurrentLocation();
+    _loadParkingZones();
+  }
+
+  Future<void> _loadParkingZones() async {
+    try {
+      final zones = await AddressApi.getParkingZones();
+      if (!mounted) return;
+      setState(() {
+        _parkingZones = zones.map((z) => ParkingZone(
+          id: z.id,
+          code: z.code,
+          name: z.name,
+          position: LatLng(z.latitude, z.longitude),
+          availableSpots: z.availableSpots,
+          totalSpots: z.totalSpots,
+          pricePerHour: z.pricePerHour,
+        )).toList();
+      });
+      _addParkingZoneMarkers();
+    } catch (_) {
+      // keep empty list on error
+    }
   }
 
   @override

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
+import 'package:localizy/api/parking_api.dart';
 import 'package:localizy/l10n/app_localizations.dart';
 
 class PaymentCheckPage extends StatefulWidget {
@@ -40,7 +41,7 @@ class _PaymentCheckPageState extends State<PaymentCheckPage> {
   }
 
   Future<void> _searchTicket() async {
-    if (!_formKey.currentState! .validate()) {
+    if (!_formKey.currentState!.validate()) {
       return;
     }
 
@@ -49,29 +50,52 @@ class _PaymentCheckPageState extends State<PaymentCheckPage> {
       _ticketInfo = null;
     });
 
-    // Simulate API call
-    await Future. delayed(const Duration(seconds: 1));
+    try {
+      final ParkingTicket t;
+      if (_searchMethod == 'ticket') {
+        t = await ParkingApi.getByTicketCode(_ticketCodeController.text.trim());
+      } else {
+        t = await ParkingApi.getByLicensePlate(_licensePlateController.text.trim());
+      }
 
-    // Mock data - replace with real API call
-    setState(() {
-      _isSearching = false;
-      _ticketInfo = {
-        'ticketCode': _searchMethod == 'ticket' 
-            ? _ticketCodeController.text 
-            : 'PKT${DateTime.now().millisecondsSinceEpoch.toString().substring(5)}',
-        'licensePlate': _searchMethod == 'license'
-            ? _licensePlateController.text
-            : '30A-12345',
-        'zone': 'A1',
-        'status': 'active', // active, expired, paid
-        'startTime': DateTime.now().subtract(const Duration(hours: 2)),
-        'endTime': DateTime. now().add(const Duration(hours: 2)),
-        'duration': '4 hours',
-        'amount': 35000,
-        'paymentMethod': 'MoMo',
-        'paidAt': DateTime.now().subtract(const Duration(hours: 2)),
-      };
-    });
+      setState(() {
+        _isSearching = false;
+        _ticketInfo = {
+          'ticketCode': t.ticketCode,
+          'licensePlate': t.licensePlate,
+          'zone': t.parkingZone,
+          'status': t.status,
+          'startTime': t.startTime,
+          'endTime': t.endTime,
+          'duration': t.duration,
+          'amount': t.amount,
+          'paymentMethod': t.paymentMethod,
+          'paidAt': t.paidAt ?? t.startTime,
+        };
+      });
+    } catch (e) {
+      setState(() => _isSearching = false);
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Row(
+              children: [
+                const Icon(Icons.error_outline, color: Colors.white),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Text(
+                    e.toString().contains('404') ? 'Ticket not found' : 'Error. Please try again.',
+                  ),
+                ),
+              ],
+            ),
+            backgroundColor: Colors.red.shade600,
+            behavior: SnackBarBehavior.floating,
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+          ),
+        );
+      }
+    }
   }
 
   void _clearSearch() {

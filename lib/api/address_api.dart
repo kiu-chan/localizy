@@ -157,6 +157,34 @@ class AddressApi {
     throw Exception('Error ${resp.statusCode}: $message');
   }
 
+  /// GET /api/addresses/search?searchTerm={term}
+  /// Tìm kiếm địa chỉ cho màn hình address_search (trả về AddressItem)
+  static Future<List<AddressItem>> searchItems(String searchTerm) async {
+    if (searchTerm.trim().isEmpty) return [];
+    final encoded = Uri.encodeComponent(searchTerm.trim());
+    final data =
+        await MainApi.instance.getJson('api/addresses/search?searchTerm=$encoded');
+    if (data is List) {
+      return data
+          .map((e) => AddressItem.fromJson(e as Map<String, dynamic>))
+          .toList();
+    }
+    throw Exception('Unexpected response format: expected list');
+  }
+
+  /// GET /api/addresses/parking-zones
+  /// Lấy danh sách khu vực đậu xe
+  static Future<List<ParkingZoneItem>> getParkingZones() async {
+    final data =
+        await MainApi.instance.getJson('api/addresses/parking-zones');
+    if (data is List) {
+      return data
+          .map((e) => ParkingZoneItem.fromJson(e as Map<String, dynamic>))
+          .toList();
+    }
+    throw Exception('Unexpected response format: expected list');
+  }
+
   // Lấy chi tiết địa chỉ theo ID
   static Future<AddressDetail> getDetail(String id) async {
     final resp = await MainApi.instance.get(
@@ -221,6 +249,82 @@ class AddressSearchResult {
       type: json['type'] ?? '',
       lat: (coords['lat'] ?? 0).toDouble(),
       lng: (coords['lng'] ?? 0).toDouble(),
+    );
+  }
+}
+
+/// Model kết quả tìm kiếm địa chỉ cho màn hình address_search
+class AddressItem {
+  final String id;
+  final String fullAddress;
+  final String district;
+  final String cityCode;
+  final double latitude;
+  final double longitude;
+  final bool isVerified;
+  final bool parkingAvailable;
+  final int parkingSpots;
+
+  AddressItem({
+    required this.id,
+    required this.fullAddress,
+    required this.district,
+    required this.cityCode,
+    required this.latitude,
+    required this.longitude,
+    required this.isVerified,
+    required this.parkingAvailable,
+    required this.parkingSpots,
+  });
+
+  factory AddressItem.fromJson(Map<String, dynamic> json) {
+    return AddressItem(
+      id: json['id']?.toString() ?? '',
+      fullAddress: json['fullAddress'] ?? '',
+      district: json['district'] ?? '',
+      cityCode: json['cityCode'] ?? '',
+      latitude: (json['latitude'] ?? 0.0).toDouble(),
+      longitude: (json['longitude'] ?? 0.0).toDouble(),
+      isVerified: json['isVerified'] ?? false,
+      parkingAvailable: json['parkingAvailable'] ?? false,
+      parkingSpots:
+          (json['availableSpots'] ?? json['totalParkingSpots'] ?? 0).toInt(),
+    );
+  }
+}
+
+/// Model khu vực đậu xe cho bản đồ
+class ParkingZoneItem {
+  final String id;
+  final String code;
+  final String name;
+  final double latitude;
+  final double longitude;
+  final int availableSpots;
+  final int totalSpots;
+  final int pricePerHour;
+
+  ParkingZoneItem({
+    required this.id,
+    required this.code,
+    required this.name,
+    required this.latitude,
+    required this.longitude,
+    required this.availableSpots,
+    required this.totalSpots,
+    required this.pricePerHour,
+  });
+
+  factory ParkingZoneItem.fromJson(Map<String, dynamic> json) {
+    return ParkingZoneItem(
+      id: json['id']?.toString() ?? '',
+      code: json['code'] ?? '',
+      name: json['name'] ?? json['fullAddress'] ?? '',
+      latitude: (json['latitude'] ?? 0.0).toDouble(),
+      longitude: (json['longitude'] ?? 0.0).toDouble(),
+      availableSpots: (json['availableSpots'] ?? 0).toInt(),
+      totalSpots: (json['totalParkingSpots'] ?? 0).toInt(),
+      pricePerHour: (json['pricePerHour'] ?? 0).toInt(),
     );
   }
 }
