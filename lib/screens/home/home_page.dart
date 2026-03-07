@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:localizy/l10n/app_localizations.dart';
 import 'package:localizy/screens/home/verification/address_verification_flow.dart';
@@ -22,7 +23,7 @@ class _HomePageState extends State<HomePage> {
   Timer? _timer;
   int _currentPage = 0;
 
-  // Slides loaded from API
+  // Slides loaded from API or cache
   List<HomeSlide> _apiSlides = [];
 
   // Loading / empty state flags
@@ -32,8 +33,23 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
-    _fetchSlides();
+    _loadSlidesWithCache();
     _startAutoSlide();
+  }
+
+  Future<void> _loadSlidesWithCache() async {
+    // 1. Hiển thị cache ngay lập tức (nếu có)
+    final cached = await SlideService.getCachedSlides();
+    if (mounted && cached.isNotEmpty) {
+      setState(() {
+        _apiSlides = cached;
+        _isLoading = false;
+        _noSlides = false;
+      });
+    }
+
+    // 2. Fetch dữ liệu mới ở nền, replace khi xong
+    await _fetchSlides();
   }
 
   Future<void> _fetchSlides() async {
@@ -54,11 +70,10 @@ class _HomePageState extends State<HomePage> {
       }
     } catch (e) {
       debugPrint('Error fetching slides: $e');
-      if (mounted) {
+      if (mounted && _apiSlides.isEmpty) {
         setState(() {
           _isLoading = false;
           _noSlides = true;
-          _apiSlides = [];
         });
       }
     }
@@ -349,39 +364,44 @@ class _HomePageState extends State<HomePage> {
     if (slide.imageUrl != null && slide.imageUrl!.isNotEmpty) {
       return Container(
         width: double.infinity,
-        decoration: BoxDecoration(
-          image: DecorationImage(
-            image: NetworkImage(slide.imageUrl!),
-            fit: BoxFit.cover,
-          ),
-        ),
-        child: Container(
-          // dark overlay to ensure text is readable
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              colors: [
-                Colors.black.withValues(alpha: 0.35),
-                Colors.black.withValues(alpha: 0.15),
-              ],
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
+        child: Stack(
+          fit: StackFit.expand,
+          children: [
+            CachedNetworkImage(
+              imageUrl: slide.imageUrl!,
+              fit: BoxFit.cover,
+              placeholder: (context, url) => Container(color: Colors.grey.shade300),
+              errorWidget: (context, url, error) => Container(color: Colors.grey.shade300),
             ),
-          ),
-          padding: const EdgeInsets.all(24),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text(
-                slide.content.isNotEmpty ? slide.content : l10n.welcomeToLocalizy,
-                textAlign: TextAlign.center,
-                style: const TextStyle(
-                  fontSize: 22,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
+            Container(
+              // dark overlay to ensure text is readable
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [
+                    Colors.black.withValues(alpha: 0.35),
+                    Colors.black.withValues(alpha: 0.15),
+                  ],
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
                 ),
               ),
-            ],
-          ),
+              padding: const EdgeInsets.all(24),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    slide.content.isNotEmpty ? slide.content : l10n.welcomeToLocalizy,
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(
+                      fontSize: 22,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
         ),
       );
     }

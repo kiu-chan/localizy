@@ -1,4 +1,7 @@
+import 'dart:convert';
+
 import 'package:localizy/api/main_api.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 /// Model cho slide
 class HomeSlide {
@@ -34,10 +37,19 @@ class HomeSlide {
           : int.tryParse('${json['order']}') ?? 0,
     );
   }
+
+  Map<String, dynamic> toJson() => {
+        'id': id,
+        'imageUrl': imageUrl ?? '',
+        'content': content,
+        'order': order,
+      };
 }
 
 /// Service riêng để lấy slide
 class SlideService {
+  static const _cacheKey = 'cached_home_slides';
+
   /// Lấy các slide active từ endpoint: GET api/homeslides/active
   /// Trả về danh sách đã sort theo field `order`.
   static Future<List<HomeSlide>> getActiveSlides() async {
@@ -47,8 +59,35 @@ class SlideService {
           .map((e) => HomeSlide.fromJson(Map<String, dynamic>.from(e)))
           .toList();
       slides.sort((a, b) => a.order.compareTo(b.order));
+      await _saveCache(slides);
       return slides;
     }
     return [];
+  }
+
+  /// Lấy slide từ cache local (SharedPreferences).
+  /// Trả về danh sách rỗng nếu chưa có cache.
+  static Future<List<HomeSlide>> getCachedSlides() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final raw = prefs.getString(_cacheKey);
+      if (raw == null) return [];
+      final list = jsonDecode(raw) as List<dynamic>;
+      return list
+          .map((e) => HomeSlide.fromJson(Map<String, dynamic>.from(e as Map)))
+          .toList();
+    } catch (_) {
+      return [];
+    }
+  }
+
+  static Future<void> _saveCache(List<HomeSlide> slides) async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setString(
+        _cacheKey,
+        jsonEncode(slides.map((s) => s.toJson()).toList()),
+      );
+    } catch (_) {}
   }
 }
