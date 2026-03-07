@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:localizy/api/address_api.dart';
+import 'package:localizy/configs/currency_config.dart';
 import 'package:localizy/configs/map_config.dart';
 import 'package:localizy/l10n/app_localizations.dart';
 
@@ -197,7 +198,8 @@ class _ParkingZoneMapSelectorState extends State<ParkingZoneMapSelector> {
 
   void _confirmSelection() {
     if (_selectedZone != null) {
-      Navigator.pop(context, _selectedZone);
+      final zone = _parkingZones.firstWhere((z) => z.code == _selectedZone);
+      Navigator.pop(context, zone);
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -216,12 +218,7 @@ class _ParkingZoneMapSelectorState extends State<ParkingZoneMapSelector> {
     }
   }
 
-  String _formatCurrency(int amount) {
-    return amount.toString().replaceAllMapped(
-      RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'),
-      (Match m) => '${m[1]}.',
-    );
-  }
+  String _formatCurrency(num amount) => CurrencyConfig.format(amount.toDouble());
 
   @override
   Widget build(BuildContext context) {

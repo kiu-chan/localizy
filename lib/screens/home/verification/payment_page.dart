@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:localizy/configs/currency_config.dart';
 import 'package:localizy/l10n/app_localizations.dart';
 
 class PaymentPage extends StatefulWidget {
@@ -19,7 +20,9 @@ class PaymentPage extends StatefulWidget {
 
 class _PaymentPageState extends State<PaymentPage> {
   String? _selectedPaymentMethod;
-  final int _verificationFee = 100000;
+  final double _basicFee = 3.00;
+  final double _travelFee = 1.00;
+  double get _verificationFee => _basicFee + _travelFee;
 
   @override
   void initState() {
@@ -62,12 +65,7 @@ class _PaymentPageState extends State<PaymentPage> {
     }
   }
 
-  String _formatCurrency(int amount) {
-    return amount.toString().replaceAllMapped(
-      RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), 
-      (Match m) => '${m[1]},'
-    );
-  }
+  String _formatCurrency(double amount) => CurrencyConfig.format(amount);
 
   @override
   Widget build(BuildContext context) {
@@ -138,7 +136,7 @@ class _PaymentPageState extends State<PaymentPage> {
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  '${_formatCurrency(_verificationFee)} ${localizations.currencyVND}',
+                  _formatCurrency(_verificationFee),
                   style: const TextStyle(
                     fontSize:  32,
                     fontWeight: FontWeight.bold,
@@ -231,16 +229,16 @@ class _PaymentPageState extends State<PaymentPage> {
                   const Divider(height: 24),
                   _buildFeeRow(
                     localizations.basicVerificationFee,
-                    '80,000 ${localizations.currencyVND}',
+                    _formatCurrency(_basicFee),
                   ),
                   _buildFeeRow(
-                    localizations. travelFee,
-                    '20,000 ${localizations.currencyVND}',
+                    localizations.travelFee,
+                    _formatCurrency(_travelFee),
                   ),
                   const Divider(height: 24),
                   _buildFeeRow(
-                    localizations. total,
-                    '100,000 ${localizations.currencyVND}',
+                    localizations.total,
+                    _formatCurrency(_verificationFee),
                     isTotal: true,
                   ),
                 ],
@@ -310,7 +308,7 @@ class _PaymentPageState extends State<PaymentPage> {
                   const SizedBox(width: 8),
                   Text(
                     _selectedPaymentMethod != null
-                        ? '${localizations.payButton} ${_formatCurrency(_verificationFee)} ${localizations.currencyVND}'
+                        ? '${localizations.payButton} ${_formatCurrency(_verificationFee)}'
                         : localizations. selectPaymentMethod,
                     style: const TextStyle(
                       fontSize: 16,

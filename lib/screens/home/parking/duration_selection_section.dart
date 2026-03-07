@@ -1,23 +1,21 @@
 import 'package:flutter/material.dart';
+import 'package:localizy/configs/currency_config.dart';
 
 class DurationSelectionSection extends StatelessWidget {
   final Map<String, Map<String, dynamic>> durationPrices;
-  final String?  selectedDuration;
+  final String? selectedDuration;
   final Function(String) onSelectDuration;
+  final bool zoneSelected;
 
   const DurationSelectionSection({
     super.key,
     required this.durationPrices,
     required this.selectedDuration,
-    required this. onSelectDuration,
+    required this.onSelectDuration,
+    this.zoneSelected = false,
   });
 
-  String _formatCurrency(int amount) {
-    return amount.toString().replaceAllMapped(
-      RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'),
-      (Match m) => '${m[1]}.',
-    );
-  }
+  String _formatCurrency(num amount) => CurrencyConfig.format(amount.toDouble());
 
   @override
   Widget build(BuildContext context) {
@@ -77,7 +75,7 @@ class DurationSelectionSection extends StatelessWidget {
     required BuildContext context,
     required String key,
     required String label,
-    required int price,
+    required num price,
     required IconData icon,
     required bool isSelected,
   }) {
@@ -123,11 +121,16 @@ class DurationSelectionSection extends StatelessWidget {
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    '${_formatCurrency(price)} VND',
-                    style:  TextStyle(
-                      fontSize:  14,
-                      color: isSelected ? Colors.green.shade600 : Colors.grey.shade600,
-                      fontWeight: FontWeight.w600,
+                    zoneSelected
+                        ? _formatCurrency(price)
+                        : 'Select a zone to see price',
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: zoneSelected
+                          ? (isSelected ? Colors.green.shade600 : Colors.grey.shade600)
+                          : Colors.grey.shade400,
+                      fontWeight: zoneSelected ? FontWeight.w600 : FontWeight.normal,
+                      fontStyle: zoneSelected ? FontStyle.normal : FontStyle.italic,
                     ),
                   ),
                 ],

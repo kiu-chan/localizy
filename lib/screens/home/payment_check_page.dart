@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'package:localizy/api/parking_api.dart';
+import 'package:localizy/configs/currency_config.dart';
 import 'package:localizy/l10n/app_localizations.dart';
 
 class PaymentCheckPage extends StatefulWidget {
@@ -106,12 +107,7 @@ class _PaymentCheckPageState extends State<PaymentCheckPage> {
     });
   }
 
-  String _formatCurrency(int amount) {
-    return amount.toString().replaceAllMapped(
-      RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), 
-      (Match m) => '${m[1]}.'
-    );
-  }
+  String _formatCurrency(num amount) => CurrencyConfig.format(amount.toDouble());
 
   Color _getStatusColor(String status) {
     switch (status) {
@@ -635,7 +631,7 @@ class _PaymentCheckPageState extends State<PaymentCheckPage> {
               _buildInfoRow(
                 Icons.attach_money,
                 'Amount',
-                '${_formatCurrency(_ticketInfo!['amount'])} VND',
+                _formatCurrency(_ticketInfo!['amount'] as num),
                 isHighlight: true,
               ),
               const Divider(height:  24),

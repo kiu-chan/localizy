@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'package:localizy/api/parking_api.dart';
+import 'package:localizy/configs/currency_config.dart';
 import 'package:localizy/l10n/app_localizations.dart';
 import 'package:localizy/screens/home/parking/vehicle_info_section.dart';
 import 'package:localizy/screens/home/parking/duration_selection_section.dart';
@@ -22,13 +23,15 @@ class _ParkingPaymentPageState extends State<ParkingPaymentPage> {
   String? _selectedPaymentMethod;
   String? _selectedDuration;
   int _parkingFee = 0;
-  
-  final Map<String, Map<String, dynamic>> _durationPrices = {
-    '1h': {'price': 10000, 'label': '1 hour', 'icon': Icons.access_time},
-    '2h': {'price': 18000, 'label': '2 hours', 'icon': Icons.access_time},
-    '4h': {'price': 35000, 'label': '4 hours', 'icon': Icons.schedule},
-    '8h': {'price': 65000, 'label': '8 hours', 'icon': Icons.schedule},
-    '1day': {'price': 100000, 'label': '1 day', 'icon': Icons.today},
+  int _pricePerHour = 0;
+  bool _zoneSelected = false;
+
+  Map<String, Map<String, dynamic>> get _durationPrices => {
+    '1h': {'price': _pricePerHour, 'label': '1 hour', 'icon': Icons.access_time},
+    '2h': {'price': _pricePerHour * 2, 'label': '2 hours', 'icon': Icons.access_time},
+    '4h': {'price': _pricePerHour * 4, 'label': '4 hours', 'icon': Icons.schedule},
+    '8h': {'price': _pricePerHour * 8, 'label': '8 hours', 'icon': Icons.schedule},
+    '1day': {'price': _pricePerHour * 24, 'label': '1 day', 'icon': Icons.today},
   };
 
   @override
@@ -38,10 +41,21 @@ class _ParkingPaymentPageState extends State<ParkingPaymentPage> {
     super.dispose();
   }
 
+  void _onZoneSelected(String code, int pricePerHour) {
+    setState(() {
+      _pricePerHour = pricePerHour;
+      _zoneSelected = true;
+      // recalculate fee if duration already selected
+      if (_selectedDuration != null) {
+        _parkingFee = _durationPrices[_selectedDuration!]!['price'] as int;
+      }
+    });
+  }
+
   void _selectDuration(String duration) {
     setState(() {
       _selectedDuration = duration;
-      _parkingFee = _durationPrices[duration]! ['price'] as int;
+      _parkingFee = _durationPrices[duration]!['price'] as int;
     });
   }
 
@@ -51,12 +65,7 @@ class _ParkingPaymentPageState extends State<ParkingPaymentPage> {
     });
   }
 
-  String _formatCurrency(int amount) {
-    return amount.toString().replaceAllMapped(
-      RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), 
-      (Match m) => '${m[1]}.'
-    );
-  }
+  String _formatCurrency(num amount) => CurrencyConfig.format(amount.toDouble());
 
   Future<void> _processPayment() async {
     if (!_formKey.currentState!.validate()) {
@@ -327,7 +336,7 @@ class _ParkingPaymentPageState extends State<ParkingPaymentPage> {
                       _buildDetailRow(
                         Icons.attach_money,
                         'Amount',
-                        '${_formatCurrency(amount)} VND',
+                        _formatCurrency(amount),
                         isHighlight: true,
                       ),
                     ],
@@ -532,7 +541,8 @@ class _ParkingPaymentPageState extends State<ParkingPaymentPage> {
                     // Vehicle Information Section
                     VehicleInfoSection(
                       licensePlateController: _licensePlateController,
-                      parkingZoneController:  _parkingZoneController,
+                      parkingZoneController: _parkingZoneController,
+                      onZoneSelected: _onZoneSelected,
                     ),
                     
                     const SizedBox(height: 24),
@@ -542,6 +552,7 @@ class _ParkingPaymentPageState extends State<ParkingPaymentPage> {
                       durationPrices: _durationPrices,
                       selectedDuration: _selectedDuration,
                       onSelectDuration: _selectDuration,
+                      zoneSelected: _zoneSelected,
                     ),
                     
                     const SizedBox(height: 24),
@@ -588,7 +599,7 @@ class _ParkingPaymentPageState extends State<ParkingPaymentPage> {
                           ),
                         ),
                         Text(
-                          '${_formatCurrency(_parkingFee)} VND',
+                          _formatCurrency(_parkingFee),
                           style: TextStyle(
                             fontSize: 24,
                             fontWeight: FontWeight.bold,

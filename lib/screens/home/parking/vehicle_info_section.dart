@@ -5,11 +5,13 @@ import 'package:localizy/screens/home/parking/parking_zone_map_selector.dart';
 class VehicleInfoSection extends StatefulWidget {
   final TextEditingController licensePlateController;
   final TextEditingController parkingZoneController;
+  final void Function(String code, int pricePerHour)? onZoneSelected;
 
   const VehicleInfoSection({
     super.key,
     required this.licensePlateController,
     required this.parkingZoneController,
+    this.onZoneSelected,
   });
 
   @override
@@ -24,14 +26,13 @@ class _VehicleInfoSectionState extends State<VehicleInfoSection> {
   void initState() {
     super.initState();
     _licensePlateFocusNode.addListener(() => setState(() {}));
-    _parkingZoneFocusNode. addListener(() => setState(() {}));
     widget.licensePlateController.addListener(() => setState(() {}));
-    widget.parkingZoneController. addListener(() => setState(() {}));
+    widget.parkingZoneController.addListener(() => setState(() {}));
   }
 
   @override
   void dispose() {
-    _licensePlateFocusNode. dispose();
+    _licensePlateFocusNode.dispose();
     _parkingZoneFocusNode.dispose();
     super.dispose();
   }
@@ -52,17 +53,18 @@ class _VehicleInfoSectionState extends State<VehicleInfoSection> {
   }
 
   Future<void> _openMapSelector() async {
-    final result = await Navigator.push<String>(
+    final result = await Navigator.push<ParkingZone>(
       context,
       MaterialPageRoute(
         builder: (context) => const ParkingZoneMapSelector(),
       ),
     );
-    
-    if (result != null && result.isNotEmpty) {
+
+    if (result != null) {
       setState(() {
-        widget.parkingZoneController.text = result;
+        widget.parkingZoneController.text = result.code;
       });
+      widget.onZoneSelected?.call(result.code, result.pricePerHour);
     }
   }
 
@@ -173,31 +175,31 @@ class _VehicleInfoSectionState extends State<VehicleInfoSection> {
               
               const SizedBox(height:  16),
               
-              // Parking Zone field with map button
+              // Parking Zone field — read-only, chỉ chọn từ bản đồ
               Row(
                 children:  [
                   Expanded(
                     child: TextFormField(
                       controller: widget.parkingZoneController,
                       focusNode: _parkingZoneFocusNode,
+                      readOnly: true,
                       decoration: InputDecoration(
                         labelText: 'Parking Zone',
                         labelStyle: TextStyle(
-                          color: (_parkingZoneFocusNode.hasFocus || 
-                                  widget.parkingZoneController.text.isNotEmpty)
-                              ? Colors. green.shade700
-                              :  Colors.grey,
-                        ),
-                        hintText: 'e.g.: A1, B2, C3',
-                        prefixIcon: Icon(
-                          Icons.location_on,
-                          color:  _parkingZoneFocusNode.hasFocus
+                          color: widget.parkingZoneController.text.isNotEmpty
                               ? Colors.green.shade700
                               : Colors.grey,
                         ),
-                        border:  OutlineInputBorder(
+                        hintText: 'Select on map →',
+                        prefixIcon: Icon(
+                          Icons.location_on,
+                          color: widget.parkingZoneController.text.isNotEmpty
+                              ? Colors.green.shade700
+                              : Colors.grey,
+                        ),
+                        border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
-                          borderSide: BorderSide(color:  Colors.grey.shade300),
+                          borderSide: BorderSide(color: Colors.grey.shade300),
                         ),
                         enabledBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
@@ -206,17 +208,16 @@ class _VehicleInfoSectionState extends State<VehicleInfoSection> {
                         focusedBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
                           borderSide: BorderSide(
-                            color: Colors.green.shade700,
+                            color: Colors.blue.shade700,
                             width: 2,
                           ),
                         ),
                         filled: true,
-                        fillColor: Colors. grey.shade50,
+                        fillColor: Colors.grey.shade50,
                       ),
-                      textCapitalization: TextCapitalization.characters,
                       validator: (value) {
                         if (value == null || value.isEmpty) {
-                          return 'Please enter parking zone';
+                          return 'Please select a parking zone on the map';
                         }
                         return null;
                       },
