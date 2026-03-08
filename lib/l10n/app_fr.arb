@@ -339,5 +339,121 @@
     "placeholders": {
       "error": {"type": "String"}
     }
-  }
+  },
+
+  "requests": "Demandes",
+
+  "validatorFailedToLoadDashboard": "Échec du chargement du tableau de bord",
+  "validatorHello": "Bonjour, {name}!",
+  "@validatorHello": {
+    "placeholders": {
+      "name": {"type": "String"}
+    }
+  },
+  "validatorPendingAndScheduled": "Vous avez {pending} tâches en attente et {scheduled} planifiées",
+  "@validatorPendingAndScheduled": {
+    "placeholders": {
+      "pending": {"type": "int"},
+      "scheduled": {"type": "int"}
+    }
+  },
+  "validatorAppointmentsToday": "{count} rendez-vous aujourd'hui",
+  "@validatorAppointmentsToday": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "validatorStatistics": "Statistiques",
+  "validatorTotalAssigned": "Total attribué",
+  "validatorAwaitingConfirm": "En attente de confirmation",
+  "validatorScheduledStat": "Planifié",
+  "validatorVerifiedStat": "Vérifié",
+  "validatorRejectedStat": "Rejeté",
+  "validatorToday": "Aujourd'hui",
+  "validatorRecentAssignments": "Affectations récentes",
+  "validatorNoRecentAssignments": "Aucune affectation récente",
+
+  "validatorRequestList": "Liste des demandes",
+  "validatorScheduleTitle": "Planning",
+  "validatorFilterAll": "Tous",
+  "validatorStatusAssigned": "Attribué",
+  "validatorFailedToLoadAssignments": "Échec du chargement des affectations",
+  "validatorNoAssignmentsFound": "Aucune affectation trouvée",
+  "validatorNoAddress": "Pas d'adresse",
+  "validatorSelectDayToView": "Sélectionnez un jour pour voir le planning",
+  "validatorNoAssignmentsForDay": "Aucune affectation pour ce jour",
+
+  "validatorGeneralInfo": "Informations générales",
+  "validatorPriority": "Priorité",
+  "validatorSubmitted": "Soumis le",
+  "validatorAssignedDate": "Date d'attribution",
+  "validatorNotes": "Notes",
+  "validatorCode": "Code",
+  "validatorCityCode": "Code de ville",
+  "validatorViewOnMap": "Voir sur la carte",
+  "validatorRequester": "Demandeur",
+  "validatorNameLabel": "Nom",
+  "validatorVerificationData": "Données de vérification",
+  "validatorPhotosProvided": "Photos fournies",
+  "validatorDocumentsProvided": "Documents fournis",
+  "validatorLocationVerified": "Emplacement vérifié",
+  "validatorAttachments": "Pièces jointes",
+  "validatorFileCount": "{count} fichier(s)",
+  "@validatorFileCount": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "validatorAssignedValidatorLabel": "Validateur attribué",
+  "validatorProcessingInfo": "Informations de traitement",
+  "validatorProcessedBy": "Traité par",
+  "validatorProcessedDate": "Date de traitement",
+  "validatorProcessingNotes": "Notes de traitement",
+  "validatorRejectionReason": "Raison du rejet",
+  "validatorVerify": "Vérifier",
+  "validatorReject": "Rejeter",
+  "validatorVerifyAddress": "Vérifier l'adresse",
+  "validatorVerifyAddressDesc": "Confirmez que l'adresse a été vérifiée sur place.",
+  "validatorNotesHint": "ex. Adresse vérifiée sur place, l'emplacement est exact",
+  "validatorRejectAddress": "Rejeter l'adresse",
+  "validatorRejectAddressDesc": "Fournissez une raison pour rejeter cette adresse.",
+  "validatorReasonLabel": "Raison *",
+  "validatorReasonHint": "ex. Les coordonnées ne correspondent pas à l'emplacement réel",
+  "validatorReasonRequired": "La raison est requise",
+  "validatorAppointmentConfirmed": "Rendez-vous confirmé avec succès",
+  "validatorAddressVerified": "Adresse vérifiée avec succès",
+  "validatorAddressRejected": "Adresse rejetée",
+  "validatorCannotLoadImage": "Impossible de charger l'image",
+
+  "validatorPersonalInformation": "Informations personnelles",
+  "validatorViewPersonalInfo": "Voir les informations personnelles",
+  "validatorChangePassword": "Changer le mot de passe",
+  "validatorChangeLoginPassword": "Changer le mot de passe de connexion",
+  "validatorPushNotifications": "Notifications push",
+  "validatorPushNotificationsDesc": "Recevoir des notifications sur les nouvelles demandes",
+  "validatorEmailNotifications": "Notifications par e-mail",
+  "validatorEmailNotificationsDesc": "Recevoir des e-mails sur les activités importantes",
+  "validatorRole": "Rôle",
+  "validatorRoleValue": "Validateur",
+  "validatorCurrentPassword": "Mot de passe actuel",
+  "validatorNewPassword": "Nouveau mot de passe",
+  "validatorConfirmNewPassword": "Confirmer le nouveau mot de passe",
+
+  "validatorMapRequestId": "ID de demande",
+  "validatorMapDirectionsHere": "Obtenir l'itinéraire vers ici",
+  "validatorMapFindingRoute": "Recherche d'itinéraire...",
+  "validatorMapLocationError": "Erreur de localisation : {error}",
+  "@validatorMapLocationError": {
+    "placeholders": {
+      "error": {"type": "String"}
+    }
+  },
+  "validatorMapDirectionsError": "Erreur d'itinéraire : {error}",
+  "@validatorMapDirectionsError": {
+    "placeholders": {
+      "error": {"type": "String"}
+    }
+  },
+  "validatorMapArrivedDestination": "🎉 Vous êtes arrivé !",
+  "validatorMapOpenInGoogleMaps": "Ouvrir dans Google Maps"
 }

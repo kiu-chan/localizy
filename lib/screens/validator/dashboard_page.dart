@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:localizy/api/auth_api.dart';
 import 'package:localizy/api/validator_api.dart';
+import 'package:localizy/l10n/app_localizations.dart';
 
 class DashboardPage extends StatefulWidget {
   const DashboardPage({super.key});
@@ -50,12 +51,13 @@ class _DashboardPageState extends State<DashboardPage> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       backgroundColor: Colors.grey.shade100,
       appBar: AppBar(
-        title: const Text(
-          'Dashboard',
-          style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
+        title: Text(
+          l10n.dashboard,
+          style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
         ),
         backgroundColor: Colors.green.shade700,
         elevation: 0,
@@ -70,7 +72,7 @@ class _DashboardPageState extends State<DashboardPage> {
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
           : _error != null
-              ? _buildError()
+              ? _buildError(l10n)
               : RefreshIndicator(
                   onRefresh: _load,
                   child: SingleChildScrollView(
@@ -78,15 +80,15 @@ class _DashboardPageState extends State<DashboardPage> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        _buildHeader(),
+                        _buildHeader(l10n),
                         Padding(
                           padding: const EdgeInsets.all(16),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              _buildStatsGrid(),
+                              _buildStatsGrid(l10n),
                               const SizedBox(height: 24),
-                              _buildRecentSection(),
+                              _buildRecentSection(l10n),
                             ],
                           ),
                         ),
@@ -97,20 +99,20 @@ class _DashboardPageState extends State<DashboardPage> {
     );
   }
 
-  Widget _buildError() {
+  Widget _buildError(AppLocalizations l10n) {
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Icon(Icons.error_outline, size: 64, color: Colors.red.shade300),
           const SizedBox(height: 16),
-          Text('Failed to load dashboard',
+          Text(l10n.validatorFailedToLoadDashboard,
               style: TextStyle(fontSize: 16, color: Colors.grey.shade600)),
           const SizedBox(height: 8),
           ElevatedButton.icon(
             onPressed: _load,
             icon: const Icon(Icons.refresh),
-            label: const Text('Retry'),
+            label: Text(l10n.retry),
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.green.shade700,
               foregroundColor: Colors.white,
@@ -121,7 +123,7 @@ class _DashboardPageState extends State<DashboardPage> {
     );
   }
 
-  Widget _buildHeader() {
+  Widget _buildHeader(AppLocalizations l10n) {
     final stats = _dashboard!.taskStats;
     return Container(
       width: double.infinity,
@@ -141,7 +143,7 @@ class _DashboardPageState extends State<DashboardPage> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Hello, $_validatorName!',
+            l10n.validatorHello(_validatorName),
             style: const TextStyle(
               fontSize: 22,
               fontWeight: FontWeight.bold,
@@ -150,7 +152,7 @@ class _DashboardPageState extends State<DashboardPage> {
           ),
           const SizedBox(height: 4),
           Text(
-            'You have ${stats.assignedCount} pending & ${stats.scheduledCount} scheduled tasks',
+            l10n.validatorPendingAndScheduled(stats.assignedCount, stats.scheduledCount),
             style: TextStyle(
               fontSize: 14,
               color: Colors.white.withValues(alpha: 0.9),
@@ -171,7 +173,7 @@ class _DashboardPageState extends State<DashboardPage> {
                   const Icon(Icons.today, size: 14, color: Colors.white),
                   const SizedBox(width: 6),
                   Text(
-                    '${stats.todayAppointments} appointment${stats.todayAppointments > 1 ? 's' : ''} today',
+                    l10n.validatorAppointmentsToday(stats.todayAppointments),
                     style: const TextStyle(
                         fontSize: 13,
                         color: Colors.white,
@@ -186,23 +188,23 @@ class _DashboardPageState extends State<DashboardPage> {
     );
   }
 
-  Widget _buildStatsGrid() {
+  Widget _buildStatsGrid(AppLocalizations l10n) {
     final s = _dashboard!.taskStats;
     final cards = [
-      _StatItem(Icons.assignment_ind, 'Total Assigned', s.totalAssigned, Colors.purple),
-      _StatItem(Icons.pending_actions, 'Awaiting Confirm', s.assignedCount, Colors.orange),
-      _StatItem(Icons.event_available, 'Scheduled', s.scheduledCount, Colors.blue),
-      _StatItem(Icons.verified, 'Verified', s.verifiedCount, Colors.green),
-      _StatItem(Icons.cancel, 'Rejected', s.rejectedCount, Colors.red),
-      _StatItem(Icons.today, 'Today', s.todayAppointments, Colors.teal),
+      _StatItem(Icons.assignment_ind, l10n.validatorTotalAssigned, s.totalAssigned, Colors.purple),
+      _StatItem(Icons.pending_actions, l10n.validatorAwaitingConfirm, s.assignedCount, Colors.orange),
+      _StatItem(Icons.event_available, l10n.validatorScheduledStat, s.scheduledCount, Colors.blue),
+      _StatItem(Icons.verified, l10n.validatorVerifiedStat, s.verifiedCount, Colors.green),
+      _StatItem(Icons.cancel, l10n.validatorRejectedStat, s.rejectedCount, Colors.red),
+      _StatItem(Icons.today, l10n.validatorToday, s.todayAppointments, Colors.teal),
     ];
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
-          'Statistics',
-          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+        Text(
+          l10n.validatorStatistics,
+          style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
         ),
         const SizedBox(height: 16),
         GridView.count(
@@ -258,22 +260,22 @@ class _DashboardPageState extends State<DashboardPage> {
     );
   }
 
-  Widget _buildRecentSection() {
+  Widget _buildRecentSection(AppLocalizations l10n) {
     final recent = _dashboard!.recentAssignments;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
-          'Recent Assignments',
-          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+        Text(
+          l10n.validatorRecentAssignments,
+          style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
         ),
         const SizedBox(height: 16),
         if (recent.isEmpty)
           Center(
             child: Padding(
               padding: const EdgeInsets.symmetric(vertical: 24),
-              child: Text('No recent assignments',
+              child: Text(l10n.validatorNoRecentAssignments,
                   style: TextStyle(
                       fontSize: 14, color: Colors.grey.shade500)),
             ),

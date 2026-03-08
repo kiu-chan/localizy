@@ -1,6 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:localizy/api/validator_api.dart';
+import 'package:localizy/l10n/app_localizations.dart';
 import 'package:localizy/screens/validator/map/assignment_map_page.dart';
 import 'package:table_calendar/table_calendar.dart';
 
@@ -62,8 +63,8 @@ class _SchedulePageState extends State<SchedulePage> {
       });
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Appointment confirmed successfully'),
+          SnackBar(
+            content: Text(AppLocalizations.of(context)!.validatorAppointmentConfirmed),
             backgroundColor: Colors.green,
           ),
         );
@@ -83,12 +84,13 @@ class _SchedulePageState extends State<SchedulePage> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       backgroundColor: Colors.grey.shade100,
       appBar: AppBar(
-        title: const Text(
-          'Schedule',
-          style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
+        title: Text(
+          l10n.validatorScheduleTitle,
+          style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
         ),
         backgroundColor: Colors.green.shade700,
         elevation: 0,
@@ -103,7 +105,7 @@ class _SchedulePageState extends State<SchedulePage> {
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
           : _error != null
-              ? _buildError()
+              ? _buildError(l10n)
               : Column(
                   children: [
                     Container(
@@ -159,7 +161,7 @@ class _SchedulePageState extends State<SchedulePage> {
                     const SizedBox(height: 8),
                     Expanded(
                       child: _selectedDay != null
-                          ? _buildAssignmentsList()
+                          ? _buildAssignmentsList(l10n)
                           : Center(
                               child: Column(
                                 mainAxisAlignment: MainAxisAlignment.center,
@@ -168,7 +170,7 @@ class _SchedulePageState extends State<SchedulePage> {
                                       size: 64, color: Colors.grey.shade300),
                                   const SizedBox(height: 16),
                                   Text(
-                                    'Select a day to view schedule',
+                                    l10n.validatorSelectDayToView,
                                     style: TextStyle(
                                         fontSize: 16, color: Colors.grey.shade600),
                                   ),
@@ -181,20 +183,20 @@ class _SchedulePageState extends State<SchedulePage> {
     );
   }
 
-  Widget _buildError() {
+  Widget _buildError(AppLocalizations l10n) {
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Icon(Icons.error_outline, size: 64, color: Colors.red.shade300),
           const SizedBox(height: 16),
-          Text('Failed to load assignments',
+          Text(l10n.validatorFailedToLoadAssignments,
               style: TextStyle(fontSize: 16, color: Colors.grey.shade600)),
           const SizedBox(height: 8),
           ElevatedButton.icon(
             onPressed: _loadAssignments,
             icon: const Icon(Icons.refresh),
-            label: const Text('Retry'),
+            label: Text(l10n.retry),
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.green.shade700,
               foregroundColor: Colors.white,
@@ -205,7 +207,7 @@ class _SchedulePageState extends State<SchedulePage> {
     );
   }
 
-  Widget _buildAssignmentsList() {
+  Widget _buildAssignmentsList(AppLocalizations l10n) {
     final assignments = _getAssignmentsForDay(_selectedDay!);
 
     if (assignments.isEmpty) {
@@ -215,7 +217,7 @@ class _SchedulePageState extends State<SchedulePage> {
           children: [
             Icon(Icons.event_busy, size: 64, color: Colors.grey.shade300),
             const SizedBox(height: 16),
-            Text('No assignments for this day',
+            Text(l10n.validatorNoAssignmentsForDay,
                 style: TextStyle(fontSize: 16, color: Colors.grey.shade600)),
           ],
         ),
@@ -225,11 +227,11 @@ class _SchedulePageState extends State<SchedulePage> {
     return ListView.builder(
       padding: const EdgeInsets.all(16),
       itemCount: assignments.length,
-      itemBuilder: (context, index) => _buildAssignmentCard(assignments[index]),
+      itemBuilder: (context, index) => _buildAssignmentCard(assignments[index], l10n),
     );
   }
 
-  Widget _buildAssignmentCard(ValidationAssignment a) {
+  Widget _buildAssignmentCard(ValidationAssignment a, AppLocalizations l10n) {
     final (Color statusColor, IconData statusIcon) = _statusStyle(a.status);
 
     return Container(
@@ -249,7 +251,7 @@ class _SchedulePageState extends State<SchedulePage> {
         color: Colors.transparent,
         child: InkWell(
           borderRadius: BorderRadius.circular(12),
-          onTap: () => _showAssignmentDetail(a),
+          onTap: () => _showAssignmentDetail(a, l10n),
           child: Padding(
             padding: const EdgeInsets.all(16),
             child: Row(
@@ -316,7 +318,7 @@ class _SchedulePageState extends State<SchedulePage> {
     );
   }
 
-  void _showAssignmentDetail(ValidationAssignment a) {
+  void _showAssignmentDetail(ValidationAssignment a, AppLocalizations l10n) {
     final (Color statusColor, IconData statusIcon) = _statusStyle(a.status);
 
     showModalBottomSheet(
@@ -368,24 +370,24 @@ class _SchedulePageState extends State<SchedulePage> {
               ),
               const SizedBox(height: 20),
 
-              // Thông tin chính
-              _sectionTitle('General Info'),
-              _detailRow(Icons.low_priority, 'Priority', a.priority),
-              _detailRow(Icons.calendar_today, 'Submitted',
+              // General Info
+              _sectionTitle(l10n.validatorGeneralInfo),
+              _detailRow(Icons.low_priority, l10n.validatorPriority, a.priority),
+              _detailRow(Icons.calendar_today, l10n.validatorSubmitted,
                   a.submittedDate != null ? _formatDateTime(a.submittedDate!) : '-'),
-              _detailRow(Icons.assignment_ind, 'Assigned Date',
+              _detailRow(Icons.assignment_ind, l10n.validatorAssignedDate,
                   a.assignedDate != null ? _formatDateTime(a.assignedDate!) : '-'),
               if (a.notes != null && a.notes!.isNotEmpty)
-                _detailRow(Icons.notes, 'Notes', a.notes!),
+                _detailRow(Icons.notes, l10n.validatorNotes, a.notes!),
 
-              // Địa chỉ
+              // Address
               if (a.address != null) ...[
                 const SizedBox(height: 16),
-                _sectionTitle('Address'),
-                _detailRow(Icons.qr_code, 'Code', a.address!.code),
-                _detailRow(Icons.location_city, 'City Code', a.address!.cityCode),
+                _sectionTitle(l10n.address),
+                _detailRow(Icons.qr_code, l10n.validatorCode, a.address!.code),
+                _detailRow(Icons.location_city, l10n.validatorCityCode, a.address!.cityCode),
                 if (a.address!.lat != null && a.address!.lng != null) ...[
-                  _detailRow(Icons.my_location, 'Coordinates',
+                  _detailRow(Icons.my_location, l10n.coordinates,
                       '${a.address!.lat!.toStringAsFixed(6)}, ${a.address!.lng!.toStringAsFixed(6)}'),
                   const SizedBox(height: 4),
                   SizedBox(
@@ -393,7 +395,7 @@ class _SchedulePageState extends State<SchedulePage> {
                     child: OutlinedButton.icon(
                       onPressed: () => _openMap(a),
                       icon: const Icon(Icons.map, size: 18),
-                      label: const Text('View on Map'),
+                      label: Text(l10n.validatorViewOnMap),
                       style: OutlinedButton.styleFrom(
                         foregroundColor: Colors.green.shade700,
                         side: BorderSide(color: Colors.green.shade700),
@@ -406,50 +408,51 @@ class _SchedulePageState extends State<SchedulePage> {
                 ],
               ],
 
-              // Người yêu cầu
+              // Requester
               if (a.submittedBy != null) ...[
                 const SizedBox(height: 16),
-                _sectionTitle('Requester'),
-                _detailRow(Icons.person, 'Name', a.submittedBy!.name),
+                _sectionTitle(l10n.validatorRequester),
+                _detailRow(Icons.person, l10n.validatorNameLabel, a.submittedBy!.name),
                 if (a.submittedBy!.email != null && a.submittedBy!.email!.isNotEmpty)
-                  _detailRow(Icons.email, 'Email', a.submittedBy!.email!),
+                  _detailRow(Icons.email, l10n.email, a.submittedBy!.email!),
               ],
 
-              // Tài liệu xác minh
+              // Verification Data
               if (a.verificationData != null) ...[
                 const SizedBox(height: 16),
-                _sectionTitle('Verification Data'),
-                _checkRow('Photos Provided', a.verificationData!.photosProvided),
-                _checkRow('Documents Provided', a.verificationData!.documentsProvided),
-                _checkRow('Location Verified', a.verificationData!.locationVerified),
-                _detailRow(Icons.attach_file, 'Attachments', '${a.attachmentsCount} file(s)'),
+                _sectionTitle(l10n.validatorVerificationData),
+                _checkRow(l10n.validatorPhotosProvided, a.verificationData!.photosProvided),
+                _checkRow(l10n.validatorDocumentsProvided, a.verificationData!.documentsProvided),
+                _checkRow(l10n.validatorLocationVerified, a.verificationData!.locationVerified),
+                _detailRow(Icons.attach_file, l10n.validatorAttachments,
+                    l10n.validatorFileCount(a.attachmentsCount)),
                 if (a.verificationData!.idDocumentUrl != null ||
                     a.verificationData!.addressProofUrl != null) ...[
                   const SizedBox(height: 10),
-                  _buildAttachmentThumbnails(a.verificationData!),
+                  _buildAttachmentThumbnails(a.verificationData!, l10n),
                 ],
               ],
 
-              // Validator được giao
+              // Assigned Validator
               if (a.assignedValidator != null) ...[
                 const SizedBox(height: 16),
-                _sectionTitle('Assigned Validator'),
-                _detailRow(Icons.badge, 'Name', a.assignedValidator!.name),
+                _sectionTitle(l10n.validatorAssignedValidatorLabel),
+                _detailRow(Icons.badge, l10n.validatorNameLabel, a.assignedValidator!.name),
               ],
 
-              // Xử lý
+              // Processing Info
               if (a.processedBy != null || a.processingNotes != null || a.rejectionReason != null) ...[
                 const SizedBox(height: 16),
-                _sectionTitle('Processing Info'),
+                _sectionTitle(l10n.validatorProcessingInfo),
                 if (a.processedBy != null)
-                  _detailRow(Icons.manage_accounts, 'Processed By', a.processedBy!.name),
+                  _detailRow(Icons.manage_accounts, l10n.validatorProcessedBy, a.processedBy!.name),
                 if (a.processedDate != null)
-                  _detailRow(Icons.check_circle_outline, 'Processed Date',
+                  _detailRow(Icons.check_circle_outline, l10n.validatorProcessedDate,
                       _formatDateTime(a.processedDate!)),
                 if (a.processingNotes != null && a.processingNotes!.isNotEmpty)
-                  _detailRow(Icons.comment, 'Processing Notes', a.processingNotes!),
+                  _detailRow(Icons.comment, l10n.validatorProcessingNotes, a.processingNotes!),
                 if (a.rejectionReason != null && a.rejectionReason!.isNotEmpty)
-                  _detailRow(Icons.cancel_outlined, 'Rejection Reason',
+                  _detailRow(Icons.cancel_outlined, l10n.validatorRejectionReason,
                       a.rejectionReason!, valueColor: Colors.red.shade700),
               ],
 
@@ -462,7 +465,7 @@ class _SchedulePageState extends State<SchedulePage> {
                   child: ElevatedButton.icon(
                     onPressed: () => _confirmAppointment(a),
                     icon: const Icon(Icons.check_circle_outline),
-                    label: const Text('Confirm Appointment'),
+                    label: Text(l10n.confirmAppointment),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.green.shade700,
                       foregroundColor: Colors.white,
@@ -484,7 +487,7 @@ class _SchedulePageState extends State<SchedulePage> {
                       shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(8)),
                     ),
-                    child: const Text('Close'),
+                    child: Text(l10n.close),
                   ),
                 ),
 
@@ -531,7 +534,7 @@ class _SchedulePageState extends State<SchedulePage> {
                   children: [
                     const Icon(Icons.broken_image, color: Colors.white54, size: 64),
                     const SizedBox(height: 12),
-                    Text('Cannot load image',
+                    Text(AppLocalizations.of(ctx)!.validatorCannotLoadImage,
                         style: TextStyle(color: Colors.grey.shade400)),
                   ],
                 ),
@@ -543,13 +546,13 @@ class _SchedulePageState extends State<SchedulePage> {
     );
   }
 
-  Widget _buildAttachmentThumbnails(ValidationVerificationData data) {
+  Widget _buildAttachmentThumbnails(ValidationVerificationData data, AppLocalizations l10n) {
     final items = <(String label, String url)>[];
     if (data.idDocumentUrl != null) {
-      items.add(('ID Document', data.idDocumentUrl!));
+      items.add((l10n.identityDocument, data.idDocumentUrl!));
     }
     if (data.addressProofUrl != null) {
-      items.add(('Address Proof', data.addressProofUrl!));
+      items.add((l10n.addressProofDoc, data.addressProofUrl!));
     }
 
     return Row(

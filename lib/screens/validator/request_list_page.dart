@@ -1,6 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:localizy/api/validator_api.dart';
+import 'package:localizy/l10n/app_localizations.dart';
 import 'package:localizy/screens/validator/map/assignment_map_page.dart';
 
 class RequestListPage extends StatefulWidget {
@@ -48,14 +49,24 @@ class _RequestListPageState extends State<RequestListPage> {
     return _assignments.where((a) => a.status == _selectedFilter).toList();
   }
 
+  String _filterLabel(String filter, AppLocalizations l10n) => switch (filter) {
+        'All' => l10n.validatorFilterAll,
+        'Assigned' => l10n.validatorStatusAssigned,
+        'Scheduled' => l10n.validatorScheduledStat,
+        'Verified' => l10n.validatorVerifiedStat,
+        'Rejected' => l10n.validatorRejectedStat,
+        _ => filter,
+      };
+
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       backgroundColor: Colors.grey.shade100,
       appBar: AppBar(
-        title: const Text(
-          'Request List',
-          style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
+        title: Text(
+          l10n.validatorRequestList,
+          style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
         ),
         backgroundColor: Colors.green.shade700,
         elevation: 0,
@@ -78,7 +89,7 @@ class _RequestListPageState extends State<RequestListPage> {
               children: _filters
                   .map((f) => Padding(
                         padding: const EdgeInsets.only(right: 8),
-                        child: _buildFilterChip(f),
+                        child: _buildFilterChip(f, _filterLabel(f, l10n)),
                       ))
                   .toList(),
             ),
@@ -87,15 +98,15 @@ class _RequestListPageState extends State<RequestListPage> {
             child: _isLoading
                 ? const Center(child: CircularProgressIndicator())
                 : _error != null
-                    ? _buildError()
+                    ? _buildError(l10n)
                     : _filtered.isEmpty
-                        ? _buildEmpty()
+                        ? _buildEmpty(l10n)
                         : RefreshIndicator(
                             onRefresh: _loadAssignments,
                             child: ListView.builder(
                               padding: const EdgeInsets.all(16),
                               itemCount: _filtered.length,
-                              itemBuilder: (_, i) => _buildCard(_filtered[i]),
+                              itemBuilder: (_, i) => _buildCard(_filtered[i], l10n),
                             ),
                           ),
           ),
@@ -104,12 +115,12 @@ class _RequestListPageState extends State<RequestListPage> {
     );
   }
 
-  Widget _buildFilterChip(String label) {
-    final isSelected = _selectedFilter == label;
+  Widget _buildFilterChip(String value, String label) {
+    final isSelected = _selectedFilter == value;
     return FilterChip(
       label: Text(label),
       selected: isSelected,
-      onSelected: (_) => setState(() => _selectedFilter = label),
+      onSelected: (_) => setState(() => _selectedFilter = value),
       backgroundColor: Colors.grey.shade200,
       selectedColor: Colors.green.shade100,
       labelStyle: TextStyle(
@@ -120,20 +131,20 @@ class _RequestListPageState extends State<RequestListPage> {
     );
   }
 
-  Widget _buildError() {
+  Widget _buildError(AppLocalizations l10n) {
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Icon(Icons.error_outline, size: 64, color: Colors.red.shade300),
           const SizedBox(height: 16),
-          Text('Failed to load assignments',
+          Text(l10n.validatorFailedToLoadAssignments,
               style: TextStyle(fontSize: 16, color: Colors.grey.shade600)),
           const SizedBox(height: 8),
           ElevatedButton.icon(
             onPressed: _loadAssignments,
             icon: const Icon(Icons.refresh),
-            label: const Text('Retry'),
+            label: Text(l10n.retry),
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.green.shade700,
               foregroundColor: Colors.white,
@@ -144,21 +155,21 @@ class _RequestListPageState extends State<RequestListPage> {
     );
   }
 
-  Widget _buildEmpty() {
+  Widget _buildEmpty(AppLocalizations l10n) {
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Icon(Icons.inbox, size: 64, color: Colors.grey.shade300),
           const SizedBox(height: 16),
-          Text('No assignments found',
+          Text(l10n.validatorNoAssignmentsFound,
               style: TextStyle(fontSize: 16, color: Colors.grey.shade600)),
         ],
       ),
     );
   }
 
-  Widget _buildCard(ValidationAssignment a) {
+  Widget _buildCard(ValidationAssignment a, AppLocalizations l10n) {
     final (Color sc, IconData si) = _statusStyle(a.status);
 
     return Container(
@@ -178,7 +189,7 @@ class _RequestListPageState extends State<RequestListPage> {
         color: Colors.transparent,
         child: InkWell(
           borderRadius: BorderRadius.circular(12),
-          onTap: () => _showDetail(a),
+          onTap: () => _showDetail(a, l10n),
           child: Padding(
             padding: const EdgeInsets.all(16),
             child: Column(
@@ -209,7 +220,7 @@ class _RequestListPageState extends State<RequestListPage> {
                 ),
                 const SizedBox(height: 10),
                 Text(
-                  a.address?.code ?? 'No address',
+                  a.address?.code ?? l10n.validatorNoAddress,
                   style: const TextStyle(
                       fontSize: 16, fontWeight: FontWeight.bold),
                 ),
@@ -256,23 +267,18 @@ class _RequestListPageState extends State<RequestListPage> {
     );
   }
 
-  void _showDetail(ValidationAssignment a) {
-    showModalBottomSheet(
+  Future<void> _showDetail(ValidationAssignment a, AppLocalizations l10n) async {
+    final shouldReload = await showModalBottomSheet<bool>(
       context: context,
       isScrollControlled: true,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
-      builder: (_) => _DetailSheet(
-        assignment: a,
-        onUpdated: (updated) {
-          setState(() {
-            final idx = _assignments.indexWhere((x) => x.id == updated.id);
-            if (idx != -1) _assignments[idx] = updated;
-          });
-        },
-      ),
+      builder: (_) => _DetailSheet(assignment: a),
     );
+    if (shouldReload == true && mounted) {
+      _loadAssignments();
+    }
   }
 
   // ── helpers ────────────────────────────────────────────────────────────
@@ -334,9 +340,8 @@ class _RequestListPageState extends State<RequestListPage> {
 // ─────────────────────────────────────────────────────────────────────────────
 class _DetailSheet extends StatefulWidget {
   final ValidationAssignment assignment;
-  final ValueChanged<ValidationAssignment> onUpdated;
 
-  const _DetailSheet({required this.assignment, required this.onUpdated});
+  const _DetailSheet({required this.assignment});
 
   @override
   State<_DetailSheet> createState() => _DetailSheetState();
@@ -362,6 +367,7 @@ class _DetailSheetState extends State<_DetailSheet> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final (Color sc, IconData si) = _statusStyle;
 
     return DraggableScrollableSheet(
@@ -411,23 +417,23 @@ class _DetailSheetState extends State<_DetailSheet> {
             const SizedBox(height: 20),
 
             // General Info
-            _section('General Info'),
-            _row(Icons.low_priority, 'Priority', _a.priority),
-            _row(Icons.calendar_today, 'Submitted',
+            _section(l10n.validatorGeneralInfo),
+            _row(Icons.low_priority, l10n.validatorPriority, _a.priority),
+            _row(Icons.calendar_today, l10n.validatorSubmitted,
                 _a.submittedDate != null ? _fmt(_a.submittedDate!) : '-'),
-            _row(Icons.assignment_ind, 'Assigned Date',
+            _row(Icons.assignment_ind, l10n.validatorAssignedDate,
                 _a.assignedDate != null ? _fmt(_a.assignedDate!) : '-'),
             if (_a.notes != null && _a.notes!.isNotEmpty)
-              _row(Icons.notes, 'Notes', _a.notes!),
+              _row(Icons.notes, l10n.validatorNotes, _a.notes!),
 
             // Address
             if (_a.address != null) ...[
               const SizedBox(height: 16),
-              _section('Address'),
-              _row(Icons.qr_code, 'Code', _a.address!.code),
-              _row(Icons.location_city, 'City Code', _a.address!.cityCode),
+              _section(l10n.address),
+              _row(Icons.qr_code, l10n.validatorCode, _a.address!.code),
+              _row(Icons.location_city, l10n.validatorCityCode, _a.address!.cityCode),
               if (_a.address!.lat != null && _a.address!.lng != null) ...[
-                _row(Icons.my_location, 'Coordinates',
+                _row(Icons.my_location, l10n.coordinates,
                     '${_a.address!.lat!.toStringAsFixed(6)}, ${_a.address!.lng!.toStringAsFixed(6)}'),
                 const SizedBox(height: 4),
                 SizedBox(
@@ -435,7 +441,7 @@ class _DetailSheetState extends State<_DetailSheet> {
                   child: OutlinedButton.icon(
                     onPressed: () => _openMap(),
                     icon: const Icon(Icons.map, size: 18),
-                    label: const Text('View on Map'),
+                    label: Text(l10n.validatorViewOnMap),
                     style: OutlinedButton.styleFrom(
                       foregroundColor: Colors.green.shade700,
                       side: BorderSide(color: Colors.green.shade700),
@@ -451,36 +457,34 @@ class _DetailSheetState extends State<_DetailSheet> {
             // Requester
             if (_a.submittedBy != null) ...[
               const SizedBox(height: 16),
-              _section('Requester'),
-              _row(Icons.person, 'Name', _a.submittedBy!.name),
+              _section(l10n.validatorRequester),
+              _row(Icons.person, l10n.validatorNameLabel, _a.submittedBy!.name),
               if (_a.submittedBy!.email != null &&
                   _a.submittedBy!.email!.isNotEmpty)
-                _row(Icons.email, 'Email', _a.submittedBy!.email!),
+                _row(Icons.email, l10n.email, _a.submittedBy!.email!),
             ],
 
             // Verification Data + attachments
             if (_a.verificationData != null) ...[
               const SizedBox(height: 16),
-              _section('Verification Data'),
-              _check('Photos Provided', _a.verificationData!.photosProvided),
-              _check('Documents Provided',
-                  _a.verificationData!.documentsProvided),
-              _check('Location Verified',
-                  _a.verificationData!.locationVerified),
-              _row(Icons.attach_file, 'Attachments',
-                  '${_a.attachmentsCount} file(s)'),
+              _section(l10n.validatorVerificationData),
+              _check(l10n.validatorPhotosProvided, _a.verificationData!.photosProvided),
+              _check(l10n.validatorDocumentsProvided, _a.verificationData!.documentsProvided),
+              _check(l10n.validatorLocationVerified, _a.verificationData!.locationVerified),
+              _row(Icons.attach_file, l10n.validatorAttachments,
+                  l10n.validatorFileCount(_a.attachmentsCount)),
               if (_a.verificationData!.idDocumentUrl != null ||
                   _a.verificationData!.addressProofUrl != null) ...[
                 const SizedBox(height: 10),
-                _buildAttachmentThumbnails(_a.verificationData!),
+                _buildAttachmentThumbnails(_a.verificationData!, l10n),
               ],
             ],
 
             // Assigned Validator
             if (_a.assignedValidator != null) ...[
               const SizedBox(height: 16),
-              _section('Assigned Validator'),
-              _row(Icons.badge, 'Name', _a.assignedValidator!.name),
+              _section(l10n.validatorAssignedValidatorLabel),
+              _row(Icons.badge, l10n.validatorNameLabel, _a.assignedValidator!.name),
             ],
 
             // Processing Info
@@ -488,17 +492,17 @@ class _DetailSheetState extends State<_DetailSheet> {
                 _a.processingNotes != null ||
                 _a.rejectionReason != null) ...[
               const SizedBox(height: 16),
-              _section('Processing Info'),
+              _section(l10n.validatorProcessingInfo),
               if (_a.processedBy != null)
-                _row(Icons.manage_accounts, 'Processed By',
+                _row(Icons.manage_accounts, l10n.validatorProcessedBy,
                     _a.processedBy!.name),
               if (_a.processedDate != null)
-                _row(Icons.check_circle_outline, 'Processed Date',
+                _row(Icons.check_circle_outline, l10n.validatorProcessedDate,
                     _fmt(_a.processedDate!)),
               if (_a.processingNotes != null && _a.processingNotes!.isNotEmpty)
-                _row(Icons.comment, 'Notes', _a.processingNotes!),
+                _row(Icons.comment, l10n.validatorProcessingNotes, _a.processingNotes!),
               if (_a.rejectionReason != null && _a.rejectionReason!.isNotEmpty)
-                _row(Icons.cancel_outlined, 'Rejection Reason',
+                _row(Icons.cancel_outlined, l10n.validatorRejectionReason,
                     _a.rejectionReason!,
                     valueColor: Colors.red.shade700),
             ],
@@ -514,7 +518,7 @@ class _DetailSheetState extends State<_DetailSheet> {
                 child: ElevatedButton.icon(
                   onPressed: _doConfirmAppointment,
                   icon: const Icon(Icons.check_circle_outline),
-                  label: const Text('Confirm Appointment'),
+                  label: Text(l10n.confirmAppointment),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.green.shade700,
                     foregroundColor: Colors.white,
@@ -531,7 +535,7 @@ class _DetailSheetState extends State<_DetailSheet> {
                     child: ElevatedButton.icon(
                       onPressed: _showVerifyDialog,
                       icon: const Icon(Icons.verified_outlined),
-                      label: const Text('Verify'),
+                      label: Text(l10n.validatorVerify),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.green.shade700,
                         foregroundColor: Colors.white,
@@ -546,7 +550,7 @@ class _DetailSheetState extends State<_DetailSheet> {
                     child: OutlinedButton.icon(
                       onPressed: _showRejectDialog,
                       icon: const Icon(Icons.cancel_outlined),
-                      label: const Text('Reject'),
+                      label: Text(l10n.validatorReject),
                       style: OutlinedButton.styleFrom(
                         foregroundColor: Colors.red,
                         side: const BorderSide(color: Colors.red),
@@ -570,7 +574,7 @@ class _DetailSheetState extends State<_DetailSheet> {
                     shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(8)),
                   ),
-                  child: const Text('Close'),
+                  child: Text(l10n.close),
                 ),
               ),
 
@@ -618,7 +622,7 @@ class _DetailSheetState extends State<_DetailSheet> {
                     const Icon(Icons.broken_image,
                         color: Colors.white54, size: 64),
                     const SizedBox(height: 12),
-                    Text('Cannot load image',
+                    Text(AppLocalizations.of(ctx)!.validatorCannotLoadImage,
                         style: TextStyle(color: Colors.grey.shade400)),
                   ],
                 ),
@@ -634,20 +638,16 @@ class _DetailSheetState extends State<_DetailSheet> {
   Future<void> _doConfirmAppointment() async {
     setState(() => _actionLoading = true);
     try {
-      final updated = await ValidatorApi.confirmAppointment(_a.id);
-      setState(() {
-        _a = updated;
-        _actionLoading = false;
-      });
-      widget.onUpdated(updated);
+      await ValidatorApi.confirmAppointment(_a.id);
+      setState(() => _actionLoading = false);
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Appointment confirmed successfully'),
+          SnackBar(
+            content: Text(AppLocalizations.of(context)!.validatorAppointmentConfirmed),
             backgroundColor: Colors.green,
           ),
         );
-        Navigator.pop(context);
+        Navigator.pop(context, true);
       }
     } catch (e) {
       setState(() => _actionLoading = false);
@@ -660,24 +660,25 @@ class _DetailSheetState extends State<_DetailSheet> {
   }
 
   void _showVerifyDialog() {
+    final l10n = AppLocalizations.of(context)!;
     final notesCtrl = TextEditingController();
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('Verify Address'),
+        title: Text(l10n.validatorVerifyAddress),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Confirm the address has been verified on-site.',
+            Text(l10n.validatorVerifyAddressDesc,
                 style: TextStyle(fontSize: 13, color: Colors.grey.shade600)),
             const SizedBox(height: 12),
             TextField(
               controller: notesCtrl,
               maxLines: 3,
               decoration: InputDecoration(
-                labelText: 'Notes',
-                hintText: 'e.g. Address verified on-site, location is accurate',
+                labelText: l10n.validatorNotes,
+                hintText: l10n.validatorNotesHint,
                 border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(8)),
                 contentPadding: const EdgeInsets.all(12),
@@ -688,14 +689,14 @@ class _DetailSheetState extends State<_DetailSheet> {
         actions: [
           TextButton(
               onPressed: () => Navigator.pop(ctx),
-              child: const Text('Cancel')),
+              child: Text(l10n.cancel)),
           ElevatedButton.icon(
             onPressed: () {
               Navigator.pop(ctx);
               _doVerify(notesCtrl.text.trim());
             },
             icon: const Icon(Icons.check),
-            label: const Text('Confirm'),
+            label: Text(l10n.confirm),
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.green.shade700,
               foregroundColor: Colors.white,
@@ -707,24 +708,25 @@ class _DetailSheetState extends State<_DetailSheet> {
   }
 
   void _showRejectDialog() {
+    final l10n = AppLocalizations.of(context)!;
     final reasonCtrl = TextEditingController();
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('Reject Address'),
+        title: Text(l10n.validatorRejectAddress),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Provide a reason for rejecting this address.',
+            Text(l10n.validatorRejectAddressDesc,
                 style: TextStyle(fontSize: 13, color: Colors.grey.shade600)),
             const SizedBox(height: 12),
             TextField(
               controller: reasonCtrl,
               maxLines: 3,
               decoration: InputDecoration(
-                labelText: 'Reason *',
-                hintText: 'e.g. Coordinates do not match actual location',
+                labelText: l10n.validatorReasonLabel,
+                hintText: l10n.validatorReasonHint,
                 border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(8)),
                 contentPadding: const EdgeInsets.all(12),
@@ -735,13 +737,13 @@ class _DetailSheetState extends State<_DetailSheet> {
         actions: [
           TextButton(
               onPressed: () => Navigator.pop(ctx),
-              child: const Text('Cancel')),
+              child: Text(l10n.cancel)),
           ElevatedButton.icon(
             onPressed: () {
               final reason = reasonCtrl.text.trim();
               if (reason.isEmpty) {
                 ScaffoldMessenger.of(ctx).showSnackBar(
-                  const SnackBar(content: Text('Reason is required')),
+                  SnackBar(content: Text(l10n.validatorReasonRequired)),
                 );
                 return;
               }
@@ -749,7 +751,7 @@ class _DetailSheetState extends State<_DetailSheet> {
               _doReject(reason);
             },
             icon: const Icon(Icons.cancel_outlined),
-            label: const Text('Reject'),
+            label: Text(l10n.validatorReject),
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.red,
               foregroundColor: Colors.white,
@@ -763,26 +765,16 @@ class _DetailSheetState extends State<_DetailSheet> {
   Future<void> _doVerify(String notes) async {
     setState(() => _actionLoading = true);
     try {
-      final updated = await ValidatorApi.verifyValidation(_a.id, notes);
-      if (_a.address != null && _a.address!.id.isNotEmpty) {
-        await ValidatorApi.reviewAddress(
-          _a.address!.id,
-          notes.isNotEmpty ? notes : 'Verified on-site',
-        );
-      }
-      setState(() {
-        _a = updated;
-        _actionLoading = false;
-      });
-      widget.onUpdated(updated);
+      await ValidatorApi.verifyValidation(_a.id, notes);
+      setState(() => _actionLoading = false);
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Address verified successfully'),
+          SnackBar(
+            content: Text(AppLocalizations.of(context)!.validatorAddressVerified),
             backgroundColor: Colors.green,
           ),
         );
-        Navigator.pop(context);
+        Navigator.pop(context, true);
       }
     } catch (e) {
       setState(() => _actionLoading = false);
@@ -797,23 +789,16 @@ class _DetailSheetState extends State<_DetailSheet> {
   Future<void> _doReject(String reason) async {
     setState(() => _actionLoading = true);
     try {
-      final updated = await ValidatorApi.rejectValidation(_a.id, reason);
-      if (_a.address != null && _a.address!.id.isNotEmpty) {
-        await ValidatorApi.rejectAddress(_a.address!.id, reason);
-      }
-      setState(() {
-        _a = updated;
-        _actionLoading = false;
-      });
-      widget.onUpdated(updated);
+      await ValidatorApi.rejectValidation(_a.id, reason);
+      setState(() => _actionLoading = false);
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Address rejected'),
+          SnackBar(
+            content: Text(AppLocalizations.of(context)!.validatorAddressRejected),
             backgroundColor: Colors.red,
           ),
         );
-        Navigator.pop(context);
+        Navigator.pop(context, true);
       }
     } catch (e) {
       setState(() => _actionLoading = false);
@@ -826,13 +811,13 @@ class _DetailSheetState extends State<_DetailSheet> {
   }
 
   // ── UI helpers ──────────────────────────────────────────────────────────────
-  Widget _buildAttachmentThumbnails(ValidationVerificationData data) {
+  Widget _buildAttachmentThumbnails(ValidationVerificationData data, AppLocalizations l10n) {
     final items = <(String, String)>[];
     if (data.idDocumentUrl != null) {
-      items.add(('ID Document', data.idDocumentUrl!));
+      items.add((l10n.identityDocument, data.idDocumentUrl!));
     }
     if (data.addressProofUrl != null) {
-      items.add(('Address Proof', data.addressProofUrl!));
+      items.add((l10n.addressProofDoc, data.addressProofUrl!));
     }
 
     return Row(

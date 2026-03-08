@@ -994,4 +994,264 @@ class AppLocalizationsFr extends AppLocalizations {
   String mapErrorMessage(String error) {
     return 'Erreur : $error';
   }
+
+  @override
+  String get requests => 'Demandes';
+
+  @override
+  String get validatorFailedToLoadDashboard =>
+      'Échec du chargement du tableau de bord';
+
+  @override
+  String validatorHello(String name) {
+    return 'Bonjour, $name!';
+  }
+
+  @override
+  String validatorPendingAndScheduled(int pending, int scheduled) {
+    return 'Vous avez $pending tâches en attente et $scheduled planifiées';
+  }
+
+  @override
+  String validatorAppointmentsToday(int count) {
+    return '$count rendez-vous aujourd\'hui';
+  }
+
+  @override
+  String get validatorStatistics => 'Statistiques';
+
+  @override
+  String get validatorTotalAssigned => 'Total attribué';
+
+  @override
+  String get validatorAwaitingConfirm => 'En attente de confirmation';
+
+  @override
+  String get validatorScheduledStat => 'Planifié';
+
+  @override
+  String get validatorVerifiedStat => 'Vérifié';
+
+  @override
+  String get validatorRejectedStat => 'Rejeté';
+
+  @override
+  String get validatorToday => 'Aujourd\'hui';
+
+  @override
+  String get validatorRecentAssignments => 'Affectations récentes';
+
+  @override
+  String get validatorNoRecentAssignments => 'Aucune affectation récente';
+
+  @override
+  String get validatorRequestList => 'Liste des demandes';
+
+  @override
+  String get validatorScheduleTitle => 'Planning';
+
+  @override
+  String get validatorFilterAll => 'Tous';
+
+  @override
+  String get validatorStatusAssigned => 'Attribué';
+
+  @override
+  String get validatorFailedToLoadAssignments =>
+      'Échec du chargement des affectations';
+
+  @override
+  String get validatorNoAssignmentsFound => 'Aucune affectation trouvée';
+
+  @override
+  String get validatorNoAddress => 'Pas d\'adresse';
+
+  @override
+  String get validatorSelectDayToView =>
+      'Sélectionnez un jour pour voir le planning';
+
+  @override
+  String get validatorNoAssignmentsForDay => 'Aucune affectation pour ce jour';
+
+  @override
+  String get validatorGeneralInfo => 'Informations générales';
+
+  @override
+  String get validatorPriority => 'Priorité';
+
+  @override
+  String get validatorSubmitted => 'Soumis le';
+
+  @override
+  String get validatorAssignedDate => 'Date d\'attribution';
+
+  @override
+  String get validatorNotes => 'Notes';
+
+  @override
+  String get validatorCode => 'Code';
+
+  @override
+  String get validatorCityCode => 'Code de ville';
+
+  @override
+  String get validatorViewOnMap => 'Voir sur la carte';
+
+  @override
+  String get validatorRequester => 'Demandeur';
+
+  @override
+  String get validatorNameLabel => 'Nom';
+
+  @override
+  String get validatorVerificationData => 'Données de vérification';
+
+  @override
+  String get validatorPhotosProvided => 'Photos fournies';
+
+  @override
+  String get validatorDocumentsProvided => 'Documents fournis';
+
+  @override
+  String get validatorLocationVerified => 'Emplacement vérifié';
+
+  @override
+  String get validatorAttachments => 'Pièces jointes';
+
+  @override
+  String validatorFileCount(int count) {
+    return '$count fichier(s)';
+  }
+
+  @override
+  String get validatorAssignedValidatorLabel => 'Validateur attribué';
+
+  @override
+  String get validatorProcessingInfo => 'Informations de traitement';
+
+  @override
+  String get validatorProcessedBy => 'Traité par';
+
+  @override
+  String get validatorProcessedDate => 'Date de traitement';
+
+  @override
+  String get validatorProcessingNotes => 'Notes de traitement';
+
+  @override
+  String get validatorRejectionReason => 'Raison du rejet';
+
+  @override
+  String get validatorVerify => 'Vérifier';
+
+  @override
+  String get validatorReject => 'Rejeter';
+
+  @override
+  String get validatorVerifyAddress => 'Vérifier l\'adresse';
+
+  @override
+  String get validatorVerifyAddressDesc =>
+      'Confirmez que l\'adresse a été vérifiée sur place.';
+
+  @override
+  String get validatorNotesHint =>
+      'ex. Adresse vérifiée sur place, l\'emplacement est exact';
+
+  @override
+  String get validatorRejectAddress => 'Rejeter l\'adresse';
+
+  @override
+  String get validatorRejectAddressDesc =>
+      'Fournissez une raison pour rejeter cette adresse.';
+
+  @override
+  String get validatorReasonLabel => 'Raison *';
+
+  @override
+  String get validatorReasonHint =>
+      'ex. Les coordonnées ne correspondent pas à l\'emplacement réel';
+
+  @override
+  String get validatorReasonRequired => 'La raison est requise';
+
+  @override
+  String get validatorAppointmentConfirmed =>
+      'Rendez-vous confirmé avec succès';
+
+  @override
+  String get validatorAddressVerified => 'Adresse vérifiée avec succès';
+
+  @override
+  String get validatorAddressRejected => 'Adresse rejetée';
+
+  @override
+  String get validatorCannotLoadImage => 'Impossible de charger l\'image';
+
+  @override
+  String get validatorPersonalInformation => 'Informations personnelles';
+
+  @override
+  String get validatorViewPersonalInfo => 'Voir les informations personnelles';
+
+  @override
+  String get validatorChangePassword => 'Changer le mot de passe';
+
+  @override
+  String get validatorChangeLoginPassword =>
+      'Changer le mot de passe de connexion';
+
+  @override
+  String get validatorPushNotifications => 'Notifications push';
+
+  @override
+  String get validatorPushNotificationsDesc =>
+      'Recevoir des notifications sur les nouvelles demandes';
+
+  @override
+  String get validatorEmailNotifications => 'Notifications par e-mail';
+
+  @override
+  String get validatorEmailNotificationsDesc =>
+      'Recevoir des e-mails sur les activités importantes';
+
+  @override
+  String get validatorRole => 'Rôle';
+
+  @override
+  String get validatorRoleValue => 'Validateur';
+
+  @override
+  String get validatorCurrentPassword => 'Mot de passe actuel';
+
+  @override
+  String get validatorNewPassword => 'Nouveau mot de passe';
+
+  @override
+  String get validatorConfirmNewPassword => 'Confirmer le nouveau mot de passe';
+
+  @override
+  String get validatorMapRequestId => 'ID de demande';
+
+  @override
+  String get validatorMapDirectionsHere => 'Obtenir l\'itinéraire vers ici';
+
+  @override
+  String get validatorMapFindingRoute => 'Recherche d\'itinéraire...';
+
+  @override
+  String validatorMapLocationError(String error) {
+    return 'Erreur de localisation : $error';
+  }
+
+  @override
+  String validatorMapDirectionsError(String error) {
+    return 'Erreur d\'itinéraire : $error';
+  }
+
+  @override
+  String get validatorMapArrivedDestination => '🎉 Vous êtes arrivé !';
+
+  @override
+  String get validatorMapOpenInGoogleMaps => 'Ouvrir dans Google Maps';
 }

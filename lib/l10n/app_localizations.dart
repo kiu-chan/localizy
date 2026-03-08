@@ -1921,6 +1921,480 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'Erreur : {error}'**
   String mapErrorMessage(String error);
+
+  /// No description provided for @requests.
+  ///
+  /// In fr, this message translates to:
+  /// **'Demandes'**
+  String get requests;
+
+  /// No description provided for @validatorFailedToLoadDashboard.
+  ///
+  /// In fr, this message translates to:
+  /// **'Échec du chargement du tableau de bord'**
+  String get validatorFailedToLoadDashboard;
+
+  /// No description provided for @validatorHello.
+  ///
+  /// In fr, this message translates to:
+  /// **'Bonjour, {name}!'**
+  String validatorHello(String name);
+
+  /// No description provided for @validatorPendingAndScheduled.
+  ///
+  /// In fr, this message translates to:
+  /// **'Vous avez {pending} tâches en attente et {scheduled} planifiées'**
+  String validatorPendingAndScheduled(int pending, int scheduled);
+
+  /// No description provided for @validatorAppointmentsToday.
+  ///
+  /// In fr, this message translates to:
+  /// **'{count} rendez-vous aujourd\'hui'**
+  String validatorAppointmentsToday(int count);
+
+  /// No description provided for @validatorStatistics.
+  ///
+  /// In fr, this message translates to:
+  /// **'Statistiques'**
+  String get validatorStatistics;
+
+  /// No description provided for @validatorTotalAssigned.
+  ///
+  /// In fr, this message translates to:
+  /// **'Total attribué'**
+  String get validatorTotalAssigned;
+
+  /// No description provided for @validatorAwaitingConfirm.
+  ///
+  /// In fr, this message translates to:
+  /// **'En attente de confirmation'**
+  String get validatorAwaitingConfirm;
+
+  /// No description provided for @validatorScheduledStat.
+  ///
+  /// In fr, this message translates to:
+  /// **'Planifié'**
+  String get validatorScheduledStat;
+
+  /// No description provided for @validatorVerifiedStat.
+  ///
+  /// In fr, this message translates to:
+  /// **'Vérifié'**
+  String get validatorVerifiedStat;
+
+  /// No description provided for @validatorRejectedStat.
+  ///
+  /// In fr, this message translates to:
+  /// **'Rejeté'**
+  String get validatorRejectedStat;
+
+  /// No description provided for @validatorToday.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aujourd\'hui'**
+  String get validatorToday;
+
+  /// No description provided for @validatorRecentAssignments.
+  ///
+  /// In fr, this message translates to:
+  /// **'Affectations récentes'**
+  String get validatorRecentAssignments;
+
+  /// No description provided for @validatorNoRecentAssignments.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucune affectation récente'**
+  String get validatorNoRecentAssignments;
+
+  /// No description provided for @validatorRequestList.
+  ///
+  /// In fr, this message translates to:
+  /// **'Liste des demandes'**
+  String get validatorRequestList;
+
+  /// No description provided for @validatorScheduleTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Planning'**
+  String get validatorScheduleTitle;
+
+  /// No description provided for @validatorFilterAll.
+  ///
+  /// In fr, this message translates to:
+  /// **'Tous'**
+  String get validatorFilterAll;
+
+  /// No description provided for @validatorStatusAssigned.
+  ///
+  /// In fr, this message translates to:
+  /// **'Attribué'**
+  String get validatorStatusAssigned;
+
+  /// No description provided for @validatorFailedToLoadAssignments.
+  ///
+  /// In fr, this message translates to:
+  /// **'Échec du chargement des affectations'**
+  String get validatorFailedToLoadAssignments;
+
+  /// No description provided for @validatorNoAssignmentsFound.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucune affectation trouvée'**
+  String get validatorNoAssignmentsFound;
+
+  /// No description provided for @validatorNoAddress.
+  ///
+  /// In fr, this message translates to:
+  /// **'Pas d\'adresse'**
+  String get validatorNoAddress;
+
+  /// No description provided for @validatorSelectDayToView.
+  ///
+  /// In fr, this message translates to:
+  /// **'Sélectionnez un jour pour voir le planning'**
+  String get validatorSelectDayToView;
+
+  /// No description provided for @validatorNoAssignmentsForDay.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucune affectation pour ce jour'**
+  String get validatorNoAssignmentsForDay;
+
+  /// No description provided for @validatorGeneralInfo.
+  ///
+  /// In fr, this message translates to:
+  /// **'Informations générales'**
+  String get validatorGeneralInfo;
+
+  /// No description provided for @validatorPriority.
+  ///
+  /// In fr, this message translates to:
+  /// **'Priorité'**
+  String get validatorPriority;
+
+  /// No description provided for @validatorSubmitted.
+  ///
+  /// In fr, this message translates to:
+  /// **'Soumis le'**
+  String get validatorSubmitted;
+
+  /// No description provided for @validatorAssignedDate.
+  ///
+  /// In fr, this message translates to:
+  /// **'Date d\'attribution'**
+  String get validatorAssignedDate;
+
+  /// No description provided for @validatorNotes.
+  ///
+  /// In fr, this message translates to:
+  /// **'Notes'**
+  String get validatorNotes;
+
+  /// No description provided for @validatorCode.
+  ///
+  /// In fr, this message translates to:
+  /// **'Code'**
+  String get validatorCode;
+
+  /// No description provided for @validatorCityCode.
+  ///
+  /// In fr, this message translates to:
+  /// **'Code de ville'**
+  String get validatorCityCode;
+
+  /// No description provided for @validatorViewOnMap.
+  ///
+  /// In fr, this message translates to:
+  /// **'Voir sur la carte'**
+  String get validatorViewOnMap;
+
+  /// No description provided for @validatorRequester.
+  ///
+  /// In fr, this message translates to:
+  /// **'Demandeur'**
+  String get validatorRequester;
+
+  /// No description provided for @validatorNameLabel.
+  ///
+  /// In fr, this message translates to:
+  /// **'Nom'**
+  String get validatorNameLabel;
+
+  /// No description provided for @validatorVerificationData.
+  ///
+  /// In fr, this message translates to:
+  /// **'Données de vérification'**
+  String get validatorVerificationData;
+
+  /// No description provided for @validatorPhotosProvided.
+  ///
+  /// In fr, this message translates to:
+  /// **'Photos fournies'**
+  String get validatorPhotosProvided;
+
+  /// No description provided for @validatorDocumentsProvided.
+  ///
+  /// In fr, this message translates to:
+  /// **'Documents fournis'**
+  String get validatorDocumentsProvided;
+
+  /// No description provided for @validatorLocationVerified.
+  ///
+  /// In fr, this message translates to:
+  /// **'Emplacement vérifié'**
+  String get validatorLocationVerified;
+
+  /// No description provided for @validatorAttachments.
+  ///
+  /// In fr, this message translates to:
+  /// **'Pièces jointes'**
+  String get validatorAttachments;
+
+  /// No description provided for @validatorFileCount.
+  ///
+  /// In fr, this message translates to:
+  /// **'{count} fichier(s)'**
+  String validatorFileCount(int count);
+
+  /// No description provided for @validatorAssignedValidatorLabel.
+  ///
+  /// In fr, this message translates to:
+  /// **'Validateur attribué'**
+  String get validatorAssignedValidatorLabel;
+
+  /// No description provided for @validatorProcessingInfo.
+  ///
+  /// In fr, this message translates to:
+  /// **'Informations de traitement'**
+  String get validatorProcessingInfo;
+
+  /// No description provided for @validatorProcessedBy.
+  ///
+  /// In fr, this message translates to:
+  /// **'Traité par'**
+  String get validatorProcessedBy;
+
+  /// No description provided for @validatorProcessedDate.
+  ///
+  /// In fr, this message translates to:
+  /// **'Date de traitement'**
+  String get validatorProcessedDate;
+
+  /// No description provided for @validatorProcessingNotes.
+  ///
+  /// In fr, this message translates to:
+  /// **'Notes de traitement'**
+  String get validatorProcessingNotes;
+
+  /// No description provided for @validatorRejectionReason.
+  ///
+  /// In fr, this message translates to:
+  /// **'Raison du rejet'**
+  String get validatorRejectionReason;
+
+  /// No description provided for @validatorVerify.
+  ///
+  /// In fr, this message translates to:
+  /// **'Vérifier'**
+  String get validatorVerify;
+
+  /// No description provided for @validatorReject.
+  ///
+  /// In fr, this message translates to:
+  /// **'Rejeter'**
+  String get validatorReject;
+
+  /// No description provided for @validatorVerifyAddress.
+  ///
+  /// In fr, this message translates to:
+  /// **'Vérifier l\'adresse'**
+  String get validatorVerifyAddress;
+
+  /// No description provided for @validatorVerifyAddressDesc.
+  ///
+  /// In fr, this message translates to:
+  /// **'Confirmez que l\'adresse a été vérifiée sur place.'**
+  String get validatorVerifyAddressDesc;
+
+  /// No description provided for @validatorNotesHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'ex. Adresse vérifiée sur place, l\'emplacement est exact'**
+  String get validatorNotesHint;
+
+  /// No description provided for @validatorRejectAddress.
+  ///
+  /// In fr, this message translates to:
+  /// **'Rejeter l\'adresse'**
+  String get validatorRejectAddress;
+
+  /// No description provided for @validatorRejectAddressDesc.
+  ///
+  /// In fr, this message translates to:
+  /// **'Fournissez une raison pour rejeter cette adresse.'**
+  String get validatorRejectAddressDesc;
+
+  /// No description provided for @validatorReasonLabel.
+  ///
+  /// In fr, this message translates to:
+  /// **'Raison *'**
+  String get validatorReasonLabel;
+
+  /// No description provided for @validatorReasonHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'ex. Les coordonnées ne correspondent pas à l\'emplacement réel'**
+  String get validatorReasonHint;
+
+  /// No description provided for @validatorReasonRequired.
+  ///
+  /// In fr, this message translates to:
+  /// **'La raison est requise'**
+  String get validatorReasonRequired;
+
+  /// No description provided for @validatorAppointmentConfirmed.
+  ///
+  /// In fr, this message translates to:
+  /// **'Rendez-vous confirmé avec succès'**
+  String get validatorAppointmentConfirmed;
+
+  /// No description provided for @validatorAddressVerified.
+  ///
+  /// In fr, this message translates to:
+  /// **'Adresse vérifiée avec succès'**
+  String get validatorAddressVerified;
+
+  /// No description provided for @validatorAddressRejected.
+  ///
+  /// In fr, this message translates to:
+  /// **'Adresse rejetée'**
+  String get validatorAddressRejected;
+
+  /// No description provided for @validatorCannotLoadImage.
+  ///
+  /// In fr, this message translates to:
+  /// **'Impossible de charger l\'image'**
+  String get validatorCannotLoadImage;
+
+  /// No description provided for @validatorPersonalInformation.
+  ///
+  /// In fr, this message translates to:
+  /// **'Informations personnelles'**
+  String get validatorPersonalInformation;
+
+  /// No description provided for @validatorViewPersonalInfo.
+  ///
+  /// In fr, this message translates to:
+  /// **'Voir les informations personnelles'**
+  String get validatorViewPersonalInfo;
+
+  /// No description provided for @validatorChangePassword.
+  ///
+  /// In fr, this message translates to:
+  /// **'Changer le mot de passe'**
+  String get validatorChangePassword;
+
+  /// No description provided for @validatorChangeLoginPassword.
+  ///
+  /// In fr, this message translates to:
+  /// **'Changer le mot de passe de connexion'**
+  String get validatorChangeLoginPassword;
+
+  /// No description provided for @validatorPushNotifications.
+  ///
+  /// In fr, this message translates to:
+  /// **'Notifications push'**
+  String get validatorPushNotifications;
+
+  /// No description provided for @validatorPushNotificationsDesc.
+  ///
+  /// In fr, this message translates to:
+  /// **'Recevoir des notifications sur les nouvelles demandes'**
+  String get validatorPushNotificationsDesc;
+
+  /// No description provided for @validatorEmailNotifications.
+  ///
+  /// In fr, this message translates to:
+  /// **'Notifications par e-mail'**
+  String get validatorEmailNotifications;
+
+  /// No description provided for @validatorEmailNotificationsDesc.
+  ///
+  /// In fr, this message translates to:
+  /// **'Recevoir des e-mails sur les activités importantes'**
+  String get validatorEmailNotificationsDesc;
+
+  /// No description provided for @validatorRole.
+  ///
+  /// In fr, this message translates to:
+  /// **'Rôle'**
+  String get validatorRole;
+
+  /// No description provided for @validatorRoleValue.
+  ///
+  /// In fr, this message translates to:
+  /// **'Validateur'**
+  String get validatorRoleValue;
+
+  /// No description provided for @validatorCurrentPassword.
+  ///
+  /// In fr, this message translates to:
+  /// **'Mot de passe actuel'**
+  String get validatorCurrentPassword;
+
+  /// No description provided for @validatorNewPassword.
+  ///
+  /// In fr, this message translates to:
+  /// **'Nouveau mot de passe'**
+  String get validatorNewPassword;
+
+  /// No description provided for @validatorConfirmNewPassword.
+  ///
+  /// In fr, this message translates to:
+  /// **'Confirmer le nouveau mot de passe'**
+  String get validatorConfirmNewPassword;
+
+  /// No description provided for @validatorMapRequestId.
+  ///
+  /// In fr, this message translates to:
+  /// **'ID de demande'**
+  String get validatorMapRequestId;
+
+  /// No description provided for @validatorMapDirectionsHere.
+  ///
+  /// In fr, this message translates to:
+  /// **'Obtenir l\'itinéraire vers ici'**
+  String get validatorMapDirectionsHere;
+
+  /// No description provided for @validatorMapFindingRoute.
+  ///
+  /// In fr, this message translates to:
+  /// **'Recherche d\'itinéraire...'**
+  String get validatorMapFindingRoute;
+
+  /// No description provided for @validatorMapLocationError.
+  ///
+  /// In fr, this message translates to:
+  /// **'Erreur de localisation : {error}'**
+  String validatorMapLocationError(String error);
+
+  /// No description provided for @validatorMapDirectionsError.
+  ///
+  /// In fr, this message translates to:
+  /// **'Erreur d\'itinéraire : {error}'**
+  String validatorMapDirectionsError(String error);
+
+  /// No description provided for @validatorMapArrivedDestination.
+  ///
+  /// In fr, this message translates to:
+  /// **'🎉 Vous êtes arrivé !'**
+  String get validatorMapArrivedDestination;
+
+  /// No description provided for @validatorMapOpenInGoogleMaps.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ouvrir dans Google Maps'**
+  String get validatorMapOpenInGoogleMaps;
 }
 
 class _AppLocalizationsDelegate

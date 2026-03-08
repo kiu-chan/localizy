@@ -339,5 +339,121 @@
     "placeholders": {
       "error": {"type": "String"}
     }
-  }
+  },
+
+  "requests": "Requests",
+
+  "validatorFailedToLoadDashboard": "Failed to load dashboard",
+  "validatorHello": "Hello, {name}!",
+  "@validatorHello": {
+    "placeholders": {
+      "name": {"type": "String"}
+    }
+  },
+  "validatorPendingAndScheduled": "You have {pending} pending & {scheduled} scheduled tasks",
+  "@validatorPendingAndScheduled": {
+    "placeholders": {
+      "pending": {"type": "int"},
+      "scheduled": {"type": "int"}
+    }
+  },
+  "validatorAppointmentsToday": "{count} appointment(s) today",
+  "@validatorAppointmentsToday": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "validatorStatistics": "Statistics",
+  "validatorTotalAssigned": "Total Assigned",
+  "validatorAwaitingConfirm": "Awaiting Confirm",
+  "validatorScheduledStat": "Scheduled",
+  "validatorVerifiedStat": "Verified",
+  "validatorRejectedStat": "Rejected",
+  "validatorToday": "Today",
+  "validatorRecentAssignments": "Recent Assignments",
+  "validatorNoRecentAssignments": "No recent assignments",
+
+  "validatorRequestList": "Request List",
+  "validatorScheduleTitle": "Schedule",
+  "validatorFilterAll": "All",
+  "validatorStatusAssigned": "Assigned",
+  "validatorFailedToLoadAssignments": "Failed to load assignments",
+  "validatorNoAssignmentsFound": "No assignments found",
+  "validatorNoAddress": "No address",
+  "validatorSelectDayToView": "Select a day to view schedule",
+  "validatorNoAssignmentsForDay": "No assignments for this day",
+
+  "validatorGeneralInfo": "General Info",
+  "validatorPriority": "Priority",
+  "validatorSubmitted": "Submitted",
+  "validatorAssignedDate": "Assigned Date",
+  "validatorNotes": "Notes",
+  "validatorCode": "Code",
+  "validatorCityCode": "City Code",
+  "validatorViewOnMap": "View on Map",
+  "validatorRequester": "Requester",
+  "validatorNameLabel": "Name",
+  "validatorVerificationData": "Verification Data",
+  "validatorPhotosProvided": "Photos Provided",
+  "validatorDocumentsProvided": "Documents Provided",
+  "validatorLocationVerified": "Location Verified",
+  "validatorAttachments": "Attachments",
+  "validatorFileCount": "{count} file(s)",
+  "@validatorFileCount": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "validatorAssignedValidatorLabel": "Assigned Validator",
+  "validatorProcessingInfo": "Processing Info",
+  "validatorProcessedBy": "Processed By",
+  "validatorProcessedDate": "Processed Date",
+  "validatorProcessingNotes": "Processing Notes",
+  "validatorRejectionReason": "Rejection Reason",
+  "validatorVerify": "Verify",
+  "validatorReject": "Reject",
+  "validatorVerifyAddress": "Verify Address",
+  "validatorVerifyAddressDesc": "Confirm the address has been verified on-site.",
+  "validatorNotesHint": "e.g. Address verified on-site, location is accurate",
+  "validatorRejectAddress": "Reject Address",
+  "validatorRejectAddressDesc": "Provide a reason for rejecting this address.",
+  "validatorReasonLabel": "Reason *",
+  "validatorReasonHint": "e.g. Coordinates do not match actual location",
+  "validatorReasonRequired": "Reason is required",
+  "validatorAppointmentConfirmed": "Appointment confirmed successfully",
+  "validatorAddressVerified": "Address verified successfully",
+  "validatorAddressRejected": "Address rejected",
+  "validatorCannotLoadImage": "Cannot load image",
+
+  "validatorPersonalInformation": "Personal Information",
+  "validatorViewPersonalInfo": "View personal information",
+  "validatorChangePassword": "Change Password",
+  "validatorChangeLoginPassword": "Change login password",
+  "validatorPushNotifications": "Push Notifications",
+  "validatorPushNotificationsDesc": "Receive notifications about new requests",
+  "validatorEmailNotifications": "Email Notifications",
+  "validatorEmailNotificationsDesc": "Receive emails about important activities",
+  "validatorRole": "Role",
+  "validatorRoleValue": "Validator",
+  "validatorCurrentPassword": "Current Password",
+  "validatorNewPassword": "New Password",
+  "validatorConfirmNewPassword": "Confirm New Password",
+
+  "validatorMapRequestId": "Request ID",
+  "validatorMapDirectionsHere": "Get directions to here",
+  "validatorMapFindingRoute": "Finding route...",
+  "validatorMapLocationError": "Error getting location: {error}",
+  "@validatorMapLocationError": {
+    "placeholders": {
+      "error": {"type": "String"}
+    }
+  },
+  "validatorMapDirectionsError": "Error finding route: {error}",
+  "@validatorMapDirectionsError": {
+    "placeholders": {
+      "error": {"type": "String"}
+    }
+  },
+  "validatorMapArrivedDestination": "🎉 You have arrived!",
+  "validatorMapOpenInGoogleMaps": "Open in Google Maps"
 }

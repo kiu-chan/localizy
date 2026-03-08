@@ -15,8 +15,6 @@ class SettingsPage extends StatefulWidget {
 }
 
 class _SettingsPageState extends State<SettingsPage> {
-  bool _notificationsEnabled = true;
-  bool _emailNotifications = true;
   String _userName = '';
   String _userEmail = '';
 
@@ -73,39 +71,16 @@ class _SettingsPageState extends State<SettingsPage> {
                   _buildCard([
                     _buildTile(
                       icon: Icons.person_outline,
-                      title: 'Personal Information',
-                      subtitle: _userEmail.isNotEmpty ? _userEmail : 'View personal information',
+                      title: l10n.validatorPersonalInformation,
+                      subtitle: _userEmail.isNotEmpty ? _userEmail : l10n.validatorViewPersonalInfo,
                       onTap: _showPersonalInfoDialog,
                     ),
                     const Divider(height: 1),
                     _buildTile(
                       icon: Icons.lock_outline,
-                      title: 'Change Password',
-                      subtitle: 'Change login password',
+                      title: l10n.validatorChangePassword,
+                      subtitle: l10n.validatorChangeLoginPassword,
                       onTap: _showChangePasswordDialog,
-                    ),
-                  ]),
-
-                  const SizedBox(height: 24),
-
-                  // Notifications
-                  _buildSectionTitle(l10n.notifications),
-                  const SizedBox(height: 12),
-                  _buildCard([
-                    _buildSwitchTile(
-                      icon: Icons.notifications_outlined,
-                      title: 'Push Notifications',
-                      subtitle: 'Receive notifications about new requests',
-                      value: _notificationsEnabled,
-                      onChanged: (v) => setState(() => _notificationsEnabled = v),
-                    ),
-                    const Divider(height: 1),
-                    _buildSwitchTile(
-                      icon: Icons.email_outlined,
-                      title: 'Email Notifications',
-                      subtitle: 'Receive emails about important activities',
-                      value: _emailNotifications,
-                      onChanged: (v) => setState(() => _emailNotifications = v),
                     ),
                   ]),
 
@@ -263,47 +238,6 @@ class _SettingsPageState extends State<SettingsPage> {
     );
   }
 
-  Widget _buildSwitchTile({
-    required IconData icon,
-    required String title,
-    required String subtitle,
-    required bool value,
-    required ValueChanged<bool> onChanged,
-  }) {
-    return Padding(
-      padding: const EdgeInsets.all(16),
-      child: Row(
-        children: [
-          Container(
-            padding: const EdgeInsets.all(10),
-            decoration: BoxDecoration(
-              color: Colors.green.withValues(alpha: 0.1),
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: Icon(icon, color: Colors.green.shade700, size: 24),
-          ),
-          const SizedBox(width: 16),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(title,
-                    style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
-                const SizedBox(height: 2),
-                Text(subtitle,
-                    style: TextStyle(fontSize: 13, color: Colors.grey.shade600)),
-              ],
-            ),
-          ),
-          Switch(
-            value: value,
-            onChanged: onChanged,
-            activeThumbColor: Colors.green.shade700,
-          ),
-        ],
-      ),
-    );
-  }
 
   Widget _buildLanguageSelector(
     BuildContext context,
@@ -453,14 +387,14 @@ class _SettingsPageState extends State<SettingsPage> {
       context: context,
       builder: (ctx) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        title: const Text('Personal Information'),
+        title: Text(l10n.validatorPersonalInformation),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             _infoRow(l10n.fullName, _userName.isNotEmpty ? _userName : '-'),
             _infoRow(l10n.email, _userEmail.isNotEmpty ? _userEmail : '-'),
-            _infoRow('Role', 'Validator'),
+            _infoRow(l10n.validatorRole, l10n.validatorRoleValue),
           ],
         ),
         actions: [
@@ -479,34 +413,34 @@ class _SettingsPageState extends State<SettingsPage> {
       context: context,
       builder: (ctx) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        title: const Text('Change Password'),
+        title: Text(l10n.validatorChangePassword),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const TextField(
+            TextField(
               obscureText: true,
               decoration: InputDecoration(
-                labelText: 'Current Password',
-                border: OutlineInputBorder(),
-                prefixIcon: Icon(Icons.lock_outline),
+                labelText: l10n.validatorCurrentPassword,
+                border: const OutlineInputBorder(),
+                prefixIcon: const Icon(Icons.lock_outline),
               ),
             ),
             const SizedBox(height: 16),
-            const TextField(
+            TextField(
               obscureText: true,
               decoration: InputDecoration(
-                labelText: 'New Password',
-                border: OutlineInputBorder(),
-                prefixIcon: Icon(Icons.lock),
+                labelText: l10n.validatorNewPassword,
+                border: const OutlineInputBorder(),
+                prefixIcon: const Icon(Icons.lock),
               ),
             ),
             const SizedBox(height: 16),
-            const TextField(
+            TextField(
               obscureText: true,
               decoration: InputDecoration(
-                labelText: 'Confirm New Password',
-                border: OutlineInputBorder(),
-                prefixIcon: Icon(Icons.lock),
+                labelText: l10n.validatorConfirmNewPassword,
+                border: const OutlineInputBorder(),
+                prefixIcon: const Icon(Icons.lock),
               ),
             ),
           ],
@@ -522,7 +456,7 @@ class _SettingsPageState extends State<SettingsPage> {
               backgroundColor: Colors.green.shade700,
               foregroundColor: Colors.white,
             ),
-            child: const Text('Change Password'),
+            child: Text(l10n.validatorChangePassword),
           ),
         ],
       ),

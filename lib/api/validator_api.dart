@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:flutter/foundation.dart';
 import 'package:localizy/api/main_api.dart';
 
 class ValidationAddress {
@@ -236,6 +237,7 @@ class ValidatorApi {
   /// Lấy dữ liệu tổng quan cho Validator: thống kê + 10 task gần nhất
   static Future<ValidatorDashboard> getValidatorDashboard() async {
     final data = await MainApi.instance.getJson('api/dashboard/validator');
+    debugPrint('[ValidatorApi] getValidatorDashboard: $data');
     return ValidatorDashboard.fromJson(data as Map<String, dynamic>);
   }
 
@@ -243,6 +245,7 @@ class ValidatorApi {
   /// Lấy danh sách các yêu cầu xác minh được phân công cho validator hiện tại
   static Future<List<ValidationAssignment>> getMyAssignments() async {
     final data = await MainApi.instance.getJson('api/validations/my-assignments');
+    debugPrint('[ValidatorApi] getMyAssignments: $data');
     if (data is List) {
       return data
           .map((e) => ValidationAssignment.fromJson(e as Map<String, dynamic>))
@@ -259,6 +262,7 @@ class ValidatorApi {
       'api/validations/$id/verify',
       {'notes': notes},
     );
+    debugPrint('[ValidatorApi] verifyValidation $id: ${resp.statusCode} ${resp.body}');
     if (resp.statusCode == 200 || resp.statusCode == 201) {
       return ValidationAssignment.fromJson(
           json.decode(resp.body) as Map<String, dynamic>);
@@ -269,15 +273,13 @@ class ValidatorApi {
   /// POST /api/validations/{id}/reject
   /// Validator từ chối validation
   /// [reason] - lý do từ chối (bắt buộc)
-  static Future<ValidationAssignment> rejectValidation(String id, String reason) async {
+  static Future<void> rejectValidation(String id, String reason) async {
     final resp = await MainApi.instance.postJson(
       'api/validations/$id/reject',
       {'reason': reason},
     );
-    if (resp.statusCode == 200 || resp.statusCode == 201) {
-      return ValidationAssignment.fromJson(
-          json.decode(resp.body) as Map<String, dynamic>);
-    }
+    debugPrint('[ValidatorApi] rejectValidation $id: ${resp.statusCode} ${resp.body}');
+    if (resp.statusCode == 200 || resp.statusCode == 201) return;
     _throwFromResponse(resp, 'Reject validation failed');
   }
 
@@ -289,6 +291,7 @@ class ValidatorApi {
       'api/addresses/$addressId/review',
       {'comments': comments},
     );
+    debugPrint('[ValidatorApi] reviewAddress $addressId: ${resp.statusCode} ${resp.body}');
     if (resp.statusCode >= 200 && resp.statusCode < 300) return;
     _throwFromResponse(resp, 'Review address failed');
   }
@@ -301,6 +304,7 @@ class ValidatorApi {
       'api/addresses/$addressId/reject',
       {'comments': comments},
     );
+    debugPrint('[ValidatorApi] rejectAddress $addressId: ${resp.statusCode} ${resp.body}');
     if (resp.statusCode >= 200 && resp.statusCode < 300) return;
     _throwFromResponse(resp, 'Reject address failed');
   }
@@ -324,6 +328,7 @@ class ValidatorApi {
       'api/validations/$id/confirm-appointment',
       {},
     );
+    debugPrint('[ValidatorApi] confirmAppointment $id: ${resp.statusCode} ${resp.body}');
     if (resp.statusCode == 200 || resp.statusCode == 201) {
       final body = json.decode(resp.body);
       return ValidationAssignment.fromJson(body as Map<String, dynamic>);

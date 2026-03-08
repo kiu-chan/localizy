@@ -192,23 +192,6 @@ class MapTypeSelector extends StatelessWidget {
     }
   }
 
-  String _getMapTypeLabel(BuildContext context, MapType mapType) {
-    final l10n = AppLocalizations.of(context);
-    
-    switch (mapType) {
-      case MapType. normal:
-        return l10n?.normal ??  'Normal';
-      case MapType.satellite:
-        return l10n?.satellite ?? 'Satellite';
-      case MapType. terrain:
-        return l10n?.terrain ?? 'Terrain';
-      case MapType.hybrid:
-        return l10n?.hybrid ?? 'Hybrid';
-      default:
-        return l10n?.normal ?? 'Normal';
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return Positioned(
@@ -221,39 +204,20 @@ class MapTypeSelector extends StatelessWidget {
           onTap: () => _showMapTypeBottomSheet(context),
           borderRadius:  BorderRadius.circular(10),
           child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+            width: 40,
+            height: 40,
             decoration: BoxDecoration(
-              color: Colors. white,
+              color: Colors.white,
               borderRadius: BorderRadius.circular(10),
               border: Border.all(
                 color: Colors.grey.shade200,
                 width: 1,
               ),
             ),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Icon(
-                  _getMapTypeIcon(currentMapType),
-                  color: Colors.green.shade700,
-                  size: 20,
-                ),
-                const SizedBox(width: 8),
-                Text(
-                  _getMapTypeLabel(context, currentMapType),
-                  style: TextStyle(
-                    color: Colors.green.shade700,
-                    fontWeight: FontWeight.w600,
-                    fontSize: 14,
-                  ),
-                ),
-                const SizedBox(width: 4),
-                Icon(
-                  Icons.arrow_drop_down,
-                  color: Colors.green. shade700,
-                  size:  24,
-                ),
-              ],
+            child: Icon(
+              _getMapTypeIcon(currentMapType),
+              color: Colors.green.shade700,
+              size: 20,
             ),
           ),
         ),

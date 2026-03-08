@@ -53,16 +53,15 @@ class _DirectionsPanelState extends State<DirectionsPanel> {
           left: 0,
           right:  0,
           bottom: 0,
-          child: SafeArea(
-            child: GestureDetector(
+          child: GestureDetector(
               onVerticalDragUpdate: (details) {
                 if (details.primaryDelta! < -10) {
-                  if (! _isExpanded) {
+                  if (!_isExpanded) {
                     setState(() {
                       _isExpanded = true;
                     });
                   }
-                } else if (details.primaryDelta!  > 10) {
+                } else if (details.primaryDelta! > 10) {
                   if (_isExpanded) {
                     setState(() {
                       _isExpanded = false;
@@ -73,9 +72,10 @@ class _DirectionsPanelState extends State<DirectionsPanel> {
               child: AnimatedContainer(
                 duration: const Duration(milliseconds: 300),
                 curve: Curves.easeInOut,
-                height: _isExpanded 
-                    ? MediaQuery.of(context).size.height * 0.6 
-                    :  (widget.isNavigating ?  140 : 220),
+                height: (_isExpanded
+                        ? MediaQuery.of(context).size.height * 0.6
+                        : (widget.isNavigating ? 140.0 : 220.0)) +
+                    MediaQuery.of(context).padding.bottom,
                 decoration: BoxDecoration(
                   color: Colors.white,
                   borderRadius: const BorderRadius.vertical(
@@ -323,7 +323,6 @@ class _DirectionsPanelState extends State<DirectionsPanel> {
               ),
             ),
           ),
-        ),
         // Navigation card - hiển thị khi đang điều hướng - ở trên cùng
         if (widget. isNavigating && currentStep != null)
           Positioned(
