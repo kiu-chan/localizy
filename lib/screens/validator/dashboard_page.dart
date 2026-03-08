@@ -1,176 +1,226 @@
 import 'package:flutter/material.dart';
+import 'package:localizy/api/auth_api.dart';
+import 'package:localizy/api/validator_api.dart';
 
-class DashboardPage extends StatelessWidget {
+class DashboardPage extends StatefulWidget {
   const DashboardPage({super.key});
+
+  @override
+  State<DashboardPage> createState() => _DashboardPageState();
+}
+
+class _DashboardPageState extends State<DashboardPage> {
+  ValidatorDashboard? _dashboard;
+  String _validatorName = 'Validator';
+  bool _isLoading = true;
+  String? _error;
+
+  @override
+  void initState() {
+    super.initState();
+    _load();
+  }
+
+  Future<void> _load() async {
+    setState(() {
+      _isLoading = true;
+      _error = null;
+    });
+    try {
+      final results = await Future.wait([
+        ValidatorApi.getValidatorDashboard(),
+        AuthService.getStoredUser(),
+      ]);
+      final dashboard = results[0] as ValidatorDashboard;
+      final user = results[1] as AuthUser?;
+      setState(() {
+        _dashboard = dashboard;
+        if (user != null && user.fullName.isNotEmpty) {
+          _validatorName = user.fullName;
+        }
+        _isLoading = false;
+      });
+    } catch (e) {
+      setState(() {
+        _error = e.toString();
+        _isLoading = false;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey. shade100,
-      appBar:  AppBar(
+      backgroundColor: Colors.grey.shade100,
+      appBar: AppBar(
         title: const Text(
           'Dashboard',
-          style: TextStyle(
-            fontWeight: FontWeight.bold,
-            color: Colors.white,
-          ),
+          style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
         ),
         backgroundColor: Colors.green.shade700,
         elevation: 0,
         automaticallyImplyLeading: false,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.refresh, color: Colors.white),
+            onPressed: _load,
+          ),
+        ],
       ),
-      body: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Header với gradient
-            Container(
-              width: double.infinity,
-              padding: const EdgeInsets.all(20),
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                  colors: [
-                    Colors.green.shade700,
-                    Colors.green.shade500,
-                  ],
-                ),
-                borderRadius: const BorderRadius.only(
-                  bottomLeft: Radius.circular(30),
-                  bottomRight: Radius.circular(30),
-                ),
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text(
-                    'Hello, Validator!',
-                    style:  TextStyle(
-                      fontSize:  24,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
+      body: _isLoading
+          ? const Center(child: CircularProgressIndicator())
+          : _error != null
+              ? _buildError()
+              : RefreshIndicator(
+                  onRefresh: _load,
+                  child: SingleChildScrollView(
+                    physics: const AlwaysScrollableScrollPhysics(),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        _buildHeader(),
+                        Padding(
+                          padding: const EdgeInsets.all(16),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              _buildStatsGrid(),
+                              const SizedBox(height: 24),
+                              _buildRecentSection(),
+                            ],
+                          ),
+                        ),
+                      ],
                     ),
                   ),
-                  const SizedBox(height: 8),
-                  Text(
-                    'Welcome back',
-                    style: TextStyle(
-                      fontSize: 16,
-                      color: Colors.white.withValues(alpha: 0.9),
-                    ),
-                  ),
-                ],
-              ),
+                ),
+    );
+  }
+
+  Widget _buildError() {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(Icons.error_outline, size: 64, color: Colors.red.shade300),
+          const SizedBox(height: 16),
+          Text('Failed to load dashboard',
+              style: TextStyle(fontSize: 16, color: Colors.grey.shade600)),
+          const SizedBox(height: 8),
+          ElevatedButton.icon(
+            onPressed: _load,
+            icon: const Icon(Icons.refresh),
+            label: const Text('Retry'),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.green.shade700,
+              foregroundColor: Colors.white,
             ),
+          ),
+        ],
+      ),
+    );
+  }
 
-            // Thống kê cards
-            Padding(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+  Widget _buildHeader() {
+    final stats = _dashboard!.taskStats;
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.fromLTRB(20, 20, 20, 28),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          colors: [Colors.green.shade700, Colors.green.shade500],
+        ),
+        borderRadius: const BorderRadius.only(
+          bottomLeft: Radius.circular(30),
+          bottomRight: Radius.circular(30),
+        ),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Hello, $_validatorName!',
+            style: const TextStyle(
+              fontSize: 22,
+              fontWeight: FontWeight.bold,
+              color: Colors.white,
+            ),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            'You have ${stats.assignedCount} pending & ${stats.scheduledCount} scheduled tasks',
+            style: TextStyle(
+              fontSize: 14,
+              color: Colors.white.withValues(alpha: 0.9),
+            ),
+          ),
+          if (stats.todayAppointments > 0) ...[
+            const SizedBox(height: 10),
+            Container(
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+              decoration: BoxDecoration(
+                color: Colors.white.withValues(alpha: 0.2),
+                borderRadius: BorderRadius.circular(20),
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
                 children: [
-                  const Text(
-                    'Statistics',
-                    style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: _buildStatCard(
-                          icon: Icons.pending_actions,
-                          title: 'Pending',
-                          value: '12',
-                          color: Colors.orange,
-                        ),
-                      ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: _buildStatCard(
-                          icon: Icons. check_circle,
-                          title: 'Completed',
-                          value: '45',
-                          color: Colors.green,
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 12),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: _buildStatCard(
-                          icon: Icons.cancel,
-                          title: 'Rejected',
-                          value: '3',
-                          color: Colors.red,
-                        ),
-                      ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: _buildStatCard(
-                          icon: Icons.access_time,
-                          title:  'Today',
-                          value: '5',
-                          color: Colors.blue,
-                        ),
-                      ),
-                    ],
-                  ),
-
-                  const SizedBox(height: 24),
-                  const Text(
-                    'Recent Activities',
-                    style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-
-                  // Danh sách hoạt động
-                  _buildActivityItem(
-                    icon: Icons.location_on,
-                    title:  'New location in Hanoi',
-                    subtitle: '2 hours ago',
-                    status: 'Pending',
-                    statusColor: Colors.orange,
-                  ),
-                  _buildActivityItem(
-                    icon: Icons.edit_location,
-                    title: 'Update location information',
-                    subtitle: '5 hours ago',
-                    status: 'Approved',
-                    statusColor: Colors.green,
-                  ),
-                  _buildActivityItem(
-                    icon: Icons.delete_outline,
-                    title: 'Delete location request',
-                    subtitle: '1 day ago',
-                    status: 'Rejected',
-                    statusColor: Colors.red,
+                  const Icon(Icons.today, size: 14, color: Colors.white),
+                  const SizedBox(width: 6),
+                  Text(
+                    '${stats.todayAppointments} appointment${stats.todayAppointments > 1 ? 's' : ''} today',
+                    style: const TextStyle(
+                        fontSize: 13,
+                        color: Colors.white,
+                        fontWeight: FontWeight.w600),
                   ),
                 ],
               ),
             ),
           ],
-        ),
+        ],
       ),
     );
   }
 
-  Widget _buildStatCard({
-    required IconData icon,
-    required String title,
-    required String value,
-    required Color color,
-  }) {
+  Widget _buildStatsGrid() {
+    final s = _dashboard!.taskStats;
+    final cards = [
+      _StatItem(Icons.assignment_ind, 'Total Assigned', s.totalAssigned, Colors.purple),
+      _StatItem(Icons.pending_actions, 'Awaiting Confirm', s.assignedCount, Colors.orange),
+      _StatItem(Icons.event_available, 'Scheduled', s.scheduledCount, Colors.blue),
+      _StatItem(Icons.verified, 'Verified', s.verifiedCount, Colors.green),
+      _StatItem(Icons.cancel, 'Rejected', s.rejectedCount, Colors.red),
+      _StatItem(Icons.today, 'Today', s.todayAppointments, Colors.teal),
+    ];
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text(
+          'Statistics',
+          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+        ),
+        const SizedBox(height: 16),
+        GridView.count(
+          crossAxisCount: 2,
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          crossAxisSpacing: 12,
+          mainAxisSpacing: 12,
+          childAspectRatio: 1.3,
+          children: cards.map(_buildStatCard).toList(),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildStatCard(_StatItem item) {
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
@@ -184,56 +234,74 @@ class DashboardPage extends StatelessWidget {
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Container(
-            padding: const EdgeInsets.all(8),
+            padding: const EdgeInsets.all(7),
             decoration: BoxDecoration(
-              color: color.withValues(alpha: 0.1),
+              color: item.color.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(8),
             ),
-            child:  Icon(
-              icon,
-              color: color,
-              size: 24,
-            ),
+            child: Icon(item.icon, color: item.color, size: 20),
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: 10),
           Text(
-            value,
-            style: const TextStyle(
-              fontSize: 24,
-              fontWeight: FontWeight.bold,
-            ),
+            item.value.toString(),
+            style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
           ),
-          const SizedBox(height: 4),
           Text(
-            title,
-            style: TextStyle(
-              fontSize: 12,
-              color: Colors.grey.shade600,
-            ),
+            item.label,
+            style: TextStyle(fontSize: 11, color: Colors.grey.shade600),
           ),
         ],
       ),
     );
   }
 
-  Widget _buildActivityItem({
-    required IconData icon,
-    required String title,
-    required String subtitle,
-    required String status,
-    required Color statusColor,
-  }) {
+  Widget _buildRecentSection() {
+    final recent = _dashboard!.recentAssignments;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text(
+          'Recent Assignments',
+          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+        ),
+        const SizedBox(height: 16),
+        if (recent.isEmpty)
+          Center(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(vertical: 24),
+              child: Text('No recent assignments',
+                  style: TextStyle(
+                      fontSize: 14, color: Colors.grey.shade500)),
+            ),
+          )
+        else
+          ...recent.map(_buildAssignmentItem),
+      ],
+    );
+  }
+
+  Widget _buildAssignmentItem(ValidationAssignment a) {
+    final (Color color, IconData icon) = switch (a.status) {
+      'Assigned' => (Colors.orange, Icons.assignment_ind),
+      'Scheduled' => (Colors.blue, Icons.event_available),
+      'Verified' => (Colors.green, Icons.verified),
+      'Rejected' => (Colors.red, Icons.cancel),
+      _ => (Colors.grey, Icons.event),
+    };
+
     return Container(
-      margin: const EdgeInsets.only(bottom: 12),
-      padding: const EdgeInsets.all(16),
+      margin: const EdgeInsets.only(bottom: 10),
+      padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: Colors. white,
+        color: Colors.white,
         borderRadius: BorderRadius.circular(12),
-        boxShadow:  [
+        boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.05),
+            color: Colors.black.withValues(alpha: 0.04),
             blurRadius: 5,
             offset: const Offset(0, 2),
           ),
@@ -242,57 +310,73 @@ class DashboardPage extends StatelessWidget {
       child: Row(
         children: [
           Container(
-            padding: const EdgeInsets.all(10),
+            padding: const EdgeInsets.all(9),
             decoration: BoxDecoration(
               color: Colors.green.shade50,
               borderRadius: BorderRadius.circular(10),
             ),
-            child:  Icon(
-              icon,
-              color: Colors.green.shade700,
-              size: 24,
-            ),
+            child:
+                Icon(Icons.location_on, color: Colors.green.shade700, size: 22),
           ),
-          const SizedBox(width:  16),
+          const SizedBox(width: 14),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  title,
+                  a.address?.code ?? a.requestId,
                   style: const TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w600,
-                  ),
+                      fontSize: 14, fontWeight: FontWeight.w600),
                 ),
-                const SizedBox(height: 4),
+                const SizedBox(height: 3),
                 Text(
-                  subtitle,
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: Colors. grey.shade600,
-                  ),
+                  a.assignedDate != null
+                      ? _fmtDate(a.assignedDate!)
+                      : a.requestType,
+                  style:
+                      TextStyle(fontSize: 12, color: Colors.grey.shade600),
                 ),
               ],
             ),
           ),
           Container(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+            padding:
+                const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
             decoration: BoxDecoration(
-              color: statusColor.withValues(alpha: 0.1),
+              color: color.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(20),
             ),
-            child: Text(
-              status,
-              style: TextStyle(
-                fontSize: 12,
-                color: statusColor,
-                fontWeight: FontWeight.w600,
-              ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(icon, size: 11, color: color),
+                const SizedBox(width: 4),
+                Text(
+                  a.status,
+                  style: TextStyle(
+                      fontSize: 11,
+                      color: color,
+                      fontWeight: FontWeight.w600),
+                ),
+              ],
             ),
           ),
         ],
       ),
     );
   }
+
+  String _fmtDate(DateTime dt) {
+    final l = dt.toLocal();
+    return '${l.day.toString().padLeft(2, '0')}/${l.month.toString().padLeft(2, '0')}/${l.year}';
+  }
+}
+
+class _StatItem {
+  final IconData icon;
+  final String label;
+  final int value;
+  final Color color;
+
+  _StatItem(this.icon, this.label, this.value, this.color);
 }

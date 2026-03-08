@@ -7,6 +7,7 @@ Tài liệu chi tiết về tất cả API endpoints của Localizy Server.
 - [Authentication](#authentication)
 - [Error Handling](#error-handling)
 - [Auth APIs](#auth-apis)
+- [Admin Dashboard API](#admin-dashboard-api)
 - [User APIs](#user-apis)
 - [Business APIs](#business-apis)
 - [Address APIs](#address-apis)
@@ -15,6 +16,7 @@ Tài liệu chi tiết về tất cả API endpoints của Localizy Server.
 - [Transaction APIs](#transaction-apis)
 - [City APIs](#city-apis)
 - [Setting APIs](#setting-apis)
+- [Home Slide APIs](#home-slide-apis)
 - [Common Use Cases](#common-use-cases)
 
 ---
@@ -111,6 +113,62 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
 | 403 | Forbidden | Không có quyền truy cập |
 | 404 | Not Found | Resource không tồn tại |
 | 500 | Internal Server Error | Lỗi server |
+
+---
+
+## 📊 Admin Dashboard API
+
+Trả về tổng quan toàn hệ thống cho Admin, bao gồm thống kê users, địa chỉ, validations, parking và cities.
+
+```http
+GET /api/dashboard
+```
+
+**Authorization:** Admin
+
+**Response:** `200 OK`
+```json
+{
+  "users": {
+    "totalUsers": 100,
+    "adminUsers": 2,
+    "validatorUsers": 5,
+    "regularUsers": 93
+  },
+  "addresses": {
+    "totalAddresses": 500,
+    "reviewedAddresses": 420,
+    "pendingAddresses": 60,
+    "rejectedAddresses": 20
+  },
+  "validations": {
+    "totalRequests": 200,
+    "pendingRequests": 50,
+    "verifiedRequests": 130,
+    "rejectedRequests": 20,
+    "highPriorityRequests": 10,
+    "todayRequests": 5
+  },
+  "parking": {
+    "totalTickets": 1500,
+    "activeTickets": 80,
+    "expiredTickets": 1400,
+    "todayTickets": 25,
+    "totalRevenue": 52500000
+  },
+  "cities": {
+    "totalCities": 10,
+    "activeCities": 8,
+    "inactiveCities": 2,
+    "totalAddresses": 500,
+    "topCities": [
+      { "id": "...", "name": "Hà Nội", "code": "VN-HN", "addressCount": 150 }
+    ]
+  }
+}
+```
+
+> 5 stats được fetch tuần tự (EF Core DbContext không hỗ trợ concurrent queries trên cùng một scoped instance).
 
 ---
 
@@ -281,19 +339,7 @@ GET /api/users/{id}
 
 ---
 
-### 6. Lấy thông tin user hiện tại
-
-```http
-GET /api/users/me
-```
-
-**Authorization:** Authenticated
-
-**Response:** `200 OK` - User object
-
----
-
-### 7. Tạo user mới
+### 6. Tạo user mới
 
 ```http
 POST /api/users
@@ -321,13 +367,15 @@ POST /api/users
 
 ---
 
-### 8. Cập nhật user
+### 7. Cập nhật user
 
 ```http
 PUT /api/users/{id}
 ```
 
 **Authorization:** Authenticated
+
+> **Lưu ý:** Chỉ Admin mới có thể thay đổi `role`. User thường chỉ cập nhật được thông tin của chính mình.
 
 **Request Body:** (tất cả fields đều optional)
 ```json
@@ -349,7 +397,7 @@ PUT /api/users/{id}
 
 ---
 
-### 9. Xóa user
+### 8. Xóa user
 
 ```http
 DELETE /api/users/{id}
@@ -364,7 +412,7 @@ DELETE /api/users/{id}
 
 ---
 
-### 10. Đổi mật khẩu
+### 9. Đổi mật khẩu
 
 ```http
 POST /api/users/{id}/change-password
@@ -980,6 +1028,12 @@ Pending → Assigned → Scheduled → Verified
 | `Verified` | Đã xác minh thành công, địa chỉ vào danh sách | Admin/Validator |
 | `Rejected` | Bị từ chối | Admin/Validator |
 
+### Lưu ý về URL tài liệu
+
+> Tất cả các trường `idDocumentUrl` và `addressProofUrl` trong response đều trả về **full URL** (bao gồm scheme + host), giúp client có thể truy cập trực tiếp để xem tài liệu xác minh.
+>
+> Ví dụ: `http://localhost:5088/uploads/verifications/cccd_xxx.jpg`
+
 ### Validation Response Object
 
 ```json
@@ -1005,7 +1059,9 @@ Pending → Assigned → Scheduled → Verified
   "verificationData": {
     "photosProvided": true,
     "documentsProvided": true,
-    "locationVerified": false
+    "locationVerified": false,
+    "idDocumentUrl": "http://localhost:5088/uploads/verifications/cccd_xxx.jpg",
+    "addressProofUrl": "http://localhost:5088/uploads/verifications/proof_xxx.jpg"
   },
   "attachmentsCount": 2,
   "assignedValidator": {
@@ -1228,6 +1284,43 @@ DELETE /api/validations/{id}
 
 ## Endpoints dành cho Validator
 
+### 12. Validator Dashboard
+
+Lấy dữ liệu tổng quan cho Validator: thống kê task và 10 task được phân công gần nhất.
+
+```http
+GET /api/dashboard/validator
+```
+
+**Authorization:** Validator
+
+**Response:** `200 OK`
+```json
+{
+  "taskStats": {
+    "totalAssigned": 20,
+    "assignedCount": 3,
+    "scheduledCount": 5,
+    "verifiedCount": 10,
+    "rejectedCount": 2,
+    "todayAppointments": 2
+  },
+  "recentAssignments": [ /* Array of Validation objects */ ]
+}
+```
+
+| Field | Mô tả |
+|-------|-------|
+| `totalAssigned` | Tổng số task được phân công |
+| `assignedCount` | Task đang chờ xác nhận lịch hẹn |
+| `scheduledCount` | Task đã xác nhận lịch hẹn |
+| `verifiedCount` | Task đã xác minh thành công |
+| `rejectedCount` | Task đã từ chối |
+| `todayAppointments` | Số lịch hẹn hôm nay |
+| `recentAssignments` | 10 task được phân công gần nhất |
+
+---
+
 ### 13. Xem các task được phân công
 
 Validator xem danh sách các yêu cầu xác minh được Admin phân công.
@@ -1348,8 +1441,8 @@ curl -X POST http://localhost:5088/api/validations/verification-request \
     "photosProvided": true,
     "documentsProvided": true,
     "attachmentsCount": 2,
-    "idDocumentUrl": "/uploads/verifications/cccd_xxx.jpg",
-    "addressProofUrl": "/uploads/verifications/proof_xxx.pdf"
+    "idDocumentUrl": "http://localhost:5088/uploads/verifications/cccd_xxx.jpg",
+    "addressProofUrl": "http://localhost:5088/uploads/verifications/proof_xxx.jpg"
   },
   "location": {
     "latitude": 21.0285,
@@ -1423,8 +1516,8 @@ GET /api/validations/my-validations
     },
     "documentFiles": {
       "idType": "CCCD",
-      "idDocumentUrl": "/uploads/verifications/cccd_xxx.jpg",
-      "addressProofUrl": "/uploads/verifications/proof_xxx.pdf"
+      "idDocumentUrl": "http://localhost:5088/uploads/verifications/cccd_xxx.jpg",
+      "addressProofUrl": "http://localhost:5088/uploads/verifications/proof_xxx.jpg"
     },
     "appointmentInfo": {
       "date": "2024-02-15T09:00:00Z",
@@ -1798,7 +1891,7 @@ DELETE /api/cities/{id}
 ### 11. Toggle active/inactive
 
 ```http
-POST /api/cities/{id}/toggle-active
+PATCH /api/cities/{id}/toggle-active
 ```
 
 **Authorization:** Admin
@@ -1807,15 +1900,248 @@ POST /api/cities/{id}/toggle-active
 
 ## ⚙️ Setting APIs
 
-```http
-GET    /api/settings                    # Lấy tất cả (Admin)
-GET    /api/settings/category/{cat}     # Lấy theo category (Admin)
-GET    /api/settings/{id}               # Lấy theo ID (Admin)
-GET    /api/settings/key/{key}          # Lấy theo key (Public)
-POST   /api/settings                    # Tạo mới (Admin)
-PUT    /api/settings/{id}               # Cập nhật (Admin)
-DELETE /api/settings/{id}               # Xóa (Admin)
+### Setting Response Object
+
+```json
+{
+  "key": "site_name",
+  "value": "Localizy",
+  "category": "general",
+  "description": "Tên website"
+}
 ```
+
+### WebsiteConfig Response Object
+
+```json
+{
+  "siteName": "Localizy",
+  "siteDescription": "...",
+  "logoUrl": "/uploads/logo.png",
+  "primaryColor": "#1976D2"
+}
+```
+
+---
+
+### 1. Lấy cấu hình website
+
+```http
+GET /api/settings/website-config
+```
+
+**Authorization:** Public (không cần token)
+
+**Response:** `200 OK` - WebsiteConfig object
+
+---
+
+### 2. Lấy tất cả settings
+
+```http
+GET /api/settings
+```
+
+**Authorization:** Admin
+
+**Response:** `200 OK` - Array of Setting objects
+
+---
+
+### 3. Lấy settings theo category
+
+```http
+GET /api/settings/category/{category}
+```
+
+**Authorization:** Admin
+
+**Path Parameters:**
+- `category`: Tên category (VD: `general`, `parking`, `payment`)
+
+**Response:** `200 OK` - Array of Setting objects
+
+---
+
+### 4. Lấy setting theo key
+
+```http
+GET /api/settings/{key}
+```
+
+**Authorization:** Admin
+
+**Path Parameters:**
+- `key`: Key của setting (VD: `site_name`)
+
+**Response:** `200 OK` - Setting object
+
+**Errors:**
+- `404` - Setting không tồn tại
+
+---
+
+### 5. Cập nhật setting
+
+```http
+PUT /api/settings/{key}
+```
+
+**Authorization:** Admin
+
+**Path Parameters:**
+- `key`: Key của setting cần cập nhật
+
+**Request Body:**
+```json
+{
+  "value": "Localizy Platform",
+  "description": "Mô tả mới (optional)"
+}
+```
+
+**Response:** `200 OK` - Setting object đã cập nhật
+
+**Errors:**
+- `404` - Setting không tồn tại
+
+---
+
+## 🖼️ Home Slide APIs
+
+Quản lý các slide ảnh hiển thị trên trang chủ.
+
+### HomeSlide Response Object
+
+```json
+{
+  "id": "3fa85f64-...",
+  "content": "Chào mừng đến với Localizy",
+  "imageUrl": "/uploads/home-slides/slide1.jpg",
+  "order": 1,
+  "isActive": true,
+  "createdAt": "2024-01-10T10:30:00Z",
+  "updatedAt": null
+}
+```
+
+---
+
+### 1. Lấy các slide đang active
+
+```http
+GET /api/homeslides/active
+```
+
+**Authorization:** Public
+
+**Response:** `200 OK` - Array of HomeSlide objects (chỉ các slide có `isActive = true`)
+
+---
+
+### 2. Lấy tất cả slides (Admin)
+
+```http
+GET /api/homeslides
+```
+
+**Authorization:** Admin
+
+**Response:** `200 OK` - Array of HomeSlide objects (bao gồm cả slide inactive)
+
+---
+
+### 3. Lấy slide theo ID
+
+```http
+GET /api/homeslides/{id}
+```
+
+**Authorization:** Admin
+
+**Response:** `200 OK` - HomeSlide object
+
+**Errors:**
+- `404` - Slide không tồn tại
+
+---
+
+### 4. Tạo slide mới
+
+```http
+POST /api/homeslides
+```
+
+**Authorization:** Admin
+
+**Content-Type:** `multipart/form-data`
+
+**Form Fields:**
+
+| Field | Type | Required | Mô tả |
+|-------|------|----------|-------|
+| `image` | file | **Có** | File ảnh slide |
+| `content` | string | **Có** | Nội dung/tiêu đề slide |
+| `order` | integer | Không | Thứ tự hiển thị (default: 0) |
+| `isActive` | boolean | Không | Hiển thị hay không (default: true) |
+
+**cURL Example:**
+```bash
+curl -X POST http://localhost:5088/api/homeslides \
+  -H "Authorization: Bearer ADMIN_TOKEN" \
+  -F "image=@/path/to/slide.jpg" \
+  -F "content=Chào mừng đến với Localizy" \
+  -F "order=1" \
+  -F "isActive=true"
+```
+
+**Response:** `201 Created` - HomeSlide object
+
+**Errors:**
+- `400` - Thiếu file ảnh
+
+---
+
+### 5. Cập nhật slide
+
+```http
+PUT /api/homeslides/{id}
+```
+
+**Authorization:** Admin
+
+**Content-Type:** `multipart/form-data`
+
+**Form Fields:** (tất cả đều optional)
+
+| Field | Type | Mô tả |
+|-------|------|-------|
+| `image` | file | Ảnh mới (nếu muốn thay ảnh) |
+| `content` | string | Nội dung mới |
+| `order` | integer | Thứ tự mới |
+| `isActive` | boolean | Trạng thái mới |
+
+**Response:** `200 OK` - HomeSlide object đã cập nhật
+
+**Errors:**
+- `404` - Slide không tồn tại
+
+---
+
+### 6. Xóa slide
+
+```http
+DELETE /api/homeslides/{id}
+```
+
+**Authorization:** Admin
+
+File ảnh liên quan cũng bị xóa khỏi server.
+
+**Response:** `204 No Content`
+
+**Errors:**
+- `404` - Slide không tồn tại
 
 ---
 
