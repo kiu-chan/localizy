@@ -265,7 +265,6 @@ class _BusinessMapPageState extends State<BusinessMapPage> {
 
     try {
       final newAddress = await AddressApi.addAddress(
-        code: data.code,
         name: data.name,
         fullAddress: data.fullAddress,
         latitude: data.lat,

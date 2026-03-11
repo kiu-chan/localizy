@@ -4,13 +4,11 @@ import 'package:flutter/material.dart';
 class FormSnapshot {
   final String name;
   final String fullAddress;
-  final String code;
   final String cityCode;
 
   const FormSnapshot({
     required this.name,
     required this.fullAddress,
-    required this.code,
     required this.cityCode,
   });
 }

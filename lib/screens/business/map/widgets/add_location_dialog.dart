@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:localizy/api/city_api.dart';
 import 'package:localizy/l10n/app_localizations.dart';
 import 'package:localizy/screens/business/map/map_form_snapshot.dart';
 
@@ -16,7 +17,6 @@ class AddLocationPickResult extends AddLocationDialogResult {
 
 /// Người dùng nhấn "Thêm" với form hợp lệ → gửi lên API
 class AddLocationSubmitResult extends AddLocationDialogResult {
-  final String code;
   final String name;
   final String fullAddress;
   final String cityCode;
@@ -24,7 +24,6 @@ class AddLocationSubmitResult extends AddLocationDialogResult {
   final double lng;
 
   AddLocationSubmitResult({
-    required this.code,
     required this.name,
     required this.fullAddress,
     required this.cityCode,
@@ -48,15 +47,22 @@ Future<AddLocationDialogResult?> showAddLocationDialog(
   final nameController = TextEditingController(text: snapshot?.name ?? '');
   final fullAddressController =
       TextEditingController(text: snapshot?.fullAddress ?? '');
-  final codeController = TextEditingController(text: snapshot?.code ?? '');
-  final cityCodeController =
-      TextEditingController(text: snapshot?.cityCode ?? '');
   final latController = TextEditingController(
     text: selectedLatLng?.latitude.toStringAsFixed(6) ?? '',
   );
   final lngController = TextEditingController(
     text: selectedLatLng?.longitude.toStringAsFixed(6) ?? '',
   );
+
+  // Load danh sách thành phố trước khi hiển thị dialog
+  List<CityItem> cities = [];
+  try {
+    cities = await CityApi.getActiveCities();
+  } catch (_) {}
+
+  String? selectedCityCode = snapshot?.cityCode.isNotEmpty == true
+      ? snapshot!.cityCode
+      : (cities.isNotEmpty ? cities.first.code : null);
 
   // 'submit' | 'pick' | 'cancel'
   String action = 'cancel';
@@ -216,34 +222,47 @@ Future<AddLocationDialogResult?> showAddLocationDialog(
                                   : null,
                         ),
                         const SizedBox(height: 12),
-                        Row(
-                          children: [
-                            Expanded(
-                              child: _FormField(
-                                controller: codeController,
-                                label: l10n.mapAddressCode,
-                                hint: 'VN-HN-001',
-                                icon: Icons.qr_code_outlined,
-                                validator: (v) =>
-                                    (v == null || v.trim().isEmpty)
-                                        ? l10n.mapFieldRequired
-                                        : null,
-                              ),
+                        DropdownButtonFormField<String>(
+                          value: selectedCityCode,
+                          decoration: InputDecoration(
+                            labelText: l10n.mapCityCode,
+                            prefixIcon: const Icon(
+                              Icons.location_city_outlined,
+                              size: 18,
+                              color: Colors.grey,
                             ),
-                            const SizedBox(width: 10),
-                            Expanded(
-                              child: _FormField(
-                                controller: cityCodeController,
-                                label: l10n.mapCityCode,
-                                hint: 'VN-HN',
-                                icon: Icons.location_city_outlined,
-                                validator: (v) =>
-                                    (v == null || v.trim().isEmpty)
-                                        ? l10n.mapFieldRequired
-                                        : null,
-                              ),
+                            filled: true,
+                            fillColor: Colors.grey.shade50,
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12),
+                              borderSide:
+                                  BorderSide(color: Colors.grey.shade200),
                             ),
-                          ],
+                            enabledBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12),
+                              borderSide:
+                                  BorderSide(color: Colors.grey.shade200),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12),
+                              borderSide: BorderSide(
+                                  color: Colors.blue.shade400, width: 1.5),
+                            ),
+                            contentPadding: const EdgeInsets.symmetric(
+                                horizontal: 14, vertical: 12),
+                            isDense: true,
+                          ),
+                          items: cities
+                              .map((c) => DropdownMenuItem(
+                                    value: c.code,
+                                    child: Text('${c.name} (${c.code})'),
+                                  ))
+                              .toList(),
+                          onChanged: (v) =>
+                              setDialogState(() => selectedCityCode = v),
+                          validator: (_) => selectedCityCode == null
+                              ? l10n.mapFieldRequired
+                              : null,
                         ),
                         const SizedBox(height: 16),
 
@@ -420,17 +439,15 @@ Future<AddLocationDialogResult?> showAddLocationDialog(
     return AddLocationPickResult(FormSnapshot(
       name: nameController.text,
       fullAddress: fullAddressController.text,
-      code: codeController.text,
-      cityCode: cityCodeController.text,
+      cityCode: selectedCityCode ?? '',
     ));
   }
 
   if (action == 'submit') {
     return AddLocationSubmitResult(
-      code: codeController.text.trim(),
       name: nameController.text.trim(),
       fullAddress: fullAddressController.text.trim(),
-      cityCode: cityCodeController.text.trim(),
+      cityCode: selectedCityCode ?? '',
       lat: double.parse(latController.text.trim()),
       lng: double.parse(lngController.text.trim()),
     );

@@ -16,6 +16,7 @@ class VerificationApi {
     required int attachmentsCount,
     required double latitude,
     required double longitude,
+    String? locationName,
     required String paymentMethod,
     required int paymentAmount,
     DateTime? appointmentDate,
@@ -37,6 +38,9 @@ class VerificationApi {
     request.fields['attachmentsCount'] = attachmentsCount.toString();
     request.fields['latitude'] = latitude.toString();
     request.fields['longitude'] = longitude.toString();
+    if (locationName != null && locationName.isNotEmpty) {
+      request.fields['locationName'] = locationName;
+    }
     request.fields['paymentMethod'] = paymentMethod;
     request.fields['paymentAmount'] = paymentAmount.toString();
 

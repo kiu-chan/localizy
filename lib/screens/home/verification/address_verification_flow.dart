@@ -25,6 +25,7 @@ class _AddressVerificationFlowState extends State<AddressVerificationFlow> {
   File? _addressProof;
   String _idType = 'cmnd';
   Map<String, double>? _location;
+  String? _locationName;
   String? _paymentMethod;
   DateTime? _appointmentDate;
   TimeOfDay? _appointmentTime;
@@ -55,7 +56,13 @@ class _AddressVerificationFlowState extends State<AddressVerificationFlow> {
           break;
         case 1:
           // Map location data
-          _location = data as Map<String, double>?;
+          if (data is Map) {
+            _location = {
+              'lat': data['lat'] as double,
+              'lng': data['lng'] as double,
+            };
+            _locationName = data['locationName'] as String?;
+          }
           break;
         case 2:
           // Payment data
@@ -125,6 +132,7 @@ class _AddressVerificationFlowState extends State<AddressVerificationFlow> {
             (_idDocument != null ? 1 : 0) + (_addressProof != null ? 1 : 0),
         latitude: _location!['lat']!,
         longitude: _location!['lng']!,
+        locationName: _locationName,
         paymentMethod: _paymentMethod ?? 'momo',
         paymentAmount: 100000,
         appointmentDate: _appointmentDate,
@@ -309,6 +317,7 @@ class _AddressVerificationFlowState extends State<AddressVerificationFlow> {
       case 1:
         return MapConfirmationPage(
           initialLocation: _location,
+          initialLocationName: _locationName,
           onNext: _nextStep,
           onPrevious: _previousStep,
         );
@@ -330,6 +339,7 @@ class _AddressVerificationFlowState extends State<AddressVerificationFlow> {
           idDocument: _idDocument,
           addressProof: _addressProof,
           location: _location,
+          locationName: _locationName,
           paymentMethod: _paymentMethod,
           appointmentDate: _appointmentDate,
           appointmentTime: _appointmentTime,

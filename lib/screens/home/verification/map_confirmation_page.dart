@@ -5,12 +5,14 @@ import 'package:localizy/screens/home/verification/map_picker_page.dart';
 
 class MapConfirmationPage extends StatefulWidget {
   final Map<String, double>? initialLocation;
-  final Function(Map<String, double>) onNext;
+  final String? initialLocationName;
+  final Function(Map<String, dynamic>) onNext;
   final VoidCallback onPrevious;
 
   const MapConfirmationPage({
     super.key,
     this.initialLocation,
+    this.initialLocationName,
     required this.onNext,
     required this.onPrevious,
   });
@@ -23,6 +25,7 @@ class _MapConfirmationPageState extends State<MapConfirmationPage> {
   Map<String, double>? _selectedLocation;
   String _address = '';
   GoogleMapController? _mapController;
+  final TextEditingController _locationNameController = TextEditingController();
 
   @override
   void initState() {
@@ -31,6 +34,7 @@ class _MapConfirmationPageState extends State<MapConfirmationPage> {
     if (_selectedLocation != null) {
       _address = 'Lat: ${_selectedLocation!['lat']! .toStringAsFixed(6)}, Lng: ${_selectedLocation!['lng']!.toStringAsFixed(6)}';
     }
+    _locationNameController.text = widget.initialLocationName ?? '';
   }
 
   Future<void> _openMapPicker() async {
@@ -64,7 +68,11 @@ class _MapConfirmationPageState extends State<MapConfirmationPage> {
 
   void _confirmLocation() {
     if (_selectedLocation != null) {
-      widget.onNext(_selectedLocation!);
+      widget.onNext({
+        'lat': _selectedLocation!['lat']!,
+        'lng': _selectedLocation!['lng']!,
+        'locationName': _locationNameController.text.trim(),
+      });
     }
   }
 
@@ -155,9 +163,24 @@ class _MapConfirmationPageState extends State<MapConfirmationPage> {
                   ),
                 ),
                 
+                const SizedBox(height: 20),
+
+                // Location name input
+                TextFormField(
+                  controller: _locationNameController,
+                  decoration: InputDecoration(
+                    labelText: localizations.mapLocationNameLabel,
+                    hintText: localizations.mapLocationNameHint,
+                    prefixIcon: const Icon(Icons.label_outline),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                ),
+
                 if (_selectedLocation != null) ...[
                   const SizedBox(height: 20),
-                  
+
                   // Location details
                   Card(
                     elevation: 2,
@@ -408,6 +431,7 @@ class _MapConfirmationPageState extends State<MapConfirmationPage> {
 
   @override
   void dispose() {
+    _locationNameController.dispose();
     _mapController?.dispose();
     super.dispose();
   }

@@ -120,7 +120,6 @@ class AddressApi {
   /// POST /api/addresses
   /// Thêm địa chỉ mới (Business/SubAccount → status = Reviewed ngay lập tức)
   static Future<MyAddress> addAddress({
-    required String code,
     required String name,
     required String fullAddress,
     required double latitude,
@@ -128,7 +127,6 @@ class AddressApi {
     required String cityCode,
   }) async {
     final body = <String, dynamic>{
-      'code': code,
       'name': name,
       'fullAddress': fullAddress,
       'latitude': latitude,

@@ -109,7 +109,7 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
 | 201 | Created | Tạo resource thành công |
 | 204 | No Content | Xóa thành công |
 | 400 | Bad Request | Dữ liệu không hợp lệ |
-| 401 | Unauthorized | Token không hợp lệ hoặc hết hạn |
+| 401 | Unauthorized | Invalid token or expired |
 | 403 | Forbidden | Không có quyền truy cập |
 | 404 | Not Found | Resource không tồn tại |
 | 500 | Internal Server Error | Lỗi server |
@@ -162,7 +162,7 @@ GET /api/dashboard
     "inactiveCities": 2,
     "totalAddresses": 500,
     "topCities": [
-      { "id": "...", "name": "Hà Nội", "code": "VN-HN", "addressCount": 150 }
+      { "id": "...", "name": "Hà Nội", "code": "HAN", "addressCount": 150 }
     ]
   }
 }
@@ -203,7 +203,7 @@ POST /api/auth/register
 ```
 
 **Errors:**
-- `400` - Email đã được sử dụng
+- `400` - Email is already in use
 
 ---
 
@@ -235,7 +235,45 @@ POST /api/auth/login
 ```
 
 **Errors:**
-- `401` - Email hoặc mật khẩu không đúng
+- `401` - Invalid email or password
+
+---
+
+### 3. Kiểm tra phiên đăng nhập
+
+```http
+GET /api/auth/verify
+```
+
+**Authorization:** Public (token truyền qua header)
+
+**Headers:**
+```
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+```
+
+**Response:** `200 OK` - Token còn hiệu lực
+```json
+{
+  "message": "Session is valid",
+  "isExpired": false,
+  "expiresAt": "2024-01-11T10:30:00Z"
+}
+```
+
+**Errors:**
+- `400` - Thiếu hoặc sai định dạng Authorization header
+  ```json
+  { "message": "Invalid token" }
+  ```
+- `401` - Token hết hạn
+  ```json
+  { "message": "Session has expired", "isExpired": true, "expiresAt": "2024-01-10T10:30:00Z" }
+  ```
+- `401` - Invalid token (wrong signature, wrong issuer/audience, ...)
+  ```json
+  { "message": "Invalid token", "isExpired": false, "expiresAt": null }
+  ```
 
 ---
 
@@ -335,7 +373,7 @@ GET /api/users/{id}
 **Response:** `200 OK` - User object
 
 **Errors:**
-- `404` - User không tồn tại
+- `404` - User not found
 
 ---
 
@@ -363,7 +401,7 @@ POST /api/users
 **Response:** `201 Created` - User object
 
 **Errors:**
-- `400` - Email đã được sử dụng
+- `400` - Email is already in use
 
 ---
 
@@ -392,8 +430,8 @@ PUT /api/users/{id}
 **Response:** `200 OK` - User object
 
 **Errors:**
-- `404` - User không tồn tại
-- `400` - Email đã được sử dụng
+- `404` - User not found
+- `400` - Email is already in use
 
 ---
 
@@ -408,7 +446,7 @@ DELETE /api/users/{id}
 **Response:** `204 No Content`
 
 **Errors:**
-- `404` - User không tồn tại
+- `404` - User not found
 
 ---
 
@@ -437,7 +475,7 @@ POST /api/users/{id}/change-password
 
 **Errors:**
 - `400` - Mật khẩu hiện tại không đúng
-- `404` - User không tồn tại
+- `404` - User not found
 
 ---
 
@@ -559,8 +597,8 @@ POST /api/business/sub-accounts
 **Response:** `201 Created` - User object với `role: "SubAccount"` và `parentBusinessId` trỏ về Business
 
 **Errors:**
-- `400` - Email đã được sử dụng
-- `400` - Tài khoản doanh nghiệp không tồn tại
+- `400` - Email is already in use
+- `400` - Business account not found
 
 ---
 
@@ -591,8 +629,8 @@ PUT /api/business/sub-accounts/{id}
 **Response:** `200 OK` - User object đã cập nhật
 
 **Errors:**
-- `400` - Email đã được sử dụng
-- `404` - Tài khoản con không tồn tại hoặc không thuộc doanh nghiệp này
+- `400` - Email is already in use
+- `404` - Sub-account not found or does not belong to this business
 
 ---
 
@@ -618,7 +656,7 @@ GET /api/business/addresses
 [
   {
     "id": "3fa85f64-...",
-    "code": "BIZ-001",
+    "code": "HANX9K21",
     "name": "Văn phòng chính",
     "userId": "3fa85f64-...",
     "userName": "Công ty ABC",
@@ -627,7 +665,7 @@ GET /api/business/addresses
   },
   {
     "id": "a1b2c3d4-...",
-    "code": "BIZ-002",
+    "code": "HCMB3P54",
     "name": "Chi nhánh Q.1",
     "userId": "a1b2c3d4-...",
     "userName": "Nhân viên A",
@@ -672,7 +710,7 @@ Quản lý danh sách địa chỉ (`AddressCodes`).
 ```json
 {
   "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
-  "code": "VN-HN-001",
+  "code": "HANA3K92",
   "name": "Nhà hàng Phở Bắc",
   "fullAddress": "123 Nguyễn Trãi, P. Thượng Đình, Q. Thanh Xuân, Hà Nội",
   "district": "Thanh Xuân",
@@ -680,7 +718,7 @@ Quản lý danh sách địa chỉ (`AddressCodes`).
   "userName": "Nguyen Van A",
   "latitude": 21.0285,
   "longitude": 105.8542,
-  "cityCode": "VN-HN",
+  "cityCode": "HAN",
   "status": "Reviewed",
   "isVerified": true,
   "validatorId": "b2c3d4e5-...",
@@ -695,6 +733,11 @@ Quản lý danh sách địa chỉ (`AddressCodes`).
   "updatedAt": "2024-01-11T08:00:00Z"
 }
 ```
+
+> **Ghi chú về mã địa chỉ (`code`):**
+> - Được **tự động sinh** bởi hệ thống, không do người dùng nhập.
+> - Format: `{CityCode}{5 ký tự ngẫu nhiên}` — tổng **8 ký tự** (`A-Z`, `0-9`).
+> - Ví dụ: `cityCode = "HAN"` → `code = "HANA3K92"`
 
 ---
 
@@ -734,13 +777,13 @@ GET /api/addresses/search?searchTerm={term}
 [
   {
     "id": "3fa85f64-...",
-    "code": "VN-HN-001",
+    "code": "HANA3K92",
     "name": "Nhà hàng Phở Bắc",
     "fullAddress": "123 Nguyễn Trãi, P. Thượng Đình, Q. Thanh Xuân",
     "district": "Thanh Xuân",
     "latitude": 21.0285,
     "longitude": 105.8542,
-    "cityCode": "VN-HN",
+    "cityCode": "HAN",
     "status": "Reviewed",
     "isVerified": true,
     "parkingAvailable": false,
@@ -862,22 +905,26 @@ POST /api/addresses
 
 **Authorization:** Authenticated
 
+> **Mã địa chỉ được tự động sinh** — không cần truyền `code`. Hệ thống tạo mã dựa trên `cityCode` theo format `{cityCode}{5 ký tự ngẫu nhiên}` (8 ký tự, đảm bảo không trùng lặp).
+
 **Request Body:**
 ```json
 {
-  "code": "VN-HN-001",
+  "cityCode": "HAN",
   "name": "Nhà hàng Phở Bắc",
   "fullAddress": "123 Nguyễn Trãi, P. Thượng Đình, Q. Thanh Xuân, Hà Nội",
   "district": "Thanh Xuân",
   "latitude": 21.0285,
   "longitude": 105.8542,
-  "cityCode": "VN-HN",
   "extraDocs": null,
   "parkingAvailable": false,
   "totalParkingSpots": 0,
   "pricePerHour": 0
 }
 ```
+
+**Validation:**
+- `cityCode`: bắt buộc, đúng **3 ký tự** (ví dụ: `HAN`, `HCM`, `DAN`)
 
 **Quy tắc theo role:**
 | Role | Status sau khi tạo |
@@ -887,10 +934,10 @@ POST /api/addresses
 | `Business` | `Reviewed` - không cần xác minh |
 | `SubAccount` | `Reviewed` - không cần xác minh |
 
-**Response:** `201 Created` - Address object
+**Response:** `201 Created` - Address object (bao gồm `code` đã được sinh tự động)
 
 **Errors:**
-- `400` - Code đã tồn tại
+- `400` - `cityCode` không hợp lệ (không đúng 3 ký tự hoặc thiếu)
 
 ---
 
@@ -905,13 +952,12 @@ PUT /api/addresses/{id}
 **Request Body:** (tất cả fields đều optional)
 ```json
 {
-  "code": "VN-HN-001-UPDATED",
   "name": "Nhà hàng Phở Bắc (đã đổi tên)",
   "fullAddress": "456 Lê Duẩn, P. Điện Biên, Q. Ba Đình, Hà Nội",
   "district": "Ba Đình",
   "latitude": 21.0290,
   "longitude": 105.8550,
-  "cityCode": "VN-HN",
+  "cityCode": "HAN",
   "validatorId": "b2c3d4e5-...",
   "comments": "Ghi chú cập nhật",
   "extraDocs": "[\"newdoc.pdf\"]",
@@ -920,6 +966,8 @@ PUT /api/addresses/{id}
   "pricePerHour": 10000
 }
 ```
+
+> **Lưu ý:** `code` không thể cập nhật — mã địa chỉ được sinh một lần tại thời điểm tạo và cố định. `cityCode` nếu cập nhật phải đúng **3 ký tự**.
 
 **Response:** `200 OK` - Address object
 
@@ -990,13 +1038,13 @@ GET /api/addresses/parking-zones
 [
   {
     "id": "3fa85f64-...",
-    "code": "PKZ-001",
+    "code": "HANP7M21",
     "name": "Bãi đỗ xe Trần Duy Hưng",
     "fullAddress": "123 Trần Duy Hưng, Q. Cầu Giấy, Hà Nội",
     "district": "Cầu Giấy",
     "latitude": 21.0075,
     "longitude": 105.7989,
-    "cityCode": "VN-HN",
+    "cityCode": "HAN",
     "status": "Reviewed",
     "isVerified": true,
     "parkingAvailable": true,
@@ -1045,8 +1093,8 @@ Pending → Assigned → Scheduled → Verified
   "requestType": "NewAddress",
   "address": {
     "id": "a1b2c3d4-...",
-    "code": "VN-HN-001",
-    "cityCode": "VN-HN",
+    "code": "HANA3K92",
+    "cityCode": "HAN",
     "coordinates": { "lat": 21.0285, "lng": 105.8542 }
   },
   "submittedBy": {
@@ -1201,7 +1249,7 @@ POST /api/validations/{id}/assign-validator
 **Response:** `200 OK` - Validation object với `status: "Assigned"`
 
 **Errors:**
-- `400` - Validator không tồn tại
+- `400` - Validator not found
 - `404` - Validation request không tồn tại
 
 ---
@@ -1408,6 +1456,7 @@ POST /api/validations/verification-request
 | `AttachmentsCount` | integer | Không | Số lượng tệp đính kèm |
 | `Latitude` | double | Không | Vĩ độ của địa chỉ |
 | `Longitude` | double | Không | Kinh độ của địa chỉ |
+| `LocationName` | string | Không | Tên địa điểm (VD: "Nhà hàng Phở Bắc", "Chung cư HH1") |
 | `PaymentMethod` | string | Không | Phương thức thanh toán |
 | `PaymentAmount` | decimal | Không | Số tiền thanh toán |
 | `AppointmentDate` | datetime | Không | Ngày hẹn xác minh |
@@ -1422,6 +1471,7 @@ curl -X POST http://localhost:5088/api/validations/verification-request \
   -F "IdType=CCCD" \
   -F "Latitude=21.0285" \
   -F "Longitude=105.8542" \
+  -F "LocationName=Nhà hàng Phở Bắc" \
   -F "PaymentMethod=Cash" \
   -F "PaymentAmount=150000" \
   -F "AppointmentDate=2024-02-15T09:00:00Z" \
@@ -1446,7 +1496,8 @@ curl -X POST http://localhost:5088/api/validations/verification-request \
   },
   "location": {
     "latitude": 21.0285,
-    "longitude": 105.8542
+    "longitude": 105.8542,
+    "locationName": "Nhà hàng Phở Bắc"
   },
   "payment": {
     "method": "Cash",
@@ -1768,8 +1819,7 @@ GET /api/transactions/my-transactions
 {
   "id": "3fa85f64-...",
   "name": "Hà Nội",
-  "code": "VN-HN",
-  "country": "Vietnam",
+  "code": "HAN",
   "description": "Thủ đô Việt Nam",
   "isActive": true,
   "totalAddresses": 150,
@@ -1777,6 +1827,18 @@ GET /api/transactions/my-transactions
   "updatedAt": null
 }
 ```
+
+> **Mã thành phố (`code`)** phải đúng **3 ký tự** (ví dụ: `HAN`, `HCM`, `DAN`). Đây là prefix dùng để sinh mã địa chỉ tự động.
+
+### Danh sách thành phố mặc định
+
+| Thành phố | `code` |
+|-----------|--------|
+| Hà Nội | `HAN` |
+| Hồ Chí Minh | `HCM` |
+| Đà Nẵng | `DAN` |
+| Hải Phòng | `HPH` |
+| Cần Thơ | `CTH` |
 
 ### 1. Thống kê cities
 
@@ -1796,6 +1858,9 @@ GET /api/cities/search?searchTerm={term}
 
 **Authorization:** Public
 
+**Query Parameters:**
+- `searchTerm`: Tìm theo `name` hoặc `code`
+
 ---
 
 ### 3. Lấy cities đang active
@@ -1808,17 +1873,7 @@ GET /api/cities/active
 
 ---
 
-### 4. Lấy cities theo quốc gia
-
-```http
-GET /api/cities/country/{country}
-```
-
-**Authorization:** Public
-
----
-
-### 5. Lấy tất cả cities
+### 4. Lấy tất cả cities
 
 ```http
 GET /api/cities
@@ -1828,7 +1883,7 @@ GET /api/cities
 
 ---
 
-### 6. Lấy city theo ID
+### 5. Lấy city theo ID
 
 ```http
 GET /api/cities/{id}
@@ -1838,7 +1893,7 @@ GET /api/cities/{id}
 
 ---
 
-### 7. Lấy city theo code
+### 6. Lấy city theo code
 
 ```http
 GET /api/cities/code/{code}
@@ -1848,7 +1903,7 @@ GET /api/cities/code/{code}
 
 ---
 
-### 8. Tạo city mới
+### 7. Tạo city mới
 
 ```http
 POST /api/cities
@@ -1860,15 +1915,21 @@ POST /api/cities
 ```json
 {
   "name": "Đà Nẵng",
-  "code": "VN-DN",
-  "country": "Vietnam",
+  "code": "DAN",
   "description": "Thành phố biển miền Trung"
 }
 ```
 
+**Validation:**
+- `name`: bắt buộc
+- `code`: bắt buộc, đúng **3 ký tự**, tự động chuyển thành chữ hoa, phải là duy nhất
+
+**Errors:**
+- `400` - Code đã tồn tại hoặc không đúng 3 ký tự
+
 ---
 
-### 9. Cập nhật city
+### 8. Cập nhật city
 
 ```http
 PUT /api/cities/{id}
@@ -1876,9 +1937,22 @@ PUT /api/cities/{id}
 
 **Authorization:** Admin
 
+**Request Body:** (tất cả fields đều optional)
+```json
+{
+  "name": "Đà Nẵng",
+  "code": "DAN",
+  "description": "Thành phố biển miền Trung",
+  "isActive": true
+}
+```
+
+**Validation:**
+- `code`: nếu có, phải đúng **3 ký tự** và không trùng với city khác
+
 ---
 
-### 10. Xóa city
+### 9. Xóa city
 
 ```http
 DELETE /api/cities/{id}
@@ -1888,7 +1962,7 @@ DELETE /api/cities/{id}
 
 ---
 
-### 11. Toggle active/inactive
+### 10. Toggle active/inactive
 
 ```http
 PATCH /api/cities/{id}/toggle-active
@@ -2155,7 +2229,7 @@ File ảnh liên quan cũng bị xóa khỏi server.
 
 2. User gửi yêu cầu xác minh kèm ảnh CCCD và giấy tờ địa chỉ
    POST /api/validations/verification-request
-   (multipart/form-data: IdDocument, AddressProof, Latitude, Longitude, AppointmentDate, ...)
+   (multipart/form-data: IdDocument, AddressProof, Latitude, Longitude, LocationName, AppointmentDate, ...)
 
 3. Admin xem danh sách yêu cầu
    GET /api/validations?status=Pending
@@ -2185,9 +2259,9 @@ File ảnh liên quan cũng bị xóa khỏi server.
 1. Business đăng nhập (role = Business hoặc SubAccount)
    POST /api/auth/login
 
-2. Thêm địa chỉ trực tiếp (không cần xác minh)
+2. Thêm địa chỉ trực tiếp (không cần xác minh) — mã địa chỉ tự động sinh
    POST /api/addresses
-   { "code": "BIZ-001", "name": "Văn phòng Công ty ABC", "fullAddress": "Tầng 5, 99 Láng Hạ, Q. Đống Đa, Hà Nội", "latitude": 21.02, "longitude": 105.85, "cityCode": "VN-HN" }
+   { "name": "Văn phòng Công ty ABC", "fullAddress": "Tầng 5, 99 Láng Hạ, Q. Đống Đa, Hà Nội", "latitude": 21.02, "longitude": 105.85, "cityCode": "HAN" }
 
 ✅ Địa chỉ ngay lập tức có status = Reviewed
 ```
@@ -2207,8 +2281,8 @@ File ảnh liên quan cũng bị xóa khỏi server.
 3. Nhân viên (SubAccount) đăng nhập và thêm địa chỉ
    POST /api/auth/login  (dùng tài khoản sub-account)
    POST /api/addresses
-   { "code": "BIZ-BRANCH-001", "name": "Chi nhánh Q.3", ... }
-   → Status = Reviewed ngay lập tức
+   { "name": "Chi nhánh Q.3", "cityCode": "HCM", "latitude": ..., "longitude": ... }
+   → Status = Reviewed ngay lập tức, mã địa chỉ tự động sinh (ví dụ: HCMB7X21)
 
 4. Business xem tất cả địa chỉ của nhóm (cả mình lẫn sub-accounts)
    GET /api/business/addresses
@@ -2245,7 +2319,8 @@ File ảnh liên quan cũng bị xóa khỏi server.
 
 ```
 # Tìm theo code, name, fullAddress, district hoặc cityCode
-GET /api/addresses/search?searchTerm=VN-HN
+GET /api/addresses/search?searchTerm=HAN
+GET /api/addresses/search?searchTerm=HANA3K92
 GET /api/addresses/search?searchTerm=Phở+Bắc
 GET /api/addresses/search?searchTerm=Thanh+Xuân
 

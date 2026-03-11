@@ -7,6 +7,7 @@ class CompletionPage extends StatelessWidget {
   final File? idDocument;
   final File? addressProof;
   final Map<String, double>? location;
+  final String? locationName;
   final String? paymentMethod;
   final DateTime? appointmentDate;
   final TimeOfDay? appointmentTime;
@@ -19,6 +20,7 @@ class CompletionPage extends StatelessWidget {
     this.idDocument,
     this.addressProof,
     this.location,
+    this.locationName,
     this.paymentMethod,
     this.appointmentDate,
     this.appointmentTime,
@@ -155,6 +157,15 @@ class CompletionPage extends StatelessWidget {
                         ? '${location!['lat']! . toStringAsFixed(4)}, ${location!['lng']!.toStringAsFixed(4)}'
                         : localizations.confirmed,
                   ),
+                  if (locationName != null && locationName!.isNotEmpty) ...[
+                    const SizedBox(height: 12),
+                    _buildSummaryRow(
+                      context,
+                      Icons.label_outline,
+                      localizations.mapLocationNameLabel,
+                      locationName!,
+                    ),
+                  ],
                   const SizedBox(height: 12),
                   _buildSummaryRow(
                     context,
