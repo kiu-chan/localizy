@@ -17,6 +17,8 @@ class VerificationApi {
     required double latitude,
     required double longitude,
     String? locationName,
+    String? fullAddress,
+    String? cityId,
     required String paymentMethod,
     required int paymentAmount,
     DateTime? appointmentDate,
@@ -41,6 +43,12 @@ class VerificationApi {
     if (locationName != null && locationName.isNotEmpty) {
       request.fields['locationName'] = locationName;
     }
+    if (fullAddress != null && fullAddress.isNotEmpty) {
+      request.fields['fullAddress'] = fullAddress;
+    }
+    if (cityId != null && cityId.isNotEmpty) {
+      request.fields['cityId'] = cityId;
+    }
     request.fields['paymentMethod'] = paymentMethod;
     request.fields['paymentAmount'] = paymentAmount.toString();
 
@@ -48,7 +56,8 @@ class VerificationApi {
       request.fields['addressId'] = addressId;
     }
     if (appointmentDate != null) {
-      request.fields['appointmentDate'] = appointmentDate.toUtc().toIso8601String();
+      request.fields['appointmentDate'] =
+          appointmentDate.toUtc().toIso8601String();
     }
     if (appointmentTimeSlot != null) {
       request.fields['appointmentTimeSlot'] = appointmentTimeSlot;
@@ -60,38 +69,60 @@ class VerificationApi {
       final stream = http.ByteStream(idDocument.openRead());
       final length = await idDocument.length();
       final filename = path.basename(idDocument.path);
-      final multipartFile = http.MultipartFile(
-        'idDocument',
-        stream,
-        length,
-        filename: filename,
+      request.files.add(
+        http.MultipartFile('idDocument', stream, length, filename: filename),
       );
-      request.files.add(multipartFile);
     }
 
     if (addressProof != null) {
       final stream = http.ByteStream(addressProof.openRead());
       final length = await addressProof.length();
       final filename = path.basename(addressProof.path);
-      final multipartFile = http.MultipartFile(
-        'addressProof',
-        stream,
-        length,
-        filename: filename,
+      request.files.add(
+        http.MultipartFile('addressProof', stream, length, filename: filename),
       );
-      request.files.add(multipartFile);
     }
 
-    debugPrint('===== VERIFICATION REQUEST DEBUG =====');
-    debugPrint('Request fields: ${request.fields}');
-    debugPrint('Files count: ${request.files.length}');
+    // ── REQUEST DEBUG ──────────────────────────────────────────────────────
+    debugPrint('');
+    debugPrint('╔══════════════════════════════════════════════════╗');
+    debugPrint('║       VERIFICATION REQUEST — SENDING             ║');
+    debugPrint('╚══════════════════════════════════════════════════╝');
+    debugPrint('[URL]    ${uri.toString()}');
+    debugPrint('[METHOD] POST multipart/form-data');
+    debugPrint('[FIELDS]');
+    request.fields.forEach((key, value) {
+      debugPrint('  $key = $value');
+    });
+    debugPrint('[FILES]  count = ${request.files.length}');
+    for (final f in request.files) {
+      debugPrint('  field="${f.field}"  filename="${f.filename}"  length=${f.length}');
+    }
+    debugPrint('──────────────────────────────────────────────────');
 
     final streamedResp = await request.send();
     final resp = await http.Response.fromStream(streamedResp);
 
-    debugPrint('Response status: ${resp.statusCode}');
-    debugPrint('Response body: ${resp.body}');
-    debugPrint('===== END DEBUG =====');
+    // ── RESPONSE DEBUG ─────────────────────────────────────────────────────
+    debugPrint('[STATUS] ${resp.statusCode}');
+    debugPrint('[HEADERS]');
+    resp.headers.forEach((key, value) {
+      debugPrint('  $key: $value');
+    });
+
+    // Pretty-print JSON body when possible
+    try {
+      final decoded = json.decode(resp.body);
+      const encoder = JsonEncoder.withIndent('  ');
+      debugPrint('[BODY — JSON]');
+      debugPrint(encoder.convert(decoded));
+    } catch (_) {
+      debugPrint('[BODY — RAW]');
+      debugPrint(resp.body);
+    }
+    debugPrint('╚══════════════════════════════════════════════════╝');
+    debugPrint('');
+    // ──────────────────────────────────────────────────────────────────────
 
     if (resp.statusCode == 200 || resp.statusCode == 201) {
       return json.decode(resp.body) as Map<String, dynamic>;

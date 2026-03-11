@@ -6,6 +6,8 @@ import 'package:localizy/l10n/app_localizations.dart';
 class CompletionPage extends StatelessWidget {
   final File? idDocument;
   final File? addressProof;
+  final String? cityName;
+  final String? fullAddress;
   final Map<String, double>? location;
   final String? locationName;
   final String? paymentMethod;
@@ -19,6 +21,8 @@ class CompletionPage extends StatelessWidget {
     super.key,
     this.idDocument,
     this.addressProof,
+    this.cityName,
+    this.fullAddress,
     this.location,
     this.locationName,
     this.paymentMethod,
@@ -146,8 +150,26 @@ class CompletionPage extends StatelessWidget {
                     context,
                     Icons.receipt_long,
                     localizations.addressProofDoc,
-                    localizations. uploaded,
+                    localizations.uploaded,
                   ),
+                  if (cityName != null && cityName!.isNotEmpty) ...[
+                    const SizedBox(height: 12),
+                    _buildSummaryRow(
+                      context,
+                      Icons.location_city,
+                      localizations.cityNameSummary,
+                      cityName!,
+                    ),
+                  ],
+                  if (fullAddress != null && fullAddress!.isNotEmpty) ...[
+                    const SizedBox(height: 12),
+                    _buildSummaryRow(
+                      context,
+                      Icons.home_outlined,
+                      localizations.fullAddressSummary,
+                      fullAddress!,
+                    ),
+                  ],
                   const SizedBox(height:  12),
                   _buildSummaryRow(
                     context,
@@ -279,11 +301,11 @@ class CompletionPage extends StatelessWidget {
             children: [
               Expanded(
                 flex: 2,
-                child:  ElevatedButton.icon(
+                child: ElevatedButton.icon(
                   onPressed: onComplete,
-                  icon: const Icon(Icons.home),
-                  label: Text(localizations.backToHome),
-                  style:  ElevatedButton.styleFrom(
+                  icon: const Icon(Icons.send),
+                  label: Text(localizations.submitVerificationRequest),
+                  style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.green.shade700,
                     foregroundColor: Colors.white,
                     padding: const EdgeInsets.symmetric(vertical: 14),

@@ -2395,6 +2395,84 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'Ouvrir dans Google Maps'**
   String get validatorMapOpenInGoogleMaps;
+
+  /// No description provided for @addressInfoIntro.
+  ///
+  /// In fr, this message translates to:
+  /// **'Sélectionnez la ville et saisissez l\'adresse complète à vérifier'**
+  String get addressInfoIntro;
+
+  /// No description provided for @selectCity.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ville'**
+  String get selectCity;
+
+  /// No description provided for @selectCityHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Sélectionner une ville'**
+  String get selectCityHint;
+
+  /// No description provided for @selectCityRequired.
+  ///
+  /// In fr, this message translates to:
+  /// **'Veuillez sélectionner une ville'**
+  String get selectCityRequired;
+
+  /// No description provided for @fullAddressLabel.
+  ///
+  /// In fr, this message translates to:
+  /// **'Adresse complète'**
+  String get fullAddressLabel;
+
+  /// No description provided for @fullAddressHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'ex. 123 rue Nguyen Trai, Quartier Thuong Dinh, District Thanh Xuan'**
+  String get fullAddressHint;
+
+  /// No description provided for @fullAddressRequired.
+  ///
+  /// In fr, this message translates to:
+  /// **'Veuillez saisir l\'adresse complète'**
+  String get fullAddressRequired;
+
+  /// No description provided for @fullAddressTip.
+  ///
+  /// In fr, this message translates to:
+  /// **'Saisissez l\'adresse exacte avec le numéro, la rue, le quartier et l\'arrondissement'**
+  String get fullAddressTip;
+
+  /// No description provided for @addressInfoStep.
+  ///
+  /// In fr, this message translates to:
+  /// **'Détails de l\'adresse'**
+  String get addressInfoStep;
+
+  /// No description provided for @cityLabel.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ville'**
+  String get cityLabel;
+
+  /// No description provided for @fullAddressSummary.
+  ///
+  /// In fr, this message translates to:
+  /// **'Adresse complète'**
+  String get fullAddressSummary;
+
+  /// No description provided for @cityNameSummary.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ville'**
+  String get cityNameSummary;
+
+  /// No description provided for @submitVerificationRequest.
+  ///
+  /// In fr, this message translates to:
+  /// **'Soumettre la demande de vérification'**
+  String get submitVerificationRequest;
 }
 
 class _AppLocalizationsDelegate

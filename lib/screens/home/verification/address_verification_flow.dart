@@ -24,6 +24,9 @@ class _AddressVerificationFlowState extends State<AddressVerificationFlow> {
   File? _idDocument;
   File? _addressProof;
   String _idType = 'cmnd';
+  String? _selectedCityId;
+  String? _selectedCityName;
+  String? _fullAddress;
   Map<String, double>? _location;
   String? _locationName;
   String? _paymentMethod;
@@ -31,23 +34,24 @@ class _AddressVerificationFlowState extends State<AddressVerificationFlow> {
   TimeOfDay? _appointmentTime;
   String? _timeSlot;
 
+  static const int _totalSteps = 5;
+
   List<String> _getStepTitles(BuildContext context) {
-    final localizations = AppLocalizations.of(context)!;
+    final loc = AppLocalizations.of(context)!;
     return [
-      localizations.uploadDocuments,
-      localizations.confirmLocation,
-      localizations.payment,
-      localizations.selectAppointment,
-      localizations.complete,
+      loc.uploadDocuments,
+      loc.confirmLocation,
+      loc.payment,
+      loc.selectAppointment,
+      loc.complete,
     ];
   }
 
   void _nextStep(dynamic data) {
     setState(() {
-      // Save data from current step
       switch (_currentStep) {
         case 0:
-          // Document upload data
+          // Document upload
           if (data is Map) {
             _idDocument = data['idDocument'];
             _addressProof = data['addressProof'];
@@ -55,21 +59,24 @@ class _AddressVerificationFlowState extends State<AddressVerificationFlow> {
           }
           break;
         case 1:
-          // Map location data
+          // Map + city + full address
           if (data is Map) {
             _location = {
               'lat': data['lat'] as double,
               'lng': data['lng'] as double,
             };
             _locationName = data['locationName'] as String?;
+            _selectedCityId = data['cityId'] as String?;
+            _selectedCityName = data['cityName'] as String?;
+            _fullAddress = data['fullAddress'] as String?;
           }
           break;
         case 2:
-          // Payment data
+          // Payment
           _paymentMethod = data as String?;
           break;
         case 3:
-          // Appointment data
+          // Appointment
           if (data is Map) {
             _appointmentDate = data['date'];
             _appointmentTime = data['time'];
@@ -78,10 +85,9 @@ class _AddressVerificationFlowState extends State<AddressVerificationFlow> {
           break;
       }
 
-      if (_currentStep < 4) {
+      if (_currentStep < _totalSteps - 1) {
         _currentStep++;
       } else {
-        // Finish the flow
         _completeVerification();
       }
     });
@@ -133,6 +139,8 @@ class _AddressVerificationFlowState extends State<AddressVerificationFlow> {
         latitude: _location!['lat']!,
         longitude: _location!['lng']!,
         locationName: _locationName,
+        fullAddress: _fullAddress,
+        cityId: _selectedCityId,
         paymentMethod: _paymentMethod ?? 'momo',
         paymentAmount: 100000,
         appointmentDate: _appointmentDate,
@@ -144,20 +152,19 @@ class _AddressVerificationFlowState extends State<AddressVerificationFlow> {
       if (mounted) Navigator.of(context).pop();
 
       if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text(localizations.requestSubmitted)));
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(localizations.requestSubmitted)),
+        );
       }
 
       if (mounted) Navigator.of(context).pop(resp);
     } catch (e) {
       if (mounted) Navigator.of(context).pop();
 
-      final msg = e.toString();
       if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text(msg)));
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(e.toString())),
+        );
       }
     }
   }
@@ -191,10 +198,7 @@ class _AddressVerificationFlowState extends State<AddressVerificationFlow> {
         ),
         body: Column(
           children: [
-            // Progress Stepper
             _buildProgressStepper(),
-
-            // Current Step Content
             Expanded(child: _buildStepContent()),
           ],
         ),
@@ -220,33 +224,30 @@ class _AddressVerificationFlowState extends State<AddressVerificationFlow> {
       ),
       child: Column(
         children: [
-          // Step indicator dots
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
-            children: List.generate(5, (index) {
+            children: List.generate(_totalSteps, (index) {
               return Row(
                 children: [
                   _buildStepDot(index),
-                  if (index < 4) _buildStepLine(index),
+                  if (index < _totalSteps - 1) _buildStepLine(index),
                 ],
               );
             }),
           ),
           const SizedBox(height: 12),
-          // Step title
           Text(
             localizations.stepProgress(
               _currentStep + 1,
-              5,
+              _totalSteps,
               stepTitles[_currentStep],
             ),
             style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 4),
-          // Progress percentage
           Text(
             localizations.percentComplete(
-              (((_currentStep + 1) / 5) * 100).toInt(),
+              (((_currentStep + 1) / _totalSteps) * 100).toInt(),
             ),
             style: TextStyle(fontSize: 14, color: Colors.grey[600]),
           ),
@@ -264,9 +265,7 @@ class _AddressVerificationFlowState extends State<AddressVerificationFlow> {
       height: 32,
       decoration: BoxDecoration(
         shape: BoxShape.circle,
-        color: isCompleted
-            ? Colors.green.shade700
-            : isCurrent
+        color: isCompleted || isCurrent
             ? Colors.green.shade700
             : Colors.grey.shade300,
         border: Border.all(
@@ -290,12 +289,12 @@ class _AddressVerificationFlowState extends State<AddressVerificationFlow> {
   }
 
   Widget _buildStepLine(int index) {
-    final isCompleted = index < _currentStep;
-
     return Container(
       width: 40,
       height: 2,
-      color: isCompleted ? Colors.green.shade700 : Colors.grey.shade300,
+      color: index < _currentStep
+          ? Colors.green.shade700
+          : Colors.grey.shade300,
     );
   }
 
@@ -318,6 +317,9 @@ class _AddressVerificationFlowState extends State<AddressVerificationFlow> {
         return MapConfirmationPage(
           initialLocation: _location,
           initialLocationName: _locationName,
+          initialCityId: _selectedCityId,
+          initialCityName: _selectedCityName,
+          initialFullAddress: _fullAddress,
           onNext: _nextStep,
           onPrevious: _previousStep,
         );
@@ -340,6 +342,8 @@ class _AddressVerificationFlowState extends State<AddressVerificationFlow> {
           addressProof: _addressProof,
           location: _location,
           locationName: _locationName,
+          cityName: _selectedCityName,
+          fullAddress: _fullAddress,
           paymentMethod: _paymentMethod,
           appointmentDate: _appointmentDate,
           appointmentTime: _appointmentTime,

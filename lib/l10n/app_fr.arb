@@ -455,5 +455,19 @@
     }
   },
   "validatorMapArrivedDestination": "🎉 Vous êtes arrivé !",
-  "validatorMapOpenInGoogleMaps": "Ouvrir dans Google Maps"
+  "validatorMapOpenInGoogleMaps": "Ouvrir dans Google Maps",
+
+  "addressInfoIntro": "Sélectionnez la ville et saisissez l'adresse complète à vérifier",
+  "selectCity": "Ville",
+  "selectCityHint": "Sélectionner une ville",
+  "selectCityRequired": "Veuillez sélectionner une ville",
+  "fullAddressLabel": "Adresse complète",
+  "fullAddressHint": "ex. 123 rue Nguyen Trai, Quartier Thuong Dinh, District Thanh Xuan",
+  "fullAddressRequired": "Veuillez saisir l'adresse complète",
+  "fullAddressTip": "Saisissez l'adresse exacte avec le numéro, la rue, le quartier et l'arrondissement",
+  "addressInfoStep": "Détails de l'adresse",
+  "cityLabel": "Ville",
+  "fullAddressSummary": "Adresse complète",
+  "cityNameSummary": "Ville",
+  "submitVerificationRequest": "Soumettre la demande de vérification"
 }

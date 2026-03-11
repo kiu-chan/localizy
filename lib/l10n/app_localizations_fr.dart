@@ -1254,4 +1254,47 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get validatorMapOpenInGoogleMaps => 'Ouvrir dans Google Maps';
+
+  @override
+  String get addressInfoIntro =>
+      'Sélectionnez la ville et saisissez l\'adresse complète à vérifier';
+
+  @override
+  String get selectCity => 'Ville';
+
+  @override
+  String get selectCityHint => 'Sélectionner une ville';
+
+  @override
+  String get selectCityRequired => 'Veuillez sélectionner une ville';
+
+  @override
+  String get fullAddressLabel => 'Adresse complète';
+
+  @override
+  String get fullAddressHint =>
+      'ex. 123 rue Nguyen Trai, Quartier Thuong Dinh, District Thanh Xuan';
+
+  @override
+  String get fullAddressRequired => 'Veuillez saisir l\'adresse complète';
+
+  @override
+  String get fullAddressTip =>
+      'Saisissez l\'adresse exacte avec le numéro, la rue, le quartier et l\'arrondissement';
+
+  @override
+  String get addressInfoStep => 'Détails de l\'adresse';
+
+  @override
+  String get cityLabel => 'Ville';
+
+  @override
+  String get fullAddressSummary => 'Adresse complète';
+
+  @override
+  String get cityNameSummary => 'Ville';
+
+  @override
+  String get submitVerificationRequest =>
+      'Soumettre la demande de vérification';
 }

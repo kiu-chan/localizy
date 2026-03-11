@@ -1223,4 +1223,46 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get validatorMapOpenInGoogleMaps => 'Open in Google Maps';
+
+  @override
+  String get addressInfoIntro =>
+      'Select the city and enter the full address to be verified';
+
+  @override
+  String get selectCity => 'City';
+
+  @override
+  String get selectCityHint => 'Select city';
+
+  @override
+  String get selectCityRequired => 'Please select a city';
+
+  @override
+  String get fullAddressLabel => 'Full Address';
+
+  @override
+  String get fullAddressHint =>
+      'e.g. 123 Nguyen Trai, Thuong Dinh Ward, Thanh Xuan District';
+
+  @override
+  String get fullAddressRequired => 'Please enter the full address';
+
+  @override
+  String get fullAddressTip =>
+      'Enter the exact address including street number, street name, ward/commune, and district';
+
+  @override
+  String get addressInfoStep => 'Address details';
+
+  @override
+  String get cityLabel => 'City';
+
+  @override
+  String get fullAddressSummary => 'Full Address';
+
+  @override
+  String get cityNameSummary => 'City';
+
+  @override
+  String get submitVerificationRequest => 'Submit Verification Request';
 }
