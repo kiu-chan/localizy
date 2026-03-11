@@ -11,7 +11,7 @@ class MyAddress {
   final String userName;
   final double latitude;
   final double longitude;
-  final String cityCode;
+  final String cityName;
   final String status;
   final String comments;
   final String createdAt;
@@ -25,7 +25,7 @@ class MyAddress {
     required this.userName,
     required this.latitude,
     required this.longitude,
-    required this.cityCode,
+    required this.cityName,
     required this.status,
     required this.comments,
     required this.createdAt,
@@ -41,7 +41,7 @@ class MyAddress {
       userName: json['userName'] ?? '',
       latitude: (json['latitude'] ?? 0).toDouble(),
       longitude: (json['longitude'] ?? 0).toDouble(),
-      cityCode: json['cityCode'] ?? '',
+      cityName: json['cityName'] ?? '',
       status: json['status'] ?? '',
       comments: json['comments'] ?? '',
       createdAt: json['createdAt'] ?? '',
@@ -124,14 +124,14 @@ class AddressApi {
     required String fullAddress,
     required double latitude,
     required double longitude,
-    required String cityCode,
+    required String cityId,
   }) async {
     final body = <String, dynamic>{
       'name': name,
       'fullAddress': fullAddress,
       'latitude': latitude,
       'longitude': longitude,
-      'cityCode': cityCode,
+      'cityId': cityId,
       'extraDocs': null,
     };
 

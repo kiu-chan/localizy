@@ -160,7 +160,7 @@ class LocationItemCard extends StatelessWidget {
         address.name.isNotEmpty ? address.name : address.code;
     final displaySub = address.fullAddress.isNotEmpty
         ? address.fullAddress
-        : address.cityCode;
+        : address.cityName;
 
     return Container(
       margin: const EdgeInsets.only(bottom: 10),

@@ -149,7 +149,7 @@ void showLocationDetailSheet(BuildContext context, MyAddress address) {
                 _DetailTile(
                   icon: Icons.location_city_outlined,
                   label: l10n.mapCityCode,
-                  value: address.cityCode,
+                  value: address.cityName,
                   iconColor: Colors.purple.shade500,
                 ),
                 const _Divider(),

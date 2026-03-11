@@ -19,14 +19,14 @@ class AddLocationPickResult extends AddLocationDialogResult {
 class AddLocationSubmitResult extends AddLocationDialogResult {
   final String name;
   final String fullAddress;
-  final String cityCode;
+  final String cityId;
   final double lat;
   final double lng;
 
   AddLocationSubmitResult({
     required this.name,
     required this.fullAddress,
-    required this.cityCode,
+    required this.cityId,
     required this.lat,
     required this.lng,
   });
@@ -60,9 +60,9 @@ Future<AddLocationDialogResult?> showAddLocationDialog(
     cities = await CityApi.getActiveCities();
   } catch (_) {}
 
-  String? selectedCityCode = snapshot?.cityCode.isNotEmpty == true
-      ? snapshot!.cityCode
-      : (cities.isNotEmpty ? cities.first.code : null);
+  String? selectedCityId = snapshot?.cityId.isNotEmpty == true
+      ? snapshot!.cityId
+      : (cities.isNotEmpty ? cities.first.id : null);
 
   // 'submit' | 'pick' | 'cancel'
   String action = 'cancel';
@@ -223,7 +223,7 @@ Future<AddLocationDialogResult?> showAddLocationDialog(
                         ),
                         const SizedBox(height: 12),
                         DropdownButtonFormField<String>(
-                          value: selectedCityCode,
+                          value: selectedCityId,
                           decoration: InputDecoration(
                             labelText: l10n.mapCityCode,
                             prefixIcon: const Icon(
@@ -254,13 +254,13 @@ Future<AddLocationDialogResult?> showAddLocationDialog(
                           ),
                           items: cities
                               .map((c) => DropdownMenuItem(
-                                    value: c.code,
+                                    value: c.id,
                                     child: Text('${c.name} (${c.code})'),
                                   ))
                               .toList(),
                           onChanged: (v) =>
-                              setDialogState(() => selectedCityCode = v),
-                          validator: (_) => selectedCityCode == null
+                              setDialogState(() => selectedCityId = v),
+                          validator: (_) => selectedCityId == null
                               ? l10n.mapFieldRequired
                               : null,
                         ),
@@ -439,7 +439,7 @@ Future<AddLocationDialogResult?> showAddLocationDialog(
     return AddLocationPickResult(FormSnapshot(
       name: nameController.text,
       fullAddress: fullAddressController.text,
-      cityCode: selectedCityCode ?? '',
+      cityId: selectedCityId ?? '',
     ));
   }
 
@@ -447,7 +447,7 @@ Future<AddLocationDialogResult?> showAddLocationDialog(
     return AddLocationSubmitResult(
       name: nameController.text.trim(),
       fullAddress: fullAddressController.text.trim(),
-      cityCode: selectedCityCode ?? '',
+      cityId: selectedCityId ?? '',
       lat: double.parse(latController.text.trim()),
       lng: double.parse(lngController.text.trim()),
     );

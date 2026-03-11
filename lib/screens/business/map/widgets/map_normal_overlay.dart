@@ -73,7 +73,7 @@ class _MapNormalOverlayState extends State<MapNormalOverlay> {
       return a.name.toLowerCase().contains(q) ||
           a.code.toLowerCase().contains(q) ||
           a.fullAddress.toLowerCase().contains(q) ||
-          a.cityCode.toLowerCase().contains(q);
+          a.cityName.toLowerCase().contains(q);
     }).toList();
   }
 
@@ -252,7 +252,7 @@ class _MapNormalOverlayState extends State<MapNormalOverlay> {
                                 a.name.isNotEmpty ? a.name : a.code;
                             final sub = a.fullAddress.isNotEmpty
                                 ? a.fullAddress
-                                : a.cityCode;
+                                : a.cityName;
                             return InkWell(
                               onTap: () => _selectSuggestion(a),
                               child: Padding(

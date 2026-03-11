@@ -87,7 +87,7 @@ class _BusinessMapPageState extends State<BusinessMapPage> {
             position: LatLng(address.latitude, address.longitude),
             infoWindow: InfoWindow(
               title: address.name.isNotEmpty ? address.name : address.code,
-              snippet: address.cityCode,
+              snippet: address.cityName,
             ),
             icon: BitmapDescriptor.defaultMarkerWithHue(
                 _markerHue(address.status)),
@@ -269,7 +269,7 @@ class _BusinessMapPageState extends State<BusinessMapPage> {
         fullAddress: data.fullAddress,
         latitude: data.lat,
         longitude: data.lng,
-        cityCode: data.cityCode,
+        cityId: data.cityId,
       );
 
       if (mounted) {
