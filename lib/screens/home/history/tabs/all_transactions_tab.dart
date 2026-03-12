@@ -1,5 +1,7 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:localizy/api/main_api.dart';
 import 'package:localizy/api/transaction_api.dart';
 import 'package:localizy/l10n/app_localizations.dart';
 
@@ -28,21 +30,30 @@ class _AllTransactionsTabState extends State<AllTransactionsTab> {
     });
 
     try {
-      final items = await TransactionApi.getMyTransactions();
+      final rawData = await MainApi.instance.getJson('api/transactions/my-transactions');
+      debugPrint('[AllTransactionsTab] my-transactions response: ${jsonEncode(rawData)}');
+
+      final items = (rawData as List)
+          .map((e) => Transaction.fromJson(e as Map<String, dynamic>))
+          .toList();
+
       setState(() {
         _transactions = items.map((t) => {
           'id': t.id,
           'type': t.type,
-          'title': t.description,
-          'location': t.referenceId,
+          'title': t.title,
+          'location': t.location,
           'amount': t.amount,
           'status': t.status,
           'paymentMethod': t.paymentMethod,
           'date': t.date,
+          'licensePlate': t.licensePlate,
+          'duration': t.duration,
         }).toList();
         _isLoading = false;
       });
     } catch (e) {
+      debugPrint('[AllTransactionsTab] Error loading: $e');
       setState(() {
         _error = e.toString();
         _isLoading = false;
@@ -134,7 +145,7 @@ class _AllTransactionsTabState extends State<AllTransactionsTab> {
                   Container(
                     padding: const EdgeInsets.all(10),
                     decoration: BoxDecoration(
-                      color: _getTypeColor(transaction['type']).withOpacity(0.1),
+                      color: _getTypeColor(transaction['type']).withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(10),
                     ),
                     child: Icon(
@@ -292,7 +303,7 @@ class _AllTransactionsTabState extends State<AllTransactionsTab> {
                       Container(
                         padding: const EdgeInsets.all(12),
                         decoration: BoxDecoration(
-                          color: _getTypeColor(transaction['type']).withOpacity(0.1),
+                          color: _getTypeColor(transaction['type']).withValues(alpha: 0.1),
                           borderRadius: BorderRadius.circular(12),
                         ),
                         child: Icon(

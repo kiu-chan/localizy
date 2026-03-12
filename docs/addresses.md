@@ -20,7 +20,6 @@ Quản lý danh sách địa chỉ (`AddressCodes`).
   "code": "HANA3K92",
   "name": "Nhà hàng Phở Bắc",
   "fullAddress": "123 Nguyễn Trãi, P. Thượng Đình, Q. Thanh Xuân, Hà Nội",
-  "district": "Thanh Xuân",
   "userId": "a1b2c3d4-...",
   "userName": "Nguyen Van A",
   "latitude": 21.0285,
@@ -32,7 +31,6 @@ Quản lý danh sách địa chỉ (`AddressCodes`).
   "validatorId": "b2c3d4e5-...",
   "validatorName": "Tran Van B",
   "comments": "Đã xác minh tại thực địa",
-  "extraDocs": "[\"photo1.jpg\"]",
   "parkingAvailable": true,
   "totalParkingSpots": 20,
   "availableSpots": 15,
@@ -78,7 +76,7 @@ GET /api/addresses/search?searchTerm={term}
 **Authorization:** Public
 
 **Query Parameters:**
-- `searchTerm` (string): Tìm theo `code`, `name`, `fullAddress`, `district` hoặc `cityName`
+- `searchTerm` (string): Tìm theo `code`, `name`, `fullAddress` hoặc `cityName`
 
 **Response:** `200 OK`
 ```json
@@ -88,7 +86,6 @@ GET /api/addresses/search?searchTerm={term}
     "code": "HANA3K92",
     "name": "Nhà hàng Phở Bắc",
     "fullAddress": "123 Nguyễn Trãi, P. Thượng Đình, Q. Thanh Xuân",
-    "district": "Thanh Xuân",
     "latitude": 21.0285,
     "longitude": 105.8542,
     "cityId": "d4e5f6a7-...",
@@ -222,10 +219,8 @@ POST /api/addresses
   "cityId": "d4e5f6a7-5717-4562-b3fc-2c963f66afa6",
   "name": "Nhà hàng Phở Bắc",
   "fullAddress": "123 Nguyễn Trãi, P. Thượng Đình, Q. Thanh Xuân, Hà Nội",
-  "district": "Thanh Xuân",
   "latitude": 21.0285,
   "longitude": 105.8542,
-  "extraDocs": null,
   "parkingAvailable": false,
   "totalParkingSpots": 0,
   "pricePerHour": 0
@@ -263,13 +258,11 @@ PUT /api/addresses/{id}
 {
   "name": "Nhà hàng Phở Bắc (đã đổi tên)",
   "fullAddress": "456 Lê Duẩn, P. Điện Biên, Q. Ba Đình, Hà Nội",
-  "district": "Ba Đình",
   "latitude": 21.0290,
   "longitude": 105.8550,
   "cityId": "d4e5f6a7-5717-4562-b3fc-2c963f66afa6",
   "validatorId": "b2c3d4e5-...",
   "comments": "Ghi chú cập nhật",
-  "extraDocs": "[\"newdoc.pdf\"]",
   "parkingAvailable": true,
   "totalParkingSpots": 20,
   "pricePerHour": 10000
@@ -350,7 +343,6 @@ GET /api/addresses/parking-zones
     "code": "HANP7M21",
     "name": "Bãi đỗ xe Trần Duy Hưng",
     "fullAddress": "123 Trần Duy Hưng, Q. Cầu Giấy, Hà Nội",
-    "district": "Cầu Giấy",
     "latitude": 21.0075,
     "longitude": 105.7989,
     "cityId": "d4e5f6a7-...",

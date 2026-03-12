@@ -64,7 +64,7 @@ class _PaymentCheckPageState extends State<PaymentCheckPage> {
         _ticketInfo = {
           'ticketCode': t.ticketCode,
           'licensePlate': t.licensePlate,
-          'zone': t.parkingZone,
+          'zone': t.addressId,
           'status': t.status,
           'startTime': t.startTime,
           'endTime': t.endTime,

@@ -47,13 +47,9 @@ Pending → Assigned → Scheduled → Verified
   "submittedDate": "2024-01-10T10:30:00Z",
   "notes": "New address verification request",
   "verificationData": {
-    "photosProvided": true,
-    "documentsProvided": true,
-    "locationVerified": false,
     "idDocumentUrl": "http://localhost:5088/uploads/verifications/cccd_xxx.jpg",
     "addressProofUrl": "http://localhost:5088/uploads/verifications/proof_xxx.jpg"
   },
-  "attachmentsCount": 2,
   "assignedValidator": {
     "userId": "c3d4e5f6-...",
     "name": "Tran Van Validator"
@@ -269,7 +265,6 @@ PUT /api/validations/{id}/address-info
 {
   "name": "Nhà hàng Phở Bắc",
   "fullAddress": "123 Nguyễn Trãi, P. Thượng Đình, Q. Thanh Xuân, Hà Nội",
-  "district": "Thanh Xuân",
   "cityId": "d4e5f6a7-5717-4562-b3fc-2c963f66afa6",
   "latitude": 21.0285,
   "longitude": 105.8542,
@@ -278,7 +273,7 @@ PUT /api/validations/{id}/address-info
 }
 ```
 
-> **Lưu ý:** Nếu validation có `addressId` (địa chỉ đã tồn tại), các trường `name`, `fullAddress`, `district`, `cityId`, `latitude`, `longitude` sẽ được cập nhật trực tiếp vào bảng `AddressCodes`. Ngược lại, chỉ `latitude`, `longitude`, `locationName`, `notes` trên Validation được cập nhật.
+> **Lưu ý:** Nếu validation có `addressId` (địa chỉ đã tồn tại), các trường `name`, `fullAddress`, `cityId`, `latitude`, `longitude` sẽ được cập nhật trực tiếp vào bảng `AddressCodes`. Ngược lại, chỉ `latitude`, `longitude`, `locationName`, `notes` trên Validation được cập nhật.
 
 **Response:** `200 OK` - Validation object đã cập nhật
 
@@ -301,10 +296,7 @@ PUT /api/validations/{id}
 ```json
 {
   "priority": "High",
-  "notes": "Cập nhật ghi chú",
-  "photosProvided": true,
-  "documentsProvided": true,
-  "locationVerified": false
+  "notes": "Cập nhật ghi chú"
 }
 ```
 
@@ -385,9 +377,6 @@ POST /api/validations/verification-request
 | `RequestType` | string | Không | `NewAddress` \| `UpdateAddress` (default: `NewAddress`) |
 | `Priority` | string | Không | `Low` \| `Medium` \| `High` (default: `Medium`) |
 | `IdType` | string | Không | Loại giấy tờ: `CCCD`, `Passport`, ... |
-| `PhotosProvided` | boolean | Không | Có cung cấp ảnh không |
-| `DocumentsProvided` | boolean | Không | Có cung cấp tài liệu không |
-| `AttachmentsCount` | integer | Không | Số lượng tệp đính kèm |
 | `Latitude` | double | Không | Vĩ độ của địa chỉ |
 | `Longitude` | double | Không | Kinh độ của địa chỉ |
 | `LocationName` | string | Không | Tên địa điểm (VD: "Nhà hàng Phở Bắc") |
@@ -405,6 +394,7 @@ curl -X POST http://localhost:5088/api/validations/verification-request \
   -F "AddressProof=@/path/to/address_proof.pdf" \
   -F "IdType=CCCD" \
   -F "Latitude=21.0285" \
+
   -F "Longitude=105.8542" \
   -F "LocationName=Nhà hàng Phở Bắc" \
   -F "FullAddress=123 Nguyễn Trãi, P. Thượng Đình, Q. Thanh Xuân, Hà Nội" \
@@ -424,9 +414,6 @@ curl -X POST http://localhost:5088/api/validations/verification-request \
   "address": {},
   "documents": {
     "idType": "CCCD",
-    "photosProvided": true,
-    "documentsProvided": true,
-    "attachmentsCount": 2,
     "idDocumentUrl": "http://localhost:5088/uploads/verifications/cccd_xxx.jpg",
     "addressProofUrl": "http://localhost:5088/uploads/verifications/proof_xxx.jpg"
   },

@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:localizy/api/main_api.dart';
@@ -30,6 +31,8 @@ class _VerificationTransactionsTabState extends State<VerificationTransactionsTa
 
     try {
       final data = await MainApi.instance.getJson('api/validations/my-validations');
+      debugPrint('[VerificationTab] my-validations response: ${jsonEncode(data)}');
+
       setState(() {
         _verifications = (data as List<dynamic>)
             .map((item) => item as Map<String, dynamic>)
@@ -37,6 +40,7 @@ class _VerificationTransactionsTabState extends State<VerificationTransactionsTa
         _isLoading = false;
       });
     } catch (e) {
+      debugPrint('[VerificationTab] Error loading: $e');
       setState(() {
         _error = e.toString();
         _isLoading = false;

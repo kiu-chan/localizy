@@ -27,16 +27,15 @@ Quản lý vé đỗ xe. Địa điểm đỗ xe là các địa chỉ có `park
   "id": "3fa85f64-...",
   "ticketCode": "PKT12345678",
   "licensePlate": "30A-12345",
-  "parkingZone": "Bãi đỗ xe Trần Duy Hưng",
+  "addressId": "b2c3d4e5-...",
   "duration": "4h",
   "startTime": "2024-01-10T10:00:00Z",
   "endTime": "2024-01-10T14:00:00Z",
   "amount": 35000,
   "paymentMethod": "momo",
-  "status": "Active",
+  "status": "active",
   "paidAt": "2024-01-10T10:00:00Z",
   "userId": "a1b2c3d4-...",
-  "addressId": "b2c3d4e5-...",
   "createdAt": "2024-01-10T10:00:00Z"
 }
 ```
@@ -65,8 +64,7 @@ POST /api/parking
 | Field | Type | Required | Mô tả |
 |-------|------|----------|-------|
 | `licensePlate` | string | **Có** | Biển số xe |
-| `addressId` | Guid | Không | ID bãi đỗ xe (ưu tiên) |
-| `parkingZone` | string | Không | Tên khu vực (fallback nếu không có addressId) |
+| `addressId` | Guid | **Có** | ID điểm đỗ xe (Address có `parkingAvailable = true`) |
 | `duration` | string | **Có** | `1h` \| `2h` \| `4h` \| `8h` \| `1day` |
 | `paymentMethod` | string | **Có** | `momo` \| `zalopay` \| `bank` \| `card` \| `cash` |
 | `startTime` | datetime | Không | Thời gian bắt đầu (mặc định: UtcNow) |
@@ -146,13 +144,13 @@ GET /api/parking/my-tickets
     "id": "3fa85f64-...",
     "ticketCode": "PKT12345678",
     "licensePlate": "30A-12345",
-    "parkingZone": "Bãi đỗ xe Trần Duy Hưng",
+    "addressId": "b2c3d4e5-...",
     "duration": "4h",
     "startTime": "2024-01-10T10:00:00Z",
     "endTime": "2024-01-10T14:00:00Z",
     "amount": 35000,
     "paymentMethod": "momo",
-    "status": "Expired",
+    "status": "expired",
     "createdAt": "2024-01-10T10:00:00Z"
   }
 ]

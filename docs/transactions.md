@@ -9,7 +9,7 @@ Lịch sử giao dịch tổng hợp (đỗ xe + xác minh địa chỉ).
   "id": "PKT12345678",
   "type": "parking",
   "title": "Parking Payment",
-  "location": "Bãi đỗ xe Trần Duy Hưng",
+  "location": "b2c3d4e5-...",
   "licensePlate": "30A-12345",
   "amount": 35000,
   "status": "success",
@@ -23,12 +23,13 @@ Lịch sử giao dịch tổng hợp (đỗ xe + xác minh địa chỉ).
 |-------|-------|
 | `type` | `parking` hoặc `verification` |
 | `status` | `success` \| `failed` \| `pending` |
+| `location` | Parking: `addressId` (Guid) của điểm đỗ xe; Verification: tọa độ `"Lat: x, Lng: y"` |
 | `licensePlate` | Chỉ có khi `type = parking` |
 | `duration` | Chỉ có khi `type = parking` |
 
 **Mapping trạng thái:**
-- Parking: `Active/Expired` → `success`, `Cancelled` → `failed`
-- Verification: `Verified` → `success`, `Rejected` → `failed`, còn lại → `pending`
+- Parking: `active/expired` → `success`, `cancelled` → `failed`
+- Verification: `verified` → `success`, `rejected` → `failed`, còn lại → `pending`
 
 ---
 
@@ -49,7 +50,7 @@ GET /api/transactions/my-transactions
     "id": "PKT12345678",
     "type": "parking",
     "title": "Parking Payment",
-    "location": "Bãi đỗ xe Trần Duy Hưng",
+    "location": "b2c3d4e5-...",
     "licensePlate": "30A-12345",
     "amount": 35000,
     "status": "success",
@@ -61,7 +62,7 @@ GET /api/transactions/my-transactions
     "id": "3fa85f64-...",
     "type": "verification",
     "title": "Address Verification",
-    "location": "Nhà hàng Phở Bắc",
+    "location": "Lat: 21.0285, Lng: 105.8542",
     "amount": 150000,
     "status": "pending",
     "date": "2024-01-09T08:00:00Z",

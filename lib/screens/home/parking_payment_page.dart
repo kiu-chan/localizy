@@ -22,6 +22,7 @@ class _ParkingPaymentPageState extends State<ParkingPaymentPage> {
   
   String? _selectedPaymentMethod;
   String? _selectedDuration;
+  String? _selectedAddressId;
   int _parkingFee = 0;
   int _pricePerHour = 0;
   bool _zoneSelected = false;
@@ -41,8 +42,9 @@ class _ParkingPaymentPageState extends State<ParkingPaymentPage> {
     super.dispose();
   }
 
-  void _onZoneSelected(String code, int pricePerHour) {
+  void _onZoneSelected(String id, String code, int pricePerHour) {
     setState(() {
+      _selectedAddressId = id;
       _pricePerHour = pricePerHour;
       _zoneSelected = true;
       // recalculate fee if duration already selected
@@ -126,7 +128,7 @@ class _ParkingPaymentPageState extends State<ParkingPaymentPage> {
     try {
       final ticket = await ParkingApi.createTicket(
         licensePlate: _licensePlateController.text.trim(),
-        parkingZone: _parkingZoneController.text.trim(),
+        addressId: _selectedAddressId!,
         duration: _selectedDuration!,
         paymentMethod: _selectedPaymentMethod!,
       );
@@ -165,7 +167,7 @@ class _ParkingPaymentPageState extends State<ParkingPaymentPage> {
     final endTime = ticket.endTime;
     final amount = ticket.amount;
     final licensePlate = ticket.licensePlate;
-    final parkingZone = ticket.parkingZone;
+    final parkingZone = _parkingZoneController.text.trim();
     final paymentMethod = ticket.paymentMethod;
     
     showDialog(

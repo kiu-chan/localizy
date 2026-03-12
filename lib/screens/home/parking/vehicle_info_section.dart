@@ -5,7 +5,7 @@ import 'package:localizy/screens/home/parking/parking_zone_map_selector.dart';
 class VehicleInfoSection extends StatefulWidget {
   final TextEditingController licensePlateController;
   final TextEditingController parkingZoneController;
-  final void Function(String code, int pricePerHour)? onZoneSelected;
+  final void Function(String id, String code, int pricePerHour)? onZoneSelected;
 
   const VehicleInfoSection({
     super.key,
@@ -64,7 +64,7 @@ class _VehicleInfoSectionState extends State<VehicleInfoSection> {
       setState(() {
         widget.parkingZoneController.text = result.code;
       });
-      widget.onZoneSelected?.call(result.code, result.pricePerHour);
+      widget.onZoneSelected?.call(result.id, result.code, result.pricePerHour);
     }
   }
 

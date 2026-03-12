@@ -3,36 +3,42 @@ import 'package:localizy/api/main_api.dart';
 class Transaction {
   final String id;
   final String type;
-  final String description;
+  final String title;
+  final String location;
   final int amount;
   final String status;
   final String paymentMethod;
-  final String referenceId;
   final DateTime date;
+  final String? licensePlate;
+  final String? duration;
 
   Transaction({
     required this.id,
     required this.type,
-    required this.description,
+    required this.title,
+    required this.location,
     required this.amount,
     required this.status,
     required this.paymentMethod,
-    required this.referenceId,
     required this.date,
+    this.licensePlate,
+    this.duration,
   });
 
   factory Transaction.fromJson(Map<String, dynamic> json) {
     return Transaction(
       id: json['id']?.toString() ?? '',
       type: json['type'] ?? '',
-      description: json['description'] ?? '',
+      title: json['title'] ?? '',
+      location: json['location']?.toString() ?? '',
       amount: (json['amount'] ?? 0).toInt(),
       status: (json['status'] as String? ?? '').toLowerCase(),
       paymentMethod: json['paymentMethod'] ?? '',
-      referenceId: json['referenceId']?.toString() ?? '',
       date: json['date'] != null
           ? DateTime.parse(json['date'])
           : DateTime.now(),
+      licensePlate: json['licensePlate'] as String?,
+      duration: json['duration'] as String?,
     );
   }
 }

@@ -1,7 +1,11 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:localizy/api/address_api.dart';
+import 'package:localizy/api/main_api.dart';
 import 'package:localizy/api/parking_api.dart';
 import 'package:localizy/l10n/app_localizations.dart';
+import 'package:localizy/screens/home/parking/parking_zone_detail_map_page.dart';
 
 class ParkingTransactionsTab extends StatefulWidget {
   const ParkingTransactionsTab({super.key});
@@ -14,10 +18,11 @@ class _ParkingTransactionsTabState extends State<ParkingTransactionsTab> {
   bool _isLoading = true;
   String? _error;
   List<Map<String, dynamic>> _transactions = [];
+  Map<String, ParkingZoneItem> _zoneMap = {};
 
   @override
   void initState() {
-    super.initState();  
+    super.initState();
     _loadTransactions();
   }
 
@@ -28,22 +33,52 @@ class _ParkingTransactionsTabState extends State<ParkingTransactionsTab> {
     });
 
     try {
-      final items = await ParkingApi.getMyTickets();
+      final rawTickets = await MainApi.instance.getJson('api/parking/my-tickets');
+      debugPrint('[ParkingTab] my-tickets response: ${jsonEncode(rawTickets)}');
+
+      final rawZones = await MainApi.instance.getJson('api/addresses/parking-zones');
+      debugPrint('[ParkingTab] parking-zones response: ${jsonEncode(rawZones)}');
+
+      final items = (rawTickets as List)
+          .map((e) => ParkingTicket.fromJson(e as Map<String, dynamic>))
+          .toList();
+
+      final zones = (rawZones as List)
+          .map((e) => ParkingZoneItem.fromJson(e as Map<String, dynamic>))
+          .toList();
+
+      final zoneMap = {for (final z in zones) z.id: z};
+
       setState(() {
-        _transactions = items.map((t) => {
-          'id': t.ticketCode.isNotEmpty ? t.ticketCode : t.id,
-          'title': 'Parking Payment',
-          'location': t.parkingZone,
-          'licensePlate': t.licensePlate,
-          'amount': t.amount,
-          'status': t.uiStatus,
-          'date': t.startTime,
-          'paymentMethod': t.paymentMethod,
-          'duration': t.duration,
+        _zoneMap = zoneMap;
+        _transactions = items.map((t) {
+          final zone = _zoneMap[t.addressId];
+          final location = zone != null ? '${zone.code} - ${zone.name}' : t.addressId;
+          return {
+            'id': t.ticketCode.isNotEmpty ? t.ticketCode : t.id,
+            'title': 'Parking Payment',
+            'location': location,
+            'licensePlate': t.licensePlate,
+            'amount': t.amount,
+            'status': t.uiStatus,
+            'date': t.startTime,
+            'paymentMethod': t.paymentMethod,
+            'duration': t.duration,
+            // Zone map data for navigation
+            'zoneId': zone?.id ?? t.addressId,
+            'zoneCode': zone?.code ?? '',
+            'zoneName': zone?.name ?? '',
+            'lat': zone?.latitude,
+            'lng': zone?.longitude,
+            'availableSpots': zone?.availableSpots ?? 0,
+            'totalSpots': zone?.totalSpots ?? 0,
+            'pricePerHour': zone?.pricePerHour ?? 0,
+          };
         }).toList();
         _isLoading = false;
       });
     } catch (e) {
+      debugPrint('[ParkingTab] Error loading: $e');
       setState(() {
         _error = e.toString();
         _isLoading = false;
@@ -371,6 +406,43 @@ class _ParkingTransactionsTabState extends State<ParkingTransactionsTab> {
                     icon: _getPaymentIcon(transaction['paymentMethod']),
                   ),
                   const SizedBox(height: 24),
+                  // View on Map button — chỉ hiện khi có tọa độ
+                  if (transaction['lat'] != null && transaction['lng'] != null) ...[
+                    SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton.icon(
+                        onPressed: () {
+                          Navigator.pop(context);
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => ParkingZoneDetailMapPage(
+                                zoneId: transaction['zoneId'] as String,
+                                zoneCode: transaction['zoneCode'] as String,
+                                zoneName: transaction['zoneName'] as String,
+                                latitude: (transaction['lat'] as double),
+                                longitude: (transaction['lng'] as double),
+                                availableSpots: transaction['availableSpots'] as int,
+                                totalSpots: transaction['totalSpots'] as int,
+                                pricePerHour: transaction['pricePerHour'] as int,
+                              ),
+                            ),
+                          );
+                        },
+                        icon: const Icon(Icons.map),
+                        label: const Text('View on Map'),
+                        style: ElevatedButton.styleFrom(
+                          padding: const EdgeInsets.symmetric(vertical: 14),
+                          backgroundColor: Colors.blue.shade700,
+                          foregroundColor: Colors.white,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                  ],
                   Row(
                     children: [
                       Expanded(

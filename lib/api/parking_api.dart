@@ -5,7 +5,7 @@ class ParkingTicket {
   final String id;
   final String ticketCode;
   final String licensePlate;
-  final String parkingZone;
+  final String addressId;
   final String duration;
   final int amount;
   final String status;
@@ -18,7 +18,7 @@ class ParkingTicket {
     required this.id,
     required this.ticketCode,
     required this.licensePlate,
-    required this.parkingZone,
+    required this.addressId,
     required this.duration,
     required this.amount,
     required this.status,
@@ -33,7 +33,7 @@ class ParkingTicket {
       id: json['id']?.toString() ?? '',
       ticketCode: json['ticketCode'] ?? '',
       licensePlate: json['licensePlate'] ?? '',
-      parkingZone: json['parkingZone'] ?? '',
+      addressId: json['addressId']?.toString() ?? '',
       duration: json['duration']?.toString() ?? '',
       amount: (json['amount'] ?? 0).toInt(),
       status: (json['status'] as String? ?? '').toLowerCase(),
@@ -68,13 +68,13 @@ class ParkingApi {
   /// Tạo vé đậu xe mới
   static Future<ParkingTicket> createTicket({
     required String licensePlate,
-    required String parkingZone,
+    required String addressId,
     required String duration,
     required String paymentMethod,
   }) async {
     final resp = await MainApi.instance.postJson('api/parking', {
       'licensePlate': licensePlate,
-      'parkingZone': parkingZone,
+      'addressId': addressId,
       'duration': duration,
       'paymentMethod': paymentMethod,
     });
