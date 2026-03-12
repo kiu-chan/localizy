@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:localizy/api/main_api.dart';
 import 'package:localizy/l10n/app_localizations.dart';
+import 'package:localizy/screens/home/parking/parking_zone_detail_map_page.dart';
 
 class VerificationTransactionsTab extends StatefulWidget {
   const VerificationTransactionsTab({super.key});
@@ -255,20 +256,53 @@ class _VerificationTransactionsTabState extends State<VerificationTransactionsTa
                         ),
                       ],
                     ),
-                  Row(
-                    children: [
-                      Icon(Icons.location_on, size: 14, color: Colors.grey.shade600),
-                      const SizedBox(width: 4),
-                      Text(
-                        '${latitude.toStringAsFixed(4)}, ${longitude.toStringAsFixed(4)}',
-                        style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
+                  if (latitude != 0.0 || longitude != 0.0)
+                    GestureDetector(
+                      behavior: HitTestBehavior.opaque,
+                      onTap: () => _openMap(latitude.toDouble(), longitude.toDouble(), requestId),
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                        decoration: BoxDecoration(
+                          color: Colors.blue.shade50,
+                          borderRadius: BorderRadius.circular(6),
+                          border: Border.all(color: Colors.blue.shade200),
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(Icons.map, size: 13, color: Colors.blue.shade700),
+                            const SizedBox(width: 4),
+                            Text(
+                              'View on Map',
+                              style: TextStyle(
+                                fontSize: 12,
+                                color: Colors.blue.shade700,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
-                    ],
-                  ),
+                    ),
                 ],
               ),
             ],
           ),
+        ),
+      ),
+    );
+  }
+
+  void _openMap(double lat, double lng, String requestId) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => ParkingZoneDetailMapPage(
+          zoneId: requestId,
+          zoneCode: requestId,
+          zoneName: 'Verification Location',
+          latitude: lat,
+          longitude: lng,
         ),
       ),
     );
@@ -473,6 +507,28 @@ class _VerificationTransactionsTabState extends State<VerificationTransactionsTa
                     ),
                   ],
                   const SizedBox(height: 24),
+                  if (latitude != 0.0 || longitude != 0.0) ...[
+                    SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton.icon(
+                        onPressed: () {
+                          Navigator.pop(context);
+                          _openMap(latitude.toDouble(), longitude.toDouble(), requestId);
+                        },
+                        icon: const Icon(Icons.map, color: Colors.white),
+                        label: const Text(
+                          'View on Map',
+                          style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600),
+                        ),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.blue,
+                          padding: const EdgeInsets.symmetric(vertical: 14),
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                  ],
                   Row(
                     children: [
                       Expanded(

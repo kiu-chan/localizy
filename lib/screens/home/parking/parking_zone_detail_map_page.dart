@@ -8,6 +8,7 @@ import 'package:localizy/configs/map_config.dart';
 import 'package:localizy/screens/map/widgets/directions_panel.dart';
 import 'package:localizy/screens/map/widgets/map_type_selector.dart';
 import 'package:localizy/services/directions_service.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class ParkingZoneDetailMapPage extends StatefulWidget {
   final String zoneId;
@@ -462,6 +463,15 @@ class _ParkingZoneDetailMapPageState extends State<ParkingZoneDetailMapPage> {
     );
   }
 
+  Future<void> _openGoogleMaps() async {
+    final uri = Uri.parse(
+      'https://www.google.com/maps/search/?api=1&query=${widget.latitude},${widget.longitude}',
+    );
+    if (await canLaunchUrl(uri)) {
+      await launchUrl(uri, mode: LaunchMode.externalApplication);
+    }
+  }
+
   void _showZoneInfoDialog() {
     final isAvailable = widget.availableSpots > 0 || widget.totalSpots == 0;
     final statusColor = isAvailable ? Colors.green.shade700 : Colors.red.shade700;
@@ -568,25 +578,47 @@ class _ParkingZoneDetailMapPageState extends State<ParkingZoneDetailMapPage> {
 
               const SizedBox(height: 20),
 
-              // Get directions button
-              SizedBox(
-                width: double.infinity,
-                child: ElevatedButton.icon(
-                  onPressed: () {
-                    Navigator.of(ctx).pop();
-                    _getDirections();
-                  },
-                  icon: const Icon(Icons.directions, color: Colors.white),
-                  label: const Text(
-                    'Get Directions',
-                    style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600, fontSize: 15),
+              // Buttons row
+              Row(
+                children: [
+                  Expanded(
+                    child: ElevatedButton.icon(
+                      onPressed: () {
+                        Navigator.of(ctx).pop();
+                        _getDirections();
+                      },
+                      icon: const Icon(Icons.directions, color: Colors.white, size: 18),
+                      label: const Text(
+                        'Directions',
+                        style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600),
+                      ),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.blue,
+                        padding: const EdgeInsets.symmetric(vertical: 13),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                      ),
+                    ),
                   ),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.blue,
-                    padding: const EdgeInsets.symmetric(vertical: 14),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: ElevatedButton.icon(
+                      onPressed: () {
+                        Navigator.of(ctx).pop();
+                        _openGoogleMaps();
+                      },
+                      icon: const Icon(Icons.map, color: Colors.white, size: 18),
+                      label: const Text(
+                        'Google Maps',
+                        style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600),
+                      ),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.green.shade700,
+                        padding: const EdgeInsets.symmetric(vertical: 13),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                      ),
+                    ),
                   ),
-                ),
+                ],
               ),
             ],
           ),

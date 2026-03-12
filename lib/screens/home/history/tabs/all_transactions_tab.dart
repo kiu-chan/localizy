@@ -1,9 +1,11 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:localizy/api/address_api.dart';
 import 'package:localizy/api/main_api.dart';
 import 'package:localizy/api/transaction_api.dart';
 import 'package:localizy/l10n/app_localizations.dart';
+import 'package:localizy/screens/home/parking/parking_zone_detail_map_page.dart';
 
 class AllTransactionsTab extends StatefulWidget {
   const AllTransactionsTab({super.key});
@@ -30,25 +32,57 @@ class _AllTransactionsTabState extends State<AllTransactionsTab> {
     });
 
     try {
-      final rawData = await MainApi.instance.getJson('api/transactions/my-transactions');
+      final results = await Future.wait([
+        MainApi.instance.getJson('api/transactions/my-transactions'),
+        MainApi.instance.getJson('api/addresses/parking-zones'),
+      ]);
+
+      final rawData = results[0];
+      final rawZones = results[1];
       debugPrint('[AllTransactionsTab] my-transactions response: ${jsonEncode(rawData)}');
 
-      final items = (rawData as List)
-          .map((e) => Transaction.fromJson(e as Map<String, dynamic>))
-          .toList();
+      final zoneMap = {
+        for (final z in (rawZones as List).map((e) => ParkingZoneItem.fromJson(e as Map<String, dynamic>)))
+          z.id: z,
+      };
 
       setState(() {
-        _transactions = items.map((t) => {
-          'id': t.id,
-          'type': t.type,
-          'title': t.title,
-          'location': t.location,
-          'amount': t.amount,
-          'status': t.status,
-          'paymentMethod': t.paymentMethod,
-          'date': t.date,
-          'licensePlate': t.licensePlate,
-          'duration': t.duration,
+        _transactions = (rawData as List).map((e) {
+          final raw = e as Map<String, dynamic>;
+          final t = Transaction.fromJson(raw);
+
+          // For parking type, match zone by location field (zone ID)
+          final zone = t.type == 'parking' ? zoneMap[t.location] : null;
+
+          // For verification type, parse lat/lng from location string "Lat: X, Lng: Y"
+          double? lat = zone?.latitude;
+          double? lng = zone?.longitude;
+          String displayLocation = zone != null ? '${zone.code} - ${zone.name}' : t.location;
+
+          if (lat == null && t.type == 'verification') {
+            final match = RegExp(r'Lat:\s*([\d.]+),\s*Lng:\s*([\d.]+)').firstMatch(t.location);
+            if (match != null) {
+              lat = double.tryParse(match.group(1)!);
+              lng = double.tryParse(match.group(2)!);
+            }
+          }
+
+          return {
+            'id': t.id,
+            'type': t.type,
+            'title': t.title,
+            'location': displayLocation,
+            'amount': t.amount,
+            'status': t.status,
+            'paymentMethod': t.paymentMethod,
+            'date': t.date,
+            'licensePlate': t.licensePlate,
+            'duration': t.duration,
+            'lat': lat,
+            'lng': lng,
+            'zoneCode': zone?.code,
+            'zoneName': zone?.name,
+          };
         }).toList();
         _isLoading = false;
       });
@@ -265,6 +299,24 @@ class _AllTransactionsTabState extends State<AllTransactionsTab> {
     );
   }
 
+  void _openMap(Map<String, dynamic> transaction) {
+    final lat = transaction['lat'];
+    final lng = transaction['lng'];
+    if (lat == null || lng == null) return;
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => ParkingZoneDetailMapPage(
+          zoneId: transaction['id'] ?? '',
+          zoneCode: transaction['zoneCode'] ?? transaction['id'] ?? '',
+          zoneName: transaction['zoneName'] ?? transaction['title'] ?? '',
+          latitude: (lat as num).toDouble(),
+          longitude: (lng as num).toDouble(),
+        ),
+      ),
+    );
+  }
+
   void _showTransactionDetail(Map<String, dynamic> transaction) {
     showModalBottomSheet(
       context: context,
@@ -385,6 +437,28 @@ class _AllTransactionsTabState extends State<AllTransactionsTab> {
                     icon: _getPaymentIcon(transaction['paymentMethod']),
                   ),
                   const SizedBox(height: 24),
+                  if (transaction['lat'] != null && transaction['lng'] != null) ...[
+                    SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton.icon(
+                        onPressed: () {
+                          Navigator.pop(context);
+                          _openMap(transaction);
+                        },
+                        icon: const Icon(Icons.map, color: Colors.white),
+                        label: const Text(
+                          'View on Map',
+                          style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600),
+                        ),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.blue,
+                          padding: const EdgeInsets.symmetric(vertical: 14),
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                  ],
                   Row(
                     children: [
                       Expanded(
