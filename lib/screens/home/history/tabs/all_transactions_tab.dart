@@ -14,7 +14,10 @@ class AllTransactionsTab extends StatefulWidget {
   State<AllTransactionsTab> createState() => _AllTransactionsTabState();
 }
 
-class _AllTransactionsTabState extends State<AllTransactionsTab> {
+class _AllTransactionsTabState extends State<AllTransactionsTab>
+    with AutomaticKeepAliveClientMixin {
+  @override
+  bool get wantKeepAlive => true;
   bool _isLoading = true;
   String? _error;
   List<Map<String, dynamic>> _transactions = [];
@@ -101,6 +104,7 @@ class _AllTransactionsTabState extends State<AllTransactionsTab> {
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     if (_isLoading) {
       return const Center(child: CircularProgressIndicator());
     }

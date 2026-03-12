@@ -14,7 +14,10 @@ class ParkingTransactionsTab extends StatefulWidget {
   State<ParkingTransactionsTab> createState() => _ParkingTransactionsTabState();
 }
 
-class _ParkingTransactionsTabState extends State<ParkingTransactionsTab> {
+class _ParkingTransactionsTabState extends State<ParkingTransactionsTab>
+    with AutomaticKeepAliveClientMixin {
+  @override
+  bool get wantKeepAlive => true;
   bool _isLoading = true;
   String? _error;
   List<Map<String, dynamic>> _transactions = [];
@@ -92,6 +95,7 @@ class _ParkingTransactionsTabState extends State<ParkingTransactionsTab> {
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     if (_isLoading) {
       return const Center(child: CircularProgressIndicator());
     }

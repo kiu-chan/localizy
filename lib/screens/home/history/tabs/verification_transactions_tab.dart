@@ -13,7 +13,10 @@ class VerificationTransactionsTab extends StatefulWidget {
       _VerificationTransactionsTabState();
 }
 
-class _VerificationTransactionsTabState extends State<VerificationTransactionsTab> {
+class _VerificationTransactionsTabState extends State<VerificationTransactionsTab>
+    with AutomaticKeepAliveClientMixin {
+  @override
+  bool get wantKeepAlive => true;
   bool _isLoading = true;
   String? _error;
   List<Map<String, dynamic>> _verifications = [];
@@ -55,6 +58,7 @@ class _VerificationTransactionsTabState extends State<VerificationTransactionsTa
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     if (_isLoading) {
       return const Center(child: CircularProgressIndicator());
     }
@@ -123,10 +127,6 @@ class _VerificationTransactionsTabState extends State<VerificationTransactionsTa
     final paymentInfo = verification['paymentInfo'];
     final amount = paymentInfo != null ? (paymentInfo['amount'] ?? 0).toInt() : 0;
     final paymentMethod = paymentInfo != null ? (paymentInfo['method'] ?? '') : '';
-
-    final locationInfo = verification['locationInfo'];
-    final latitude = locationInfo != null ? (locationInfo['latitude'] ?? 0.0) : 0.0;
-    final longitude = locationInfo != null ? (locationInfo['longitude'] ?? 0.0) : 0.0;
 
     return Card(
       margin: const EdgeInsets.only(bottom: 12),
@@ -255,34 +255,6 @@ class _VerificationTransactionsTabState extends State<VerificationTransactionsTa
                           style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
                         ),
                       ],
-                    ),
-                  if (latitude != 0.0 || longitude != 0.0)
-                    GestureDetector(
-                      behavior: HitTestBehavior.opaque,
-                      onTap: () => _openMap(latitude.toDouble(), longitude.toDouble(), requestId),
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                        decoration: BoxDecoration(
-                          color: Colors.blue.shade50,
-                          borderRadius: BorderRadius.circular(6),
-                          border: Border.all(color: Colors.blue.shade200),
-                        ),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Icon(Icons.map, size: 13, color: Colors.blue.shade700),
-                            const SizedBox(width: 4),
-                            Text(
-                              'View on Map',
-                              style: TextStyle(
-                                fontSize: 12,
-                                color: Colors.blue.shade700,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
                     ),
                 ],
               ),
