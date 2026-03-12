@@ -52,7 +52,7 @@ class _AppointmentPageState extends State<AppointmentPage> {
         return Theme(
           data: Theme.of(context).copyWith(
             colorScheme:  ColorScheme.light(
-              primary: Colors.green.shade700,
+              primary: const Color(0xFF4285F4),
               onPrimary:  Colors.white,
             ),
           ),
@@ -175,7 +175,7 @@ class _AppointmentPageState extends State<AppointmentPage> {
           children: [
             Icon(
               Icons.info_outline,
-              color: Colors.blue.shade700,
+              color: const Color(0xFF4285F4),
               size: 28,
             ),
             const SizedBox(width: 12),
@@ -210,14 +210,14 @@ class _AppointmentPageState extends State<AppointmentPage> {
           child: Container(
             padding:  const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: _selectedDate != null 
-                  ? Colors.green. shade50 
-                  : Colors. grey[100],
+              color: _selectedDate != null
+                  ? const Color(0xFFEBF3FF)
+                  : Colors.grey[100],
               borderRadius: BorderRadius.circular(12),
               border: Border.all(
-                color: _selectedDate != null 
-                    ? Colors.green.shade700 
-                    :  Colors.grey.shade300,
+                color: _selectedDate != null
+                    ? const Color(0xFF4285F4)
+                    : Colors.grey.shade300,
                 width: 2,
               ),
             ),
@@ -225,9 +225,9 @@ class _AppointmentPageState extends State<AppointmentPage> {
               children: [
                 Icon(
                   Icons. calendar_today,
-                  color: _selectedDate != null 
-                      ? Colors.green.shade700 
-                      : Colors. grey,
+                  color: _selectedDate != null
+                      ? const Color(0xFF4285F4)
+                      : Colors.grey,
                   size: 24,
                 ),
                 const SizedBox(width: 16),
@@ -332,14 +332,14 @@ class _AppointmentPageState extends State<AppointmentPage> {
           color: ! isAvailable
               ? Colors. grey[200]
               : isSelected
-                  ? Colors.green.shade700
+                  ? const Color(0xFF4285F4)
                   : Colors.white,
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
-            color: ! isAvailable
-                ? Colors. grey.shade300
+            color: !isAvailable
+                ? Colors.grey.shade300
                 : isSelected
-                    ? Colors.green.shade700
+                    ? const Color(0xFF4285F4)
                     : Colors.grey.shade300,
             width: 2,
           ),
@@ -355,7 +355,7 @@ class _AppointmentPageState extends State<AppointmentPage> {
                     ? Colors.grey
                     : isSelected
                         ? Colors.white
-                        : Colors.green.shade700,
+                        : const Color(0xFF4285F4),
                 size: 22,
               ),
               const SizedBox(height: 6),
@@ -394,10 +394,10 @@ class _AppointmentPageState extends State<AppointmentPage> {
     
     return Card(
       elevation: 2,
-      color: Colors.green.shade50,
+      color: const Color(0xFFEBF3FF),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12),
-        side: BorderSide(color: Colors.green.shade700, width: 2),
+        side: const BorderSide(color: Color(0xFF4285F4), width: 2),
       ),
       child: Padding(
         padding: const EdgeInsets. all(16.0),
@@ -408,7 +408,7 @@ class _AppointmentPageState extends State<AppointmentPage> {
               children: [
                 Icon(
                   Icons.check_circle,
-                  color:  Colors.green.shade700,
+                  color: const Color(0xFF4285F4),
                   size: 24,
                 ),
                 const SizedBox(width: 12),
@@ -443,7 +443,7 @@ class _AppointmentPageState extends State<AppointmentPage> {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Icon(icon, size: 20, color: Colors. green.shade700),
+        Icon(icon, size: 20, color: const Color(0xFF4285F4)),
         const SizedBox(width: 12),
         Expanded(
           child: Column(
@@ -546,7 +546,7 @@ class _AppointmentPageState extends State<AppointmentPage> {
           child: ElevatedButton(
             onPressed: canProceed ? _confirmAppointment : null,
             style:  ElevatedButton.styleFrom(
-              backgroundColor: Colors.green.shade700,
+              backgroundColor: const Color(0xFF4285F4),
               foregroundColor: Colors.white,
               disabledBackgroundColor: Colors. grey[300],
               shape: RoundedRectangleBorder(

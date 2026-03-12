@@ -157,8 +157,8 @@ class _MapConfirmationPageState extends State<MapConfirmationPage> {
                     padding: const EdgeInsets.all(16.0),
                     child: Row(
                       children: [
-                        Icon(Icons.info_outline,
-                            color: Colors.blue.shade700, size: 28),
+                        const Icon(Icons.info_outline,
+                            color: Color(0xFF4285F4), size: 28),
                         const SizedBox(width: 12),
                         Expanded(
                           child: Text(
@@ -209,9 +209,9 @@ class _MapConfirmationPageState extends State<MapConfirmationPage> {
                     ),
                     style: OutlinedButton.styleFrom(
                       padding: const EdgeInsets.symmetric(vertical: 14),
-                      side: BorderSide(
-                          color: Colors.green.shade700, width: 2),
-                      foregroundColor: Colors.green.shade700,
+                      side: const BorderSide(
+                          color: Color(0xFF4285F4), width: 2),
+                      foregroundColor: const Color(0xFF4285F4),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12),
                       ),
@@ -225,11 +225,11 @@ class _MapConfirmationPageState extends State<MapConfirmationPage> {
                   // Coordinates card
                   Card(
                     elevation: 2,
-                    color: Colors.green.shade50,
+                    color: const Color(0xFFEBF3FF),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),
-                      side: BorderSide(
-                          color: Colors.green.shade700, width: 2),
+                      side: const BorderSide(
+                          color: Color(0xFF4285F4), width: 2),
                     ),
                     child: Padding(
                       padding: const EdgeInsets.all(16.0),
@@ -250,7 +250,7 @@ class _MapConfirmationPageState extends State<MapConfirmationPage> {
                   style: TextStyle(
                     fontSize: 15,
                     fontWeight: FontWeight.bold,
-                    color: Colors.grey[800],
+                    color: const Color(0xFF2D3142),
                   ),
                 ),
                 const SizedBox(height: 8),
@@ -298,7 +298,7 @@ class _MapConfirmationPageState extends State<MapConfirmationPage> {
                   style: TextStyle(
                     fontSize: 15,
                     fontWeight: FontWeight.bold,
-                    color: Colors.grey[800],
+                    color: const Color(0xFF2D3142),
                   ),
                 ),
                 const SizedBox(height: 8),
@@ -442,7 +442,7 @@ class _MapConfirmationPageState extends State<MapConfirmationPage> {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Icon(icon, size: 20, color: Colors.green.shade700),
+        Icon(icon, size: 20, color: const Color(0xFF4285F4)),
         const SizedBox(width: 12),
         Expanded(
           child: Column(
@@ -501,7 +501,7 @@ class _MapConfirmationPageState extends State<MapConfirmationPage> {
           child: ElevatedButton(
             onPressed: _canProceed() ? _confirmLocation : null,
             style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.green.shade700,
+              backgroundColor: const Color(0xFF4285F4),
               foregroundColor: Colors.white,
               disabledBackgroundColor: Colors.grey[300],
               shape: RoundedRectangleBorder(

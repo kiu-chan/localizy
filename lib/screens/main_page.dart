@@ -60,7 +60,7 @@ class _MainPageState extends State<MainPage> {
                   },
                   backgroundColor:  Colors.transparent,
                   elevation: 0,
-                  selectedItemColor: Colors.green.shade700,
+                  selectedItemColor: const Color(0xFF1A73E8),
                   unselectedItemColor: Colors.grey.shade500,
                   selectedLabelStyle: const TextStyle(
                     fontWeight: FontWeight.w600,
@@ -77,7 +77,7 @@ class _MainPageState extends State<MainPage> {
                       activeIcon: Container(
                         padding: const EdgeInsets.all(8),
                         decoration: BoxDecoration(
-                          color: Colors.green.shade700.withValues(alpha: 0.15),
+                          color: const Color(0xFF1A73E8).withValues(alpha: 0.12),
                           borderRadius: BorderRadius.circular(12),
                         ),
                         child: const Icon(Icons.home),
@@ -89,7 +89,7 @@ class _MainPageState extends State<MainPage> {
                       activeIcon: Container(
                         padding:  const EdgeInsets.all(8),
                         decoration: BoxDecoration(
-                          color: Colors.green.shade700.withValues(alpha: 0.15),
+                          color: const Color(0xFF1A73E8).withValues(alpha: 0.12),
                           borderRadius: BorderRadius.circular(12),
                         ),
                         child: const Icon(Icons.map),
@@ -101,7 +101,7 @@ class _MainPageState extends State<MainPage> {
                       activeIcon: Container(
                         padding:  const EdgeInsets.all(8),
                         decoration: BoxDecoration(
-                          color: Colors.green.shade700.withValues(alpha: 0.15),
+                          color: const Color(0xFF1A73E8).withValues(alpha: 0.12),
                           borderRadius: BorderRadius.circular(12),
                         ),
                         child: const Icon(Icons.settings),

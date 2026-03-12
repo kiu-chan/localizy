@@ -88,12 +88,12 @@ class CompletionPage extends StatelessWidget {
             padding: const EdgeInsets.all(24),
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              color: Colors.green.shade50,
+              color: const Color(0xFFEBF3FF),
             ),
-            child:  Icon(
+            child: const Icon(
               Icons.check_circle,
               size: 80,
-              color: Colors.green. shade700,
+              color: Color(0xFF4285F4),
             ),
           ),
           
@@ -236,7 +236,7 @@ class CompletionPage extends StatelessWidget {
                 children: [
                   Row(
                     children: [
-                      Icon(Icons.info_outline, color: Colors.blue. shade700),
+                      Icon(Icons.info_outline, color: const Color(0xFF4285F4)),
                       const SizedBox(width: 8),
                       Text(
                         localizations.nextSteps,
@@ -306,7 +306,7 @@ class CompletionPage extends StatelessWidget {
                   icon: const Icon(Icons.send),
                   label: Text(localizations.submitVerificationRequest),
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.green.shade700,
+                    backgroundColor: const Color(0xFF4285F4),
                     foregroundColor: Colors.white,
                     padding: const EdgeInsets.symmetric(vertical: 14),
                     shape: RoundedRectangleBorder(
@@ -327,7 +327,7 @@ class CompletionPage extends StatelessWidget {
   Widget _buildSummaryRow(BuildContext context, IconData icon, String label, String value) {
     return Row(
       children: [
-        Icon(icon, size: 20, color: Colors.green.shade700),
+        Icon(icon, size: 20, color: const Color(0xFF4285F4)),
         const SizedBox(width: 12),
         Expanded(
           child: Text(
@@ -356,7 +356,7 @@ class CompletionPage extends StatelessWidget {
             width: 24,
             height: 24,
             decoration: BoxDecoration(
-              color: Colors.blue.shade700,
+              color: const Color(0xFF4285F4),
               shape: BoxShape.circle,
             ),
             child: Center(

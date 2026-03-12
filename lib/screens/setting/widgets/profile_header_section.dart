@@ -71,8 +71,8 @@ class _ProfileHeaderSectionState extends State<ProfileHeaderSection> {
 
     return Container(
       decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [Colors.green.shade700, Colors.green.shade500],
+        gradient: const LinearGradient(
+          colors: [Color(0xFF1565C0), Color(0xFF4285F4)],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
@@ -103,7 +103,7 @@ class _ProfileHeaderSectionState extends State<ProfileHeaderSection> {
                           ? const Icon(
                               Icons.person,
                               size: 50,
-                              color: Colors.green,
+                              color: Color(0xFF4285F4),
                             )
                           : null,
                     ),
@@ -128,10 +128,10 @@ class _ProfileHeaderSectionState extends State<ProfileHeaderSection> {
                             ),
                           ],
                         ),
-                        child: Icon(
-                          Icons.edit,
+                        child: const Icon(
+                          Icons.edit_outlined,
                           size: 16,
-                          color: Colors.green.shade700,
+                          color: Color(0xFF4285F4),
                         ),
                       ),
                     ),

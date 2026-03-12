@@ -183,7 +183,7 @@ class _AddressVerificationFlowState extends State<AddressVerificationFlow> {
       child: Scaffold(
         appBar: AppBar(
           title: Text(localizations.addressVerification),
-          backgroundColor: Colors.green.shade700,
+          backgroundColor: const Color(0xFF1565C0),
           foregroundColor: Colors.white,
           leading: IconButton(
             icon: const Icon(Icons.arrow_back),
@@ -266,10 +266,10 @@ class _AddressVerificationFlowState extends State<AddressVerificationFlow> {
       decoration: BoxDecoration(
         shape: BoxShape.circle,
         color: isCompleted || isCurrent
-            ? Colors.green.shade700
+            ? const Color(0xFF4285F4)
             : Colors.grey.shade300,
         border: Border.all(
-          color: isCurrent ? Colors.green.shade900 : Colors.transparent,
+          color: isCurrent ? const Color(0xFF1565C0) : Colors.transparent,
           width: 2,
         ),
       ),
@@ -293,7 +293,7 @@ class _AddressVerificationFlowState extends State<AddressVerificationFlow> {
       width: 40,
       height: 2,
       color: index < _currentStep
-          ? Colors.green.shade700
+          ? const Color(0xFF4285F4)
           : Colors.grey.shade300,
     );
   }

@@ -71,10 +71,10 @@ class _SettingsSectionsState extends State<SettingsSections> {
             [
               _buildSettingItem(
                 context,
-                icon: Icons.history,
+                icon: Icons.history_rounded,
                 title: 'Transaction History',
                 subtitle: 'View your payment history',
-                color: Colors.blue,
+                color: const Color(0xFF4285F4),
                 onTap: () {
                   Navigator.push(
                     context,
@@ -87,10 +87,10 @@ class _SettingsSectionsState extends State<SettingsSections> {
               _buildDivider(),
               _buildSettingItem(
                 context,
-                icon: Icons.verified,
+                icon: Icons.verified_outlined,
                 title: 'Verified Addresses',
                 subtitle: 'Manage verified locations',
-                color: Colors.purple,
+                color: const Color(0xFF4285F4),
                 onTap: () {
                   Navigator.push(
                     context,
@@ -103,10 +103,10 @@ class _SettingsSectionsState extends State<SettingsSections> {
               _buildDivider(),
               _buildSettingItem(
                 context,
-                icon: Icons.person_outline,
+                icon: Icons.person_outline_rounded,
                 title: 'Account Settings',
                 subtitle: 'Update your profile information',
-                color:  Colors.orange,
+                color: const Color(0xFF4285F4),
                 onTap: () {
                   Navigator.push(
                     context,
@@ -141,10 +141,10 @@ class _SettingsSectionsState extends State<SettingsSections> {
             [
               _buildSettingItem(
                 context,
-                icon: Icons.help_outline,
+                icon: Icons.help_outline_rounded,
                 title: 'Help & Support',
                 subtitle: 'Get help and contact us',
-                color: Colors.indigo,
+                color: const Color(0xFF4285F4),
                 onTap:  () {
                   _showSupportDialog(context);
                 },
@@ -155,7 +155,7 @@ class _SettingsSectionsState extends State<SettingsSections> {
                 icon: Icons.privacy_tip_outlined,
                 title: 'Privacy Policy',
                 subtitle: 'Read our privacy policy',
-                color:  Colors.cyan,
+                color: const Color(0xFF4285F4),
                 onTap: () {
                   _showComingSoon(context, 'Privacy Policy');
                 },
@@ -163,10 +163,10 @@ class _SettingsSectionsState extends State<SettingsSections> {
               _buildDivider(),
               _buildSettingItem(
                 context,
-                icon: Icons.info_outline,
+                icon: Icons.info_outline_rounded,
                 title: 'About App',
-                subtitle: 'Version $_appVersion${_buildNumber. isNotEmpty ? ' ($_buildNumber)' : ''}',
-                color: Colors.pink,
+                subtitle: 'Version $_appVersion${_buildNumber.isNotEmpty ? ' ($_buildNumber)' : ''}',
+                color: const Color(0xFF4285F4),
                 onTap: () {
                   Navigator.push(
                     context,
@@ -191,17 +191,26 @@ class _SettingsSectionsState extends State<SettingsSections> {
   }
 
   Widget _buildSectionTitle(String title) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 4),
-      child: Text(
-        title,
-        style: TextStyle(
-          fontSize: 14,
-          fontWeight: FontWeight.bold,
-          color: Colors.grey.shade600,
-          letterSpacing: 0.5,
+    return Row(
+      children: [
+        Container(
+          width: 4,
+          height: 18,
+          decoration: BoxDecoration(
+            color: const Color(0xFF4285F4),
+            borderRadius: BorderRadius.circular(2),
+          ),
         ),
-      ),
+        const SizedBox(width: 10),
+        Text(
+          title,
+          style: const TextStyle(
+            fontSize: 15,
+            fontWeight: FontWeight.bold,
+            color: Color(0xFF2D3142),
+          ),
+        ),
+      ],
     );
   }
 
@@ -210,14 +219,8 @@ class _SettingsSectionsState extends State<SettingsSections> {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color:  Colors.black.withValues(alpha: 0.05),
-            blurRadius: 10,
-            offset: const Offset(0, 2),
-          ),
-        ],
       ),
+      clipBehavior: Clip.hardEdge,
       child: Column(children: children),
     );
   }
@@ -254,16 +257,17 @@ class _SettingsSectionsState extends State<SettingsSections> {
                   Text(
                     title,
                     style: const TextStyle(
-                      fontSize: 16,
+                      fontSize: 14,
                       fontWeight: FontWeight.w600,
+                      color: Color(0xFF2D3142),
                     ),
                   ),
                   const SizedBox(height: 2),
                   Text(
                     subtitle,
-                    style:  TextStyle(
-                      fontSize:  13,
-                      color:  Colors.grey.shade600,
+                    style: const TextStyle(
+                      fontSize: 12,
+                      color: Color(0xFF9AA0B4),
                     ),
                   ),
                 ],
@@ -271,9 +275,9 @@ class _SettingsSectionsState extends State<SettingsSections> {
             ),
             trailing ??
                 Icon(
-                  Icons.arrow_forward_ios,
-                  size: 16,
-                  color: Colors.grey.shade400,
+                  Icons.chevron_right_rounded,
+                  size: 20,
+                  color: Colors.grey[350],
                 ),
           ],
         ),
@@ -289,10 +293,10 @@ class _SettingsSectionsState extends State<SettingsSections> {
           Container(
             padding: const EdgeInsets.all(10),
             decoration: BoxDecoration(
-              color: Colors.green.withValues(alpha: 0.1),
+              color: const Color(0xFF4285F4).withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(12),
             ),
-            child: Icon(Icons.language, color: Colors.green. shade700, size: 24),
+            child: const Icon(Icons.language_rounded, color: Color(0xFF4285F4), size: 24),
           ),
           const SizedBox(width: 16),
           Expanded(
@@ -302,16 +306,17 @@ class _SettingsSectionsState extends State<SettingsSections> {
                 Text(
                   widget.l10n.language,
                   style: const TextStyle(
-                    fontSize: 16,
-                    fontWeight:  FontWeight.w600,
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600,
+                    color: Color(0xFF2D3142),
                   ),
                 ),
                 const SizedBox(height: 2),
-                Text(
+                const Text(
                   'Change app language',
                   style: TextStyle(
-                    fontSize: 13,
-                    color: Colors.grey.shade600,
+                    fontSize: 12,
+                    color: Color(0xFF9AA0B4),
                   ),
                 ),
               ],
@@ -320,14 +325,14 @@ class _SettingsSectionsState extends State<SettingsSections> {
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical:  8),
             decoration: BoxDecoration(
-              color: Colors.green.shade50,
+              color: const Color(0xFF4285F4).withValues(alpha: 0.06),
               borderRadius: BorderRadius.circular(8),
-              border: Border.all(color: Colors.green.shade200),
+              border: Border.all(color: const Color(0xFF4285F4).withValues(alpha: 0.2)),
             ),
-            child:  DropdownButton<String>(
+            child: DropdownButton<String>(
               value: widget.currentLanguage,
               underline: const SizedBox(),
-              icon: Icon(Icons.arrow_drop_down, color: Colors.green.shade700),
+              icon: const Icon(Icons.arrow_drop_down, color: Color(0xFF4285F4)),
               isDense: true,
               items: [
                 DropdownMenuItem(
@@ -357,7 +362,7 @@ class _SettingsSectionsState extends State<SettingsSections> {
                           Text('Language changed to ${widget.languageManager.getLanguageName(newValue)}'),
                         ],
                       ),
-                      backgroundColor: Colors.green.shade700,
+                      backgroundColor: const Color(0xFF4285F4),
                       behavior: SnackBarBehavior.floating,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius. circular(10),
@@ -461,7 +466,7 @@ class _SettingsSectionsState extends State<SettingsSections> {
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         title: Row(
           children: [
-            Icon(Icons.support_agent, color: Colors.green.shade700),
+            const Icon(Icons.support_agent, color: Color(0xFF4285F4)),
             const SizedBox(width: 12),
             const Text('Help & Support'),
           ],
@@ -500,7 +505,7 @@ class _SettingsSectionsState extends State<SettingsSections> {
   Widget _buildSupportOption(IconData icon, String title, String subtitle) {
     return Row(
       children: [
-        Icon(icon, color: Colors. green.shade700, size: 20),
+        Icon(icon, color: const Color(0xFF4285F4), size: 20),
         const SizedBox(width: 12),
         Expanded(
           child: Column(
@@ -531,7 +536,7 @@ class _SettingsSectionsState extends State<SettingsSections> {
             Expanded(child: Text('$feature - Coming soon')),
           ],
         ),
-        backgroundColor: Colors.blue.shade700,
+        backgroundColor: const Color(0xFF4285F4),
         behavior: SnackBarBehavior.floating,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
         duration: const Duration(seconds: 2),

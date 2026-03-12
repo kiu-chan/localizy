@@ -135,7 +135,7 @@ class _DocumentUploadPageState extends State<DocumentUploadPage> {
                 children: [
                   Icon(
                     Icons.info_outline,
-                    color: Colors.blue.shade700,
+                    color: const Color(0xFF4285F4),
                     size: 32,
                   ),
                   const SizedBox(width: 16),
@@ -155,10 +155,10 @@ class _DocumentUploadPageState extends State<DocumentUploadPage> {
           // ID Document Section
           Text(
             localizations. idDocumentSection,
-            style: TextStyle(
+            style: const TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.bold,
-              color: Colors.grey[800],
+              color: Color(0xFF2D3142),
             ),
           ),
           
@@ -168,7 +168,7 @@ class _DocumentUploadPageState extends State<DocumentUploadPage> {
           Container(
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: Colors. grey[100],
+              color: const Color(0xFFF5F7FA),
               borderRadius: BorderRadius.circular(12),
             ),
             child: Column(
@@ -222,7 +222,7 @@ class _DocumentUploadPageState extends State<DocumentUploadPage> {
             title:  _selectedIdType == 'cmnd' ? localizations.idCardCCCD : localizations.passport,
             description: localizations.idDocumentDescription,
             icon: Icons.credit_card,
-            color: Colors.blue,
+            color: const Color(0xFF4285F4),
             document: _idDocument,
             onUpload: () => _pickImage('id'),
             onRemove: () => _removeImage('id'),
@@ -233,10 +233,10 @@ class _DocumentUploadPageState extends State<DocumentUploadPage> {
           // Address Proof Section
           Text(
             localizations.addressProofSection,
-            style: TextStyle(
+            style: const TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.bold,
-              color: Colors.grey[800],
+              color: Color(0xFF2D3142),
             ),
           ),
           
@@ -246,7 +246,7 @@ class _DocumentUploadPageState extends State<DocumentUploadPage> {
             title: localizations.addressProofTitle,
             description: localizations.addressProofDescription,
             icon: Icons.receipt_long,
-            color: Colors. orange,
+            color: const Color(0xFF4285F4),
             document: _addressProof,
             onUpload:  () => _pickImage('address'),
             onRemove: () => _removeImage('address'),
@@ -301,7 +301,7 @@ class _DocumentUploadPageState extends State<DocumentUploadPage> {
             child: ElevatedButton(
               onPressed: _canProceed() ? _proceedToNextStep : null,
               style:  ElevatedButton.styleFrom(
-                backgroundColor: Colors.green. shade700,
+                backgroundColor: const Color(0xFF4285F4),
                 foregroundColor: Colors.white,
                 disabledBackgroundColor: Colors. grey[300],
                 shape: RoundedRectangleBorder(
@@ -342,7 +342,7 @@ class _DocumentUploadPageState extends State<DocumentUploadPage> {
         color: Colors.white,
         borderRadius: BorderRadius.circular(8),
         border: Border.all(
-          color: groupValue == value ? Colors.green.shade700 : Colors.grey.shade300,
+          color: groupValue == value ? const Color(0xFF4285F4) : Colors.grey.shade300,
           width: 2,
         ),
       ),
@@ -361,7 +361,7 @@ class _DocumentUploadPageState extends State<DocumentUploadPage> {
         ),
         dense: true,
         contentPadding: const EdgeInsets.symmetric(horizontal: 4),
-        activeColor: Colors.green.shade700,
+        activeColor: const Color(0xFF4285F4),
       ),
     );
   }
@@ -449,9 +449,9 @@ class _DocumentUploadPageState extends State<DocumentUploadPage> {
                 width: double.infinity,
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: Colors.green.shade50,
+                  color: const Color(0xFFEBF3FF),
                   borderRadius: BorderRadius.circular(8),
-                  border: Border. all(color: Colors.green.shade300),
+                  border: Border.all(color: Color(0xFF4285F4).withValues(alpha: 0.3)),
                 ),
                 child: Column(
                   children: [
@@ -469,7 +469,7 @@ class _DocumentUploadPageState extends State<DocumentUploadPage> {
                       children: [
                         const Icon(
                           Icons.check_circle,
-                          color: Colors.green,
+                          color: Color(0xFF4285F4),
                           size: 20,
                         ),
                         const SizedBox(width: 8),
@@ -477,7 +477,7 @@ class _DocumentUploadPageState extends State<DocumentUploadPage> {
                           child: Text(
                             localizations.uploaded,
                             style: const TextStyle(
-                              color: Colors.green,
+                              color: Color(0xFF4285F4),
                               fontWeight: FontWeight.w600,
                             ),
                           ),

@@ -113,12 +113,17 @@ class _HomePageState extends State<HomePage> {
     final slides = _apiSlides;
 
     return Scaffold(
+      backgroundColor: const Color(0xFFF5F7FA),
       body: SingleChildScrollView(
         child: Column(
           children: [
             // Header Section with Slider
-            SizedBox(
-              height: 280,
+            ClipRRect(
+              borderRadius: const BorderRadius.vertical(
+                bottom: Radius.circular(28),
+              ),
+              child: SizedBox(
+              height: 290,
               child: Stack(
                 children: [
                   // Three states:
@@ -133,14 +138,20 @@ class _HomePageState extends State<HomePage> {
                     Container(
                       width: double.infinity,
                       padding: const EdgeInsets.all(24),
-                      color: Colors.grey.shade200,
+                      decoration: const BoxDecoration(
+                        gradient: LinearGradient(
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                          colors: [Color(0xFF1565C0), Color(0xFF42A5F5)],
+                        ),
+                      ),
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: const [
                           Icon(
                             Icons.info_outline,
                             size: 48,
-                            color: Colors.grey,
+                            color: Colors.white70,
                           ),
                           SizedBox(height: 12),
                           Text(
@@ -148,7 +159,7 @@ class _HomePageState extends State<HomePage> {
                             style: TextStyle(
                               fontSize: 18,
                               fontWeight: FontWeight.w600,
-                              color: Colors.black54,
+                              color: Colors.white,
                             ),
                           ),
                         ],
@@ -189,6 +200,7 @@ class _HomePageState extends State<HomePage> {
                 ],
               ),
             ),
+            ),
 
             // Main Features Section
             Padding(
@@ -197,21 +209,35 @@ class _HomePageState extends State<HomePage> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   // Main Features Title
-                  Text(
-                    l10n.mainFeatures,
-                    style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.grey[800],
-                    ),
+                  Row(
+                    children: [
+                      Container(
+                        width: 4,
+                        height: 22,
+                        decoration: BoxDecoration(
+                          color: const Color(0xFF1A73E8),
+                          borderRadius: BorderRadius.circular(2),
+                        ),
+                      ),
+                      const SizedBox(width: 10),
+                      Text(
+                        l10n.mainFeatures,
+                        style: const TextStyle(
+                          fontSize: 19,
+                          fontWeight: FontWeight.bold,
+                          color: Color(0xFF1A1A2E),
+                        ),
+                      ),
+                    ],
                   ),
 
-                  const SizedBox(height: 16),
+                  const SizedBox(height: 10),
 
                   // Main Features Grid
                   GridView.count(
                     shrinkWrap: true,
                     physics: const NeverScrollableScrollPhysics(),
+                    padding: EdgeInsets.zero,
                     crossAxisCount: 2,
                     mainAxisSpacing: 12,
                     crossAxisSpacing: 12,
@@ -221,7 +247,7 @@ class _HomePageState extends State<HomePage> {
                         context: context,
                         icon: Icons.verified_outlined,
                         title: l10n.addressVerification,
-                        color: Colors.blue,
+                        color: const Color(0xFF4285F4),
                         onTap: () {
                           Navigator.push(
                             context,
@@ -233,9 +259,9 @@ class _HomePageState extends State<HomePage> {
                       ),
                       _buildFeatureCard(
                         context: context,
-                        icon: Icons.payment,
+                        icon: Icons.payment_outlined,
                         title: l10n.parkingPayment,
-                        color: Colors.green,
+                        color: const Color(0xFF00BFA5),
                         onTap: () {
                           Navigator.push(
                             context,
@@ -247,9 +273,9 @@ class _HomePageState extends State<HomePage> {
                       ),
                       _buildFeatureCard(
                         context: context,
-                        icon: Icons.receipt_long,
+                        icon: Icons.receipt_long_outlined,
                         title: l10n.paymentCheck,
-                        color: Colors.orange,
+                        color: const Color(0xFF7C4DFF),
                         onTap: () {
                           Navigator.push(
                             context,
@@ -261,9 +287,9 @@ class _HomePageState extends State<HomePage> {
                       ),
                       _buildFeatureCard(
                         context: context,
-                        icon: Icons.search,
+                        icon: Icons.search_rounded,
                         title: l10n.addressSearch,
-                        color: Colors.purple,
+                        color: const Color(0xFF00B0FF),
                         onTap: () {
                           Navigator.push(
                             context,
@@ -279,29 +305,26 @@ class _HomePageState extends State<HomePage> {
                   const SizedBox(height: 24),
 
                   // Quick Actions Title
-                  Text(
-                    l10n.quickActions,
-                    style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.grey[800],
-                    ),
-                  ),
-
-                  const SizedBox(height: 16),
-
-                  // Quick Actions
-                  _buildActionCard(
-                    context: context,
-                    icon: Icons.map_outlined,
-                    title: l10n.viewMap,
-                    description: l10n.findAndViewParkingLots,
-                    color: Colors.teal,
-                    onTap: () {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text(l10n.openMap)),
-                      );
-                    },
+                  Row(
+                    children: [
+                      Container(
+                        width: 4,
+                        height: 22,
+                        decoration: BoxDecoration(
+                          color: const Color(0xFF1A73E8),
+                          borderRadius: BorderRadius.circular(2),
+                        ),
+                      ),
+                      const SizedBox(width: 10),
+                      Text(
+                        l10n.quickActions,
+                        style: const TextStyle(
+                          fontSize: 19,
+                          fontWeight: FontWeight.bold,
+                          color: Color(0xFF1A1A2E),
+                        ),
+                      ),
+                    ],
                   ),
 
                   const SizedBox(height: 12),
@@ -311,7 +334,7 @@ class _HomePageState extends State<HomePage> {
                     icon: Icons.history,
                     title: l10n.transactionHistory,
                     description: l10n.viewParkingPaymentHistory,
-                    color: Colors.indigo,
+                    color: const Color(0xFF4285F4),
                     onTap: () {
                       Navigator.push(
                         context,
@@ -329,7 +352,7 @@ class _HomePageState extends State<HomePage> {
                     icon: Icons.camera_alt_outlined,
                     title: l10n.licensePlateScannerOCR,
                     description: l10n.automaticLicensePlateRecognition,
-                    color: Colors.red,
+                    color: const Color(0xFF4285F4),
                     onTap: () async {
                       final result = await Navigator.push(
                         context,
@@ -407,7 +430,7 @@ class _HomePageState extends State<HomePage> {
     }
 
     // Fallback: gradient + icon + text (used when slide has no image)
-    final gradient = [Colors.blue.shade400, Colors.blue.shade700];
+    const gradient = [Color(0xFF1565C0), Color(0xFF42A5F5)];
 
     return Container(
       width: double.infinity,
@@ -438,10 +461,10 @@ class _HomePageState extends State<HomePage> {
                   ),
                 ],
               ),
-              child: Icon(
-                Icons.local_parking,
+              child: const Icon(
+                Icons.local_parking_rounded,
                 size: 60,
-                color: Colors.blueAccent,
+                color: Color(0xFF1A73E8),
               ),
             ),
           ),
@@ -461,13 +484,14 @@ class _HomePageState extends State<HomePage> {
   }
 
   Widget _buildPageIndicator(bool isActive) {
-    return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 5),
-      width: 8,
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 250),
+      margin: const EdgeInsets.symmetric(horizontal: 4),
+      width: isActive ? 20 : 8,
       height: 8,
       decoration: BoxDecoration(
         color: isActive ? Colors.white : Colors.white.withValues(alpha: 0.5),
-        shape: BoxShape.circle,
+        borderRadius: BorderRadius.circular(4),
       ),
     );
   }
@@ -479,43 +503,40 @@ class _HomePageState extends State<HomePage> {
     required Color color,
     required VoidCallback onTap,
   }) {
-    return Card(
-      elevation: 3,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
-      ),
+    return Material(
+      color: Colors.white,
+      borderRadius: BorderRadius.circular(16),
       child: InkWell(
         onTap: onTap,
         borderRadius: BorderRadius.circular(16),
+        splashColor: color.withValues(alpha: 0.08),
+        highlightColor: color.withValues(alpha: 0.04),
         child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
+          padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 12),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             mainAxisSize: MainAxisSize.min,
             children: [
               Container(
-                padding: const EdgeInsets.all(14),
+                width: 52,
+                height: 52,
                 decoration: BoxDecoration(
                   color: color.withValues(alpha: 0.1),
-                  shape: BoxShape.circle,
+                  borderRadius: BorderRadius.circular(14),
                 ),
-                child: Icon(
-                  icon,
-                  size: 32,
-                  color: color,
-                ),
+                child: Icon(icon, size: 26, color: color),
               ),
-              const SizedBox(height: 10),
-              Flexible(
-                child: Text(
-                  title,
-                  textAlign: TextAlign.center,
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(
-                    fontSize: 13,
-                    fontWeight: FontWeight.w600,
-                  ),
+              const SizedBox(height: 12),
+              Text(
+                title,
+                textAlign: TextAlign.center,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                style: const TextStyle(
+                  fontSize: 13,
+                  fontWeight: FontWeight.w600,
+                  color: Color(0xFF2D3142),
+                  height: 1.3,
                 ),
               ),
             ],
@@ -533,31 +554,28 @@ class _HomePageState extends State<HomePage> {
     required Color color,
     required VoidCallback onTap,
   }) {
-    return Card(
-      elevation: 3,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
-      ),
+    return Material(
+      color: Colors.white,
+      borderRadius: BorderRadius.circular(16),
       child: InkWell(
         onTap: onTap,
         borderRadius: BorderRadius.circular(16),
-        child: Container(
-          padding: const EdgeInsets.all(16),
+        splashColor: color.withValues(alpha: 0.08),
+        highlightColor: color.withValues(alpha: 0.04),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
           child: Row(
             children: [
               Container(
-                padding: const EdgeInsets.all(14),
+                width: 48,
+                height: 48,
                 decoration: BoxDecoration(
                   color: color.withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: BorderRadius.circular(13),
                 ),
-                child: Icon(
-                  icon,
-                  size: 28,
-                  color: color,
-                ),
+                child: Icon(icon, size: 24, color: color),
               ),
-              const SizedBox(width: 16),
+              const SizedBox(width: 14),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -565,26 +583,23 @@ class _HomePageState extends State<HomePage> {
                     Text(
                       title,
                       style: const TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                        color: Color(0xFF2D3142),
                       ),
                     ),
-                    const SizedBox(height: 4),
+                    const SizedBox(height: 2),
                     Text(
                       description,
-                      style: TextStyle(
-                        fontSize: 13,
-                        color: Colors.grey[600],
+                      style: const TextStyle(
+                        fontSize: 12,
+                        color: Color(0xFF9AA0B4),
                       ),
                     ),
                   ],
                 ),
               ),
-              Icon(
-                Icons.arrow_forward_ios,
-                size: 16,
-                color: Colors.grey[400],
-              ),
+              Icon(Icons.chevron_right_rounded, size: 20, color: Colors.grey[350]),
             ],
           ),
         ),

@@ -20,7 +20,7 @@ class SettingsPage extends StatelessWidget {
         : 'fr'; // Mặc định là 'fr' nếu không hợp lệ
 
     return Scaffold(
-      backgroundColor: Colors.grey. shade50,
+      backgroundColor: const Color(0xFFF5F7FA),
       body: CustomScrollView(
         slivers: [
           // Profile Header Section
