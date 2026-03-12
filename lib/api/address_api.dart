@@ -50,15 +50,23 @@ class MyAddress {
 }
 
 class AddressApi {
-  // Lấy danh sách địa chỉ có id và toạ độ từ endpoint mới
+  // Lấy danh sách địa chỉ có id, code và toạ độ
   static Future<List<AddressCoordinate>> fetchCoordinates() async {
-    final resp = await MainApi.instance.get('/api/Addresses/coordinates',
+    final resp = await MainApi.instance.get('/api/Addresses',
       headers: {'accept': 'text/plain'},
     );
     if (resp.statusCode == 200) {
       final raw = json.decode(resp.body);
       if (raw is List) {
-        return raw.map((json) => AddressCoordinate.fromJson(json)).toList();
+        return raw
+            .map((item) => AddressCoordinate(
+                  id: item['id']?.toString() ?? '',
+                  code: item['code'] ?? '',
+                  lat: (item['latitude'] ?? 0).toDouble(),
+                  lng: (item['longitude'] ?? 0).toDouble(),
+                ))
+            .where((a) => a.lat != 0 || a.lng != 0)
+            .toList();
       }
     }
     throw Exception('Failed to fetch address coordinates: ${resp.statusCode}');
@@ -198,14 +206,16 @@ class AddressApi {
   }
 }
 
-/// Model đơn giản hoá chỉ chứa id và coordinates
+/// Model đơn giản hoá chỉ chứa id, code và coordinates
 class AddressCoordinate {
   final String id;
+  final String code;
   final double lat;
   final double lng;
-  
+
   AddressCoordinate({
     required this.id,
+    this.code = '',
     required this.lat,
     required this.lng,
   });
@@ -214,6 +224,7 @@ class AddressCoordinate {
     final coords = json['coordinates'] ?? {};
     return AddressCoordinate(
       id: json['id'] ?? '',
+      code: json['code'] ?? '',
       lat: (coords['lat'] ?? 0).toDouble(),
       lng: (coords['lng'] ?? 0).toDouble(),
     );
@@ -327,52 +338,71 @@ class ParkingZoneItem {
   }
 }
 
-/// Model chi tiết địa chỉ
+/// Model chi tiết địa chỉ - khớp với Address Response Object từ API
 class AddressDetail {
   final String id;
+  final String code;
   final String name;
-  final String address;
-  final String type;
-  final String? category;
-  final String? description;
+  final String fullAddress;
+  final String userName;
   final double lat;
   final double lng;
-  final String? phone;
-  final String? website;
-  final String? openingHours;
+  final String cityName;
+  final String status;
+  final bool isVerified;
+  final String? validatorName;
+  final String? comments;
+  final bool parkingAvailable;
+  final int totalParkingSpots;
+  final int availableSpots;
+  final int pricePerHour;
   final DateTime? createdAt;
+  final DateTime? updatedAt;
 
   AddressDetail({
     required this.id,
+    required this.code,
     required this.name,
-    required this.address,
-    required this.type,
-    this.category,
-    this.description,
+    required this.fullAddress,
+    required this.userName,
     required this.lat,
     required this.lng,
-    this.phone,
-    this.website,
-    this.openingHours,
+    required this.cityName,
+    required this.status,
+    required this.isVerified,
+    this.validatorName,
+    this.comments,
+    required this.parkingAvailable,
+    required this.totalParkingSpots,
+    required this.availableSpots,
+    required this.pricePerHour,
     this.createdAt,
+    this.updatedAt,
   });
 
   factory AddressDetail.fromJson(Map<String, dynamic> json) {
-    final coords = json['coordinates'] ?? {};
     return AddressDetail(
-      id: json['id'] ?? '',
+      id: json['id']?.toString() ?? '',
+      code: json['code'] ?? '',
       name: json['name'] ?? '',
-      address: json['address'] ?? '',
-      type: json['type'] ?? '',
-      category: json['category'],
-      description: json['description'],
-      lat: (coords['lat'] ?? 0).toDouble(),
-      lng: (coords['lng'] ?? 0).toDouble(),
-      phone: json['phone'],
-      website: json['website'],
-      openingHours: json['openingHours'],
-      createdAt: json['createdAt'] != null 
-          ? DateTime.tryParse(json['createdAt']) 
+      fullAddress: json['fullAddress'] ?? '',
+      userName: json['userName'] ?? '',
+      lat: (json['latitude'] ?? 0).toDouble(),
+      lng: (json['longitude'] ?? 0).toDouble(),
+      cityName: json['cityName'] ?? '',
+      status: json['status'] ?? '',
+      isVerified: json['isVerified'] ?? false,
+      validatorName: json['validatorName'],
+      comments: json['comments'],
+      parkingAvailable: json['parkingAvailable'] ?? false,
+      totalParkingSpots: (json['totalParkingSpots'] ?? 0).toInt(),
+      availableSpots: (json['availableSpots'] ?? 0).toInt(),
+      pricePerHour: (json['pricePerHour'] ?? 0).toInt(),
+      createdAt: json['createdAt'] != null
+          ? DateTime.tryParse(json['createdAt'])
+          : null,
+      updatedAt: json['updatedAt'] != null
+          ? DateTime.tryParse(json['updatedAt'])
           : null,
     );
   }
@@ -388,5 +418,11 @@ class AddressDetail {
   String? get formattedCreatedAt {
     if (createdAt == null) return null;
     return '${createdAt!.day.toString().padLeft(2, '0')}/${createdAt!.month.toString().padLeft(2, '0')}/${createdAt!.year}';
+  }
+
+  /// Format giá đỗ xe
+  String get formattedPricePerHour {
+    if (pricePerHour <= 0) return 'Miễn phí';
+    return '${pricePerHour.toString().replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (m) => '${m[1]}.')} đ/giờ';
   }
 }

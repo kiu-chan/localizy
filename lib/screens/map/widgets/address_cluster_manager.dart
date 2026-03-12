@@ -76,7 +76,9 @@ class AddressClusterManager {
       icon: await _getClusterIcon(clusterSize, isCluster),
       infoWindow: isCluster
           ? InfoWindow(title: '$clusterSize addresses')
-          : InfoWindow(title: clusterData.items.first.address.id),
+          : InfoWindow(title: clusterData.items.first.address.code.isNotEmpty
+              ? clusterData.items.first.address.code
+              : clusterData.items.first.address.id),
       onTap: () {
         if (isCluster) {
           onClusterTapped?.call(clusterData.location, _currentZoom);

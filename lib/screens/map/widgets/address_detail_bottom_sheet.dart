@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:localizy/api/address_api.dart';
 import 'package:localizy/l10n/app_localizations.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 /// Callback khi người dùng chọn chỉ đường
 typedef OnGetDirections = void Function(AddressCoordinate address);
@@ -72,100 +71,6 @@ class _AddressDetailBottomSheetState extends State<AddressDetailBottomSheet> {
         });
       }
       debugPrint('Error loading address detail: $e');
-    }
-  }
-
-  IconData _getTypeIcon(String type) {
-    switch (type.toLowerCase()) {
-      case 'landmark':
-        return Icons.account_balance;
-      case 'restaurant':
-        return Icons.restaurant;
-      case 'hotel':
-        return Icons.hotel;
-      case 'hospital':
-        return Icons.local_hospital;
-      case 'school':
-        return Icons.school;
-      case 'shop':
-        return Icons.shopping_cart;
-      case 'park':
-        return Icons.park;
-      case 'station':
-        return Icons.train;
-      case 'airport':
-        return Icons.flight;
-      case 'cafe':
-        return Icons.local_cafe;
-      case 'bank':
-        return Icons.account_balance_wallet;
-      case 'atm':
-        return Icons.atm;
-      case 'pharmacy':
-        return Icons.local_pharmacy;
-      case 'gas_station':
-        return Icons.local_gas_station;
-      case 'parking':
-        return Icons.local_parking;
-      case 'gym':
-        return Icons.fitness_center;
-      case 'cinema':
-        return Icons.movie;
-      case 'museum':
-        return Icons.museum;
-      case 'library':
-        return Icons.local_library;
-      case 'church':
-        return Icons.church;
-      case 'mosque':
-        return Icons.mosque;
-      case 'temple':
-        return Icons.temple_buddhist;
-      default:
-        return Icons.location_on;
-    }
-  }
-
-  Color _getTypeColor(String type) {
-    switch (type.toLowerCase()) {
-      case 'landmark':
-        return Colors.purple;
-      case 'restaurant':
-        return Colors.orange;
-      case 'hotel':
-        return Colors.blue;
-      case 'hospital':
-        return Colors.red;
-      case 'school':
-        return Colors.amber.shade700;
-      case 'shop':
-        return Colors.teal;
-      case 'park':
-        return Colors.green;
-      case 'station':
-        return Colors.indigo;
-      case 'airport':
-        return Colors.cyan;
-      case 'cafe':
-        return Colors.brown;
-      case 'bank':
-        return Colors.blueGrey;
-      default:
-        return Colors.green.shade700;
-    }
-  }
-
-  Future<void> _launchUrl(String url) async {
-    final uri = Uri.parse(url.startsWith('http') ? url : 'https://$url');
-    if (await canLaunchUrl(uri)) {
-      await launchUrl(uri, mode: LaunchMode.externalApplication);
-    }
-  }
-
-  Future<void> _launchPhone(String phone) async {
-    final uri = Uri.parse('tel:$phone');
-    if (await canLaunchUrl(uri)) {
-      await launchUrl(uri);
     }
   }
 
@@ -242,7 +147,7 @@ class _AddressDetailBottomSheetState extends State<AddressDetailBottomSheet> {
 
   Widget _buildDetailContent(AppLocalizations? l10n) {
     final detail = _detail!;
-    final typeColor = _getTypeColor(detail.type);
+    final statusColor = detail.isVerified ? Colors.green.shade700 : Colors.orange;
 
     return SingleChildScrollView(
       padding: const EdgeInsets.fromLTRB(20, 8, 20, 20),
@@ -256,12 +161,12 @@ class _AddressDetailBottomSheetState extends State<AddressDetailBottomSheet> {
               Container(
                 padding: const EdgeInsets.all(14),
                 decoration: BoxDecoration(
-                  color: typeColor.withOpacity(0.1),
+                  color: statusColor.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(14),
                 ),
                 child: Icon(
-                  _getTypeIcon(detail.type),
-                  color: typeColor,
+                  detail.parkingAvailable ? Icons.local_parking : Icons.location_on,
+                  color: statusColor,
                   size: 32,
                 ),
               ),
@@ -277,48 +182,60 @@ class _AddressDetailBottomSheetState extends State<AddressDetailBottomSheet> {
                         fontWeight: FontWeight.bold,
                       ),
                     ),
+                    const SizedBox(height: 4),
+                    Text(
+                      detail.code,
+                      style: TextStyle(
+                        fontSize: 13,
+                        color: Colors.grey.shade600,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
                     const SizedBox(height: 6),
                     Row(
                       children: [
                         Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 8,
-                            vertical: 4,
-                          ),
+                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                           decoration: BoxDecoration(
-                            color: typeColor.withOpacity(0.1),
+                            color: statusColor.withValues(alpha: 0.1),
+                            borderRadius: BorderRadius.circular(6),
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(
+                                detail.isVerified ? Icons.verified : Icons.pending,
+                                size: 12,
+                                color: statusColor,
+                              ),
+                              const SizedBox(width: 4),
+                              Text(
+                                detail.isVerified ? 'Đã xác minh' : detail.status,
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  color: statusColor,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                          decoration: BoxDecoration(
+                            color: Colors.grey.shade100,
                             borderRadius: BorderRadius.circular(6),
                           ),
                           child: Text(
-                            detail.type,
+                            detail.cityName,
                             style: TextStyle(
                               fontSize: 12,
-                              color: typeColor,
-                              fontWeight: FontWeight.w600,
+                              color: Colors.grey.shade700,
+                              fontWeight: FontWeight.w500,
                             ),
                           ),
                         ),
-                        if (detail.category != null) ...[
-                          const SizedBox(width: 8),
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 8,
-                              vertical: 4,
-                            ),
-                            decoration: BoxDecoration(
-                              color: Colors.grey.shade100,
-                              borderRadius: BorderRadius.circular(6),
-                            ),
-                            child: Text(
-                              detail.category!,
-                              style: TextStyle(
-                                fontSize: 12,
-                                color: Colors.grey.shade700,
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
-                          ),
-                        ],
                       ],
                     ),
                   ],
@@ -331,11 +248,11 @@ class _AddressDetailBottomSheetState extends State<AddressDetailBottomSheet> {
           const Divider(height: 1),
           const SizedBox(height: 16),
 
-          // Địa chỉ
+          // Địa chỉ đầy đủ
           _buildInfoRow(
             icon: Icons.location_on_outlined,
             label: l10n?.address ?? 'Address',
-            value: detail.address,
+            value: detail.fullAddress,
           ),
 
           // Toạ độ
@@ -345,41 +262,60 @@ class _AddressDetailBottomSheetState extends State<AddressDetailBottomSheet> {
             value: detail.formattedCoordinates,
           ),
 
-          // Mô tả
-          if (detail.description != null && detail.description!.isNotEmpty)
+          // Người tạo
+          _buildInfoRow(
+            icon: Icons.person_outline,
+            label: 'Người tạo',
+            value: detail.userName,
+          ),
+
+          // Validator
+          if (detail.validatorName != null && detail.validatorName!.isNotEmpty)
             _buildInfoRow(
-              icon: Icons.info_outline,
-              label: l10n?.description ?? 'Description',
-              value: detail.description!,
+              icon: Icons.verified_user_outlined,
+              label: 'Người xác minh',
+              value: detail.validatorName!,
             ),
 
-          // Số điện thoại
-          if (detail.phone != null && detail.phone!.isNotEmpty)
+          // Ghi chú xác minh
+          if (detail.comments != null && detail.comments!.isNotEmpty)
             _buildInfoRow(
-              icon: Icons.phone_outlined,
-              label: l10n?.phone ?? 'Phone',
-              value: detail.phone!,
-              onTap: () => _launchPhone(detail.phone!),
-              isLink: true,
+              icon: Icons.comment_outlined,
+              label: 'Ghi chú',
+              value: detail.comments!,
             ),
 
-          // Website
-          if (detail.website != null && detail.website!.isNotEmpty)
-            _buildInfoRow(
-              icon: Icons.language,
-              label: l10n?.website ?? 'Website',
-              value: detail.website!,
-              onTap: () => _launchUrl(detail.website!),
-              isLink: true,
+          // Thông tin đỗ xe
+          if (detail.parkingAvailable) ...[
+            const Divider(height: 24),
+            Padding(
+              padding: const EdgeInsets.only(bottom: 12),
+              child: Row(
+                children: [
+                  Icon(Icons.local_parking, size: 18, color: Colors.blue.shade700),
+                  const SizedBox(width: 8),
+                  Text(
+                    'Thông tin đỗ xe',
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.blue.shade700,
+                    ),
+                  ),
+                ],
+              ),
             ),
-
-          // Giờ hoạt động
-          if (detail.openingHours != null && detail.openingHours!.isNotEmpty)
             _buildInfoRow(
-              icon: Icons.access_time,
-              label: l10n?.openingHours ?? 'Opening Hours',
-              value: detail.openingHours!,
+              icon: Icons.directions_car_outlined,
+              label: 'Chỗ trống / Tổng',
+              value: '${detail.availableSpots} / ${detail.totalParkingSpots}',
             ),
+            _buildInfoRow(
+              icon: Icons.attach_money,
+              label: 'Giá đỗ xe',
+              value: detail.formattedPricePerHour,
+            ),
+          ],
 
           // Ngày tạo
           if (detail.formattedCreatedAt != null)
@@ -444,19 +380,13 @@ class _AddressDetailBottomSheetState extends State<AddressDetailBottomSheet> {
     required IconData icon,
     required String label,
     required String value,
-    VoidCallback? onTap,
-    bool isLink = false,
   }) {
-    final content = Padding(
+    return Padding(
       padding: const EdgeInsets.only(bottom: 16),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(
-            icon,
-            size: 20,
-            color: Colors.grey.shade600,
-          ),
+          Icon(icon, size: 20, color: Colors.grey.shade600),
           const SizedBox(width: 12),
           Expanded(
             child: Column(
@@ -473,34 +403,17 @@ class _AddressDetailBottomSheetState extends State<AddressDetailBottomSheet> {
                 const SizedBox(height: 2),
                 Text(
                   value,
-                  style: TextStyle(
+                  style: const TextStyle(
                     fontSize: 14,
-                    color: isLink ? Colors.blue : Colors.black87,
+                    color: Colors.black87,
                     fontWeight: FontWeight.w500,
-                    decoration: isLink ? TextDecoration.underline : null,
                   ),
                 ),
               ],
             ),
           ),
-          if (isLink)
-            Icon(
-              Icons.open_in_new,
-              size: 16,
-              color: Colors.blue.shade400,
-            ),
         ],
       ),
     );
-
-    if (onTap != null) {
-      return InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(8),
-        child: content,
-      );
-    }
-
-    return content;
   }
 }
