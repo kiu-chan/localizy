@@ -1,6 +1,9 @@
 import 'dart:convert';
 import 'dart:io';
+import 'dart:typed_data';
+import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:intl/intl.dart';
 import 'package:localizy/api/address_api.dart';
 import 'package:localizy/api/main_api.dart';
@@ -8,7 +11,6 @@ import 'package:localizy/api/parking_api.dart';
 import 'package:localizy/l10n/app_localizations.dart';
 import 'package:localizy/screens/home/parking/parking_zone_detail_map_page.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:screenshot/screenshot.dart';
 import 'package:share_plus/share_plus.dart';
 
 class ParkingTransactionsTab extends StatefulWidget {
@@ -22,7 +24,6 @@ class _ParkingTransactionsTabState extends State<ParkingTransactionsTab>
     with AutomaticKeepAliveClientMixin {
   @override
   bool get wantKeepAlive => true;
-  final _screenshotController = ScreenshotController();
   bool _isLoading = true;
   String? _error;
   List<Map<String, dynamic>> _transactions = [];
@@ -307,18 +308,339 @@ class _ParkingTransactionsTabState extends State<ParkingTransactionsTab>
   }
 
   Future<void> _downloadAsImage(Map<String, dynamic> transaction) async {
-    final image = await _screenshotController.capture(pixelRatio: 2.0);
-    if (image == null) return;
+    final amountStr = _formatCurrency(context, transaction['amount'] ?? 0);
+    final dateStr = _formatDate(transaction['date'] ?? DateTime.now());
+    final paymentStr =
+        _getPaymentMethodName(context, transaction['paymentMethod'] ?? '');
+    final bytes = await _captureWidgetAsImage(
+      _buildReceiptWidget(
+        transaction: transaction,
+        amountStr: amountStr,
+        dateStr: dateStr,
+        paymentStr: paymentStr,
+      ),
+    );
+    if (bytes == null) return;
     final dir = await getTemporaryDirectory();
-    final file = File('${dir.path}/parking_${transaction['id']}.png');
-    await file.writeAsBytes(image);
-    await Share.shareXFiles([XFile(file.path)], text: 'Parking Receipt');
+    final id =
+        (transaction['id'] ?? DateTime.now().millisecondsSinceEpoch).toString();
+    final file = File('${dir.path}/parking_receipt_$id.png');
+    await file.writeAsBytes(bytes);
+    await Share.shareXFiles(
+        [XFile(file.path)], text: 'Parking Receipt · Localizy');
+  }
+
+  Future<Uint8List?> _captureWidgetAsImage(Widget widget) async {
+    final key = GlobalKey();
+    late OverlayEntry entry;
+    entry = OverlayEntry(
+      builder: (_) => Positioned(
+        left: -10000,
+        top: 0,
+        child: Material(
+          child: RepaintBoundary(
+            key: key,
+            child: Directionality(
+              textDirection: ui.TextDirection.ltr,
+              child: widget,
+            ),
+          ),
+        ),
+      ),
+    );
+    Overlay.of(context).insert(entry);
+    await WidgetsBinding.instance.endOfFrame;
+    await Future.delayed(const Duration(milliseconds: 80));
+    try {
+      final boundary =
+          key.currentContext?.findRenderObject() as RenderRepaintBoundary?;
+      if (boundary == null) return null;
+      final image = await boundary.toImage(pixelRatio: 3.0);
+      final byteData =
+          await image.toByteData(format: ui.ImageByteFormat.png);
+      return byteData?.buffer.asUint8List();
+    } catch (e) {
+      return null;
+    } finally {
+      entry.remove();
+    }
+  }
+
+  Widget _buildReceiptWidget({
+    required Map<String, dynamic> transaction,
+    required String amountStr,
+    required String dateStr,
+    required String paymentStr,
+  }) {
+    final status = transaction['status'] as String? ?? '';
+
+    final IconData statusIcon;
+    final String statusStr;
+    final Color statusColor;
+    switch (status) {
+      case 'success':
+        statusIcon = Icons.check_circle_outline;
+        statusStr = 'Paid';
+        statusColor = const Color(0xFF43A047);
+        break;
+      case 'failed':
+        statusIcon = Icons.cancel_outlined;
+        statusStr = 'Failed';
+        statusColor = const Color(0xFFE53935);
+        break;
+      default:
+        statusIcon = Icons.hourglass_empty;
+        statusStr = 'Pending';
+        statusColor = const Color(0xFFFB8C00);
+    }
+
+    const headerColor = Color(0xFF1565C0);
+
+    return Container(
+      width: 360,
+      color: const Color(0xFFEEF0F3),
+      padding: const EdgeInsets.fromLTRB(16, 24, 16, 24),
+      child: Container(
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(20),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.10),
+              blurRadius: 20,
+              offset: const Offset(0, 6),
+            ),
+          ],
+        ),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(20),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              // ── Header ──
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.fromLTRB(24, 32, 24, 28),
+                decoration: const BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [headerColor, Color(0xFF0D47A1)],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ),
+                ),
+                child: Column(
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(Icons.location_on,
+                            color: Colors.white.withValues(alpha: 0.7),
+                            size: 14),
+                        const SizedBox(width: 5),
+                        Text(
+                          'C I T I Z E N',
+                          style: TextStyle(
+                            color: Colors.white.withValues(alpha: 0.7),
+                            fontSize: 11,
+                            fontWeight: FontWeight.w700,
+                            letterSpacing: 3,
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 22),
+                    Container(
+                      padding: const EdgeInsets.all(14),
+                      decoration: BoxDecoration(
+                        color: Colors.white.withValues(alpha: 0.15),
+                        shape: BoxShape.circle,
+                        border: Border.all(
+                            color: Colors.white.withValues(alpha: 0.25),
+                            width: 1.5),
+                      ),
+                      child: const Icon(Icons.local_parking,
+                          color: Colors.white, size: 30),
+                    ),
+                    const SizedBox(height: 12),
+                    Text(
+                      'Parking Payment',
+                      style: TextStyle(
+                          color: Colors.white.withValues(alpha: 0.8),
+                          fontSize: 13),
+                    ),
+                    const SizedBox(height: 6),
+                    Text(
+                      amountStr,
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 32,
+                        fontWeight: FontWeight.bold,
+                        letterSpacing: -0.5,
+                      ),
+                    ),
+                    const SizedBox(height: 14),
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 14, vertical: 7),
+                      decoration: BoxDecoration(
+                        color: Colors.white.withValues(alpha: 0.12),
+                        borderRadius: BorderRadius.circular(30),
+                        border: Border.all(
+                            color: Colors.white.withValues(alpha: 0.3)),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(statusIcon, color: Colors.white, size: 13),
+                          const SizedBox(width: 5),
+                          Text(
+                            statusStr,
+                            style: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 12,
+                                fontWeight: FontWeight.w600),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    // License plate badge
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 16, vertical: 8),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Text(
+                        transaction['licensePlate'] ?? '',
+                        style: const TextStyle(
+                          color: Color(0xFF1565C0),
+                          fontSize: 18,
+                          fontWeight: FontWeight.w800,
+                          letterSpacing: 2,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              // ── Dashed separator ──
+              Padding(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                child: Row(
+                  children: List.generate(
+                    32,
+                    (i) => Expanded(
+                      child: Container(
+                        height: 1.5,
+                        margin: const EdgeInsets.symmetric(horizontal: 1.5),
+                        color: i.isEven
+                            ? Colors.grey.shade200
+                            : Colors.transparent,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              // ── Details ──
+              Padding(
+                padding: const EdgeInsets.fromLTRB(20, 0, 20, 8),
+                child: Column(
+                  children: [
+                    _buildReceiptDetailRow('Ticket Code', transaction['id'] ?? ''),
+                    _buildReceiptDetailRow('Date', dateStr),
+                    _buildReceiptDetailRow('Zone', transaction['location'] ?? ''),
+                    _buildReceiptDetailRow(
+                        'Duration', transaction['duration'] ?? ''),
+                    _buildReceiptDetailRow('Payment', paymentStr),
+                    _buildReceiptDetailRow('Status', statusStr,
+                        valueColor: statusColor),
+                  ],
+                ),
+              ),
+              // ── Footer ──
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.symmetric(vertical: 14),
+                decoration: BoxDecoration(
+                  color: const Color(0xFFF8F8F8),
+                  border:
+                      Border(top: BorderSide(color: Colors.grey.shade100)),
+                ),
+                child: Column(
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const Icon(Icons.verified_outlined,
+                            size: 12, color: headerColor),
+                        const SizedBox(width: 5),
+                        Text(
+                          'Official Receipt · Citizen',
+                          style: TextStyle(
+                            color: Colors.grey.shade600,
+                            fontSize: 11,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      DateFormat('dd/MM/yyyy HH:mm').format(DateTime.now()),
+                      style: TextStyle(
+                          color: Colors.grey.shade400, fontSize: 10),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildReceiptDetailRow(String label, String value,
+      {Color? valueColor}) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 6),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          SizedBox(
+            width: 110,
+            child: Text(
+              label,
+              style: TextStyle(
+                color: Colors.grey.shade500,
+                fontSize: 12,
+                fontWeight: FontWeight.w400,
+              ),
+            ),
+          ),
+          Expanded(
+            child: Text(
+              value,
+              textAlign: TextAlign.right,
+              style: TextStyle(
+                color: valueColor ?? const Color(0xFF111111),
+                fontSize: 12,
+                fontWeight: FontWeight.w600,
+              ),
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+        ],
+      ),
+    );
   }
 
   Widget _buildTransactionDetailSheet(Map<String, dynamic> transaction) {
-    return Screenshot(
-      controller: _screenshotController,
-      child: Container(
+    return Container(
       height: MediaQuery.of(context).size.height * 0.75,
       decoration: const BoxDecoration(
         color: Colors.white,
@@ -485,7 +807,6 @@ class _ParkingTransactionsTabState extends State<ParkingTransactionsTab>
           ),
         ],
       ),
-    ),
     );
   }
 

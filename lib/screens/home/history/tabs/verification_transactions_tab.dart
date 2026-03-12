@@ -1,12 +1,14 @@
 import 'dart:convert';
 import 'dart:io';
+import 'dart:typed_data';
+import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:intl/intl.dart';
 import 'package:localizy/api/main_api.dart';
 import 'package:localizy/l10n/app_localizations.dart';
 import 'package:localizy/screens/home/parking/parking_zone_detail_map_page.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:screenshot/screenshot.dart';
 import 'package:share_plus/share_plus.dart';
 
 class VerificationTransactionsTab extends StatefulWidget {
@@ -21,7 +23,6 @@ class _VerificationTransactionsTabState extends State<VerificationTransactionsTa
     with AutomaticKeepAliveClientMixin {
   @override
   bool get wantKeepAlive => true;
-  final _screenshotController = ScreenshotController();
   bool _isLoading = true;
   String? _error;
   List<Map<String, dynamic>> _verifications = [];
@@ -322,9 +323,7 @@ class _VerificationTransactionsTabState extends State<VerificationTransactionsTa
         : null;
     final appointmentTimeSlot = appointmentInfo != null ? (appointmentInfo['timeSlot'] ?? '') : '';
 
-    return Screenshot(
-      controller: _screenshotController,
-      child: Container(
+    return Container(
       height: MediaQuery.of(context).size.height * 0.85,
       decoration: const BoxDecoration(
         color: Colors.white,
@@ -530,17 +529,351 @@ class _VerificationTransactionsTabState extends State<VerificationTransactionsTa
           ),
         ],
       ),
-    ),
     );
   }
 
   Future<void> _downloadAsImage(Map<String, dynamic> verification) async {
-    final image = await _screenshotController.capture(pixelRatio: 2.0);
-    if (image == null) return;
+    final status = verification['status'] as String? ?? 'Pending';
+    final requestId = verification['requestId'] as String? ?? '';
+    final createdAt = verification['createdAt'] != null
+        ? DateTime.parse(verification['createdAt'] as String)
+        : DateTime.now();
+    final paymentInfo = verification['paymentInfo'];
+    final amount =
+        paymentInfo != null ? (paymentInfo['amount'] ?? 0).toInt() : 0;
+    final paymentMethod =
+        paymentInfo != null ? (paymentInfo['method'] as String? ?? '') : '';
+    final locationInfo = verification['locationInfo'];
+    final latitude =
+        locationInfo != null ? (locationInfo['latitude'] ?? 0.0) : 0.0;
+    final longitude =
+        locationInfo != null ? (locationInfo['longitude'] ?? 0.0) : 0.0;
+    final documentFiles = verification['documentFiles'];
+    final idType =
+        documentFiles != null ? (documentFiles['idType'] as String? ?? '') : '';
+
+    final dateStr = _formatDate(createdAt);
+    final paymentStr =
+        paymentMethod.isNotEmpty ? _getPaymentMethodName(context, paymentMethod) : '';
+    final amountStr = amount > 0 ? _formatCurrency(context, amount) : '';
+    final lat = (latitude is num) ? latitude.toDouble() : 0.0;
+    final lng = (longitude is num) ? longitude.toDouble() : 0.0;
+    final locationStr = lat != 0.0 || lng != 0.0
+        ? '${lat.toStringAsFixed(4)}, ${lng.toStringAsFixed(4)}'
+        : '';
+
+    final bytes = await _captureWidgetAsImage(
+      _buildReceiptWidget(
+        requestId: requestId,
+        status: status,
+        dateStr: dateStr,
+        locationStr: locationStr,
+        idType: idType,
+        paymentStr: paymentStr,
+        amountStr: amountStr,
+      ),
+    );
+    if (bytes == null) return;
     final dir = await getTemporaryDirectory();
-    final file = File('${dir.path}/verification_${verification['requestId']}.png');
-    await file.writeAsBytes(image);
-    await Share.shareXFiles([XFile(file.path)], text: 'Verification Receipt');
+    final file = File('${dir.path}/verification_$requestId.png');
+    await file.writeAsBytes(bytes);
+    await Share.shareXFiles(
+        [XFile(file.path)], text: 'Verification Receipt · Localizy');
+  }
+
+  Future<Uint8List?> _captureWidgetAsImage(Widget widget) async {
+    final key = GlobalKey();
+    late OverlayEntry entry;
+    entry = OverlayEntry(
+      builder: (_) => Positioned(
+        left: -10000,
+        top: 0,
+        child: Material(
+          child: RepaintBoundary(
+            key: key,
+            child: Directionality(
+              textDirection: ui.TextDirection.ltr,
+              child: widget,
+            ),
+          ),
+        ),
+      ),
+    );
+    Overlay.of(context).insert(entry);
+    await WidgetsBinding.instance.endOfFrame;
+    await Future.delayed(const Duration(milliseconds: 80));
+    try {
+      final boundary =
+          key.currentContext?.findRenderObject() as RenderRepaintBoundary?;
+      if (boundary == null) return null;
+      final image = await boundary.toImage(pixelRatio: 3.0);
+      final byteData =
+          await image.toByteData(format: ui.ImageByteFormat.png);
+      return byteData?.buffer.asUint8List();
+    } catch (e) {
+      return null;
+    } finally {
+      entry.remove();
+    }
+  }
+
+  Widget _buildReceiptWidget({
+    required String requestId,
+    required String status,
+    required String dateStr,
+    required String locationStr,
+    required String idType,
+    required String paymentStr,
+    required String amountStr,
+  }) {
+    final Color statusColor;
+    final IconData statusIcon;
+    final String statusLabel;
+    switch (status.toLowerCase()) {
+      case 'verified':
+        statusColor = const Color(0xFF43A047);
+        statusIcon = Icons.check_circle_outline;
+        statusLabel = 'Verified';
+        break;
+      case 'rejected':
+        statusColor = const Color(0xFFE53935);
+        statusIcon = Icons.cancel_outlined;
+        statusLabel = 'Rejected';
+        break;
+      default:
+        statusColor = const Color(0xFFFB8C00);
+        statusIcon = Icons.hourglass_empty;
+        statusLabel = 'Pending';
+    }
+
+    const headerColor = Color(0xFF6A1B9A);
+
+    return Container(
+      width: 360,
+      color: const Color(0xFFEEF0F3),
+      padding: const EdgeInsets.fromLTRB(16, 24, 16, 24),
+      child: Container(
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(20),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.10),
+              blurRadius: 20,
+              offset: const Offset(0, 6),
+            ),
+          ],
+        ),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(20),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              // ── Header ──
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.fromLTRB(24, 32, 24, 28),
+                decoration: const BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [headerColor, Color(0xFF4A148C)],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ),
+                ),
+                child: Column(
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(Icons.location_on,
+                            color: Colors.white.withValues(alpha: 0.7),
+                            size: 14),
+                        const SizedBox(width: 5),
+                        Text(
+                          'C I T I Z E N',
+                          style: TextStyle(
+                            color: Colors.white.withValues(alpha: 0.7),
+                            fontSize: 11,
+                            fontWeight: FontWeight.w700,
+                            letterSpacing: 3,
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 22),
+                    Container(
+                      padding: const EdgeInsets.all(14),
+                      decoration: BoxDecoration(
+                        color: Colors.white.withValues(alpha: 0.15),
+                        shape: BoxShape.circle,
+                        border: Border.all(
+                            color: Colors.white.withValues(alpha: 0.25),
+                            width: 1.5),
+                      ),
+                      child: const Icon(Icons.verified_outlined,
+                          color: Colors.white, size: 30),
+                    ),
+                    const SizedBox(height: 12),
+                    Text(
+                      'Address Verification',
+                      style: TextStyle(
+                          color: Colors.white.withValues(alpha: 0.8),
+                          fontSize: 13),
+                    ),
+                    const SizedBox(height: 10),
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 16, vertical: 8),
+                      decoration: BoxDecoration(
+                        color: statusColor.withValues(alpha: 0.2),
+                        borderRadius: BorderRadius.circular(30),
+                        border: Border.all(
+                            color: Colors.white.withValues(alpha: 0.4)),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(statusIcon, color: Colors.white, size: 14),
+                          const SizedBox(width: 6),
+                          Text(
+                            statusLabel,
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 13,
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    if (amountStr.isNotEmpty) ...[
+                      const SizedBox(height: 10),
+                      Text(
+                        amountStr,
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 28,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ],
+                  ],
+                ),
+              ),
+              // ── Dashed separator ──
+              Padding(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                child: Row(
+                  children: List.generate(
+                    32,
+                    (i) => Expanded(
+                      child: Container(
+                        height: 1.5,
+                        margin: const EdgeInsets.symmetric(horizontal: 1.5),
+                        color: i.isEven
+                            ? Colors.grey.shade200
+                            : Colors.transparent,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              // ── Details ──
+              Padding(
+                padding: const EdgeInsets.fromLTRB(20, 0, 20, 8),
+                child: Column(
+                  children: [
+                    _buildReceiptDetailRow('Request ID', requestId),
+                    _buildReceiptDetailRow('Date', dateStr),
+                    if (locationStr.isNotEmpty)
+                      _buildReceiptDetailRow('Location', locationStr),
+                    if (idType.isNotEmpty)
+                      _buildReceiptDetailRow('ID Type', idType),
+                    if (paymentStr.isNotEmpty)
+                      _buildReceiptDetailRow('Payment', paymentStr),
+                    _buildReceiptDetailRow('Status', statusLabel,
+                        valueColor: statusColor),
+                  ],
+                ),
+              ),
+              // ── Footer ──
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.symmetric(vertical: 14),
+                decoration: BoxDecoration(
+                  color: const Color(0xFFF8F8F8),
+                  border:
+                      Border(top: BorderSide(color: Colors.grey.shade100)),
+                ),
+                child: Column(
+                  children: [
+                    const Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(Icons.verified_outlined,
+                            size: 12, color: headerColor),
+                        SizedBox(width: 5),
+                        Text(
+                          'Official Certificate · Citizen',
+                          style: TextStyle(
+                            color: Color(0xFF757575),
+                            fontSize: 11,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      DateFormat('dd/MM/yyyy HH:mm').format(DateTime.now()),
+                      style: TextStyle(
+                          color: Colors.grey.shade400, fontSize: 10),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildReceiptDetailRow(String label, String value,
+      {Color? valueColor}) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 6),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          SizedBox(
+            width: 110,
+            child: Text(
+              label,
+              style: TextStyle(
+                color: Colors.grey.shade500,
+                fontSize: 12,
+                fontWeight: FontWeight.w400,
+              ),
+            ),
+          ),
+          Expanded(
+            child: Text(
+              value,
+              textAlign: TextAlign.right,
+              style: TextStyle(
+                color: valueColor ?? const Color(0xFF111111),
+                fontSize: 12,
+                fontWeight: FontWeight.w600,
+              ),
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+        ],
+      ),
+    );
   }
 
   Widget _buildDocumentPreview(String label, String url) {
