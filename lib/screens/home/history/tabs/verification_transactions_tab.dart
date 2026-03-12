@@ -1,9 +1,13 @@
 import 'dart:convert';
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:localizy/api/main_api.dart';
 import 'package:localizy/l10n/app_localizations.dart';
 import 'package:localizy/screens/home/parking/parking_zone_detail_map_page.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:screenshot/screenshot.dart';
+import 'package:share_plus/share_plus.dart';
 
 class VerificationTransactionsTab extends StatefulWidget {
   const VerificationTransactionsTab({super.key});
@@ -17,6 +21,7 @@ class _VerificationTransactionsTabState extends State<VerificationTransactionsTa
     with AutomaticKeepAliveClientMixin {
   @override
   bool get wantKeepAlive => true;
+  final _screenshotController = ScreenshotController();
   bool _isLoading = true;
   String? _error;
   List<Map<String, dynamic>> _verifications = [];
@@ -317,7 +322,9 @@ class _VerificationTransactionsTabState extends State<VerificationTransactionsTa
         : null;
     final appointmentTimeSlot = appointmentInfo != null ? (appointmentInfo['timeSlot'] ?? '') : '';
 
-    return Container(
+    return Screenshot(
+      controller: _screenshotController,
+      child: Container(
       height: MediaQuery.of(context).size.height * 0.85,
       decoration: const BoxDecoration(
         color: Colors.white,
@@ -501,38 +508,21 @@ class _VerificationTransactionsTabState extends State<VerificationTransactionsTa
                     ),
                     const SizedBox(height: 12),
                   ],
-                  Row(
-                    children: [
-                      Expanded(
-                        child: OutlinedButton.icon(
-                          onPressed: () {},
-                          icon: const Icon(Icons.download),
-                          label: const Text('Download'),
-                          style: OutlinedButton.styleFrom(
-                            padding: const EdgeInsets.symmetric(vertical: 12),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                          ),
+                  SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton.icon(
+                      onPressed: () => _downloadAsImage(verification),
+                      icon: const Icon(Icons.download),
+                      label: const Text('Download'),
+                      style: ElevatedButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(vertical: 14),
+                        backgroundColor: Colors.green.shade700,
+                        foregroundColor: Colors.white,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
                         ),
                       ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: ElevatedButton.icon(
-                          onPressed: () {},
-                          icon: const Icon(Icons.support_agent),
-                          label: const Text('Support'),
-                          style: ElevatedButton.styleFrom(
-                            padding: const EdgeInsets.symmetric(vertical: 12),
-                            backgroundColor: Colors.green.shade700,
-                            foregroundColor: Colors.white,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
+                    ),
                   ),
                 ],
               ),
@@ -540,7 +530,17 @@ class _VerificationTransactionsTabState extends State<VerificationTransactionsTa
           ),
         ],
       ),
+    ),
     );
+  }
+
+  Future<void> _downloadAsImage(Map<String, dynamic> verification) async {
+    final image = await _screenshotController.capture(pixelRatio: 2.0);
+    if (image == null) return;
+    final dir = await getTemporaryDirectory();
+    final file = File('${dir.path}/verification_${verification['requestId']}.png');
+    await file.writeAsBytes(image);
+    await Share.shareXFiles([XFile(file.path)], text: 'Verification Receipt');
   }
 
   Widget _buildDocumentPreview(String label, String url) {

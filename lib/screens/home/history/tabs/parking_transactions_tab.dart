@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:localizy/api/address_api.dart';
@@ -6,6 +7,9 @@ import 'package:localizy/api/main_api.dart';
 import 'package:localizy/api/parking_api.dart';
 import 'package:localizy/l10n/app_localizations.dart';
 import 'package:localizy/screens/home/parking/parking_zone_detail_map_page.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:screenshot/screenshot.dart';
+import 'package:share_plus/share_plus.dart';
 
 class ParkingTransactionsTab extends StatefulWidget {
   const ParkingTransactionsTab({super.key});
@@ -18,6 +22,7 @@ class _ParkingTransactionsTabState extends State<ParkingTransactionsTab>
     with AutomaticKeepAliveClientMixin {
   @override
   bool get wantKeepAlive => true;
+  final _screenshotController = ScreenshotController();
   bool _isLoading = true;
   String? _error;
   List<Map<String, dynamic>> _transactions = [];
@@ -301,8 +306,19 @@ class _ParkingTransactionsTabState extends State<ParkingTransactionsTab>
     );
   }
 
+  Future<void> _downloadAsImage(Map<String, dynamic> transaction) async {
+    final image = await _screenshotController.capture(pixelRatio: 2.0);
+    if (image == null) return;
+    final dir = await getTemporaryDirectory();
+    final file = File('${dir.path}/parking_${transaction['id']}.png');
+    await file.writeAsBytes(image);
+    await Share.shareXFiles([XFile(file.path)], text: 'Parking Receipt');
+  }
+
   Widget _buildTransactionDetailSheet(Map<String, dynamic> transaction) {
-    return Container(
+    return Screenshot(
+      controller: _screenshotController,
+      child: Container(
       height: MediaQuery.of(context).size.height * 0.75,
       decoration: const BoxDecoration(
         color: Colors.white,
@@ -447,38 +463,21 @@ class _ParkingTransactionsTabState extends State<ParkingTransactionsTab>
                     ),
                     const SizedBox(height: 12),
                   ],
-                  Row(
-                    children: [
-                      Expanded(
-                        child: OutlinedButton.icon(
-                          onPressed: () {},
-                          icon: const Icon(Icons.download),
-                          label: const Text('Download'),
-                          style: OutlinedButton.styleFrom(
-                            padding: const EdgeInsets.symmetric(vertical: 12),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                          ),
+                  SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton.icon(
+                      onPressed: () => _downloadAsImage(transaction),
+                      icon: const Icon(Icons.download),
+                      label: const Text('Download'),
+                      style: ElevatedButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(vertical: 14),
+                        backgroundColor: Colors.green.shade700,
+                        foregroundColor: Colors.white,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
                         ),
                       ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: ElevatedButton.icon(
-                          onPressed: () {},
-                          icon: const Icon(Icons.support_agent),
-                          label: const Text('Support'),
-                          style: ElevatedButton.styleFrom(
-                            padding: const EdgeInsets.symmetric(vertical: 12),
-                            backgroundColor: Colors.green.shade700,
-                            foregroundColor: Colors.white,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
+                    ),
                   ),
                 ],
               ),
@@ -486,6 +485,7 @@ class _ParkingTransactionsTabState extends State<ParkingTransactionsTab>
           ),
         ],
       ),
+    ),
     );
   }
 
