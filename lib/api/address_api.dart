@@ -163,6 +163,18 @@ class AddressApi {
     throw Exception('Error ${resp.statusCode}: $message');
   }
 
+  /// GET /api/addresses
+  /// Lấy tất cả địa chỉ (Public)
+  static Future<List<AddressItem>> fetchAll() async {
+    final data = await MainApi.instance.getJson('api/addresses');
+    if (data is List) {
+      return data
+          .map((e) => AddressItem.fromJson(e as Map<String, dynamic>))
+          .toList();
+    }
+    throw Exception('Unexpected response format: expected list');
+  }
+
   /// GET /api/addresses/search?searchTerm={term}
   /// Tìm kiếm địa chỉ cho màn hình address_search (trả về AddressItem)
   static Future<List<AddressItem>> searchItems(String searchTerm) async {
@@ -265,9 +277,10 @@ class AddressSearchResult {
 /// Model kết quả tìm kiếm địa chỉ cho màn hình address_search
 class AddressItem {
   final String id;
+  final String code;
+  final String name;
   final String fullAddress;
-  final String district;
-  final String cityCode;
+  final String cityName;
   final double latitude;
   final double longitude;
   final bool isVerified;
@@ -276,9 +289,10 @@ class AddressItem {
 
   AddressItem({
     required this.id,
+    required this.code,
+    required this.name,
     required this.fullAddress,
-    required this.district,
-    required this.cityCode,
+    required this.cityName,
     required this.latitude,
     required this.longitude,
     required this.isVerified,
@@ -289,9 +303,10 @@ class AddressItem {
   factory AddressItem.fromJson(Map<String, dynamic> json) {
     return AddressItem(
       id: json['id']?.toString() ?? '',
+      code: json['code'] ?? '',
+      name: json['name'] ?? '',
       fullAddress: json['fullAddress'] ?? '',
-      district: json['district'] ?? '',
-      cityCode: json['cityCode'] ?? '',
+      cityName: json['cityName'] ?? '',
       latitude: (json['latitude'] ?? 0.0).toDouble(),
       longitude: (json['longitude'] ?? 0.0).toDouble(),
       isVerified: json['isVerified'] ?? false,

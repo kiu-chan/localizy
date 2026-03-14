@@ -8,6 +8,7 @@ import 'package:intl/intl.dart';
 import 'package:localizy/api/address_api.dart';
 import 'package:localizy/api/main_api.dart';
 import 'package:localizy/api/parking_api.dart';
+import 'package:localizy/configs/currency_config.dart';
 import 'package:localizy/l10n/app_localizations.dart';
 import 'package:localizy/screens/home/parking/parking_zone_detail_map_page.dart';
 import 'package:path_provider/path_provider.dart';
@@ -877,12 +878,7 @@ class _ParkingTransactionsTabState extends State<ParkingTransactionsTab>
   }
 
   String _formatCurrency(BuildContext context, int amount) {
-    final locale = Localizations.localeOf(context).languageCode;
-    if (locale == 'vi') {
-      return NumberFormat.currency(locale: 'vi_VN', symbol: '₫').format(amount);
-    }
-    return NumberFormat.currency(locale: 'en_US', symbol: '\$', decimalDigits: 0)
-        .format(amount / 23000);
+    return CurrencyConfig.format(amount.toDouble());
   }
 
   String _formatDate(DateTime date) {

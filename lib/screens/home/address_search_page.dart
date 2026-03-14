@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:localizy/api/address_api.dart';
 import 'package:localizy/l10n/app_localizations.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class AddressSearchPage extends StatefulWidget {
   const AddressSearchPage({super.key});
@@ -14,34 +14,58 @@ class AddressSearchPage extends StatefulWidget {
 class _AddressSearchPageState extends State<AddressSearchPage> {
   final _searchController = TextEditingController();
   final _searchFocusNode = FocusNode();
-  
+
   bool _isSearching = false;
+  bool _isLoadingAll = false;
   List<Map<String, dynamic>> _searchResults = [];
-  Map<String, dynamic>? _selectedAddress;
-  GoogleMapController? _mapController;
-  
+  List<Map<String, dynamic>> _allAddresses = [];
 
   @override
   void initState() {
     super.initState();
     _searchFocusNode.addListener(() => setState(() {}));
     _searchController.addListener(() => setState(() {}));
+    _loadAllAddresses();
   }
 
   @override
   void dispose() {
     _searchController.dispose();
     _searchFocusNode.dispose();
-    _mapController?.dispose();
     super.dispose();
+  }
+
+  Future<void> _loadAllAddresses() async {
+    setState(() => _isLoadingAll = true);
+    try {
+      final items = await AddressApi.fetchAll();
+      setState(() {
+        _allAddresses = items.map((a) => _addressItemToMap(a)).toList();
+        _isLoadingAll = false;
+      });
+    } catch (e) {
+      setState(() => _isLoadingAll = false);
+    }
+  }
+
+  Map<String, dynamic> _addressItemToMap(dynamic a) {
+    return {
+      'id': a.id,
+      'code': a.code,
+      'name': a.name,
+      'address': a.fullAddress,
+      'cityName': a.cityName,
+      'lat': a.latitude,
+      'lng': a.longitude,
+      'verified': a.isVerified,
+      'parkingAvailable': a.parkingAvailable,
+      'parkingSpots': a.parkingSpots,
+    };
   }
 
   Future<void> _performSearch(String query) async {
     if (query.isEmpty) {
-      setState(() {
-        _searchResults = [];
-        _selectedAddress = null;
-      });
+      setState(() => _searchResults = []);
       return;
     }
 
@@ -49,19 +73,8 @@ class _AddressSearchPageState extends State<AddressSearchPage> {
 
     try {
       final items = await AddressApi.searchItems(query);
-
       setState(() {
-        _searchResults = items.map((a) => {
-          'id': a.id,
-          'address': a.fullAddress,
-          'district': a.district,
-          'city': a.cityCode,
-          'lat': a.latitude,
-          'lng': a.longitude,
-          'verified': a.isVerified,
-          'parkingAvailable': a.parkingAvailable,
-          'parkingSpots': a.parkingSpots,
-        }).toList();
+        _searchResults = items.map((a) => _addressItemToMap(a)).toList();
         _isSearching = false;
       });
     } catch (e) {
@@ -72,58 +85,20 @@ class _AddressSearchPageState extends State<AddressSearchPage> {
     }
   }
 
-  void _selectAddress(Map<String, dynamic> address) {
-    setState(() {
-      _selectedAddress = address;
-    });
-
-    // Animate camera to selected location
-    if (_mapController != null) {
-      _mapController!.animateCamera(
-        CameraUpdate. newCameraPosition(
-          CameraPosition(
-            target: LatLng(address['lat'], address['lng']),
-            zoom: 17,
-          ),
-        ),
-      );
-    }
-
-    // Hide keyboard
-    FocusScope. of(context).unfocus();
-  }
-
-  void _copyAddress(String address) {
-    Clipboard.setData(ClipboardData(text: address));
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: const Row(
-          children: [
-            Icon(Icons.check, color: Colors.white, size: 20),
-            SizedBox(width: 8),
-            Text('Address copied'),
-          ],
-        ),
-        backgroundColor: Colors.green.shade700,
-        behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(
-          borderRadius:  BorderRadius.circular(10),
-        ),
-        duration: const Duration(seconds: 2),
-      ),
-    );
-  }
-
-  void _openInMap(Map<String, dynamic> address) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Opening map.. .')),
+  void _openDetail(Map<String, dynamic> address) {
+    FocusScope.of(context).unfocus();
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (_) => _AddressDetailSheet(addressId: address['id'], basicInfo: address),
     );
   }
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations. of(context)!;
-    
+    final l10n = AppLocalizations.of(context)!;
+
     return Scaffold(
       backgroundColor: Colors.grey.shade50,
       appBar: AppBar(
@@ -145,171 +120,104 @@ class _AddressSearchPageState extends State<AddressSearchPage> {
               boxShadow: [
                 BoxShadow(
                   color: Colors.black.withValues(alpha: 0.05),
-                  blurRadius:  10,
-                  offset:  const Offset(0, 2),
+                  blurRadius: 10,
+                  offset: const Offset(0, 2),
                 ),
               ],
             ),
-            child: Column(
-              children: [
-                // Search input
-                TextField(
-                  controller: _searchController,
-                  focusNode: _searchFocusNode,
-                  decoration: InputDecoration(
-                    hintText: 'Enter address, district, city...',
-                    prefixIcon: Icon(
-                      Icons.search,
-                      color: _searchFocusNode.hasFocus
-                          ? Colors.purple.shade700
-                          : Colors.grey,
-                    ),
-                    suffixIcon: _searchController.text.isNotEmpty
-                        ? Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              if (_isSearching)
-                                Padding(
-                                  padding:  const EdgeInsets.only(right: 8),
-                                  child: SizedBox(
-                                    width: 20,
-                                    height: 20,
-                                    child: CircularProgressIndicator(
-                                      strokeWidth: 2,
-                                      valueColor: AlwaysStoppedAnimation<Color>(
-                                        Colors.purple.shade700,
-                                      ),
-                                    ),
+            child: TextField(
+              controller: _searchController,
+              focusNode: _searchFocusNode,
+              decoration: InputDecoration(
+                hintText: 'Enter address, district, city...',
+                prefixIcon: Icon(
+                  Icons.search,
+                  color: _searchFocusNode.hasFocus
+                      ? Colors.purple.shade700
+                      : Colors.grey,
+                ),
+                suffixIcon: _searchController.text.isNotEmpty
+                    ? Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          if (_isSearching)
+                            Padding(
+                              padding: const EdgeInsets.only(right: 8),
+                              child: SizedBox(
+                                width: 20,
+                                height: 20,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                  valueColor: AlwaysStoppedAnimation<Color>(
+                                    Colors.purple.shade700,
                                   ),
                                 ),
-                              IconButton(
-                                icon: const Icon(Icons.clear),
-                                onPressed: () {
-                                  _searchController.clear();
-                                  _performSearch('');
-                                },
                               ),
-                            ],
-                          )
-                        : null,
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      borderSide:  BorderSide(color: Colors.grey.shade300),
-                    ),
-                    enabledBorder: OutlineInputBorder(
-                      borderRadius:  BorderRadius.circular(12),
-                      borderSide: BorderSide(color: Colors.grey. shade300),
-                    ),
-                    focusedBorder:  OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      borderSide: BorderSide(
-                        color: Colors.purple. shade700,
-                        width:  2,
-                      ),
-                    ),
-                    filled: true,
-                    fillColor: Colors.grey.shade50,
-                    contentPadding: const EdgeInsets.symmetric(
-                      horizontal: 16,
-                      vertical: 14,
-                    ),
-                  ),
-                  onChanged: _performSearch,
-                  textInputAction: TextInputAction.search,
+                            ),
+                          IconButton(
+                            icon: const Icon(Icons.clear),
+                            onPressed: () {
+                              _searchController.clear();
+                              _performSearch('');
+                            },
+                          ),
+                        ],
+                      )
+                    : null,
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide(color: Colors.grey.shade300),
                 ),
-                
-                // Quick filters
-                if (_searchResults.isEmpty && _searchController.text.isEmpty) ...[
-                  const SizedBox(height: 16),
-                  SingleChildScrollView(
-                    scrollDirection: Axis.horizontal,
-                    child: Row(
-                      children: [
-                        _buildQuickFilter('District 1', Icons.location_city),
-                        _buildQuickFilter('District 3', Icons.location_city),
-                        _buildQuickFilter('District 5', Icons.location_city),
-                        _buildQuickFilter('Verified', Icons.verified),
-                        _buildQuickFilter('Parking', Icons.local_parking),
-                      ],
-                    ),
-                  ),
-                ],
-              ],
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide(color: Colors.grey.shade300),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide(color: Colors.purple.shade700, width: 2),
+                ),
+                filled: true,
+                fillColor: Colors.grey.shade50,
+                contentPadding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 14,
+                ),
+              ),
+              onChanged: _performSearch,
+              textInputAction: TextInputAction.search,
             ),
           ),
-          
-          // Results
-          Expanded(
-            child:  _selectedAddress != null
-                ? _buildDetailView()
-                : _buildSearchResults(),
-          ),
-        ],
-      ),
-    );
-  }
 
-  Widget _buildQuickFilter(String label, IconData icon) {
-    return Padding(
-      padding: const EdgeInsets.only(right: 8),
-      child: FilterChip(
-        label: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(icon, size: 16),
-            const SizedBox(width: 6),
-            Text(label),
-          ],
-        ),
-        onSelected: (selected) {
-          if (selected) {
-            _searchController.text = label;
-            _performSearch(label);
-          }
-        },
-        backgroundColor: Colors.white,
-        selectedColor: Colors.purple.shade100,
-        side: BorderSide(color: Colors.grey.shade300),
-        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+          // Results
+          Expanded(child: _buildSearchResults()),
+        ],
       ),
     );
   }
 
   Widget _buildSearchResults() {
     if (_searchController.text.isEmpty) {
-      return Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Container(
-              padding: const EdgeInsets.all(24),
-              decoration: BoxDecoration(
-                color: Colors.purple.shade50,
-                shape: BoxShape.circle,
-              ),
-              child: Icon(
-                Icons.search,
-                size: 64,
-                color: Colors.purple.shade300,
-              ),
-            ),
-            const SizedBox(height:  24),
-            const Text(
-              'Search Address',
-              style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              'Enter an address to start searching',
-              style: TextStyle(
-                fontSize: 14,
-                color: Colors.grey.shade600,
-              ),
-            ),
-          ],
+      if (_isLoadingAll) {
+        return Center(
+          child: CircularProgressIndicator(
+            valueColor: AlwaysStoppedAnimation<Color>(Colors.purple.shade700),
+          ),
+        );
+      }
+      if (_allAddresses.isEmpty) {
+        return Center(
+          child: Text(
+            'No addresses found',
+            style: TextStyle(fontSize: 14, color: Colors.grey.shade600),
+          ),
+        );
+      }
+      return ListView.builder(
+        padding: const EdgeInsets.all(16),
+        itemCount: _allAddresses.length,
+        itemBuilder: (context, index) => Padding(
+          padding: const EdgeInsets.only(bottom: 12),
+          child: _buildAddressCard(_allAddresses[index]),
         ),
       );
     }
@@ -331,29 +239,19 @@ class _AddressSearchPageState extends State<AddressSearchPage> {
 
     if (_searchResults.isEmpty) {
       return Center(
-        child:  Column(
-          mainAxisAlignment:  MainAxisAlignment.center,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(
-              Icons.search_off,
-              size: 64,
-              color: Colors.grey.shade400,
-            ),
-            const SizedBox(height:  16),
+            Icon(Icons.search_off, size: 64, color: Colors.grey.shade400),
+            const SizedBox(height: 16),
             const Text(
               'No results found',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.w600,
-              ),
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
             ),
             const SizedBox(height: 8),
             Text(
               'Try searching with different keywords',
-              style: TextStyle(
-                fontSize: 14,
-                color: Colors.grey.shade600,
-              ),
+              style: TextStyle(fontSize: 14, color: Colors.grey.shade600),
             ),
           ],
         ),
@@ -363,418 +261,372 @@ class _AddressSearchPageState extends State<AddressSearchPage> {
     return ListView.builder(
       padding: const EdgeInsets.all(16),
       itemCount: _searchResults.length,
-      itemBuilder: (context, index) {
-        final address = _searchResults[index];
-        return Padding(
-          padding: const EdgeInsets.only(bottom: 12),
-          child: _buildAddressCard(address),
-        );
-      },
+      itemBuilder: (context, index) => Padding(
+        padding: const EdgeInsets.only(bottom: 12),
+        child: _buildAddressCard(_searchResults[index]),
+      ),
     );
   }
 
   Widget _buildAddressCard(Map<String, dynamic> address) {
     final isVerified = address['verified'] as bool;
     final hasParkingAvailable = address['parkingAvailable'] as bool;
-    
+
     return Card(
-      elevation:  2,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
-      ),
+      elevation: 2,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       child: InkWell(
-        onTap: () => _selectAddress(address),
+        onTap: () => _openDetail(address),
         borderRadius: BorderRadius.circular(16),
-        child:  Padding(
+        child: Padding(
           padding: const EdgeInsets.all(16),
-          child: Column(
+          child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Container(
-                    padding: const EdgeInsets.all(12),
-                    decoration: BoxDecoration(
-                      color:  Colors.purple.shade50,
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: Icon(
-                      Icons.location_on,
-                      color: Colors.purple.shade700,
-                      size: 24,
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: Colors.purple.shade50,
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Icon(Icons.location_on, color: Colors.purple.shade700, size: 24),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
                       children: [
-                        Row(
-                          children: [
-                            Expanded(
-                              child: Text(
-                                address['address'],
-                                style: const TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
+                        Expanded(
+                          child: Text(
+                            address['address'],
+                            style: const TextStyle(
+                              fontSize: 15,
+                              fontWeight: FontWeight.bold,
                             ),
-                            if (isVerified)
-                              Container(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 8,
-                                  vertical:  4,
-                                ),
-                                decoration: BoxDecoration(
-                                  color: Colors. green.shade50,
-                                  borderRadius: BorderRadius.circular(6),
-                                ),
-                                child: Row(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    Icon(
-                                      Icons.verified,
-                                      size: 14,
-                                      color: Colors.green.shade700,
-                                    ),
-                                    const SizedBox(width: 4),
-                                    Text(
-                                      'Verified',
-                                      style: TextStyle(
-                                        fontSize: 11,
-                                        fontWeight: FontWeight.w600,
-                                        color: Colors. green.shade700,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                          ],
+                          ),
                         ),
-                        const SizedBox(height: 8),
-                        Row(
-                          children: [
-                            Icon(
-                              Icons.location_city,
-                              size: 16,
-                              color: Colors. grey.shade600,
-                            ),
-                            const SizedBox(width: 4),
-                            Text(
-                              '${address['district']} • ${address['city']}',
-                              style: TextStyle(
-                                fontSize: 13,
-                                color: Colors. grey.shade600,
-                              ),
-                            ),
-                          ],
+                        if (isVerified) ...[
+                          const SizedBox(width: 8),
+                          Icon(Icons.verified, size: 16, color: Colors.green.shade600),
+                        ],
+                      ],
+                    ),
+                    const SizedBox(height: 4),
+                    Row(
+                      children: [
+                        Icon(Icons.location_city, size: 14, color: Colors.grey.shade500),
+                        const SizedBox(width: 4),
+                        Expanded(
+                          child: Text(
+                            address['cityName'] ?? '',
+                            style: TextStyle(fontSize: 13, color: Colors.grey.shade600),
+                            overflow: TextOverflow.ellipsis,
+                          ),
                         ),
                         if (hasParkingAvailable) ...[
-                          const SizedBox(height: 8),
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 8,
-                              vertical: 4,
-                            ),
-                            decoration: BoxDecoration(
-                              color: Colors.blue.shade50,
-                              borderRadius: BorderRadius.circular(6),
-                            ),
-                            child: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Icon(
-                                  Icons.local_parking,
-                                  size: 14,
-                                  color: Colors.blue.shade700,
-                                ),
-                                const SizedBox(width: 4),
-                                Text(
-                                  '${address['parkingSpots']} spots',
-                                  style: TextStyle(
-                                    fontSize: 12,
-                                    fontWeight: FontWeight.w600,
-                                    color: Colors. blue.shade700,
-                                  ),
-                                ),
-                              ],
+                          const SizedBox(width: 8),
+                          Icon(Icons.local_parking, size: 14, color: Colors.blue.shade600),
+                          const SizedBox(width: 2),
+                          Text(
+                            '${address['parkingSpots']}',
+                            style: TextStyle(
+                              fontSize: 12,
+                              fontWeight: FontWeight.w600,
+                              color: Colors.blue.shade600,
                             ),
                           ),
                         ],
                       ],
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
+              const SizedBox(width: 8),
+              Icon(Icons.chevron_right, color: Colors.grey.shade400),
             ],
           ),
         ),
       ),
     );
   }
+}
 
-  Widget _buildDetailView() {
-    final address = _selectedAddress! ;
-    final isVerified = address['verified'] as bool;
-    final hasParkingAvailable = address['parkingAvailable'] as bool;
-    
-    return SingleChildScrollView(
-      child: Column(
-        children: [
-          // Map preview
-          SizedBox(
-            height: 250,
-            child: GoogleMap(
-              initialCameraPosition: CameraPosition(
-                target: LatLng(address['lat'], address['lng']),
-                zoom: 17,
+class _AddressDetailSheet extends StatefulWidget {
+  final String addressId;
+  final Map<String, dynamic> basicInfo;
+
+  const _AddressDetailSheet({required this.addressId, required this.basicInfo});
+
+  @override
+  State<_AddressDetailSheet> createState() => _AddressDetailSheetState();
+}
+
+class _AddressDetailSheetState extends State<_AddressDetailSheet> {
+  AddressDetail? _detail;
+  bool _isLoading = true;
+  GoogleMapController? _mapController;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadDetail();
+  }
+
+  @override
+  void dispose() {
+    _mapController?.dispose();
+    super.dispose();
+  }
+
+  Future<void> _loadDetail() async {
+    try {
+      final detail = await AddressApi.getDetail(widget.addressId);
+      if (mounted) setState(() { _detail = detail; _isLoading = false; });
+    } catch (e) {
+      if (mounted) setState(() => _isLoading = false);
+    }
+  }
+
+  Future<void> _openInGoogleMaps(double lat, double lng) async {
+    final uri = Uri.parse('https://www.google.com/maps/search/?api=1&query=$lat,$lng');
+    if (await canLaunchUrl(uri)) {
+      await launchUrl(uri, mode: LaunchMode.externalApplication);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final lat = widget.basicInfo['lat'] as double;
+    final lng = widget.basicInfo['lng'] as double;
+
+    return DraggableScrollableSheet(
+      initialChildSize: 0.85,
+      minChildSize: 0.5,
+      maxChildSize: 0.95,
+      builder: (_, controller) => Container(
+        decoration: const BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+        ),
+        child: Column(
+          children: [
+            // Handle bar
+            Container(
+              margin: const EdgeInsets.only(top: 12, bottom: 8),
+              width: 40,
+              height: 4,
+              decoration: BoxDecoration(
+                color: Colors.grey.shade300,
+                borderRadius: BorderRadius.circular(2),
               ),
-              onMapCreated:  (controller) {
-                _mapController = controller;
-              },
-              markers: {
-                Marker(
-                  markerId: MarkerId(address['id']),
-                  position: LatLng(address['lat'], address['lng']),
-                  infoWindow: InfoWindow(title: address['address']),
-                ),
-              },
-              myLocationButtonEnabled: true,
-              zoomControlsEnabled: true,
             ),
-          ),
-          
-          // Address details
-          Container(
-            padding: const EdgeInsets.all(20),
-            decoration: const BoxDecoration(
-              color:  Colors.white,
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // Back button
-                TextButton. icon(
-                  onPressed:  () {
-                    setState(() {
-                      _selectedAddress = null;
-                    });
-                  },
-                  icon: const Icon(Icons.arrow_back, size: 20),
-                  label: const Text('Back to results'),
-                  style: TextButton.styleFrom(
-                    foregroundColor: Colors.purple.shade700,
-                    padding: EdgeInsets.zero,
+
+            // Map
+            SizedBox(
+              height: 200,
+              child: ClipRRect(
+                borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+                child: GoogleMap(
+                  initialCameraPosition: CameraPosition(
+                    target: LatLng(lat, lng),
+                    zoom: 16,
                   ),
-                ),
-                
-                const SizedBox(height: 16),
-                
-                // Address title
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Icon(
-                      Icons.location_on,
-                      color: Colors.purple.shade700,
-                      size: 28,
+                  onMapCreated: (c) => _mapController = c,
+                  markers: {
+                    Marker(
+                      markerId: MarkerId(widget.addressId),
+                      position: LatLng(lat, lng),
+                      infoWindow: InfoWindow(title: widget.basicInfo['address']),
                     ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            address['address'],
-                            style: const TextStyle(
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          const SizedBox(height: 8),
-                          Row(
-                            children: [
-                              if (isVerified) ...[
-                                Container(
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 10,
-                                    vertical: 6,
-                                  ),
-                                  decoration: BoxDecoration(
-                                    color: Colors. green.shade50,
-                                    borderRadius: BorderRadius.circular(8),
-                                  ),
-                                  child: Row(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      Icon(
-                                        Icons.verified,
-                                        size: 16,
-                                        color: Colors.green.shade700,
-                                      ),
-                                      const SizedBox(width: 6),
-                                      Text(
-                                        'Verified',
-                                        style: TextStyle(
-                                          fontSize:  13,
-                                          fontWeight: FontWeight.w600,
-                                          color: Colors. green.shade700,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                                const SizedBox(width: 8),
-                              ],
-                              if (hasParkingAvailable)
-                                Container(
-                                  padding: const EdgeInsets. symmetric(
-                                    horizontal:  10,
-                                    vertical: 6,
-                                  ),
-                                  decoration: BoxDecoration(
-                                    color: Colors.blue.shade50,
-                                    borderRadius: BorderRadius.circular(8),
-                                  ),
-                                  child: Row(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      Icon(
-                                        Icons.local_parking,
-                                        size: 16,
-                                        color: Colors.blue.shade700,
-                                      ),
-                                      const SizedBox(width: 6),
-                                      Text(
-                                        'Parking Available',
-                                        style: TextStyle(
-                                          fontSize:  13,
-                                          fontWeight: FontWeight.w600,
-                                          color: Colors. blue.shade700,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                            ],
-                          ),
-                        ],
+                  },
+                  myLocationButtonEnabled: false,
+                  zoomControlsEnabled: false,
+                ),
+              ),
+            ),
+
+            // Content
+            Expanded(
+              child: _isLoading
+                  ? Center(
+                      child: CircularProgressIndicator(
+                        valueColor: AlwaysStoppedAnimation<Color>(Colors.purple.shade700),
                       ),
-                    ),
-                  ],
+                    )
+                  : _buildContent(controller),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildContent(ScrollController controller) {
+    final d = _detail;
+    final basic = widget.basicInfo;
+
+    final fullAddress = d?.fullAddress ?? basic['address'] ?? '';
+    final name = d?.name ?? basic['name'] ?? '';
+    final cityName = d?.cityName ?? basic['cityName'] ?? '';
+    final code = d?.code ?? basic['code'] ?? '';
+    final isVerified = d?.isVerified ?? basic['verified'] ?? false;
+    final parkingAvailable = d?.parkingAvailable ?? basic['parkingAvailable'] ?? false;
+    final totalSpots = d?.totalParkingSpots ?? 0;
+    final availableSpots = d?.availableSpots ?? basic['parkingSpots'] ?? 0;
+    final pricePerHour = d?.pricePerHour ?? 0;
+
+    return ListView(
+      controller: controller,
+      padding: const EdgeInsets.fromLTRB(20, 16, 20, 32),
+      children: [
+        // Name & badges
+        if (name.isNotEmpty)
+          Text(
+            name,
+            style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+          ),
+        if (name.isNotEmpty) const SizedBox(height: 4),
+        Text(
+          fullAddress,
+          style: TextStyle(
+            fontSize: name.isEmpty ? 18 : 14,
+            fontWeight: name.isEmpty ? FontWeight.bold : FontWeight.normal,
+            color: name.isEmpty ? Colors.black87 : Colors.grey.shade600,
+          ),
+        ),
+        const SizedBox(height: 10),
+
+        // Badges
+        Wrap(
+          spacing: 8,
+          children: [
+            if (code.isNotEmpty)
+              _badge(code, Icons.qr_code, Colors.purple),
+            if (isVerified)
+              _badge('Verified', Icons.verified, Colors.green),
+            if (parkingAvailable)
+              _badge('Parking available', Icons.local_parking, Colors.blue),
+          ],
+        ),
+
+        const SizedBox(height: 20),
+        const Divider(),
+        const SizedBox(height: 12),
+
+        // Info rows
+        _infoRow(Icons.location_city, 'City', cityName),
+        if (d?.userName != null && d!.userName.isNotEmpty) ...[
+          const SizedBox(height: 12),
+          _infoRow(Icons.person, 'Added by', d.userName),
+        ],
+        if (d?.validatorName != null && d!.validatorName!.isNotEmpty) ...[
+          const SizedBox(height: 12),
+          _infoRow(Icons.how_to_reg, 'Verified by', d.validatorName!),
+        ],
+        const SizedBox(height: 12),
+        _infoRow(
+          Icons.map,
+          'Coordinates',
+          '${widget.basicInfo['lat'].toStringAsFixed(6)}, ${widget.basicInfo['lng'].toStringAsFixed(6)}',
+        ),
+        if (d?.formattedCreatedAt != null) ...[
+          const SizedBox(height: 12),
+          _infoRow(Icons.calendar_today, 'Created at', d!.formattedCreatedAt!),
+        ],
+
+        // Parking info
+        if (parkingAvailable) ...[
+          const SizedBox(height: 12),
+          const Divider(),
+          const SizedBox(height: 12),
+          _infoRow(Icons.local_parking, 'Total spots', '$totalSpots spots'),
+          const SizedBox(height: 12),
+          _infoRow(Icons.check_circle_outline, 'Available spots', '$availableSpots spots'),
+          if (pricePerHour > 0) ...[
+            const SizedBox(height: 12),
+            _infoRow(Icons.payments_outlined, 'Price/hour', d?.formattedPricePerHour ?? ''),
+          ],
+        ],
+
+        if (d?.comments != null && d!.comments!.isNotEmpty) ...[
+          const SizedBox(height: 12),
+          const Divider(),
+          const SizedBox(height: 12),
+          _infoRow(Icons.comment_outlined, 'Notes', d.comments!),
+        ],
+
+        const SizedBox(height: 24),
+
+        // Action buttons
+        Row(
+          children: [
+            Expanded(
+              child: OutlinedButton.icon(
+                onPressed: () => _openInGoogleMaps(
+                  widget.basicInfo['lat'] as double,
+                  widget.basicInfo['lng'] as double,
                 ),
-                
-                const SizedBox(height: 24),
-                
-                // Details grid
-                Container(
-                  padding: const EdgeInsets.all(16),
-                  decoration: BoxDecoration(
-                    color: Colors.grey.shade50,
+                icon: const Icon(Icons.map_outlined, size: 18),
+                label: const Text('View on Maps'),
+                style: OutlinedButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(vertical: 12),
+                  side: BorderSide(color: Colors.grey.shade300, width: 1.5),
+                  shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),
                   ),
-                  child: Column(
-                    children: [
-                      _buildDetailRow(
-                        Icons.location_city,
-                        'District',
-                        address['district'],
-                      ),
-                      const Divider(height: 20),
-                      _buildDetailRow(
-                        Icons.business,
-                        'City',
-                        address['city'],
-                      ),
-                      const Divider(height: 20),
-                      _buildDetailRow(
-                        Icons.map,
-                        'Coordinates',
-                        '${address['lat']. toStringAsFixed(6)}, ${address['lng'].toStringAsFixed(6)}',
-                      ),
-                      if (hasParkingAvailable) ...[
-                        const Divider(height: 20),
-                        _buildDetailRow(
-                          Icons.local_parking,
-                          'Parking Spots',
-                          '${address['parkingSpots']} spots',
-                        ),
-                      ],
-                    ],
+                ),
+              ),
+            ),
+            if (parkingAvailable) ...[
+              const SizedBox(width: 12),
+              Expanded(
+                child: ElevatedButton.icon(
+                  onPressed: () {
+                    Navigator.pop(context);
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('Navigating to payment...')),
+                    );
+                  },
+                  icon: const Icon(Icons.payment, size: 18),
+                  label: const Text('Book parking'),
+                  style: ElevatedButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(vertical: 12),
+                    backgroundColor: Colors.green.shade700,
+                    foregroundColor: Colors.white,
+                    elevation: 0,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
                   ),
                 ),
-                
-                const SizedBox(height: 24),
-                
-                // Action buttons
-                Row(
-                  children: [
-                    Expanded(
-                      child: OutlinedButton.icon(
-                        onPressed: () => _copyAddress(address['address']),
-                        icon:  const Icon(Icons.copy, size: 20),
-                        label: const Text('Copy'),
-                        style: OutlinedButton.styleFrom(
-                          padding: const EdgeInsets.symmetric(vertical: 14),
-                          side: BorderSide(
-                            color: Colors.grey.shade300,
-                            width: 2,
-                          ),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: ElevatedButton.icon(
-                        onPressed: () => _openInMap(address),
-                        icon: const Icon(Icons.directions, size: 20),
-                        label: const Text('Directions'),
-                        style: ElevatedButton.styleFrom(
-                          padding: const EdgeInsets.symmetric(vertical: 14),
-                          backgroundColor: Colors.purple.shade700,
-                          foregroundColor: Colors.white,
-                          elevation: 0,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-                
-                if (hasParkingAvailable) ...[
-                  const SizedBox(height: 12),
-                  SizedBox(
-                    width: double.infinity,
-                    child: ElevatedButton.icon(
-                      onPressed: () {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text('Navigating to payment...'),
-                          ),
-                        );
-                      },
-                      icon: const Icon(Icons. payment, size: 20),
-                      label: const Text('Pay for Parking'),
-                      style: ElevatedButton.styleFrom(
-                        padding: const EdgeInsets.symmetric(vertical: 14),
-                        backgroundColor: Colors.green.shade700,
-                        foregroundColor: Colors.white,
-                        elevation: 0,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ],
+              ),
+            ],
+          ],
+        ),
+      ],
+    );
+  }
+
+  Widget _badge(String label, IconData icon, MaterialColor color) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      decoration: BoxDecoration(
+        color: color.shade50,
+        borderRadius: BorderRadius.circular(6),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, size: 13, color: color.shade700),
+          const SizedBox(width: 4),
+          Text(
+            label,
+            style: TextStyle(
+              fontSize: 12,
+              fontWeight: FontWeight.w600,
+              color: color.shade700,
             ),
           ),
         ],
@@ -782,33 +634,26 @@ class _AddressSearchPageState extends State<AddressSearchPage> {
     );
   }
 
-  Widget _buildDetailRow(IconData icon, String label, String value) {
+  Widget _infoRow(IconData icon, String label, String value) {
     return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Icon(
-          icon,
-          size: 20,
-          color: Colors. grey.shade600,
-        ),
-        const SizedBox(width: 12),
+        Icon(icon, size: 18, color: Colors.grey.shade500),
+        const SizedBox(width: 10),
         Expanded(
-          child: Text(
-            label,
-            style: TextStyle(
-              fontSize: 14,
-              color: Colors.grey.shade600,
-            ),
-          ),
-        ),
-        Flexible(
-          child: Text(
-            value,
-            style: const TextStyle(
-              fontSize: 14,
-              fontWeight: FontWeight.w600,
-              color: Colors.black87,
-            ),
-            textAlign: TextAlign.right,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                label,
+                style: TextStyle(fontSize: 12, color: Colors.grey.shade500),
+              ),
+              const SizedBox(height: 2),
+              Text(
+                value,
+                style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
+              ),
+            ],
           ),
         ),
       ],

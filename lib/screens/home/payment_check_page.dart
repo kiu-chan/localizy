@@ -1,9 +1,16 @@
+import 'dart:io';
+import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
+import 'package:localizy/api/address_api.dart';
+import 'package:localizy/api/main_api.dart';
 import 'package:localizy/api/parking_api.dart';
 import 'package:localizy/configs/currency_config.dart';
 import 'package:localizy/l10n/app_localizations.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:share_plus/share_plus.dart';
 
 class PaymentCheckPage extends StatefulWidget {
   const PaymentCheckPage({super.key});
@@ -59,12 +66,22 @@ class _PaymentCheckPageState extends State<PaymentCheckPage> {
         t = await ParkingApi.getByLicensePlate(_licensePlateController.text.trim());
       }
 
+      String zoneName = t.addressId;
+      try {
+        final rawZones = await MainApi.instance.getJson('api/addresses/parking-zones');
+        final zones = (rawZones as List)
+            .map((e) => ParkingZoneItem.fromJson(e as Map<String, dynamic>))
+            .toList();
+        final zone = zones.firstWhere((z) => z.id == t.addressId, orElse: () => ParkingZoneItem(id: '', code: '', name: '', latitude: 0, longitude: 0, availableSpots: 0, totalSpots: 0, pricePerHour: 0));
+        if (zone.name.isNotEmpty) zoneName = zone.name;
+      } catch (_) {}
+
       setState(() {
         _isSearching = false;
         _ticketInfo = {
           'ticketCode': t.ticketCode,
           'licensePlate': t.licensePlate,
-          'zone': t.addressId,
+          'zone': zoneName,
           'status': t.status,
           'startTime': t.startTime,
           'endTime': t.endTime,
@@ -666,13 +683,9 @@ class _PaymentCheckPageState extends State<PaymentCheckPage> {
             const SizedBox(width: 12),
             Expanded(
               child: ElevatedButton.icon(
-                onPressed: () {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Extension feature in development')),
-                  );
-                },
-                icon: const Icon(Icons.add_circle),
-                label: const Text('Extend'),
+                onPressed: () => _downloadAsImage(_ticketInfo!),
+                icon: const Icon(Icons.download),
+                label: const Text('Download'),
                 style: ElevatedButton.styleFrom(
                   padding: const EdgeInsets.symmetric(vertical: 14),
                   backgroundColor: Colors.orange.shade700,
@@ -740,16 +753,320 @@ class _PaymentCheckPageState extends State<PaymentCheckPage> {
             ),
           ),
         const SizedBox(width: 8),
-        Text(
-          value,
-          style: TextStyle(
-            fontSize: 14,
-            fontWeight: isHighlight ? FontWeight.bold :  FontWeight.w600,
-            color: isHighlight ? Colors.orange.shade700 : Colors.black87,
+        Flexible(
+          child: Text(
+            value,
+            style: TextStyle(
+              fontSize: 14,
+              fontWeight: isHighlight ? FontWeight.bold : FontWeight.w600,
+              color: isHighlight ? Colors.orange.shade700 : Colors.black87,
+            ),
+            textAlign: TextAlign.right,
+            overflow: TextOverflow.ellipsis,
           ),
-          textAlign: TextAlign.right,
         ),
       ],
+    );
+  }
+
+  Future<void> _downloadAsImage(Map<String, dynamic> info) async {
+    final bytes = await _captureWidgetAsImage(_buildReceiptWidget(info));
+    if (bytes == null) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Failed to generate image')),
+        );
+      }
+      return;
+    }
+    final dir = await getTemporaryDirectory();
+    final code = (info['ticketCode'] ?? DateTime.now().millisecondsSinceEpoch).toString();
+    final file = File('${dir.path}/parking_receipt_$code.png');
+    await file.writeAsBytes(bytes);
+    await Share.shareXFiles([XFile(file.path)], text: 'Parking Receipt · Localizy');
+  }
+
+  Future<Uint8List?> _captureWidgetAsImage(Widget widget) async {
+    final key = GlobalKey();
+    late OverlayEntry entry;
+    entry = OverlayEntry(
+      builder: (_) => Positioned(
+        left: -10000,
+        top: 0,
+        child: Material(
+          child: RepaintBoundary(
+            key: key,
+            child: Directionality(
+              textDirection: ui.TextDirection.ltr,
+              child: widget,
+            ),
+          ),
+        ),
+      ),
+    );
+    Overlay.of(context).insert(entry);
+    await WidgetsBinding.instance.endOfFrame;
+    await Future.delayed(const Duration(milliseconds: 80));
+    try {
+      final boundary = key.currentContext?.findRenderObject() as RenderRepaintBoundary?;
+      if (boundary == null) return null;
+      final image = await boundary.toImage(pixelRatio: 3.0);
+      final byteData = await image.toByteData(format: ui.ImageByteFormat.png);
+      return byteData?.buffer.asUint8List();
+    } catch (e) {
+      return null;
+    } finally {
+      entry.remove();
+    }
+  }
+
+  Widget _buildReceiptWidget(Map<String, dynamic> info) {
+    final status = info['status'] as String? ?? '';
+    final amount = info['amount'] as num? ?? 0;
+    final amountStr = _formatCurrency(amount);
+    final startTime = info['startTime'] as DateTime?;
+    final dateStr = startTime != null ? DateFormat('HH:mm - dd/MM/yyyy').format(startTime) : '';
+
+    final IconData statusIcon;
+    final String statusStr;
+    final Color statusColor;
+    switch (status) {
+      case 'active':
+        statusIcon = Icons.check_circle_outline;
+        statusStr = 'Active';
+        statusColor = const Color(0xFF43A047);
+        break;
+      case 'expired':
+        statusIcon = Icons.check_circle_outline;
+        statusStr = 'Expired';
+        statusColor = const Color(0xFF757575);
+        break;
+      case 'cancelled':
+        statusIcon = Icons.cancel_outlined;
+        statusStr = 'Cancelled';
+        statusColor = const Color(0xFFE53935);
+        break;
+      default:
+        statusIcon = Icons.hourglass_empty;
+        statusStr = 'Pending';
+        statusColor = const Color(0xFFFB8C00);
+    }
+
+    const headerColor = Color(0xFF1565C0);
+
+    return Container(
+      width: 360,
+      color: const Color(0xFFEEF0F3),
+      padding: const EdgeInsets.fromLTRB(16, 24, 16, 24),
+      child: Container(
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(20),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.10),
+              blurRadius: 20,
+              offset: const Offset(0, 6),
+            ),
+          ],
+        ),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(20),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              // Header
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.fromLTRB(24, 32, 24, 28),
+                decoration: const BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [headerColor, Color(0xFF0D47A1)],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ),
+                ),
+                child: Column(
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(Icons.location_on, color: Colors.white.withValues(alpha: 0.7), size: 14),
+                        const SizedBox(width: 5),
+                        Text(
+                          'L O C A L I Z Y',
+                          style: TextStyle(
+                            color: Colors.white.withValues(alpha: 0.7),
+                            fontSize: 11,
+                            fontWeight: FontWeight.w700,
+                            letterSpacing: 3,
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 22),
+                    Container(
+                      padding: const EdgeInsets.all(14),
+                      decoration: BoxDecoration(
+                        color: Colors.white.withValues(alpha: 0.15),
+                        shape: BoxShape.circle,
+                        border: Border.all(color: Colors.white.withValues(alpha: 0.25), width: 1.5),
+                      ),
+                      child: const Icon(Icons.local_parking, color: Colors.white, size: 30),
+                    ),
+                    const SizedBox(height: 12),
+                    Text(
+                      'Parking Payment',
+                      style: TextStyle(color: Colors.white.withValues(alpha: 0.8), fontSize: 13),
+                    ),
+                    const SizedBox(height: 6),
+                    Text(
+                      amountStr,
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 32,
+                        fontWeight: FontWeight.bold,
+                        letterSpacing: -0.5,
+                      ),
+                    ),
+                    const SizedBox(height: 14),
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 7),
+                      decoration: BoxDecoration(
+                        color: Colors.white.withValues(alpha: 0.12),
+                        borderRadius: BorderRadius.circular(30),
+                        border: Border.all(color: Colors.white.withValues(alpha: 0.3)),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(statusIcon, color: Colors.white, size: 13),
+                          const SizedBox(width: 5),
+                          Text(
+                            statusStr,
+                            style: const TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.w600),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Text(
+                        info['licensePlate'] ?? '',
+                        style: const TextStyle(
+                          color: Color(0xFF1565C0),
+                          fontSize: 18,
+                          fontWeight: FontWeight.w800,
+                          letterSpacing: 2,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              // Dashed separator
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                child: Row(
+                  children: List.generate(
+                    32,
+                    (i) => Expanded(
+                      child: Container(
+                        height: 1.5,
+                        margin: const EdgeInsets.symmetric(horizontal: 1.5),
+                        color: i.isEven ? Colors.grey.shade200 : Colors.transparent,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              // Details
+              Padding(
+                padding: const EdgeInsets.fromLTRB(20, 0, 20, 8),
+                child: Column(
+                  children: [
+                    _buildReceiptDetailRow('Ticket Code', info['ticketCode'] ?? ''),
+                    _buildReceiptDetailRow('Date', dateStr),
+                    _buildReceiptDetailRow('Zone', info['zone'] ?? ''),
+                    _buildReceiptDetailRow('Duration', info['duration'] ?? ''),
+                    _buildReceiptDetailRow('Payment', info['paymentMethod'] ?? ''),
+                    _buildReceiptDetailRow('Status', statusStr, valueColor: statusColor),
+                  ],
+                ),
+              ),
+              // Footer
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.symmetric(vertical: 14),
+                decoration: BoxDecoration(
+                  color: const Color(0xFFF8F8F8),
+                  border: Border(top: BorderSide(color: Colors.grey.shade100)),
+                ),
+                child: Column(
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const Icon(Icons.verified_outlined, size: 12, color: headerColor),
+                        const SizedBox(width: 5),
+                        Text(
+                          'Official Receipt · Localizy',
+                          style: TextStyle(
+                            color: Colors.grey.shade600,
+                            fontSize: 11,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      DateFormat('dd/MM/yyyy HH:mm').format(DateTime.now()),
+                      style: TextStyle(color: Colors.grey.shade400, fontSize: 10),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildReceiptDetailRow(String label, String value, {Color? valueColor}) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 6),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          SizedBox(
+            width: 110,
+            child: Text(
+              label,
+              style: TextStyle(color: Colors.grey.shade500, fontSize: 12, fontWeight: FontWeight.w400),
+            ),
+          ),
+          Expanded(
+            child: Text(
+              value,
+              textAlign: TextAlign.right,
+              style: TextStyle(
+                color: valueColor ?? const Color(0xFF111111),
+                fontSize: 12,
+                fontWeight: FontWeight.w600,
+              ),
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+        ],
+      ),
     );
   }
 
