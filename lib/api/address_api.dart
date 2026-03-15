@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:flutter/foundation.dart';
 import 'package:localizy/api/main_api.dart';
 
 /// Model địa chỉ dùng cho map page (Business/SubAccount)
@@ -59,24 +60,19 @@ class AddressApi {
     throw Exception('Unexpected response format');
   }
 
-  // Lấy danh sách địa chỉ có id, code và toạ độ
+  // Lấy danh sách tọa độ tất cả địa chỉ (dùng cho bản đồ)
   static Future<List<AddressCoordinate>> fetchCoordinates() async {
-    final resp = await MainApi.instance.get('/api/Addresses',
+    final resp = await MainApi.instance.get('/api/addresses/coordinates',
       headers: {'accept': 'text/plain'},
     );
+    debugPrint('[AddressApi] fetchCoordinates status=${resp.statusCode}');
     if (resp.statusCode == 200) {
       final raw = json.decode(resp.body);
-      if (raw is List) {
-        return raw
-            .map((item) => AddressCoordinate(
-                  id: item['id']?.toString() ?? '',
-                  code: item['code'] ?? '',
-                  lat: (item['latitude'] ?? 0).toDouble(),
-                  lng: (item['longitude'] ?? 0).toDouble(),
-                ))
-            .where((a) => a.lat != 0 || a.lng != 0)
-            .toList();
-      }
+      final items = raw is List ? raw : (raw['items'] as List? ?? []);
+      return items
+          .map((item) => AddressCoordinate.fromJson(item as Map<String, dynamic>))
+          .where((a) => a.lat != 0 || a.lng != 0)
+          .toList();
     }
     throw Exception('Failed to fetch address coordinates: ${resp.statusCode}');
   }
@@ -140,12 +136,14 @@ class AddressApi {
     required String cityId,
   }) async {
     final body = <String, dynamic>{
+      'cityId': cityId,
       'name': name,
       'fullAddress': fullAddress,
       'latitude': latitude,
       'longitude': longitude,
-      'cityId': cityId,
-      'extraDocs': null,
+      'parkingAvailable': false,
+      'totalParkingSpots': 0,
+      'pricePerHour': 0,
     };
 
     final resp = await MainApi.instance.postJson('api/addresses', body);
@@ -241,6 +239,7 @@ class AddressCoordinate {
 /// Model cho kết quả tìm kiếm địa chỉ
 class AddressSearchResult {
   final String id;
+  final String code;
   final String name;
   final String address;
   final String type;
@@ -249,6 +248,7 @@ class AddressSearchResult {
 
   AddressSearchResult({
     required this.id,
+    required this.code,
     required this.name,
     required this.address,
     required this.type,
@@ -257,14 +257,14 @@ class AddressSearchResult {
   });
 
   factory AddressSearchResult.fromJson(Map<String, dynamic> json) {
-    final coords = json['coordinates'] ?? {};
     return AddressSearchResult(
       id: json['id'] ?? '',
+      code: json['code'] ?? '',
       name: json['name'] ?? '',
-      address: json['address'] ?? '',
+      address: json['fullAddress'] ?? json['address'] ?? '',
       type: json['type'] ?? '',
-      lat: (coords['lat'] ?? 0).toDouble(),
-      lng: (coords['lng'] ?? 0).toDouble(),
+      lat: (json['latitude'] ?? 0).toDouble(),
+      lng: (json['longitude'] ?? 0).toDouble(),
     );
   }
 }

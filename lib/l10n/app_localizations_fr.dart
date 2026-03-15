@@ -1297,4 +1297,116 @@ class AppLocalizationsFr extends AppLocalizations {
   @override
   String get submitVerificationRequest =>
       'Soumettre la demande de vérification';
+
+  @override
+  String get account => 'Compte';
+
+  @override
+  String get viewPaymentHistory => 'Voir votre historique de paiements';
+
+  @override
+  String get verifiedAddresses => 'Adresses vérifiées';
+
+  @override
+  String get manageVerifiedLocations => 'Gérer vos adresses vérifiées';
+
+  @override
+  String get accountSettingsTitle => 'Modifier le compte';
+
+  @override
+  String get updateProfileInfo => 'Mettre à jour vos informations';
+
+  @override
+  String get changeAppLanguage => 'Changer la langue de l\'application';
+
+  @override
+  String get helpAndSupport => 'Aide & Support';
+
+  @override
+  String get getHelpAndContact => 'Obtenir de l\'aide et nous contacter';
+
+  @override
+  String get privacyPolicy => 'Politique de confidentialité';
+
+  @override
+  String get readPrivacyPolicy => 'Lire notre politique de confidentialité';
+
+  @override
+  String featureComingSoon(String feature) {
+    return '$feature - Bientôt disponible';
+  }
+
+  @override
+  String get howCanWeHelp => 'Comment pouvons-nous vous aider ?';
+
+  @override
+  String get emailUs => 'Nous écrire';
+
+  @override
+  String get callUs => 'Nous appeler';
+
+  @override
+  String get liveChat => 'Chat en direct';
+
+  @override
+  String get available247 => 'Disponible 24h/24, 7j/7';
+
+  @override
+  String get respondWithin24h => 'Nous répondons généralement sous 24 heures';
+
+  @override
+  String get saveChanges => 'Enregistrer les modifications';
+
+  @override
+  String get profileUpdateSuccess => 'Profil mis à jour avec succès';
+
+  @override
+  String profileUpdateFailed(Object error) {
+    return 'Mise à jour échouée : $error';
+  }
+
+  @override
+  String profileLoadFailed(Object error) {
+    return 'Impossible de charger le profil : $error';
+  }
+
+  @override
+  String get avatarUpdated => 'Photo de profil mise à jour';
+
+  @override
+  String avatarUpdateFailed(Object error) {
+    return 'Impossible de mettre à jour la photo : $error';
+  }
+
+  @override
+  String cannotPickImage(Object error) {
+    return 'Impossible de choisir une image : $error';
+  }
+
+  @override
+  String get yourName => 'Votre nom';
+
+  @override
+  String get enterFullNameHint => 'Entrez votre nom complet';
+
+  @override
+  String get enterEmailHint => 'Entrez votre e-mail';
+
+  @override
+  String get enterPhoneHint => 'Entrez votre numéro de téléphone';
+
+  @override
+  String get roleAdmin => 'Administrateur';
+
+  @override
+  String get roleValidator => 'Validateur';
+
+  @override
+  String get roleBusiness => 'Entreprise';
+
+  @override
+  String get roleSubAccount => 'Sous-compte';
+
+  @override
+  String get roleMember => 'Membre';
 }

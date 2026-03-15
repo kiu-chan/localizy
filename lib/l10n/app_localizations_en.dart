@@ -1265,4 +1265,116 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get submitVerificationRequest => 'Submit Verification Request';
+
+  @override
+  String get account => 'Account';
+
+  @override
+  String get viewPaymentHistory => 'View your payment history';
+
+  @override
+  String get verifiedAddresses => 'Verified Addresses';
+
+  @override
+  String get manageVerifiedLocations => 'Manage verified locations';
+
+  @override
+  String get accountSettingsTitle => 'Update Account';
+
+  @override
+  String get updateProfileInfo => 'Update your profile information';
+
+  @override
+  String get changeAppLanguage => 'Change app language';
+
+  @override
+  String get helpAndSupport => 'Help & Support';
+
+  @override
+  String get getHelpAndContact => 'Get help and contact us';
+
+  @override
+  String get privacyPolicy => 'Privacy Policy';
+
+  @override
+  String get readPrivacyPolicy => 'Read our privacy policy';
+
+  @override
+  String featureComingSoon(String feature) {
+    return '$feature - Coming soon';
+  }
+
+  @override
+  String get howCanWeHelp => 'How can we help you?';
+
+  @override
+  String get emailUs => 'Email Us';
+
+  @override
+  String get callUs => 'Call Us';
+
+  @override
+  String get liveChat => 'Live Chat';
+
+  @override
+  String get available247 => 'Available 24/7';
+
+  @override
+  String get respondWithin24h => 'We typically respond within 24 hours';
+
+  @override
+  String get saveChanges => 'Save Changes';
+
+  @override
+  String get profileUpdateSuccess => 'Profile updated successfully';
+
+  @override
+  String profileUpdateFailed(Object error) {
+    return 'Update failed: $error';
+  }
+
+  @override
+  String profileLoadFailed(Object error) {
+    return 'Could not load profile: $error';
+  }
+
+  @override
+  String get avatarUpdated => 'Avatar updated successfully';
+
+  @override
+  String avatarUpdateFailed(Object error) {
+    return 'Could not update avatar: $error';
+  }
+
+  @override
+  String cannotPickImage(Object error) {
+    return 'Could not pick image: $error';
+  }
+
+  @override
+  String get yourName => 'Your name';
+
+  @override
+  String get enterFullNameHint => 'Enter your full name';
+
+  @override
+  String get enterEmailHint => 'Enter your email';
+
+  @override
+  String get enterPhoneHint => 'Enter phone number';
+
+  @override
+  String get roleAdmin => 'Administrator';
+
+  @override
+  String get roleValidator => 'Validator';
+
+  @override
+  String get roleBusiness => 'Business';
+
+  @override
+  String get roleSubAccount => 'Sub Account';
+
+  @override
+  String get roleMember => 'Member';
 }

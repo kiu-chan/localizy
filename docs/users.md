@@ -10,6 +10,7 @@
   "phone": "0901234567",
   "email": "user@example.com",
   "documents": "[\"doc1.pdf\", \"doc2.pdf\"]",
+  "avatarUrl": "/uploads/avatars/abc123.jpg",
   "role": "SubAccount",
   "parentBusinessId": "a1b2c3d4-5717-4562-b3fc-2c963f66afa6",
   "createdAt": "2024-01-10T10:30:00Z",
@@ -18,6 +19,7 @@
 ```
 
 > **Lưu ý:** `parentBusinessId` chỉ có giá trị khi `role = "SubAccount"`. Với các role khác, trường này là `null`.
+> **Lưu ý:** `avatarUrl` là `null` nếu user chưa upload ảnh đại diện.
 
 ---
 
@@ -202,7 +204,34 @@ DELETE /api/users/{id}
 
 ---
 
-## 9. Đổi mật khẩu
+## 9. Upload ảnh đại diện
+
+```http
+POST /api/users/{id}/avatar
+Content-Type: multipart/form-data
+```
+
+**Authorization:** Authenticated
+
+> **Lưu ý:** User chỉ có thể upload ảnh của chính mình. Admin có thể upload cho bất kỳ user nào. Ảnh cũ sẽ bị xóa tự động khi upload ảnh mới.
+
+**Form Data:**
+- `avatar` (file, bắt buộc): File ảnh đại diện
+
+**Giới hạn:**
+- Định dạng: `.jpg`, `.jpeg`, `.png`, `.gif`, `.webp`
+- Dung lượng tối đa: **5MB**
+
+**Response:** `200 OK` - User object (với `avatarUrl` đã cập nhật)
+
+**Errors:**
+- `400` - File không hợp lệ (sai định dạng, vượt 5MB, hoặc không có file)
+- `403` - Không có quyền upload ảnh cho user khác
+- `404` - User not found
+
+---
+
+## 10. Đổi mật khẩu
 
 ```http
 POST /api/users/{id}/change-password

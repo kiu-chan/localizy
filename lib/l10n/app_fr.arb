@@ -469,5 +469,55 @@
   "cityLabel": "Ville",
   "fullAddressSummary": "Adresse complète",
   "cityNameSummary": "Ville",
-  "submitVerificationRequest": "Soumettre la demande de vérification"
+  "submitVerificationRequest": "Soumettre la demande de vérification",
+
+  "account": "Compte",
+  "viewPaymentHistory": "Voir votre historique de paiements",
+  "verifiedAddresses": "Adresses vérifiées",
+  "manageVerifiedLocations": "Gérer vos adresses vérifiées",
+  "accountSettingsTitle": "Modifier le compte",
+  "updateProfileInfo": "Mettre à jour vos informations",
+  "changeAppLanguage": "Changer la langue de l'application",
+  "helpAndSupport": "Aide & Support",
+  "getHelpAndContact": "Obtenir de l'aide et nous contacter",
+  "privacyPolicy": "Politique de confidentialité",
+  "readPrivacyPolicy": "Lire notre politique de confidentialité",
+  "featureComingSoon": "{feature} - Bientôt disponible",
+  "@featureComingSoon": {
+    "placeholders": { "feature": {"type": "String"} }
+  },
+  "howCanWeHelp": "Comment pouvons-nous vous aider ?",
+  "emailUs": "Nous écrire",
+  "callUs": "Nous appeler",
+  "liveChat": "Chat en direct",
+  "available247": "Disponible 24h/24, 7j/7",
+  "respondWithin24h": "Nous répondons généralement sous 24 heures",
+  "saveChanges": "Enregistrer les modifications",
+  "profileUpdateSuccess": "Profil mis à jour avec succès",
+  "profileUpdateFailed": "Mise à jour échouée : {error}",
+  "@profileUpdateFailed": {
+    "placeholders": { "error": {"type": "Object"} }
+  },
+  "profileLoadFailed": "Impossible de charger le profil : {error}",
+  "@profileLoadFailed": {
+    "placeholders": { "error": {"type": "Object"} }
+  },
+  "avatarUpdated": "Photo de profil mise à jour",
+  "avatarUpdateFailed": "Impossible de mettre à jour la photo : {error}",
+  "@avatarUpdateFailed": {
+    "placeholders": { "error": {"type": "Object"} }
+  },
+  "cannotPickImage": "Impossible de choisir une image : {error}",
+  "@cannotPickImage": {
+    "placeholders": { "error": {"type": "Object"} }
+  },
+  "yourName": "Votre nom",
+  "enterFullNameHint": "Entrez votre nom complet",
+  "enterEmailHint": "Entrez votre e-mail",
+  "enterPhoneHint": "Entrez votre numéro de téléphone",
+  "roleAdmin": "Administrateur",
+  "roleValidator": "Validateur",
+  "roleBusiness": "Entreprise",
+  "roleSubAccount": "Sous-compte",
+  "roleMember": "Membre"
 }

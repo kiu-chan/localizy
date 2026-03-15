@@ -6,7 +6,7 @@ import 'package:localizy/api/main_api.dart';
 
 class UserProfileService {
   /// Fetch current user profile using stored userId.
-  /// Returns parsed JSON Map.
+  /// Returns parsed JSON Map with fields: id, name, email, phone, avatarUrl, role, dateOfBirth, etc.
   static Future<Map<String, dynamic>> fetchCurrentUserProfile() async {
     final userId = await AuthService.getStoredUserId();
     if (userId == null || userId.isEmpty) {
@@ -19,58 +19,31 @@ class UserProfileService {
     throw Exception('Unexpected response from user profile API');
   }
 
-  /// Update profile (multipart/form-data). All fields optional.
-  /// avatar: File (dart:io) - include only on mobile/native platforms.
-  /// Returns updated user object (parsed Map).
+  /// Update profile via JSON body. All fields optional.
+  /// PUT /api/users/{id}
+  /// Fields: name, dateOfBirth, phone, email
   static Future<Map<String, dynamic>> updateProfile({
     String? userId,
-    String? fullName,
-    String? email,
+    String? name,
+    String? dateOfBirth,
     String? phone,
-    String? location,
-    bool? isActive,
-    String? role,
-    File? avatar,
+    String? email,
   }) async {
     userId ??= await AuthService.getStoredUserId();
     if (userId == null || userId.isEmpty) {
       throw Exception('No stored user id. Cannot update profile.');
     }
 
-    // Build URL correctly (avoid double slash)
-    final base = MainApi.instance.baseUrl.endsWith('/')
-        ? MainApi.instance.baseUrl.substring(0, MainApi.instance.baseUrl.length - 1)
-        : MainApi.instance.baseUrl;
-    final uri = Uri.parse('$base/api/users/$userId');
+    final body = <String, dynamic>{};
+    if (name != null) body['name'] = name;
+    if (dateOfBirth != null) body['dateOfBirth'] = dateOfBirth;
+    if (phone != null) body['phone'] = phone;
+    if (email != null) body['email'] = email;
 
-    final req = http.MultipartRequest('PUT', uri);
-
-    if (fullName != null) req.fields['fullName'] = fullName;
-    if (email != null) req.fields['email'] = email;
-    if (phone != null) req.fields['phone'] = phone;
-    if (location != null) req.fields['location'] = location;
-    if (isActive != null) req.fields['isActive'] = isActive.toString();
-    if (role != null) req.fields['role'] = role;
-
-    if (avatar != null) {
-      // From path (mobile). Ensure file exists.
-      if (await avatar.exists()) {
-        final multipartFile = await http.MultipartFile.fromPath('avatar', avatar.path);
-        req.files.add(multipartFile);
-      } else {
-        throw Exception('Avatar file does not exist: ${avatar.path}');
-      }
-    }
-
-    // Attach Authorization header
-    await MainApi.instance.attachAuthToMultipart(req);
-
-    final streamed = await req.send();
-    final resp = await http.Response.fromStream(streamed);
+    final resp = await MainApi.instance.putJson('api/users/$userId', body);
 
     if (resp.statusCode >= 200 && resp.statusCode < 300) {
       final Map<String, dynamic> data = json.decode(resp.body);
-      // Optionally update stored user payload if API returns useful fields (e.g. token/name)
       try {
         await AuthService.updateStoredUserPayload(data);
       } catch (_) {}
@@ -79,8 +52,55 @@ class UserProfileService {
       String message = 'Failed to update profile: ${resp.statusCode}';
       try {
         final body = json.decode(resp.body);
-        if (body is Map && body['message'] != null) message = body['message'].toString();
-        else if (body is String && body.isNotEmpty) message = body;
+        if (body is Map && body['message'] != null) { message = body['message'].toString(); }
+        else if (body is String && body.isNotEmpty) { message = body; }
+      } catch (_) {}
+      throw Exception(message);
+    }
+  }
+
+  /// Upload avatar via multipart POST.
+  /// POST /api/users/{id}/avatar
+  /// Returns updated user object (with avatarUrl updated).
+  static Future<Map<String, dynamic>> uploadAvatar({
+    String? userId,
+    required File avatarFile,
+  }) async {
+    userId ??= await AuthService.getStoredUserId();
+    if (userId == null || userId.isEmpty) {
+      throw Exception('No stored user id. Cannot upload avatar.');
+    }
+
+    final base = MainApi.instance.baseUrl.endsWith('/')
+        ? MainApi.instance.baseUrl.substring(0, MainApi.instance.baseUrl.length - 1)
+        : MainApi.instance.baseUrl;
+    final uri = Uri.parse('$base/api/users/$userId/avatar');
+
+    final req = http.MultipartRequest('POST', uri);
+
+    if (!await avatarFile.exists()) {
+      throw Exception('Avatar file does not exist: ${avatarFile.path}');
+    }
+    final multipartFile = await http.MultipartFile.fromPath('avatar', avatarFile.path);
+    req.files.add(multipartFile);
+
+    await MainApi.instance.attachAuthToMultipart(req);
+
+    final streamed = await req.send();
+    final resp = await http.Response.fromStream(streamed);
+
+    if (resp.statusCode >= 200 && resp.statusCode < 300) {
+      final Map<String, dynamic> data = json.decode(resp.body);
+      try {
+        await AuthService.updateStoredUserPayload(data);
+      } catch (_) {}
+      return data;
+    } else {
+      String message = 'Failed to upload avatar: ${resp.statusCode}';
+      try {
+        final body = json.decode(resp.body);
+        if (body is Map && body['message'] != null) { message = body['message'].toString(); }
+        else if (body is String && body.isNotEmpty) { message = body; }
       } catch (_) {}
       throw Exception(message);
     }

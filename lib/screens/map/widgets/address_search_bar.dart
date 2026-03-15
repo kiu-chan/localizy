@@ -97,6 +97,7 @@ class _AddressSearchBarState extends State<AddressSearchBar> {
     widget.onAddressSelected(
       AddressResult(
         id: address.id,
+        code: address.code,
         name: address.name,
         address: address.address,
         type: address.type,
@@ -352,68 +353,87 @@ class _AddressSearchBarState extends State<AddressSearchBar> {
       itemBuilder: (context, index) {
         final result = _searchResults[index];
         final typeColor = _getTypeColor(result.type);
-        
-        return ListTile(
+
+        final hasName = result.name.isNotEmpty;
+        final hasAddress = result.address.isNotEmpty;
+        final hasCode = result.code.isNotEmpty;
+        final showCoords = !hasName || !hasAddress || !hasCode;
+        final coordText =
+            '${result.lat.toStringAsFixed(6)}, ${result.lng.toStringAsFixed(6)}';
+
+        return InkWell(
           onTap: () => _selectAddress(result),
-          leading: Container(
-            width: 44,
-            height: 44,
-            decoration: BoxDecoration(
-              color: typeColor.withOpacity(0.1),
-              borderRadius: BorderRadius.circular(10),
-            ),
-            child: Icon(
-              _getTypeIcon(result.type),
-              color: typeColor,
-              size: 22,
-            ),
-          ),
-          title: Text(
-            result.name,
-            style: const TextStyle(
-              fontWeight: FontWeight.w600,
-              fontSize: 15,
-            ),
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-          ),
-          subtitle: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const SizedBox(height: 2),
-              Text(
-                result.address,
-                style: TextStyle(
-                  fontSize: 13,
-                  color: Colors.grey.shade600,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Container(
+                  width: 44,
+                  height: 44,
+                  decoration: BoxDecoration(
+                    color: typeColor.withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: Icon(_getTypeIcon(result.type), color: typeColor, size: 22),
                 ),
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-              ),
-              const SizedBox(height: 4),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                decoration: BoxDecoration(
-                  color: typeColor.withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(4),
-                ),
-                child: Text(
-                  result.type,
-                  style: TextStyle(
-                    fontSize: 10,
-                    color: typeColor,
-                    fontWeight: FontWeight.w500,
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      if (hasName)
+                        Text(
+                          result.name,
+                          style: const TextStyle(
+                            fontWeight: FontWeight.w600,
+                            fontSize: 15,
+                          ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      if (hasAddress) ...[
+                        if (hasName) const SizedBox(height: 2),
+                        Text(
+                          result.address,
+                          style: TextStyle(fontSize: 13, color: Colors.grey.shade600),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ],
+                      if (hasCode) ...[
+                        if (hasName || hasAddress) const SizedBox(height: 4),
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                          decoration: BoxDecoration(
+                            color: typeColor.withValues(alpha: 0.1),
+                            borderRadius: BorderRadius.circular(4),
+                          ),
+                          child: Text(
+                            result.code,
+                            style: TextStyle(
+                              fontSize: 11,
+                              color: typeColor,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ),
+                      ],
+                      if (showCoords) ...[
+                        if (hasName || hasAddress || hasCode) const SizedBox(height: 2),
+                        Text(
+                          coordText,
+                          style: TextStyle(fontSize: 11, color: Colors.grey.shade400),
+                        ),
+                      ],
+                    ],
                   ),
                 ),
-              ),
-            ],
+                const SizedBox(width: 8),
+                Icon(Icons.arrow_forward_ios, size: 14, color: Colors.grey.shade400),
+              ],
+            ),
           ),
-          trailing: Icon(
-            Icons.arrow_forward_ios,
-            size: 14,
-            color: Colors.grey.shade400,
-          ),
-          contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
         );
       },
     );
@@ -423,6 +443,7 @@ class _AddressSearchBarState extends State<AddressSearchBar> {
 /// Model kết quả địa chỉ được chọn
 class AddressResult {
   final String id;
+  final String code;
   final String name;
   final String address;
   final String type;
@@ -431,6 +452,7 @@ class AddressResult {
 
   AddressResult({
     required this.id,
+    required this.code,
     required this.name,
     required this.address,
     required this.type,
@@ -438,7 +460,5 @@ class AddressResult {
     required this.lng,
   });
 
-  // Getters để tương thích với code cũ
-  String get code => id;
   bool get verified => true;
 }

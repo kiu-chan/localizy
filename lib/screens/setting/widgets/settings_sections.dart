@@ -64,7 +64,7 @@ class _SettingsSectionsState extends State<SettingsSections> {
           const SizedBox(height: 8),
 
           // Account Section
-          _buildSectionTitle('Account'),
+          _buildSectionTitle(widget.l10n.account),
           const SizedBox(height: 12),
           _buildSettingsCard(
             context,
@@ -72,8 +72,8 @@ class _SettingsSectionsState extends State<SettingsSections> {
               _buildSettingItem(
                 context,
                 icon: Icons.history_rounded,
-                title: 'Transaction History',
-                subtitle: 'View your payment history',
+                title: widget.l10n.transactionHistory,
+                subtitle: widget.l10n.viewPaymentHistory,
                 color: const Color(0xFF4285F4),
                 onTap: () {
                   Navigator.push(
@@ -88,8 +88,8 @@ class _SettingsSectionsState extends State<SettingsSections> {
               _buildSettingItem(
                 context,
                 icon: Icons.verified_outlined,
-                title: 'Verified Addresses',
-                subtitle: 'Manage verified locations',
+                title: widget.l10n.verifiedAddresses,
+                subtitle: widget.l10n.manageVerifiedLocations,
                 color: const Color(0xFF4285F4),
                 onTap: () {
                   Navigator.push(
@@ -104,8 +104,8 @@ class _SettingsSectionsState extends State<SettingsSections> {
               _buildSettingItem(
                 context,
                 icon: Icons.person_outline_rounded,
-                title: 'Account Settings',
-                subtitle: 'Update your profile information',
+                title: widget.l10n.accountSettingsTitle,
+                subtitle: widget.l10n.updateProfileInfo,
                 color: const Color(0xFF4285F4),
                 onTap: () {
                   Navigator.push(
@@ -122,7 +122,7 @@ class _SettingsSectionsState extends State<SettingsSections> {
           const SizedBox(height: 24),
 
           // Preferences Section
-          _buildSectionTitle('Preferences'),
+          _buildSectionTitle(widget.l10n.preferences),
           const SizedBox(height: 12),
           _buildSettingsCard(
             context,
@@ -131,10 +131,10 @@ class _SettingsSectionsState extends State<SettingsSections> {
             ],
           ),
 
-          const SizedBox(height:  24),
+          const SizedBox(height: 24),
 
           // Support Section
-          _buildSectionTitle('Support & About'),
+          _buildSectionTitle(widget.l10n.supportAndAbout),
           const SizedBox(height: 12),
           _buildSettingsCard(
             context,
@@ -142,10 +142,10 @@ class _SettingsSectionsState extends State<SettingsSections> {
               _buildSettingItem(
                 context,
                 icon: Icons.help_outline_rounded,
-                title: 'Help & Support',
-                subtitle: 'Get help and contact us',
+                title: widget.l10n.helpAndSupport,
+                subtitle: widget.l10n.getHelpAndContact,
                 color: const Color(0xFF4285F4),
-                onTap:  () {
+                onTap: () {
                   _showSupportDialog(context);
                 },
               ),
@@ -153,18 +153,18 @@ class _SettingsSectionsState extends State<SettingsSections> {
               _buildSettingItem(
                 context,
                 icon: Icons.privacy_tip_outlined,
-                title: 'Privacy Policy',
-                subtitle: 'Read our privacy policy',
+                title: widget.l10n.privacyPolicy,
+                subtitle: widget.l10n.readPrivacyPolicy,
                 color: const Color(0xFF4285F4),
                 onTap: () {
-                  _showComingSoon(context, 'Privacy Policy');
+                  _showComingSoon(context, widget.l10n.privacyPolicy);
                 },
               ),
               _buildDivider(),
               _buildSettingItem(
                 context,
                 icon: Icons.info_outline_rounded,
-                title: 'About App',
+                title: widget.l10n.about,
                 subtitle: 'Version $_appVersion${_buildNumber.isNotEmpty ? ' ($_buildNumber)' : ''}',
                 color: const Color(0xFF4285F4),
                 onTap: () {
@@ -312,9 +312,9 @@ class _SettingsSectionsState extends State<SettingsSections> {
                   ),
                 ),
                 const SizedBox(height: 2),
-                const Text(
-                  'Change app language',
-                  style: TextStyle(
+                Text(
+                  widget.l10n.changeAppLanguage,
+                  style: const TextStyle(
                     fontSize: 12,
                     color: Color(0xFF9AA0B4),
                   ),
@@ -460,42 +460,43 @@ class _SettingsSectionsState extends State<SettingsSections> {
   }
 
   void _showSupportDialog(BuildContext context) {
+    final l10n = widget.l10n;
     showDialog(
       context: context,
-      builder:  (context) => AlertDialog(
+      builder: (context) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         title: Row(
           children: [
             const Icon(Icons.support_agent, color: Color(0xFF4285F4)),
             const SizedBox(width: 12),
-            const Text('Help & Support'),
+            Text(l10n.helpAndSupport),
           ],
         ),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
-              'How can we help you? ',
-              style: TextStyle(fontSize: 16, fontWeight:  FontWeight.w600),
+            Text(
+              l10n.howCanWeHelp,
+              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
             ),
             const SizedBox(height: 16),
-            _buildSupportOption(Icons.email, 'Email Us', 'support@localizy.com'),
+            _buildSupportOption(Icons.email, l10n.emailUs, 'support@localizy.com'),
             const SizedBox(height: 12),
-            _buildSupportOption(Icons.phone, 'Call Us', '+84 123 456 789'),
+            _buildSupportOption(Icons.phone, l10n.callUs, '+84 123 456 789'),
             const SizedBox(height: 12),
-            _buildSupportOption(Icons.chat, 'Live Chat', 'Available 24/7'),
+            _buildSupportOption(Icons.chat, l10n.liveChat, l10n.available247),
             const SizedBox(height: 16),
-            const Text(
-              'We typically respond within 24 hours',
-              style: TextStyle(fontSize: 12, color: Colors.grey),
+            Text(
+              l10n.respondWithin24h,
+              style: const TextStyle(fontSize: 12, color: Colors.grey),
             ),
           ],
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Close'),
+            child: Text(l10n.close),
           ),
         ],
       ),
@@ -527,13 +528,14 @@ class _SettingsSectionsState extends State<SettingsSections> {
   }
 
   void _showComingSoon(BuildContext context, String feature) {
+    final l10n = widget.l10n;
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Row(
           children: [
             const Icon(Icons.info_outline, color: Colors.white),
             const SizedBox(width: 12),
-            Expanded(child: Text('$feature - Coming soon')),
+            Expanded(child: Text(l10n.featureComingSoon(feature))),
           ],
         ),
         backgroundColor: const Color(0xFF4285F4),

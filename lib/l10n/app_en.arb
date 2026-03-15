@@ -469,5 +469,55 @@
   "cityLabel": "City",
   "fullAddressSummary": "Full Address",
   "cityNameSummary": "City",
-  "submitVerificationRequest": "Submit Verification Request"
+  "submitVerificationRequest": "Submit Verification Request",
+
+  "account": "Account",
+  "viewPaymentHistory": "View your payment history",
+  "verifiedAddresses": "Verified Addresses",
+  "manageVerifiedLocations": "Manage verified locations",
+  "accountSettingsTitle": "Update Account",
+  "updateProfileInfo": "Update your profile information",
+  "changeAppLanguage": "Change app language",
+  "helpAndSupport": "Help & Support",
+  "getHelpAndContact": "Get help and contact us",
+  "privacyPolicy": "Privacy Policy",
+  "readPrivacyPolicy": "Read our privacy policy",
+  "featureComingSoon": "{feature} - Coming soon",
+  "@featureComingSoon": {
+    "placeholders": { "feature": {"type": "String"} }
+  },
+  "howCanWeHelp": "How can we help you?",
+  "emailUs": "Email Us",
+  "callUs": "Call Us",
+  "liveChat": "Live Chat",
+  "available247": "Available 24/7",
+  "respondWithin24h": "We typically respond within 24 hours",
+  "saveChanges": "Save Changes",
+  "profileUpdateSuccess": "Profile updated successfully",
+  "profileUpdateFailed": "Update failed: {error}",
+  "@profileUpdateFailed": {
+    "placeholders": { "error": {"type": "Object"} }
+  },
+  "profileLoadFailed": "Could not load profile: {error}",
+  "@profileLoadFailed": {
+    "placeholders": { "error": {"type": "Object"} }
+  },
+  "avatarUpdated": "Avatar updated successfully",
+  "avatarUpdateFailed": "Could not update avatar: {error}",
+  "@avatarUpdateFailed": {
+    "placeholders": { "error": {"type": "Object"} }
+  },
+  "cannotPickImage": "Could not pick image: {error}",
+  "@cannotPickImage": {
+    "placeholders": { "error": {"type": "Object"} }
+  },
+  "yourName": "Your name",
+  "enterFullNameHint": "Enter your full name",
+  "enterEmailHint": "Enter your email",
+  "enterPhoneHint": "Enter phone number",
+  "roleAdmin": "Administrator",
+  "roleValidator": "Validator",
+  "roleBusiness": "Business",
+  "roleSubAccount": "Sub Account",
+  "roleMember": "Member"
 }

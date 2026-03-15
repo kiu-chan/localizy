@@ -337,6 +337,7 @@ class _AddressDetailBottomSheetState extends State<AddressDetailBottomSheet> {
                   widget.onGetDirections?.call(
                     AddressCoordinate(
                       id: detail.id,
+                      code: detail.code,
                       lat: detail.lat,
                       lng: detail.lng,
                     ),

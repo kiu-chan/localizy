@@ -4,12 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:localizy/api/user_profile_service.dart';
 import 'package:localizy/api/main_api.dart';
+import 'package:localizy/l10n/app_localizations.dart';
 
-/// Note:
-/// - This page uses the backend user profile API which supports:
-///   fullName, email, phone, location, avatar (multipart PUT /api/users/{id})
-/// - Removed UI elements that the API does not provide (date of birth, delete account, password change).
-/// - To enable avatar picking, add `image_picker` to your pubspec.yaml and configure platform permissions.
 class AccountSettingsPage extends StatefulWidget {
   const AccountSettingsPage({super.key});
 
@@ -21,7 +17,6 @@ class _AccountSettingsPageState extends State<AccountSettingsPage> {
   final _nameController = TextEditingController();
   final _emailController = TextEditingController();
   final _phoneController = TextEditingController();
-  final _addressController = TextEditingController();
 
   String? _avatarUrl;
   File? _avatarFile;
@@ -39,34 +34,26 @@ class _AccountSettingsPageState extends State<AccountSettingsPage> {
     _nameController.dispose();
     _emailController.dispose();
     _phoneController.dispose();
-    _addressController.dispose();
     super.dispose();
   }
 
   Future<void> _loadProfile() async {
-    setState(() {
-      _loading = true;
-    });
-
+    setState(() => _loading = true);
     try {
       final profile = await UserProfileService.fetchCurrentUserProfile();
       if (!mounted) return;
       setState(() {
-        _nameController.text = profile['fullName']?.toString() ?? '';
+        _nameController.text = profile['name']?.toString() ?? '';
         _emailController.text = profile['email']?.toString() ?? '';
         _phoneController.text = profile['phone']?.toString() ?? '';
-        _addressController.text = profile['location']?.toString() ?? '';
-        _avatarUrl = _toAvatarFullUrl(profile['avatar']?.toString());
-        _avatarFile = null; // clear any temporary selected file
+        _avatarUrl = _toFullUrl(profile['avatarUrl']?.toString());
+        _avatarFile = null;
       });
     } catch (e) {
-      // keep defaults if fetch fails
       if (mounted) {
+        final l10n = AppLocalizations.of(context)!;
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Could not load profile: $e'),
-            backgroundColor: Colors.red,
-          ),
+          SnackBar(content: Text(l10n.profileLoadFailed(e)), backgroundColor: Colors.red),
         );
       }
     } finally {
@@ -74,16 +61,17 @@ class _AccountSettingsPageState extends State<AccountSettingsPage> {
     }
   }
 
-  String? _toAvatarFullUrl(String? avatarPath) {
-    if (avatarPath == null || avatarPath.isEmpty) return null;
-    if (avatarPath.toLowerCase().startsWith('http')) return avatarPath;
+  String? _toFullUrl(String? path) {
+    if (path == null || path.isEmpty) return null;
+    if (path.toLowerCase().startsWith('http')) return path;
     final base = MainApi.instance.baseUrl.endsWith('/')
         ? MainApi.instance.baseUrl.substring(0, MainApi.instance.baseUrl.length - 1)
         : MainApi.instance.baseUrl;
-    return '$base$avatarPath';
+    return '$base$path';
   }
 
   Future<void> _pickAvatar() async {
+    final l10n = AppLocalizations.of(context)!;
     try {
       final picker = ImagePicker();
       final XFile? picked = await picker.pickImage(
@@ -95,45 +83,40 @@ class _AccountSettingsPageState extends State<AccountSettingsPage> {
       if (picked != null && mounted) {
         setState(() {
           _avatarFile = File(picked.path);
-          // Show local preview immediately
-          _avatarUrl = _avatarFile!.path;
         });
       }
     } catch (e) {
-      // If image_picker isn't configured or user denied permission, show a message
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Could not pick image: $e'), backgroundColor: Colors.red),
+          SnackBar(content: Text(l10n.cannotPickImage(e)), backgroundColor: Colors.red),
         );
       }
     }
   }
 
   Future<void> _saveProfile() async {
-    setState(() {
-      _saving = true;
-    });
-
+    final l10n = AppLocalizations.of(context)!;
+    setState(() => _saving = true);
     try {
+      if (_avatarFile != null) {
+        await UserProfileService.uploadAvatar(avatarFile: _avatarFile!);
+      }
+
       await UserProfileService.updateProfile(
-        fullName: _nameController.text.trim().isEmpty ? null : _nameController.text.trim(),
+        name: _nameController.text.trim().isEmpty ? null : _nameController.text.trim(),
         email: _emailController.text.trim().isEmpty ? null : _emailController.text.trim(),
         phone: _phoneController.text.trim().isEmpty ? null : _phoneController.text.trim(),
-        location: _addressController.text.trim().isEmpty ? null : _addressController.text.trim(),
-        avatar: _avatarFile,
       );
 
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: const Text('Profile updated'), backgroundColor: Colors.green),
+        SnackBar(content: Text(l10n.profileUpdateSuccess), backgroundColor: Colors.green),
       );
-
-      // refresh displayed values from API response (or reload)
       await _loadProfile();
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to update profile: $e'), backgroundColor: Colors.red),
+          SnackBar(content: Text(l10n.profileUpdateFailed(e)), backgroundColor: Colors.red),
         );
       }
     } finally {
@@ -142,16 +125,13 @@ class _AccountSettingsPageState extends State<AccountSettingsPage> {
   }
 
   Widget _avatarWidget() {
-    final radius = 50.0;
     ImageProvider? imageProvider;
     if (_avatarFile != null) {
       imageProvider = FileImage(_avatarFile!);
     } else if (_avatarUrl != null && _avatarUrl!.isNotEmpty) {
-      // If _avatarUrl holds a local path (from picking) it will be shown by FileImage above.
       if (_avatarUrl!.toLowerCase().startsWith('http')) {
         imageProvider = NetworkImage(_avatarUrl!);
       } else {
-        // local file path string (when previewing picked image), wrap as FileImage
         try {
           imageProvider = FileImage(File(_avatarUrl!));
         } catch (_) {
@@ -169,18 +149,18 @@ class _AccountSettingsPageState extends State<AccountSettingsPage> {
             shape: BoxShape.circle,
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.15),
+                color: Colors.black.withValues(alpha: 0.15),
                 blurRadius: 10,
                 offset: const Offset(0, 5),
               ),
             ],
           ),
           child: CircleAvatar(
-            radius: radius,
-            backgroundColor: Colors.green.shade100,
+            radius: 50,
+            backgroundColor: const Color(0xFFE3F0FF),
             backgroundImage: imageProvider,
             child: imageProvider == null
-                ? Icon(Icons.person, size: 50, color: Colors.green.shade700)
+                ? const Icon(Icons.person, size: 50, color: Color(0xFF4285F4))
                 : null,
           ),
         ),
@@ -192,7 +172,7 @@ class _AccountSettingsPageState extends State<AccountSettingsPage> {
             child: Container(
               padding: const EdgeInsets.all(6),
               decoration: BoxDecoration(
-                color: Colors.blue.shade600,
+                color: const Color(0xFF4285F4),
                 shape: BoxShape.circle,
                 border: Border.all(color: Colors.white, width: 2),
               ),
@@ -206,14 +186,13 @@ class _AccountSettingsPageState extends State<AccountSettingsPage> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     return Scaffold(
-      backgroundColor: Colors.grey.shade50,
+      backgroundColor: const Color(0xFFF5F7FA),
       appBar: AppBar(
-        title: const Text(
-          'Account Settings',
-          style: TextStyle(fontWeight: FontWeight.bold),
-        ),
-        backgroundColor: Colors.green.shade700,
+        title: Text(l10n.accountSettingsTitle, style: const TextStyle(fontWeight: FontWeight.bold)),
+        backgroundColor: const Color(0xFF1565C0),
         foregroundColor: Colors.white,
         elevation: 0,
         actions: [
@@ -225,7 +204,10 @@ class _AccountSettingsPageState extends State<AccountSettingsPage> {
                     height: 20,
                     child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
                   )
-                : const Text('Save', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                : Text(
+                    l10n.save,
+                    style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                  ),
           ),
         ],
       ),
@@ -234,11 +216,15 @@ class _AccountSettingsPageState extends State<AccountSettingsPage> {
           : SingleChildScrollView(
               child: Column(
                 children: [
-                  // Header with avatar
+                  // Header
                   Container(
                     width: double.infinity,
                     decoration: const BoxDecoration(
-                      // keep same look as other pages
+                      gradient: LinearGradient(
+                        colors: [Color(0xFF1565C0), Color(0xFF4285F4)],
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                      ),
                       borderRadius: BorderRadius.only(
                         bottomLeft: Radius.circular(30),
                         bottomRight: Radius.circular(30),
@@ -250,77 +236,81 @@ class _AccountSettingsPageState extends State<AccountSettingsPage> {
                         _avatarWidget(),
                         const SizedBox(height: 12),
                         Text(
-                          _nameController.text.isNotEmpty ? _nameController.text : 'Your name',
-                          style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+                          _nameController.text.isNotEmpty ? _nameController.text : l10n.yourName,
+                          style: const TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                          ),
                         ),
                         const SizedBox(height: 4),
-                        Text(
-                          _emailController.text.isNotEmpty ? _emailController.text : 'your@email.com',
-                          style: TextStyle(fontSize: 14, color: Colors.grey.shade600),
-                        ),
+                        if (_emailController.text.isNotEmpty)
+                          Text(
+                            _emailController.text,
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: Colors.white.withValues(alpha: 0.85),
+                            ),
+                          ),
                       ],
                     ),
                   ),
 
-                  const SizedBox(height: 20),
+                  const SizedBox(height: 24),
 
-                  // Form
+                  // Form fields
                   Padding(
-                    padding: const EdgeInsets.all(16),
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
                     child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
+                        _buildLabel(l10n.fullName),
+                        const SizedBox(height: 6),
                         TextField(
                           controller: _nameController,
-                          decoration: InputDecoration(
-                            labelText: 'Full Name',
-                            border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-                          ),
+                          decoration: _inputDecoration(l10n.enterFullNameHint, Icons.person_outline),
                         ),
-                        const SizedBox(height: 12),
+                        const SizedBox(height: 16),
+
+                        _buildLabel(l10n.email),
+                        const SizedBox(height: 6),
                         TextField(
                           controller: _emailController,
                           keyboardType: TextInputType.emailAddress,
-                          decoration: InputDecoration(
-                            labelText: 'Email',
-                            border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-                          ),
+                          decoration: _inputDecoration(l10n.enterEmailHint, Icons.email_outlined),
                         ),
-                        const SizedBox(height: 12),
+                        const SizedBox(height: 16),
+
+                        _buildLabel(l10n.phone),
+                        const SizedBox(height: 6),
                         TextField(
                           controller: _phoneController,
                           keyboardType: TextInputType.phone,
-                          decoration: InputDecoration(
-                            labelText: 'Phone',
-                            border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-                          ),
+                          decoration: _inputDecoration(l10n.enterPhoneHint, Icons.phone_outlined),
                         ),
-                        const SizedBox(height: 12),
-                        TextField(
-                          controller: _addressController,
-                          decoration: InputDecoration(
-                            labelText: 'Location',
-                            border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-                          ),
-                        ),
-                        const SizedBox(height: 24),
+                        const SizedBox(height: 32),
+
                         SizedBox(
                           width: double.infinity,
                           child: ElevatedButton(
-                            onPressed: (_saving ? null : _saveProfile),
+                            onPressed: _saving ? null : _saveProfile,
                             style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.green.shade700,
+                              backgroundColor: const Color(0xFF1565C0),
+                              foregroundColor: Colors.white,
+                              padding: const EdgeInsets.symmetric(vertical: 14),
                               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                              elevation: 0,
                             ),
-                            child: Padding(
-                              padding: const EdgeInsets.symmetric(vertical: 12),
-                              child: _saving
-                                  ? const SizedBox(
-                                      height: 20,
-                                      width: 20,
-                                      child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
-                                    )
-                                  : const Text('Save Changes', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-                            ),
+                            child: _saving
+                                ? const SizedBox(
+                                    height: 20,
+                                    width: 20,
+                                    child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
+                                  )
+                                : Text(
+                                    l10n.saveChanges,
+                                    style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                                  ),
                           ),
                         ),
                         const SizedBox(height: 32),
@@ -330,6 +320,38 @@ class _AccountSettingsPageState extends State<AccountSettingsPage> {
                 ],
               ),
             ),
+    );
+  }
+
+  Widget _buildLabel(String text) {
+    return Text(
+      text,
+      style: const TextStyle(
+        fontSize: 13,
+        fontWeight: FontWeight.w600,
+        color: Color(0xFF2D3142),
+      ),
+    );
+  }
+
+  InputDecoration _inputDecoration(String hint, IconData icon) {
+    return InputDecoration(
+      hintText: hint,
+      prefixIcon: Icon(icon, color: const Color(0xFF4285F4)),
+      filled: true,
+      fillColor: Colors.white,
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(12),
+        borderSide: BorderSide(color: Colors.grey.shade200),
+      ),
+      enabledBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(12),
+        borderSide: BorderSide(color: Colors.grey.shade200),
+      ),
+      focusedBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(12),
+        borderSide: const BorderSide(color: Color(0xFF4285F4)),
+      ),
     );
   }
 }

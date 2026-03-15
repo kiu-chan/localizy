@@ -192,6 +192,7 @@ GET /api/addresses/coordinates
 [
   {
     "id": "3fa85f64-...",
+    "code": "HANA3K92",
     "coordinates": {
       "lat": 21.0285,
       "lng": 105.8542

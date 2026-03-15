@@ -106,7 +106,7 @@ class _MapPageState extends State<MapPage> with AutomaticKeepAliveClientMixin {
           markerId: const MarkerId('destination'),
           position: position,
           icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueRed),
-          infoWindow: InfoWindow(title: address.id),
+          infoWindow: InfoWindow(title: address.code.isNotEmpty ? address.code : address.id),
         ),
       );
     });

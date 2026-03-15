@@ -2473,6 +2473,210 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'Soumettre la demande de vérification'**
   String get submitVerificationRequest;
+
+  /// No description provided for @account.
+  ///
+  /// In fr, this message translates to:
+  /// **'Compte'**
+  String get account;
+
+  /// No description provided for @viewPaymentHistory.
+  ///
+  /// In fr, this message translates to:
+  /// **'Voir votre historique de paiements'**
+  String get viewPaymentHistory;
+
+  /// No description provided for @verifiedAddresses.
+  ///
+  /// In fr, this message translates to:
+  /// **'Adresses vérifiées'**
+  String get verifiedAddresses;
+
+  /// No description provided for @manageVerifiedLocations.
+  ///
+  /// In fr, this message translates to:
+  /// **'Gérer vos adresses vérifiées'**
+  String get manageVerifiedLocations;
+
+  /// No description provided for @accountSettingsTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Modifier le compte'**
+  String get accountSettingsTitle;
+
+  /// No description provided for @updateProfileInfo.
+  ///
+  /// In fr, this message translates to:
+  /// **'Mettre à jour vos informations'**
+  String get updateProfileInfo;
+
+  /// No description provided for @changeAppLanguage.
+  ///
+  /// In fr, this message translates to:
+  /// **'Changer la langue de l\'application'**
+  String get changeAppLanguage;
+
+  /// No description provided for @helpAndSupport.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aide & Support'**
+  String get helpAndSupport;
+
+  /// No description provided for @getHelpAndContact.
+  ///
+  /// In fr, this message translates to:
+  /// **'Obtenir de l\'aide et nous contacter'**
+  String get getHelpAndContact;
+
+  /// No description provided for @privacyPolicy.
+  ///
+  /// In fr, this message translates to:
+  /// **'Politique de confidentialité'**
+  String get privacyPolicy;
+
+  /// No description provided for @readPrivacyPolicy.
+  ///
+  /// In fr, this message translates to:
+  /// **'Lire notre politique de confidentialité'**
+  String get readPrivacyPolicy;
+
+  /// No description provided for @featureComingSoon.
+  ///
+  /// In fr, this message translates to:
+  /// **'{feature} - Bientôt disponible'**
+  String featureComingSoon(String feature);
+
+  /// No description provided for @howCanWeHelp.
+  ///
+  /// In fr, this message translates to:
+  /// **'Comment pouvons-nous vous aider ?'**
+  String get howCanWeHelp;
+
+  /// No description provided for @emailUs.
+  ///
+  /// In fr, this message translates to:
+  /// **'Nous écrire'**
+  String get emailUs;
+
+  /// No description provided for @callUs.
+  ///
+  /// In fr, this message translates to:
+  /// **'Nous appeler'**
+  String get callUs;
+
+  /// No description provided for @liveChat.
+  ///
+  /// In fr, this message translates to:
+  /// **'Chat en direct'**
+  String get liveChat;
+
+  /// No description provided for @available247.
+  ///
+  /// In fr, this message translates to:
+  /// **'Disponible 24h/24, 7j/7'**
+  String get available247;
+
+  /// No description provided for @respondWithin24h.
+  ///
+  /// In fr, this message translates to:
+  /// **'Nous répondons généralement sous 24 heures'**
+  String get respondWithin24h;
+
+  /// No description provided for @saveChanges.
+  ///
+  /// In fr, this message translates to:
+  /// **'Enregistrer les modifications'**
+  String get saveChanges;
+
+  /// No description provided for @profileUpdateSuccess.
+  ///
+  /// In fr, this message translates to:
+  /// **'Profil mis à jour avec succès'**
+  String get profileUpdateSuccess;
+
+  /// No description provided for @profileUpdateFailed.
+  ///
+  /// In fr, this message translates to:
+  /// **'Mise à jour échouée : {error}'**
+  String profileUpdateFailed(Object error);
+
+  /// No description provided for @profileLoadFailed.
+  ///
+  /// In fr, this message translates to:
+  /// **'Impossible de charger le profil : {error}'**
+  String profileLoadFailed(Object error);
+
+  /// No description provided for @avatarUpdated.
+  ///
+  /// In fr, this message translates to:
+  /// **'Photo de profil mise à jour'**
+  String get avatarUpdated;
+
+  /// No description provided for @avatarUpdateFailed.
+  ///
+  /// In fr, this message translates to:
+  /// **'Impossible de mettre à jour la photo : {error}'**
+  String avatarUpdateFailed(Object error);
+
+  /// No description provided for @cannotPickImage.
+  ///
+  /// In fr, this message translates to:
+  /// **'Impossible de choisir une image : {error}'**
+  String cannotPickImage(Object error);
+
+  /// No description provided for @yourName.
+  ///
+  /// In fr, this message translates to:
+  /// **'Votre nom'**
+  String get yourName;
+
+  /// No description provided for @enterFullNameHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Entrez votre nom complet'**
+  String get enterFullNameHint;
+
+  /// No description provided for @enterEmailHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Entrez votre e-mail'**
+  String get enterEmailHint;
+
+  /// No description provided for @enterPhoneHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Entrez votre numéro de téléphone'**
+  String get enterPhoneHint;
+
+  /// No description provided for @roleAdmin.
+  ///
+  /// In fr, this message translates to:
+  /// **'Administrateur'**
+  String get roleAdmin;
+
+  /// No description provided for @roleValidator.
+  ///
+  /// In fr, this message translates to:
+  /// **'Validateur'**
+  String get roleValidator;
+
+  /// No description provided for @roleBusiness.
+  ///
+  /// In fr, this message translates to:
+  /// **'Entreprise'**
+  String get roleBusiness;
+
+  /// No description provided for @roleSubAccount.
+  ///
+  /// In fr, this message translates to:
+  /// **'Sous-compte'**
+  String get roleSubAccount;
+
+  /// No description provided for @roleMember.
+  ///
+  /// In fr, this message translates to:
+  /// **'Membre'**
+  String get roleMember;
 }
 
 class _AppLocalizationsDelegate
