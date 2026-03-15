@@ -519,5 +519,18 @@
   "roleValidator": "Validateur",
   "roleBusiness": "Entreprise",
   "roleSubAccount": "Sous-compte",
-  "roleMember": "Membre"
+  "roleMember": "Membre",
+
+  "changePassword": "Changer le mot de passe",
+  "changeLoginPassword": "Modifier votre mot de passe de connexion",
+  "currentPassword": "Mot de passe actuel",
+  "newPassword": "Nouveau mot de passe",
+  "confirmNewPassword": "Confirmer le nouveau mot de passe",
+  "enterCurrentPasswordHint": "Entrez le mot de passe actuel",
+  "enterNewPasswordHint": "Entrez le nouveau mot de passe",
+  "passwordChangeSuccess": "Mot de passe modifié avec succès",
+  "passwordChangeFailed": "Impossible de modifier le mot de passe : {error}",
+  "@passwordChangeFailed": {
+    "placeholders": { "error": {"type": "Object"} }
+  }
 }

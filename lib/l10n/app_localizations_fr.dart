@@ -1409,4 +1409,33 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get roleMember => 'Membre';
+
+  @override
+  String get changePassword => 'Changer le mot de passe';
+
+  @override
+  String get changeLoginPassword => 'Modifier votre mot de passe de connexion';
+
+  @override
+  String get currentPassword => 'Mot de passe actuel';
+
+  @override
+  String get newPassword => 'Nouveau mot de passe';
+
+  @override
+  String get confirmNewPassword => 'Confirmer le nouveau mot de passe';
+
+  @override
+  String get enterCurrentPasswordHint => 'Entrez le mot de passe actuel';
+
+  @override
+  String get enterNewPasswordHint => 'Entrez le nouveau mot de passe';
+
+  @override
+  String get passwordChangeSuccess => 'Mot de passe modifié avec succès';
+
+  @override
+  String passwordChangeFailed(Object error) {
+    return 'Impossible de modifier le mot de passe : $error';
+  }
 }

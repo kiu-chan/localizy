@@ -2677,6 +2677,60 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'Membre'**
   String get roleMember;
+
+  /// No description provided for @changePassword.
+  ///
+  /// In fr, this message translates to:
+  /// **'Changer le mot de passe'**
+  String get changePassword;
+
+  /// No description provided for @changeLoginPassword.
+  ///
+  /// In fr, this message translates to:
+  /// **'Modifier votre mot de passe de connexion'**
+  String get changeLoginPassword;
+
+  /// No description provided for @currentPassword.
+  ///
+  /// In fr, this message translates to:
+  /// **'Mot de passe actuel'**
+  String get currentPassword;
+
+  /// No description provided for @newPassword.
+  ///
+  /// In fr, this message translates to:
+  /// **'Nouveau mot de passe'**
+  String get newPassword;
+
+  /// No description provided for @confirmNewPassword.
+  ///
+  /// In fr, this message translates to:
+  /// **'Confirmer le nouveau mot de passe'**
+  String get confirmNewPassword;
+
+  /// No description provided for @enterCurrentPasswordHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Entrez le mot de passe actuel'**
+  String get enterCurrentPasswordHint;
+
+  /// No description provided for @enterNewPasswordHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Entrez le nouveau mot de passe'**
+  String get enterNewPasswordHint;
+
+  /// No description provided for @passwordChangeSuccess.
+  ///
+  /// In fr, this message translates to:
+  /// **'Mot de passe modifié avec succès'**
+  String get passwordChangeSuccess;
+
+  /// No description provided for @passwordChangeFailed.
+  ///
+  /// In fr, this message translates to:
+  /// **'Impossible de modifier le mot de passe : {error}'**
+  String passwordChangeFailed(Object error);
 }
 
 class _AppLocalizationsDelegate

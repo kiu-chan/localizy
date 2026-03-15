@@ -1,13 +1,71 @@
 import 'package:flutter/material.dart';
+import 'package:localizy/api/auth_api.dart';
+import 'package:localizy/api/main_api.dart';
+import 'package:localizy/api/user_profile_service.dart';
 import 'package:localizy/l10n/app_localizations.dart';
 import 'package:localizy/screens/setting/about_page.dart';
+import 'package:localizy/screens/setting/account_settings_page.dart';
+import 'package:localizy/screens/setting/change_password_page.dart';
 import 'package:localizy/screens/account/login_page.dart';
 import 'package:localizy/utils/language_manager.dart';
 import 'package:localizy/services/logout_service.dart';
 import 'package:provider/provider.dart';
 
-class BusinessSettingsPage extends StatelessWidget {
+class BusinessSettingsPage extends StatefulWidget {
   const BusinessSettingsPage({super.key});
+
+  @override
+  State<BusinessSettingsPage> createState() => _BusinessSettingsPageState();
+}
+
+class _BusinessSettingsPageState extends State<BusinessSettingsPage> {
+  Map<String, dynamic>? _profile;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadProfile();
+  }
+
+  Future<void> _loadProfile() async {
+    final stored = await AuthService.getStoredUser();
+    if (stored != null && mounted) {
+      setState(() {
+        _profile = {
+          'name': stored.fullName,
+          'email': stored.email,
+          'role': stored.role,
+        };
+      });
+    }
+
+    try {
+      final fetched = await UserProfileService.fetchCurrentUserProfile();
+      if (mounted) {
+        setState(() {
+          _profile = fetched;
+        });
+      }
+    } catch (_) {
+      // keep stored values
+    }
+  }
+
+  String? _avatarUrl(String? avatarPath) {
+    if (avatarPath == null || avatarPath.isEmpty) return null;
+    if (avatarPath.toLowerCase().startsWith('http')) return avatarPath;
+    final base = MainApi.instance.baseUrl.endsWith('/')
+        ? MainApi.instance.baseUrl.substring(0, MainApi.instance.baseUrl.length - 1)
+        : MainApi.instance.baseUrl;
+    return '$base$avatarPath';
+  }
+
+  void _goToEditProfile() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (_) => const AccountSettingsPage()),
+    ).then((_) => _loadProfile());
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -17,6 +75,12 @@ class BusinessSettingsPage extends StatelessWidget {
     final currentLanguage = validLanguages.contains(languageManager.locale.languageCode)
         ? languageManager.locale.languageCode
         : 'fr';
+
+    final name = (_profile?['name'] ?? _profile?['fullName']) as String? ?? l10n.yourName;
+    final email = _profile?['email'] as String? ?? '';
+    final phone = _profile?['phone'] as String?;
+    final avatarPath = _profile?['avatarUrl'] as String?;
+    final avatarUrl = _avatarUrl(avatarPath);
 
     return Scaffold(
       backgroundColor: Colors.grey.shade50,
@@ -35,13 +99,50 @@ class BusinessSettingsPage extends StatelessWidget {
       body: SingleChildScrollView(
         child: Column(
           children: [
-            _buildProfileHeader(l10n),
+            _buildProfileHeader(
+              context: context,
+              l10n: l10n,
+              name: name,
+              email: email,
+              phone: phone,
+              avatarUrl: avatarUrl,
+            ),
             Padding(
               padding: const EdgeInsets.all(16),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   const SizedBox(height: 8),
+
+                  // Account
+                  _buildSectionTitle(l10n.account),
+                  const SizedBox(height: 12),
+                  _buildCard([
+                    _buildItem(
+                      context,
+                      icon: Icons.manage_accounts_outlined,
+                      title: l10n.accountSettingsTitle,
+                      subtitle: email.isNotEmpty ? email : l10n.accountInfo,
+                      color: Colors.blue,
+                      onTap: _goToEditProfile,
+                    ),
+                    Divider(height: 1, indent: 72, color: Colors.grey.shade200),
+                    _buildItem(
+                      context,
+                      icon: Icons.lock_outline,
+                      title: l10n.changePassword,
+                      subtitle: l10n.changeLoginPassword,
+                      color: Colors.orange,
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (_) => const ChangePasswordPage()),
+                        );
+                      },
+                    ),
+                  ]),
+
+                  const SizedBox(height: 24),
 
                   // Preferences
                   _buildSectionTitle(l10n.preferences),
@@ -85,7 +186,14 @@ class BusinessSettingsPage extends StatelessWidget {
     );
   }
 
-  Widget _buildProfileHeader(AppLocalizations l10n) {
+  Widget _buildProfileHeader({
+    required BuildContext context,
+    required AppLocalizations l10n,
+    required String name,
+    required String email,
+    String? phone,
+    String? avatarUrl,
+  }) {
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.symmetric(vertical: 32, horizontal: 20),
@@ -98,18 +206,69 @@ class BusinessSettingsPage extends StatelessWidget {
       ),
       child: Column(
         children: [
-          CircleAvatar(
-            radius: 50,
-            backgroundColor: Colors.white,
-            child: Icon(Icons.business, size: 50, color: Colors.blue.shade700),
+          Container(
+            padding: const EdgeInsets.all(4),
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              border: Border.all(color: Colors.white, width: 3),
+            ),
+            child: CircleAvatar(
+              radius: 50,
+              backgroundColor: Colors.white,
+              backgroundImage: avatarUrl != null ? NetworkImage(avatarUrl) : null,
+              child: avatarUrl == null
+                  ? Icon(Icons.business, size: 50, color: Colors.blue.shade700)
+                  : null,
+            ),
           ),
           const SizedBox(height: 16),
           Text(
-            l10n.businessAccount,
+            name,
             style: const TextStyle(
               fontSize: 22,
               fontWeight: FontWeight.bold,
               color: Colors.white,
+            ),
+            overflow: TextOverflow.ellipsis,
+          ),
+          if (email.isNotEmpty) ...[
+            const SizedBox(height: 4),
+            Text(
+              email,
+              style: TextStyle(fontSize: 14, color: Colors.white.withValues(alpha: 0.9)),
+            ),
+          ],
+          if (phone != null && phone.isNotEmpty) ...[
+            const SizedBox(height: 2),
+            Text(
+              phone,
+              style: TextStyle(fontSize: 13, color: Colors.white.withValues(alpha: 0.8)),
+            ),
+          ],
+          const SizedBox(height: 16),
+          GestureDetector(
+            onTap: _goToEditProfile,
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(20),
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(Icons.edit_outlined, size: 14, color: Colors.blue.shade700),
+                  const SizedBox(width: 6),
+                  Text(
+                    l10n.edit,
+                    style: TextStyle(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.blue.shade700,
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
         ],
@@ -188,6 +347,7 @@ class BusinessSettingsPage extends StatelessWidget {
                   Text(
                     subtitle,
                     style: TextStyle(fontSize: 13, color: Colors.grey.shade600),
+                    overflow: TextOverflow.ellipsis,
                   ),
                 ],
               ),

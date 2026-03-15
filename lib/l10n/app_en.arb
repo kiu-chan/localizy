@@ -519,5 +519,18 @@
   "roleValidator": "Validator",
   "roleBusiness": "Business",
   "roleSubAccount": "Sub Account",
-  "roleMember": "Member"
+  "roleMember": "Member",
+
+  "changePassword": "Change Password",
+  "changeLoginPassword": "Change your login password",
+  "currentPassword": "Current Password",
+  "newPassword": "New Password",
+  "confirmNewPassword": "Confirm New Password",
+  "enterCurrentPasswordHint": "Enter current password",
+  "enterNewPasswordHint": "Enter new password",
+  "passwordChangeSuccess": "Password changed successfully",
+  "passwordChangeFailed": "Failed to change password: {error}",
+  "@passwordChangeFailed": {
+    "placeholders": { "error": {"type": "Object"} }
+  }
 }

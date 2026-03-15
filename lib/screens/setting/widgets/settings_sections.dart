@@ -4,6 +4,7 @@ import 'package:localizy/screens/home/history/transaction_history_page.dart';
 import 'package:localizy/screens/home/verification/address_verification_flow.dart';
 import 'package:localizy/screens/setting/about_page.dart';
 import 'package:localizy/screens/setting/account_settings_page.dart';
+import 'package:localizy/screens/setting/change_password_page.dart';
 import 'package:localizy/screens/account/login_page.dart';
 import 'package:localizy/utils/language_manager.dart';
 import 'package:package_info_plus/package_info_plus.dart';
@@ -112,6 +113,22 @@ class _SettingsSectionsState extends State<SettingsSections> {
                     context,
                     MaterialPageRoute(
                       builder: (context) => const AccountSettingsPage(),
+                    ),
+                  );
+                },
+              ),
+              _buildDivider(),
+              _buildSettingItem(
+                context,
+                icon: Icons.lock_outline_rounded,
+                title: widget.l10n.changePassword,
+                subtitle: widget.l10n.changeLoginPassword,
+                color: const Color(0xFF4285F4),
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const ChangePasswordPage(),
                     ),
                   );
                 },

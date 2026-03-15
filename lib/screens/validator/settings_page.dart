@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:localizy/api/auth_api.dart';
+import 'package:localizy/api/main_api.dart';
+import 'package:localizy/api/user_profile_service.dart';
 import 'package:localizy/l10n/app_localizations.dart';
 import 'package:localizy/screens/setting/about_page.dart';
+import 'package:localizy/screens/setting/account_settings_page.dart';
+import 'package:localizy/screens/setting/change_password_page.dart';
 import 'package:localizy/screens/account/login_page.dart';
 import 'package:localizy/utils/language_manager.dart';
 import 'package:localizy/services/logout_service.dart';
@@ -15,23 +19,52 @@ class SettingsPage extends StatefulWidget {
 }
 
 class _SettingsPageState extends State<SettingsPage> {
-  String _userName = '';
-  String _userEmail = '';
+  Map<String, dynamic>? _profile;
 
   @override
   void initState() {
     super.initState();
-    _loadUser();
+    _loadProfile();
   }
 
-  Future<void> _loadUser() async {
-    final user = await AuthService.getStoredUser();
-    if (user != null && mounted) {
+  Future<void> _loadProfile() async {
+    final stored = await AuthService.getStoredUser();
+    if (stored != null && mounted) {
       setState(() {
-        _userName = user.fullName;
-        _userEmail = user.email;
+        _profile = {
+          'name': stored.fullName,
+          'email': stored.email,
+          'role': stored.role,
+        };
       });
     }
+
+    try {
+      final fetched = await UserProfileService.fetchCurrentUserProfile();
+      if (mounted) {
+        setState(() {
+          _profile = fetched;
+        });
+      }
+    } catch (_) {
+      // keep stored values
+    }
+  }
+
+  String? _avatarUrl(String? avatarPath) {
+    if (avatarPath == null || avatarPath.isEmpty) return null;
+    if (avatarPath.toLowerCase().startsWith('http')) return avatarPath;
+    final base = MainApi.instance.baseUrl.endsWith('/')
+        ? MainApi.instance.baseUrl.substring(0, MainApi.instance.baseUrl.length - 1)
+        : MainApi.instance.baseUrl;
+    return '$base$avatarPath';
+  }
+
+  void _goToEditProfile() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (_) => const AccountSettingsPage()),
+    ).then((_) => _loadProfile());
   }
 
   @override
@@ -42,6 +75,12 @@ class _SettingsPageState extends State<SettingsPage> {
     final currentLanguage = validLanguages.contains(languageManager.locale.languageCode)
         ? languageManager.locale.languageCode
         : 'fr';
+
+    final name = (_profile?['name'] ?? _profile?['fullName']) as String? ?? l10n.yourName;
+    final email = _profile?['email'] as String? ?? '';
+    final phone = _profile?['phone'] as String?;
+    final avatarPath = _profile?['avatarUrl'] as String?;
+    final avatarUrl = _avatarUrl(avatarPath);
 
     return Scaffold(
       backgroundColor: Colors.grey.shade100,
@@ -57,7 +96,13 @@ class _SettingsPageState extends State<SettingsPage> {
       body: SingleChildScrollView(
         child: Column(
           children: [
-            _buildProfileHeader(),
+            _buildProfileHeader(
+              name: name,
+              email: email,
+              phone: phone,
+              avatarUrl: avatarUrl,
+              l10n: l10n,
+            ),
             Padding(
               padding: const EdgeInsets.all(16),
               child: Column(
@@ -70,17 +115,22 @@ class _SettingsPageState extends State<SettingsPage> {
                   const SizedBox(height: 12),
                   _buildCard([
                     _buildTile(
-                      icon: Icons.person_outline,
-                      title: l10n.validatorPersonalInformation,
-                      subtitle: _userEmail.isNotEmpty ? _userEmail : l10n.validatorViewPersonalInfo,
-                      onTap: _showPersonalInfoDialog,
+                      icon: Icons.manage_accounts_outlined,
+                      title: l10n.accountSettingsTitle,
+                      subtitle: email.isNotEmpty ? email : l10n.accountInfo,
+                      onTap: _goToEditProfile,
                     ),
-                    const Divider(height: 1),
+                    Divider(height: 1, indent: 72, color: Colors.grey.shade200),
                     _buildTile(
                       icon: Icons.lock_outline,
-                      title: l10n.validatorChangePassword,
-                      subtitle: l10n.validatorChangeLoginPassword,
-                      onTap: _showChangePasswordDialog,
+                      title: l10n.changePassword,
+                      subtitle: l10n.changeLoginPassword,
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (_) => const ChangePasswordPage()),
+                        );
+                      },
                     ),
                   ]),
 
@@ -126,7 +176,13 @@ class _SettingsPageState extends State<SettingsPage> {
     );
   }
 
-  Widget _buildProfileHeader() {
+  Widget _buildProfileHeader({
+    required String name,
+    required String email,
+    String? phone,
+    String? avatarUrl,
+    required AppLocalizations l10n,
+  }) {
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.symmetric(vertical: 32, horizontal: 20),
@@ -139,27 +195,71 @@ class _SettingsPageState extends State<SettingsPage> {
       ),
       child: Column(
         children: [
-          CircleAvatar(
-            radius: 50,
-            backgroundColor: Colors.white,
-            child: Icon(Icons.verified_user, size: 50, color: Colors.green.shade700),
+          Container(
+            padding: const EdgeInsets.all(4),
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              border: Border.all(color: Colors.white, width: 3),
+            ),
+            child: CircleAvatar(
+              radius: 50,
+              backgroundColor: Colors.white,
+              backgroundImage: avatarUrl != null ? NetworkImage(avatarUrl) : null,
+              child: avatarUrl == null
+                  ? Icon(Icons.verified_user, size: 50, color: Colors.green.shade700)
+                  : null,
+            ),
           ),
           const SizedBox(height: 16),
           Text(
-            _userName.isNotEmpty ? _userName : 'Validator',
+            name,
             style: const TextStyle(
               fontSize: 22,
               fontWeight: FontWeight.bold,
               color: Colors.white,
             ),
+            overflow: TextOverflow.ellipsis,
           ),
-          if (_userEmail.isNotEmpty) ...[
+          if (email.isNotEmpty) ...[
             const SizedBox(height: 4),
             Text(
-              _userEmail,
-              style: const TextStyle(fontSize: 14, color: Colors.white70),
+              email,
+              style: TextStyle(fontSize: 14, color: Colors.white.withValues(alpha: 0.9)),
             ),
           ],
+          if (phone != null && phone.isNotEmpty) ...[
+            const SizedBox(height: 2),
+            Text(
+              phone,
+              style: TextStyle(fontSize: 13, color: Colors.white.withValues(alpha: 0.8)),
+            ),
+          ],
+          const SizedBox(height: 16),
+          GestureDetector(
+            onTap: _goToEditProfile,
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(20),
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(Icons.edit_outlined, size: 14, color: Colors.green.shade700),
+                  const SizedBox(width: 6),
+                  Text(
+                    l10n.edit,
+                    style: TextStyle(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.green.shade700,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
         ],
       ),
     );
@@ -226,8 +326,11 @@ class _SettingsPageState extends State<SettingsPage> {
                   Text(title,
                       style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
                   const SizedBox(height: 2),
-                  Text(subtitle,
-                      style: TextStyle(fontSize: 13, color: Colors.grey.shade600)),
+                  Text(
+                    subtitle,
+                    style: TextStyle(fontSize: 13, color: Colors.grey.shade600),
+                    overflow: TextOverflow.ellipsis,
+                  ),
                 ],
               ),
             ),
@@ -237,7 +340,6 @@ class _SettingsPageState extends State<SettingsPage> {
       ),
     );
   }
-
 
   Widget _buildLanguageSelector(
     BuildContext context,
@@ -377,109 +479,6 @@ class _SettingsPageState extends State<SettingsPage> {
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
           elevation: 0,
         ),
-      ),
-    );
-  }
-
-  void _showPersonalInfoDialog() {
-    final l10n = AppLocalizations.of(context)!;
-    showDialog(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        title: Text(l10n.validatorPersonalInformation),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _infoRow(l10n.fullName, _userName.isNotEmpty ? _userName : '-'),
-            _infoRow(l10n.email, _userEmail.isNotEmpty ? _userEmail : '-'),
-            _infoRow(l10n.validatorRole, l10n.validatorRoleValue),
-          ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx),
-            child: Text(l10n.close),
-          ),
-        ],
-      ),
-    );
-  }
-
-  void _showChangePasswordDialog() {
-    final l10n = AppLocalizations.of(context)!;
-    showDialog(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        title: Text(l10n.validatorChangePassword),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            TextField(
-              obscureText: true,
-              decoration: InputDecoration(
-                labelText: l10n.validatorCurrentPassword,
-                border: const OutlineInputBorder(),
-                prefixIcon: const Icon(Icons.lock_outline),
-              ),
-            ),
-            const SizedBox(height: 16),
-            TextField(
-              obscureText: true,
-              decoration: InputDecoration(
-                labelText: l10n.validatorNewPassword,
-                border: const OutlineInputBorder(),
-                prefixIcon: const Icon(Icons.lock),
-              ),
-            ),
-            const SizedBox(height: 16),
-            TextField(
-              obscureText: true,
-              decoration: InputDecoration(
-                labelText: l10n.validatorConfirmNewPassword,
-                border: const OutlineInputBorder(),
-                prefixIcon: const Icon(Icons.lock),
-              ),
-            ),
-          ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx),
-            child: Text(l10n.cancel),
-          ),
-          ElevatedButton(
-            onPressed: () => Navigator.pop(ctx),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.green.shade700,
-              foregroundColor: Colors.white,
-            ),
-            child: Text(l10n.validatorChangePassword),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _infoRow(String label, String value) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 12),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          SizedBox(
-            width: 90,
-            child: Text(label,
-                style: TextStyle(fontSize: 14, color: Colors.grey.shade600)),
-          ),
-          Expanded(
-            child: Text(value,
-                style:
-                    const TextStyle(fontSize: 14, fontWeight: FontWeight.w600)),
-          ),
-        ],
       ),
     );
   }

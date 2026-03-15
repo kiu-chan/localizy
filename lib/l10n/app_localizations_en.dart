@@ -1377,4 +1377,33 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get roleMember => 'Member';
+
+  @override
+  String get changePassword => 'Change Password';
+
+  @override
+  String get changeLoginPassword => 'Change your login password';
+
+  @override
+  String get currentPassword => 'Current Password';
+
+  @override
+  String get newPassword => 'New Password';
+
+  @override
+  String get confirmNewPassword => 'Confirm New Password';
+
+  @override
+  String get enterCurrentPasswordHint => 'Enter current password';
+
+  @override
+  String get enterNewPasswordHint => 'Enter new password';
+
+  @override
+  String get passwordChangeSuccess => 'Password changed successfully';
+
+  @override
+  String passwordChangeFailed(Object error) {
+    return 'Failed to change password: $error';
+  }
 }
