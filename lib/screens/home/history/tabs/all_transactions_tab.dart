@@ -51,13 +51,17 @@ class _AllTransactionsTabState extends State<AllTransactionsTab>
       final rawZones = results[1];
       debugPrint('[AllTransactionsTab] my-transactions response: ${jsonEncode(rawData)}');
 
+      List<dynamic> extractItems(dynamic d) => (d is Map && d.containsKey('items'))
+          ? d['items'] as List<dynamic>
+          : d as List<dynamic>;
+
       final zoneMap = {
-        for (final z in (rawZones as List).map((e) => ParkingZoneItem.fromJson(e as Map<String, dynamic>)))
+        for (final z in extractItems(rawZones).map((e) => ParkingZoneItem.fromJson(e as Map<String, dynamic>)))
           z.id: z,
       };
 
       setState(() {
-        _transactions = (rawData as List).map((e) {
+        _transactions = extractItems(rawData).map((e) {
           final raw = e as Map<String, dynamic>;
           final t = Transaction.fromJson(raw);
 

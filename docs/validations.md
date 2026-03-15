@@ -93,34 +93,40 @@ GET /api/validations/stats
 ### 2. Lấy tất cả validation requests
 
 ```http
-GET /api/validations
+GET /api/validations?pageNumber={n}&pageSize={n}
 ```
 
 **Authorization:** Admin
 
-**Response:** `200 OK` - Array of Validation objects
+**Query Parameters:**
+- `pageNumber` (int, default: 1)
+- `pageSize` (int, default: 20, max: 100)
+
+**Response:** `200 OK` - PagedResult of Validation objects
 
 ---
 
 ### 3. Tìm kiếm validations
 
 ```http
-GET /api/validations/search?searchTerm={term}
+GET /api/validations/search?searchTerm={term}&pageNumber={n}&pageSize={n}
 ```
 
 **Authorization:** Admin
 
 **Query Parameters:**
 - `searchTerm`: Tìm theo requestId, address code, tên người gửi, notes
+- `pageNumber` (int, default: 1)
+- `pageSize` (int, default: 20, max: 100)
 
-**Response:** `200 OK` - Array of Validation objects
+**Response:** `200 OK` - PagedResult of Validation objects
 
 ---
 
 ### 4. Lọc theo status
 
 ```http
-GET /api/validations/filter/status/{status}
+GET /api/validations/filter/status/{status}?pageNumber={n}&pageSize={n}
 ```
 
 **Authorization:** Admin
@@ -128,14 +134,18 @@ GET /api/validations/filter/status/{status}
 **Path Parameters:**
 - `status`: `Pending` | `Assigned` | `Scheduled` | `Verified` | `Rejected`
 
-**Response:** `200 OK` - Array of Validation objects
+**Query Parameters:**
+- `pageNumber` (int, default: 1)
+- `pageSize` (int, default: 20, max: 100)
+
+**Response:** `200 OK` - PagedResult of Validation objects
 
 ---
 
 ### 5. Lọc theo priority
 
 ```http
-GET /api/validations/filter/priority/{priority}
+GET /api/validations/filter/priority/{priority}?pageNumber={n}&pageSize={n}
 ```
 
 **Authorization:** Admin
@@ -143,7 +153,11 @@ GET /api/validations/filter/priority/{priority}
 **Path Parameters:**
 - `priority`: `Low` | `Medium` | `High`
 
-**Response:** `200 OK` - Array of Validation objects
+**Query Parameters:**
+- `pageNumber` (int, default: 1)
+- `pageSize` (int, default: 20, max: 100)
+
+**Response:** `200 OK` - PagedResult of Validation objects
 
 ---
 
@@ -315,6 +329,8 @@ DELETE /api/validations/{id}
 
 **Authorization:** Admin
 
+> **Soft Delete:** Bản ghi không bị xóa vật lý. Cột `IsDeleted` được đặt `true` và `DeletedAt` được ghi nhận.
+
 **Response:** `204 No Content`
 
 ---
@@ -326,12 +342,16 @@ DELETE /api/validations/{id}
 Validator xem danh sách các yêu cầu xác minh được Admin phân công.
 
 ```http
-GET /api/validations/my-assignments
+GET /api/validations/my-assignments?pageNumber={n}&pageSize={n}
 ```
 
 **Authorization:** Validator
 
-**Response:** `200 OK` - Array of Validation objects (chỉ các yêu cầu được phân công cho validator hiện tại)
+**Query Parameters:**
+- `pageNumber` (int, default: 1)
+- `pageSize` (int, default: 20, max: 100)
+
+**Response:** `200 OK` - PagedResult of Validation objects (chỉ các yêu cầu được phân công cho validator hiện tại)
 
 ---
 
@@ -454,26 +474,35 @@ GET /api/validations/verification-request/{id}
 ### 18. Lấy validations theo user ID
 
 ```http
-GET /api/validations/user/{userId}
+GET /api/validations/user/{userId}?pageNumber={n}&pageSize={n}
 ```
 
 **Authorization:** Authenticated
 
-**Response:** `200 OK` - Array of Validation objects
+**Query Parameters:**
+- `pageNumber` (int, default: 1)
+- `pageSize` (int, default: 20, max: 100)
+
+**Response:** `200 OK` - PagedResult of Validation objects
 
 ---
 
 ### 19. Lấy validations của user hiện tại
 
 ```http
-GET /api/validations/my-validations
+GET /api/validations/my-validations?pageNumber={n}&pageSize={n}
 ```
 
 **Authorization:** Authenticated
 
+**Query Parameters:**
+- `pageNumber` (int, default: 1)
+- `pageSize` (int, default: 20, max: 100)
+
 **Response:** `200 OK`
 ```json
-[
+{
+  "items": [
   {
     "id": "3fa85f64-...",
     "requestId": "VAL-2024-042",
@@ -499,7 +528,14 @@ GET /api/validations/my-validations
       "timeSlot": "9:00-11:00"
     }
   }
-]
+  ],
+  "totalCount": 3,
+  "pageNumber": 1,
+  "pageSize": 20,
+  "totalPages": 1,
+  "hasPreviousPage": false,
+  "hasNextPage": false
+}
 ```
 
 > **Lưu ý:** `appointmentInfo` là `null` nếu chưa có lịch hẹn.

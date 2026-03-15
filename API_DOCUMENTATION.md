@@ -74,6 +74,69 @@ Authorization: Bearer <token>
 
 ---
 
+## 📄 Pagination
+
+Tất cả các API trả về danh sách đều hỗ trợ phân trang qua query parameters.
+
+### Query Parameters
+
+| Tham số | Kiểu | Mặc định | Tối đa | Mô tả |
+|---------|------|----------|--------|-------|
+| `pageNumber` | int | `1` | - | Số trang (bắt đầu từ 1) |
+| `pageSize` | int | `20` | `100` | Số bản ghi mỗi trang |
+
+**Ví dụ:**
+```
+GET /api/addresses?pageNumber=2&pageSize=10
+GET /api/users?pageNumber=1&pageSize=50
+GET /api/validations/search?searchTerm=abc&pageNumber=1&pageSize=20
+```
+
+### Paged Response Format
+
+Tất cả list endpoints trả về định dạng `PagedResult<T>`:
+
+```json
+{
+  "items": [ ... ],
+  "totalCount": 150,
+  "pageNumber": 1,
+  "pageSize": 20,
+  "totalPages": 8,
+  "hasPreviousPage": false,
+  "hasNextPage": true
+}
+```
+
+| Field | Mô tả |
+|-------|-------|
+| `items` | Danh sách bản ghi của trang hiện tại |
+| `totalCount` | Tổng số bản ghi (không phân trang) |
+| `pageNumber` | Trang hiện tại |
+| `pageSize` | Số bản ghi mỗi trang |
+| `totalPages` | Tổng số trang |
+| `hasPreviousPage` | Còn trang trước không |
+| `hasNextPage` | Còn trang sau không |
+
+> **Lưu ý:** Endpoint `GET /api/addresses/coordinates` không phân trang vì trả về toàn bộ tọa độ để hiển thị bản đồ.
+
+---
+
+## 🗑️ Soft Delete
+
+Hệ thống sử dụng **xóa mềm (soft delete)** cho tất cả các bảng dữ liệu. Khi gọi API xóa:
+
+- Bản ghi **không bị xóa vật lý** khỏi cơ sở dữ liệu.
+- Cột `IsDeleted` được đặt thành `true`.
+- Cột `DeletedAt` được ghi nhận thời điểm xóa (UTC).
+- Tất cả các API `GET` sẽ **tự động lọc** bản ghi đã xóa — client không bao giờ thấy dữ liệu đã xóa.
+
+### Các bảng áp dụng Soft Delete
+
+`AddressCodes`, `Cities`, `HomeSlides`, `ParkingTickets`, `Projects`, `Settings`, `Translations`, `Users`, `Validations`
+
+---
+
 ## 📚 Tài liệu chi tiết
 
 | Module | Mô tả | Link |
@@ -89,4 +152,5 @@ Authorization: Bearer <token>
 | 🏙️ Cities | Quản lý thành phố | [cities.md](docs/cities.md) |
 | ⚙️ Settings | Cấu hình hệ thống | [settings.md](docs/settings.md) |
 | 🖼️ Home Slides | Slide ảnh trang chủ | [home-slides.md](docs/home-slides.md) |
+| 📈 Statistics | Thống kê & phân tích dữ liệu | [statistics.md](docs/statistics.md) |
 | 🔄 Use Cases | Các luồng nghiệp vụ phổ biến | [use-cases.md](docs/use-cases.md) |

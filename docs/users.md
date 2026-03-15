@@ -44,25 +44,35 @@ GET /api/users/stats
 ## 2. Tìm kiếm users
 
 ```http
-GET /api/users/search?searchTerm={term}
+GET /api/users/search?searchTerm={term}&pageNumber={n}&pageSize={n}
 ```
 
 **Authorization:** Admin
 
 **Query Parameters:**
 - `searchTerm` (string): Tìm theo name hoặc email
+- `pageNumber` (int, default: 1)
+- `pageSize` (int, default: 20, max: 100)
 
-**Response:** `200 OK` - Array of User objects
+**Response:** `200 OK` - PagedResult of User objects
 ```json
-[
-  {
-    "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
-    "name": "Nguyen Van A",
-    "email": "user@example.com",
-    "role": "User",
-    "createdAt": "2024-01-10T10:30:00Z"
-  }
-]
+{
+  "items": [
+    {
+      "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+      "name": "Nguyen Van A",
+      "email": "user@example.com",
+      "role": "User",
+      "createdAt": "2024-01-10T10:30:00Z"
+    }
+  ],
+  "totalCount": 5,
+  "pageNumber": 1,
+  "pageSize": 20,
+  "totalPages": 1,
+  "hasPreviousPage": false,
+  "hasNextPage": false
+}
 ```
 
 ---
@@ -70,19 +80,23 @@ GET /api/users/search?searchTerm={term}
 ## 3. Lấy tất cả users
 
 ```http
-GET /api/users
+GET /api/users?pageNumber={n}&pageSize={n}
 ```
 
 **Authorization:** Admin
 
-**Response:** `200 OK` - Array of User objects
+**Query Parameters:**
+- `pageNumber` (int, default: 1)
+- `pageSize` (int, default: 20, max: 100)
+
+**Response:** `200 OK` - PagedResult of User objects
 
 ---
 
 ## 4. Lọc users theo role
 
 ```http
-GET /api/users/filter/role/{role}
+GET /api/users/filter/role/{role}?pageNumber={n}&pageSize={n}
 ```
 
 **Authorization:** Admin
@@ -90,7 +104,11 @@ GET /api/users/filter/role/{role}
 **Path Parameters:**
 - `role`: `User` | `Admin` | `Validator` | `Business` | `SubAccount`
 
-**Response:** `200 OK` - Array of User objects
+**Query Parameters:**
+- `pageNumber` (int, default: 1)
+- `pageSize` (int, default: 20, max: 100)
+
+**Response:** `200 OK` - PagedResult of User objects
 
 ---
 
@@ -174,6 +192,8 @@ DELETE /api/users/{id}
 ```
 
 **Authorization:** Admin
+
+> **Soft Delete:** Bản ghi không bị xóa vật lý. Cột `IsDeleted` được đặt `true` và `DeletedAt` được ghi nhận. User sẽ không còn xuất hiện trong bất kỳ API nào.
 
 **Response:** `204 No Content`
 

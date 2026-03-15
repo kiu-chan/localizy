@@ -129,12 +129,12 @@ class SubAccountApi {
   static Future<List<SubAccount>> getMySubAccounts() async {
     debugPrint('SubAccountApi: GET api/business/sub-accounts');
     final data = await MainApi.instance.getJson('api/business/sub-accounts');
-    if (data is List) {
-      return data
-          .map((e) => SubAccount.fromJson(e as Map<String, dynamic>))
-          .toList();
-    }
-    throw Exception('Unexpected response format: expected list');
+    final items = (data is Map<String, dynamic> && data.containsKey('items'))
+        ? data['items'] as List<dynamic>
+        : data as List<dynamic>;
+    return items
+        .map((e) => SubAccount.fromJson(e as Map<String, dynamic>))
+        .toList();
   }
 
   /// POST /api/business/sub-accounts

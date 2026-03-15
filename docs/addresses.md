@@ -70,34 +70,44 @@ GET /api/addresses/stats
 ## 2. Tìm kiếm địa chỉ (simple)
 
 ```http
-GET /api/addresses/search?searchTerm={term}
+GET /api/addresses/search?searchTerm={term}&pageNumber={n}&pageSize={n}
 ```
 
 **Authorization:** Public
 
 **Query Parameters:**
 - `searchTerm` (string): Tìm theo `code`, `name`, `fullAddress` hoặc `cityName`
+- `pageNumber` (int, default: 1): Số trang
+- `pageSize` (int, default: 20, max: 100): Số bản ghi mỗi trang
 
 **Response:** `200 OK`
 ```json
-[
-  {
-    "id": "3fa85f64-...",
-    "code": "HANA3K92",
-    "name": "Nhà hàng Phở Bắc",
-    "fullAddress": "123 Nguyễn Trãi, P. Thượng Đình, Q. Thanh Xuân",
-    "latitude": 21.0285,
-    "longitude": 105.8542,
-    "cityId": "d4e5f6a7-...",
-    "cityName": "Hà Nội",
-    "status": "Reviewed",
-    "isVerified": true,
-    "parkingAvailable": false,
-    "totalParkingSpots": 0,
-    "availableSpots": 0,
-    "pricePerHour": 0
-  }
-]
+{
+  "items": [
+    {
+      "id": "3fa85f64-...",
+      "code": "HANA3K92",
+      "name": "Nhà hàng Phở Bắc",
+      "fullAddress": "123 Nguyễn Trãi, P. Thượng Đình, Q. Thanh Xuân",
+      "latitude": 21.0285,
+      "longitude": 105.8542,
+      "cityId": "d4e5f6a7-...",
+      "cityName": "Hà Nội",
+      "status": "Reviewed",
+      "isVerified": true,
+      "parkingAvailable": false,
+      "totalParkingSpots": 0,
+      "availableSpots": 0,
+      "pricePerHour": 0
+    }
+  ],
+  "totalCount": 42,
+  "pageNumber": 1,
+  "pageSize": 20,
+  "totalPages": 3,
+  "hasPreviousPage": false,
+  "hasNextPage": true
+}
 ```
 
 ---
@@ -105,7 +115,7 @@ GET /api/addresses/search?searchTerm={term}
 ## 3. Lọc theo status
 
 ```http
-GET /api/addresses/filter/status/{status}
+GET /api/addresses/filter/status/{status}?pageNumber={n}&pageSize={n}
 ```
 
 **Authorization:** Public
@@ -113,43 +123,59 @@ GET /api/addresses/filter/status/{status}
 **Path Parameters:**
 - `status`: `Pending` | `Reviewed` | `Rejected`
 
-**Response:** `200 OK` - Array of Address objects
+**Query Parameters:**
+- `pageNumber` (int, default: 1)
+- `pageSize` (int, default: 20, max: 100)
+
+**Response:** `200 OK` - PagedResult of Address objects
 
 ---
 
 ## 4. Lấy địa chỉ theo user
 
 ```http
-GET /api/addresses/user/{userId}
+GET /api/addresses/user/{userId}?pageNumber={n}&pageSize={n}
 ```
 
 **Authorization:** Authenticated
 
-**Response:** `200 OK` - Array of Address objects
+**Query Parameters:**
+- `pageNumber` (int, default: 1)
+- `pageSize` (int, default: 20, max: 100)
+
+**Response:** `200 OK` - PagedResult of Address objects
 
 ---
 
 ## 5. Lấy địa chỉ của user hiện tại
 
 ```http
-GET /api/addresses/my-addresses
+GET /api/addresses/my-addresses?pageNumber={n}&pageSize={n}
 ```
 
 **Authorization:** Authenticated
 
-**Response:** `200 OK` - Array of Address simple objects
+**Query Parameters:**
+- `pageNumber` (int, default: 1)
+- `pageSize` (int, default: 20, max: 100)
+
+**Response:** `200 OK` - PagedResult of Address simple objects
 
 ---
 
 ## 6. Lấy tất cả địa chỉ
 
 ```http
-GET /api/addresses
+GET /api/addresses?pageNumber={n}&pageSize={n}
 ```
 
 **Authorization:** Public
 
-**Response:** `200 OK` - Array of Address objects
+**Query Parameters:**
+- `pageNumber` (int, default: 1)
+- `pageSize` (int, default: 20, max: 100)
+
+**Response:** `200 OK` - PagedResult of Address objects
 
 ---
 
@@ -283,6 +309,8 @@ DELETE /api/addresses/{id}
 
 **Authorization:** Admin
 
+> **Soft Delete:** Bản ghi không bị xóa vật lý. Cột `IsDeleted` được đặt `true` và `DeletedAt` được ghi nhận. Địa chỉ sẽ không còn xuất hiện trong bất kỳ API nào.
+
 **Response:** `204 No Content`
 
 ---
@@ -330,29 +358,41 @@ POST /api/addresses/{id}/reject
 Trả về các địa chỉ có `parkingAvailable = true` và `status = Reviewed`. `availableSpots` được tính động theo số vé đang active.
 
 ```http
-GET /api/addresses/parking-zones
+GET /api/addresses/parking-zones?pageNumber={n}&pageSize={n}
 ```
 
 **Authorization:** Public
 
+**Query Parameters:**
+- `pageNumber` (int, default: 1)
+- `pageSize` (int, default: 20, max: 100)
+
 **Response:** `200 OK`
 ```json
-[
-  {
-    "id": "3fa85f64-...",
-    "code": "HANP7M21",
-    "name": "Bãi đỗ xe Trần Duy Hưng",
-    "fullAddress": "123 Trần Duy Hưng, Q. Cầu Giấy, Hà Nội",
-    "latitude": 21.0075,
-    "longitude": 105.7989,
-    "cityId": "d4e5f6a7-...",
-    "cityName": "Hà Nội",
-    "status": "Reviewed",
-    "isVerified": true,
-    "parkingAvailable": true,
-    "totalParkingSpots": 50,
-    "availableSpots": 35,
-    "pricePerHour": 10000
-  }
-]
+{
+  "items": [
+    {
+      "id": "3fa85f64-...",
+      "code": "HANP7M21",
+      "name": "Bãi đỗ xe Trần Duy Hưng",
+      "fullAddress": "123 Trần Duy Hưng, Q. Cầu Giấy, Hà Nội",
+      "latitude": 21.0075,
+      "longitude": 105.7989,
+      "cityId": "d4e5f6a7-...",
+      "cityName": "Hà Nội",
+      "status": "Reviewed",
+      "isVerified": true,
+      "parkingAvailable": true,
+      "totalParkingSpots": 50,
+      "availableSpots": 35,
+      "pricePerHour": 10000
+    }
+  ],
+  "totalCount": 8,
+  "pageNumber": 1,
+  "pageSize": 20,
+  "totalPages": 1,
+  "hasPreviousPage": false,
+  "hasNextPage": false
+}
 ```

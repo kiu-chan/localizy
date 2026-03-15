@@ -21,24 +21,36 @@ Quản lý các slide ảnh hiển thị trên trang chủ.
 ## 1. Lấy các slide đang active
 
 ```http
-GET /api/homeslides/active
+GET /api/homeslides/active?pageNumber={n}&pageSize={n}
 ```
 
 **Authorization:** Public
 
+**Query Parameters:**
+- `pageNumber` (int, default: 1)
+- `pageSize` (int, default: 20, max: 100)
+
 **Response:** `200 OK`
 ```json
-[
-  {
-    "id": "3fa85f64-...",
-    "content": "Chào mừng đến với Localizy",
-    "imageUrl": "/uploads/home-slides/slide1.jpg",
-    "order": 1,
-    "isActive": true,
-    "createdAt": "2024-01-10T10:30:00Z",
-    "updatedAt": null
-  }
-]
+{
+  "items": [
+    {
+      "id": "3fa85f64-...",
+      "content": "Chào mừng đến với Localizy",
+      "imageUrl": "/uploads/home-slides/slide1.jpg",
+      "order": 1,
+      "isActive": true,
+      "createdAt": "2024-01-10T10:30:00Z",
+      "updatedAt": null
+    }
+  ],
+  "totalCount": 5,
+  "pageNumber": 1,
+  "pageSize": 20,
+  "totalPages": 1,
+  "hasPreviousPage": false,
+  "hasNextPage": false
+}
 ```
 
 ---
@@ -46,12 +58,16 @@ GET /api/homeslides/active
 ## 2. Lấy tất cả slides (Admin)
 
 ```http
-GET /api/homeslides
+GET /api/homeslides?pageNumber={n}&pageSize={n}
 ```
 
 **Authorization:** Admin
 
-**Response:** `200 OK` - Array of HomeSlide objects (bao gồm cả slide inactive)
+**Query Parameters:**
+- `pageNumber` (int, default: 1)
+- `pageSize` (int, default: 20, max: 100)
+
+**Response:** `200 OK` - PagedResult of HomeSlide objects (bao gồm cả slide inactive)
 
 ---
 
@@ -151,7 +167,7 @@ DELETE /api/homeslides/{id}
 
 **Authorization:** Admin
 
-File ảnh liên quan cũng bị xóa khỏi server.
+> **Soft Delete:** Bản ghi không bị xóa vật lý. Cột `IsDeleted` được đặt `true` và `DeletedAt` được ghi nhận. File ảnh liên quan cũng bị xóa khỏi server (file vật lý vẫn được xóa).
 
 **Response:** `204 No Content`
 

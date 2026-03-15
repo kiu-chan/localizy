@@ -44,16 +44,21 @@ class Transaction {
 }
 
 class TransactionApi {
+  static List<dynamic> _extractItems(dynamic data) {
+    if (data is Map<String, dynamic> && data.containsKey('items')) {
+      return data['items'] as List<dynamic>;
+    }
+    if (data is List) return data;
+    throw Exception('Unexpected response format');
+  }
+
   /// GET /api/transactions/my-transactions
   /// Lấy lịch sử giao dịch của người dùng hiện tại
   static Future<List<Transaction>> getMyTransactions() async {
     final data =
         await MainApi.instance.getJson('api/transactions/my-transactions');
-    if (data is List) {
-      return data
-          .map((e) => Transaction.fromJson(e as Map<String, dynamic>))
-          .toList();
-    }
-    throw Exception('Unexpected response format: expected list');
+    return _extractItems(data)
+        .map((e) => Transaction.fromJson(e as Map<String, dynamic>))
+        .toList();
   }
 }

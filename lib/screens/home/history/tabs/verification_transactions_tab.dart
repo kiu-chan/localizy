@@ -44,8 +44,15 @@ class _VerificationTransactionsTabState extends State<VerificationTransactionsTa
       final data = await MainApi.instance.getJson('api/validations/my-validations');
       debugPrint('[VerificationTab] my-validations response: ${jsonEncode(data)}');
 
+      final List<dynamic> items;
+      if (data is Map && data.containsKey('items')) {
+        items = data['items'] as List<dynamic>;
+      } else {
+        items = data as List<dynamic>;
+      }
+
       setState(() {
-        _verifications = (data as List<dynamic>)
+        _verifications = items
             .map((item) => item as Map<String, dynamic>)
             .toList();
         _isLoading = false;

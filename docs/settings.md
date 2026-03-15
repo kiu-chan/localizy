@@ -39,19 +39,23 @@ GET /api/settings/website-config
 ## 2. Lấy tất cả settings
 
 ```http
-GET /api/settings
+GET /api/settings?pageNumber={n}&pageSize={n}
 ```
 
 **Authorization:** Admin
 
-**Response:** `200 OK` - Array of Setting objects
+**Query Parameters:**
+- `pageNumber` (int, default: 1)
+- `pageSize` (int, default: 20, max: 100)
+
+**Response:** `200 OK` - PagedResult of Setting objects
 
 ---
 
 ## 3. Lấy settings theo category
 
 ```http
-GET /api/settings/category/{category}
+GET /api/settings/category/{category}?pageNumber={n}&pageSize={n}
 ```
 
 **Authorization:** Admin
@@ -59,7 +63,11 @@ GET /api/settings/category/{category}
 **Path Parameters:**
 - `category`: Tên category (VD: `general`, `parking`, `payment`)
 
-**Response:** `200 OK` - Array of Setting objects
+**Query Parameters:**
+- `pageNumber` (int, default: 1)
+- `pageSize` (int, default: 20, max: 100)
+
+**Response:** `200 OK` - PagedResult of Setting objects
 
 ---
 

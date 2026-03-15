@@ -55,39 +55,49 @@ GET /api/cities/stats
 ## 2. Tìm kiếm cities
 
 ```http
-GET /api/cities/search?searchTerm={term}
+GET /api/cities/search?searchTerm={term}&pageNumber={n}&pageSize={n}
 ```
 
 **Authorization:** Public
 
 **Query Parameters:**
 - `searchTerm`: Tìm theo `name` hoặc `code`
+- `pageNumber` (int, default: 1)
+- `pageSize` (int, default: 20, max: 100)
 
-**Response:** `200 OK` - Array of City objects
+**Response:** `200 OK` - PagedResult of City objects
 
 ---
 
 ## 3. Lấy cities đang active
 
 ```http
-GET /api/cities/active
+GET /api/cities/active?pageNumber={n}&pageSize={n}
 ```
 
 **Authorization:** Public
 
-**Response:** `200 OK` - Array of City objects (chỉ các city có `isActive = true`)
+**Query Parameters:**
+- `pageNumber` (int, default: 1)
+- `pageSize` (int, default: 20, max: 100)
+
+**Response:** `200 OK` - PagedResult of City objects (chỉ các city có `isActive = true`)
 
 ---
 
 ## 4. Lấy tất cả cities
 
 ```http
-GET /api/cities
+GET /api/cities?pageNumber={n}&pageSize={n}
 ```
 
 **Authorization:** Public
 
-**Response:** `200 OK` - Array of City objects
+**Query Parameters:**
+- `pageNumber` (int, default: 1)
+- `pageSize` (int, default: 20, max: 100)
+
+**Response:** `200 OK` - PagedResult of City objects
 
 ---
 
@@ -187,6 +197,8 @@ DELETE /api/cities/{id}
 ```
 
 **Authorization:** Admin
+
+> **Soft Delete:** Bản ghi không bị xóa vật lý. Cột `IsDeleted` được đặt `true` và `DeletedAt` được ghi nhận.
 
 **Response:** `204 No Content`
 

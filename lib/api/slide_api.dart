@@ -54,15 +54,20 @@ class SlideService {
   /// Trả về danh sách đã sort theo field `order`.
   static Future<List<HomeSlide>> getActiveSlides() async {
     final result = await MainApi.instance.getJson('api/homeslides/active');
-    if (result is List) {
-      final slides = result
-          .map((e) => HomeSlide.fromJson(Map<String, dynamic>.from(e)))
-          .toList();
-      slides.sort((a, b) => a.order.compareTo(b.order));
-      await _saveCache(slides);
-      return slides;
+    final List<dynamic> rawList;
+    if (result is Map<String, dynamic> && result.containsKey('items')) {
+      rawList = result['items'] as List<dynamic>;
+    } else if (result is List) {
+      rawList = result;
+    } else {
+      return [];
     }
-    return [];
+    final slides = rawList
+        .map((e) => HomeSlide.fromJson(Map<String, dynamic>.from(e as Map)))
+        .toList();
+    slides.sort((a, b) => a.order.compareTo(b.order));
+    await _saveCache(slides);
+    return slides;
   }
 
   /// Lấy slide từ cache local (SharedPreferences).

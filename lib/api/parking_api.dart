@@ -114,11 +114,11 @@ class ParkingApi {
   /// Lấy danh sách vé của người dùng hiện tại
   static Future<List<ParkingTicket>> getMyTickets() async {
     final data = await MainApi.instance.getJson('api/parking/my-tickets');
-    if (data is List) {
-      return data
-          .map((e) => ParkingTicket.fromJson(e as Map<String, dynamic>))
-          .toList();
-    }
-    throw Exception('Unexpected response format: expected list');
+    final items = (data is Map<String, dynamic> && data.containsKey('items'))
+        ? data['items'] as List<dynamic>
+        : data as List<dynamic>;
+    return items
+        .map((e) => ParkingTicket.fromJson(e as Map<String, dynamic>))
+        .toList();
   }
 }

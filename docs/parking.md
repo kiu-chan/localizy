@@ -132,28 +132,40 @@ GET /api/parking/license/{licensePlate}
 ## 5. Lấy vé của user hiện tại
 
 ```http
-GET /api/parking/my-tickets
+GET /api/parking/my-tickets?pageNumber={n}&pageSize={n}
 ```
 
 **Authorization:** Authenticated
 
+**Query Parameters:**
+- `pageNumber` (int, default: 1)
+- `pageSize` (int, default: 20, max: 100)
+
 **Response:** `200 OK`
 ```json
-[
-  {
-    "id": "3fa85f64-...",
-    "ticketCode": "PKT12345678",
-    "licensePlate": "30A-12345",
-    "addressId": "b2c3d4e5-...",
-    "duration": "4h",
-    "startTime": "2024-01-10T10:00:00Z",
-    "endTime": "2024-01-10T14:00:00Z",
-    "amount": 35000,
-    "paymentMethod": "momo",
-    "status": "expired",
-    "createdAt": "2024-01-10T10:00:00Z"
-  }
-]
+{
+  "items": [
+    {
+      "id": "3fa85f64-...",
+      "ticketCode": "PKT12345678",
+      "licensePlate": "30A-12345",
+      "addressId": "b2c3d4e5-...",
+      "duration": "4h",
+      "startTime": "2024-01-10T10:00:00Z",
+      "endTime": "2024-01-10T14:00:00Z",
+      "amount": 35000,
+      "paymentMethod": "momo",
+      "status": "expired",
+      "createdAt": "2024-01-10T10:00:00Z"
+    }
+  ],
+  "totalCount": 12,
+  "pageNumber": 1,
+  "pageSize": 20,
+  "totalPages": 1,
+  "hasPreviousPage": false,
+  "hasNextPage": false
+}
 ```
 
 ---
@@ -161,12 +173,16 @@ GET /api/parking/my-tickets
 ## 6. Lấy tất cả vé (Admin)
 
 ```http
-GET /api/parking
+GET /api/parking?pageNumber={n}&pageSize={n}
 ```
 
 **Authorization:** Admin
 
-**Response:** `200 OK` - Array of Parking Ticket objects
+**Query Parameters:**
+- `pageNumber` (int, default: 1)
+- `pageSize` (int, default: 20, max: 100)
+
+**Response:** `200 OK` - PagedResult of Parking Ticket objects
 
 ---
 

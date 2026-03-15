@@ -50,6 +50,15 @@ class MyAddress {
 }
 
 class AddressApi {
+  /// Trích xuất danh sách items từ PagedResult hoặc List thuần
+  static List<dynamic> _extractItems(dynamic data) {
+    if (data is Map<String, dynamic> && data.containsKey('items')) {
+      return data['items'] as List<dynamic>;
+    }
+    if (data is List) return data;
+    throw Exception('Unexpected response format');
+  }
+
   // Lấy danh sách địa chỉ có id, code và toạ độ
   static Future<List<AddressCoordinate>> fetchCoordinates() async {
     final resp = await MainApi.instance.get('/api/Addresses',
@@ -77,18 +86,17 @@ class AddressApi {
     if (searchTerm.trim().isEmpty) {
       return [];
     }
-    
+
     final encodedSearchTerm = Uri.encodeComponent(searchTerm);
     final resp = await MainApi.instance.get(
       '/api/Addresses/search?searchTerm=$encodedSearchTerm',
       headers: {'accept': 'text/plain'},
     );
-    
+
     if (resp.statusCode == 200) {
       final raw = json.decode(resp.body);
-      if (raw is List) {
-        return raw.map((json) => AddressSearchResult.fromJson(json)).toList();
-      }
+      final items = _extractItems(raw);
+      return items.map((e) => AddressSearchResult.fromJson(e as Map<String, dynamic>)).toList();
     }
     throw Exception('Failed to search addresses: ${resp.statusCode}');
   }
@@ -97,10 +105,9 @@ class AddressApi {
   /// Lấy danh sách địa chỉ của user hiện tại (Business/SubAccount)
   static Future<List<MyAddress>> getMyAddresses() async {
     final data = await MainApi.instance.getJson('api/addresses/my-addresses');
-    if (data is List) {
-      return data.map((e) => MyAddress.fromJson(e as Map<String, dynamic>)).toList();
-    }
-    throw Exception('Unexpected response format: expected list');
+    return _extractItems(data)
+        .map((e) => MyAddress.fromJson(e as Map<String, dynamic>))
+        .toList();
   }
 
   /// GET /api/business/addresses
@@ -109,20 +116,18 @@ class AddressApi {
   /// - Role SubAccount: địa chỉ của parent business + tất cả sub-accounts cùng cấp
   static Future<List<MyAddress>> getBusinessAddresses() async {
     final data = await MainApi.instance.getJson('api/business/addresses');
-    if (data is List) {
-      return data.map((e) => MyAddress.fromJson(e as Map<String, dynamic>)).toList();
-    }
-    throw Exception('Unexpected response format: expected list');
+    return _extractItems(data)
+        .map((e) => MyAddress.fromJson(e as Map<String, dynamic>))
+        .toList();
   }
 
   /// GET /api/business/addresses/mine
   /// Chỉ trả về địa chỉ mà chính tài khoản đang đăng nhập đã thêm
   static Future<List<MyAddress>> getBusinessMineAddresses() async {
     final data = await MainApi.instance.getJson('api/business/addresses/mine');
-    if (data is List) {
-      return data.map((e) => MyAddress.fromJson(e as Map<String, dynamic>)).toList();
-    }
-    throw Exception('Unexpected response format: expected list');
+    return _extractItems(data)
+        .map((e) => MyAddress.fromJson(e as Map<String, dynamic>))
+        .toList();
   }
 
   /// POST /api/addresses
@@ -167,12 +172,9 @@ class AddressApi {
   /// Lấy tất cả địa chỉ (Public)
   static Future<List<AddressItem>> fetchAll() async {
     final data = await MainApi.instance.getJson('api/addresses');
-    if (data is List) {
-      return data
-          .map((e) => AddressItem.fromJson(e as Map<String, dynamic>))
-          .toList();
-    }
-    throw Exception('Unexpected response format: expected list');
+    return _extractItems(data)
+        .map((e) => AddressItem.fromJson(e as Map<String, dynamic>))
+        .toList();
   }
 
   /// GET /api/addresses/search?searchTerm={term}
@@ -182,25 +184,18 @@ class AddressApi {
     final encoded = Uri.encodeComponent(searchTerm.trim());
     final data =
         await MainApi.instance.getJson('api/addresses/search?searchTerm=$encoded');
-    if (data is List) {
-      return data
-          .map((e) => AddressItem.fromJson(e as Map<String, dynamic>))
-          .toList();
-    }
-    throw Exception('Unexpected response format: expected list');
+    return _extractItems(data)
+        .map((e) => AddressItem.fromJson(e as Map<String, dynamic>))
+        .toList();
   }
 
   /// GET /api/addresses/parking-zones
   /// Lấy danh sách khu vực đậu xe
   static Future<List<ParkingZoneItem>> getParkingZones() async {
-    final data =
-        await MainApi.instance.getJson('api/addresses/parking-zones');
-    if (data is List) {
-      return data
-          .map((e) => ParkingZoneItem.fromJson(e as Map<String, dynamic>))
-          .toList();
-    }
-    throw Exception('Unexpected response format: expected list');
+    final data = await MainApi.instance.getJson('api/addresses/parking-zones');
+    return _extractItems(data)
+        .map((e) => ParkingZoneItem.fromJson(e as Map<String, dynamic>))
+        .toList();
   }
 
   // Lấy chi tiết địa chỉ theo ID

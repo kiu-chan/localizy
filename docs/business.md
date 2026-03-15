@@ -67,26 +67,38 @@ GET /api/business/dashboard
 ## 2. Lấy danh sách tài khoản con
 
 ```http
-GET /api/business/sub-accounts
+GET /api/business/sub-accounts?pageNumber={n}&pageSize={n}
 ```
 
 **Authorization:** Business
 
+**Query Parameters:**
+- `pageNumber` (int, default: 1)
+- `pageSize` (int, default: 20, max: 100)
+
 **Response:** `200 OK`
 ```json
-[
-  {
-    "id": "a1b2c3d4-5717-4562-b3fc-2c963f66afa6",
-    "name": "Nhân viên A",
-    "phone": "0901234567",
-    "email": "staff.a@company.com",
-    "documents": null,
-    "role": "SubAccount",
-    "parentBusinessId": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
-    "createdAt": "2026-01-10T10:30:00Z",
-    "updatedAt": null
-  }
-]
+{
+  "items": [
+    {
+      "id": "a1b2c3d4-5717-4562-b3fc-2c963f66afa6",
+      "name": "Nhân viên A",
+      "phone": "0901234567",
+      "email": "staff.a@company.com",
+      "documents": null,
+      "role": "SubAccount",
+      "parentBusinessId": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+      "createdAt": "2026-01-10T10:30:00Z",
+      "updatedAt": null
+    }
+  ],
+  "totalCount": 3,
+  "pageNumber": 1,
+  "pageSize": 20,
+  "totalPages": 1,
+  "hasPreviousPage": false,
+  "hasNextPage": false
+}
 ```
 
 ---
@@ -158,10 +170,14 @@ PUT /api/business/sub-accounts/{id}
 Trả về địa chỉ của **cả doanh nghiệp lẫn tất cả tài khoản con**.
 
 ```http
-GET /api/business/addresses
+GET /api/business/addresses?pageNumber={n}&pageSize={n}
 ```
 
 **Authorization:** Business, SubAccount
+
+**Query Parameters:**
+- `pageNumber` (int, default: 1)
+- `pageSize` (int, default: 20, max: 100)
 
 **Hành vi theo role:**
 | Role | Kết quả trả về |
@@ -169,29 +185,35 @@ GET /api/business/addresses
 | `Business` | Địa chỉ của business + tất cả sub-accounts |
 | `SubAccount` | Địa chỉ của parent business + tất cả sub-accounts cùng cấp (bao gồm bản thân) |
 
-**Response:** `200 OK` - Array of Address objects
+**Response:** `200 OK` - PagedResult of Address objects
 
 ```json
-[
-  {
-    "id": "3fa85f64-...",
-    "code": "HANX9K21",
-    "name": "Văn phòng chính",
-    "userId": "3fa85f64-...",
-    "userName": "Công ty ABC",
-    "status": "Reviewed",
-    ...
-  },
-  {
-    "id": "a1b2c3d4-...",
-    "code": "HCMB3P54",
-    "name": "Chi nhánh Q.1",
-    "userId": "a1b2c3d4-...",
-    "userName": "Nhân viên A",
-    "status": "Reviewed",
-    ...
-  }
-]
+{
+  "items": [
+    {
+      "id": "3fa85f64-...",
+      "code": "HANX9K21",
+      "name": "Văn phòng chính",
+      "userId": "3fa85f64-...",
+      "userName": "Công ty ABC",
+      "status": "Reviewed"
+    },
+    {
+      "id": "a1b2c3d4-...",
+      "code": "HCMB3P54",
+      "name": "Chi nhánh Q.1",
+      "userId": "a1b2c3d4-...",
+      "userName": "Nhân viên A",
+      "status": "Reviewed"
+    }
+  ],
+  "totalCount": 24,
+  "pageNumber": 1,
+  "pageSize": 20,
+  "totalPages": 2,
+  "hasPreviousPage": false,
+  "hasNextPage": true
+}
 ```
 
 ---
@@ -201,28 +223,38 @@ GET /api/business/addresses
 Chỉ trả về địa chỉ mà **chính tài khoản đang đăng nhập** đã thêm (không bao gồm sub-accounts hay parent).
 
 ```http
-GET /api/business/addresses/mine
+GET /api/business/addresses/mine?pageNumber={n}&pageSize={n}
 ```
 
 **Authorization:** Business, SubAccount
 
-**Response:** `200 OK`
+**Query Parameters:**
+- `pageNumber` (int, default: 1)
+- `pageSize` (int, default: 20, max: 100)
+
+**Response:** `200 OK` - PagedResult of Address objects
 ```json
-[
-  {
-    "id": "3fa85f64-...",
-    "code": "HANX9K21",
-    "name": "Văn phòng chính",
-    "fullAddress": "Tầng 5, 99 Láng Hạ, Q. Đống Đa, Hà Nội",
-    "district": "Đống Đa",
-    "latitude": 21.02,
-    "longitude": 105.85,
-    "cityCode": "HAN",
-    "status": "Reviewed",
-    "isVerified": true,
-    "userId": "3fa85f64-...",
-    "userName": "Công ty ABC",
-    "createdAt": "2024-01-10T10:30:00Z"
-  }
-]
+{
+  "items": [
+    {
+      "id": "3fa85f64-...",
+      "code": "HANX9K21",
+      "name": "Văn phòng chính",
+      "fullAddress": "Tầng 5, 99 Láng Hạ, Q. Đống Đa, Hà Nội",
+      "latitude": 21.02,
+      "longitude": 105.85,
+      "status": "Reviewed",
+      "isVerified": true,
+      "userId": "3fa85f64-...",
+      "userName": "Công ty ABC",
+      "createdAt": "2024-01-10T10:30:00Z"
+    }
+  ],
+  "totalCount": 10,
+  "pageNumber": 1,
+  "pageSize": 20,
+  "totalPages": 1,
+  "hasPreviousPage": false,
+  "hasNextPage": false
+}
 ```

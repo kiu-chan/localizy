@@ -49,11 +49,15 @@ class _ParkingTransactionsTabState extends State<ParkingTransactionsTab>
       final rawZones = await MainApi.instance.getJson('api/addresses/parking-zones');
       debugPrint('[ParkingTab] parking-zones response: ${jsonEncode(rawZones)}');
 
-      final items = (rawTickets as List)
+      List<dynamic> extractItems(dynamic d) => (d is Map && d.containsKey('items'))
+          ? d['items'] as List<dynamic>
+          : d as List<dynamic>;
+
+      final items = extractItems(rawTickets)
           .map((e) => ParkingTicket.fromJson(e as Map<String, dynamic>))
           .toList();
 
-      final zones = (rawZones as List)
+      final zones = extractItems(rawZones)
           .map((e) => ParkingZoneItem.fromJson(e as Map<String, dynamic>))
           .toList();
 

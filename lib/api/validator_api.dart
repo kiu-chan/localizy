@@ -246,12 +246,12 @@ class ValidatorApi {
   static Future<List<ValidationAssignment>> getMyAssignments() async {
     final data = await MainApi.instance.getJson('api/validations/my-assignments');
     debugPrint('[ValidatorApi] getMyAssignments: $data');
-    if (data is List) {
-      return data
-          .map((e) => ValidationAssignment.fromJson(e as Map<String, dynamic>))
-          .toList();
-    }
-    throw Exception('Unexpected response format: expected list');
+    final items = (data is Map<String, dynamic> && data.containsKey('items'))
+        ? data['items'] as List<dynamic>
+        : data as List<dynamic>;
+    return items
+        .map((e) => ValidationAssignment.fromJson(e as Map<String, dynamic>))
+        .toList();
   }
 
   /// POST /api/validations/{id}/verify
