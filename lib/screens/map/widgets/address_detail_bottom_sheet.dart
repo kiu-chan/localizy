@@ -66,7 +66,7 @@ class _AddressDetailBottomSheetState extends State<AddressDetailBottomSheet> {
     } catch (e) {
       if (mounted) {
         setState(() {
-          _errorMessage = 'Failed to load details';
+          _errorMessage = AppLocalizations.of(context)?.failedToLoadDetails ?? 'Failed to load details';
           _isLoading = false;
         });
       }
@@ -138,7 +138,7 @@ class _AddressDetailBottomSheetState extends State<AddressDetailBottomSheet> {
               });
               _loadDetail();
             },
-            child: const Text('Retry'),
+            child: Text(AppLocalizations.of(context)?.retry ?? 'Retry'),
           ),
         ],
       ),
@@ -210,7 +210,7 @@ class _AddressDetailBottomSheetState extends State<AddressDetailBottomSheet> {
                               ),
                               const SizedBox(width: 4),
                               Text(
-                                detail.isVerified ? 'Đã xác minh' : detail.status,
+                                detail.isVerified ? (l10n?.verifiedStatus ?? 'Verified') : detail.status,
                                 style: TextStyle(
                                   fontSize: 12,
                                   color: statusColor,
@@ -265,7 +265,7 @@ class _AddressDetailBottomSheetState extends State<AddressDetailBottomSheet> {
           // Người tạo
           _buildInfoRow(
             icon: Icons.person_outline,
-            label: 'Người tạo',
+            label: l10n?.createdBy ?? 'Created by',
             value: detail.userName,
           ),
 
@@ -273,7 +273,7 @@ class _AddressDetailBottomSheetState extends State<AddressDetailBottomSheet> {
           if (detail.validatorName != null && detail.validatorName!.isNotEmpty)
             _buildInfoRow(
               icon: Icons.verified_user_outlined,
-              label: 'Người xác minh',
+              label: l10n?.verifiedBy ?? 'Verified by',
               value: detail.validatorName!,
             ),
 
@@ -281,7 +281,7 @@ class _AddressDetailBottomSheetState extends State<AddressDetailBottomSheet> {
           if (detail.comments != null && detail.comments!.isNotEmpty)
             _buildInfoRow(
               icon: Icons.comment_outlined,
-              label: 'Ghi chú',
+              label: l10n?.notes ?? 'Notes',
               value: detail.comments!,
             ),
 
@@ -295,7 +295,7 @@ class _AddressDetailBottomSheetState extends State<AddressDetailBottomSheet> {
                   Icon(Icons.local_parking, size: 18, color: Colors.blue.shade700),
                   const SizedBox(width: 8),
                   Text(
-                    'Thông tin đỗ xe',
+                    l10n?.parkingInfoSection ?? 'Parking information',
                     style: TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.w600,
@@ -307,12 +307,12 @@ class _AddressDetailBottomSheetState extends State<AddressDetailBottomSheet> {
             ),
             _buildInfoRow(
               icon: Icons.directions_car_outlined,
-              label: 'Chỗ trống / Tổng',
+              label: l10n?.parkingAvailableSlots ?? 'Available / Total',
               value: '${detail.availableSpots} / ${detail.totalParkingSpots}',
             ),
             _buildInfoRow(
               icon: Icons.attach_money,
-              label: 'Giá đỗ xe',
+              label: l10n?.parkingPriceLabel ?? 'Parking price',
               value: detail.formattedPricePerHour,
             ),
           ],

@@ -532,5 +532,86 @@
   "passwordChangeFailed": "Failed to change password: {error}",
   "@passwordChangeFailed": {
     "placeholders": { "error": {"type": "Object"} }
-  }
+  },
+
+  "createdBy": "Created by",
+  "verifiedBy": "Verified by",
+  "notes": "Notes",
+  "parkingAvailableSlots": "Available / Total",
+  "parkingPriceLabel": "Parking price",
+  "parkingInfoSection": "Parking information",
+  "verifiedStatus": "Verified",
+  "failedToLoadDetails": "Failed to load details",
+
+  "searchAddressHint": "Enter address, district, city...",
+  "searching": "Searching...",
+  "noAddressesFound": "No addresses found",
+  "searchTryDifferentKeywords": "Try searching with different keywords",
+  "parkingAvailableBadge": "Parking available",
+  "totalParkingSpots": "Total spots",
+  "availableParkingSpots": "Available spots",
+  "pricePerHour": "Price/hour",
+  "viewOnMaps": "View on Maps",
+  "bookParking": "Book parking",
+  "navigatingToPayment": "Navigating to payment...",
+
+  "aboutLocalizy": "About Localizy",
+  "appDescription": "Your smart solution for parking\nmanagement and location verification",
+  "keyFeatures": "Key Features",
+  "smartParkingPaymentDesc": "Pay for parking easily and securely",
+  "licensePlateScanning": "License Plate Scanning",
+  "licensePlateScanningDesc": "Automatic OCR recognition for quick entry",
+  "addressVerificationDesc": "Verify and manage your locations",
+  "realTimeNavigation": "Real-time Navigation",
+  "realTimeNavigationDesc": "Get directions to parking locations",
+  "transactionHistoryDesc": "Track all your parking payments",
+  "multiLanguageSupport": "Multi-language Support",
+  "multiLanguageSupportDesc": "Available in multiple languages",
+  "appInformation": "App Information",
+  "appNameLabel": "App Name",
+  "packageNameLabel": "Package Name",
+  "versionLabel": "Version",
+  "buildNumberLabel": "Build Number",
+  "platformLabel": "Platform",
+  "releaseDateLabel": "Release Date",
+  "contactInformation": "Contact Information",
+  "copiedToClipboard": "{label} copied to clipboard",
+  "@copiedToClipboard": {
+    "placeholders": { "label": {"type": "String"} }
+  },
+  "legalSection": "Legal",
+  "termsOfService": "Terms of Service",
+  "termsAndConditions": "Terms and conditions",
+  "openSourceLicenses": "Open Source Licenses",
+  "thirdPartyLicenses": "Third-party licenses",
+  "developmentTeam": "Development Team",
+  "developedBy": "Developed by",
+  "devTeamName": "Localizy Development Team",
+  "copyright": "© 2024 Localizy",
+  "allRightsReserved": "All rights reserved",
+  "madeWithLoveInVietnam": "Made with ❤️ in Vietnam",
+  "versionDisplay": "Version {version}",
+  "@versionDisplay": {
+    "placeholders": { "version": {"type": "String"} }
+  },
+
+  "businessDashboard": "Business Dashboard",
+  "overview": "Overview",
+  "totalLocations": "Total Locations",
+  "recentActivities": "Recent Activities",
+  "failedToLoadData": "Failed to load data",
+  "noActivitiesYet": "No activities yet",
+  "minutesAgo": "{count}m ago",
+  "@minutesAgo": {
+    "placeholders": { "count": {"type": "int"} }
+  },
+  "hoursAgo": "{count}h ago",
+  "@hoursAgo": {
+    "placeholders": { "count": {"type": "int"} }
+  },
+  "daysAgo": "{count}d ago",
+  "@daysAgo": {
+    "placeholders": { "count": {"type": "int"} }
+  },
+  "idCopied": "ID copied"
 }

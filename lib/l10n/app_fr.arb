@@ -532,5 +532,86 @@
   "passwordChangeFailed": "Impossible de modifier le mot de passe : {error}",
   "@passwordChangeFailed": {
     "placeholders": { "error": {"type": "Object"} }
-  }
+  },
+
+  "createdBy": "Créé par",
+  "verifiedBy": "Vérifié par",
+  "notes": "Notes",
+  "parkingAvailableSlots": "Disponible / Total",
+  "parkingPriceLabel": "Prix de stationnement",
+  "parkingInfoSection": "Informations de stationnement",
+  "verifiedStatus": "Vérifié",
+  "failedToLoadDetails": "Impossible de charger les détails",
+
+  "searchAddressHint": "Entrez une adresse, district, ville...",
+  "searching": "Recherche...",
+  "noAddressesFound": "Aucune adresse trouvée",
+  "searchTryDifferentKeywords": "Essayez de rechercher avec d'autres mots-clés",
+  "parkingAvailableBadge": "Parking disponible",
+  "totalParkingSpots": "Places totales",
+  "availableParkingSpots": "Places disponibles",
+  "pricePerHour": "Prix/heure",
+  "viewOnMaps": "Voir sur Maps",
+  "bookParking": "Réserver un parking",
+  "navigatingToPayment": "Navigation vers le paiement...",
+
+  "aboutLocalizy": "À propos de Localizy",
+  "appDescription": "Votre solution intelligente pour la gestion\ndu stationnement et la vérification d'adresses",
+  "keyFeatures": "Fonctionnalités clés",
+  "smartParkingPaymentDesc": "Payez le stationnement facilement et en toute sécurité",
+  "licensePlateScanning": "Lecture de plaques d'immatriculation",
+  "licensePlateScanningDesc": "Reconnaissance OCR automatique pour une saisie rapide",
+  "addressVerificationDesc": "Vérifiez et gérez vos adresses",
+  "realTimeNavigation": "Navigation en temps réel",
+  "realTimeNavigationDesc": "Obtenez un itinéraire vers les parkings",
+  "transactionHistoryDesc": "Suivez tous vos paiements de stationnement",
+  "multiLanguageSupport": "Support multilingue",
+  "multiLanguageSupportDesc": "Disponible en plusieurs langues",
+  "appInformation": "Informations sur l'application",
+  "appNameLabel": "Nom de l'application",
+  "packageNameLabel": "Nom du package",
+  "versionLabel": "Version",
+  "buildNumberLabel": "Numéro de build",
+  "platformLabel": "Plateforme",
+  "releaseDateLabel": "Date de sortie",
+  "contactInformation": "Informations de contact",
+  "copiedToClipboard": "{label} copié dans le presse-papier",
+  "@copiedToClipboard": {
+    "placeholders": { "label": {"type": "String"} }
+  },
+  "legalSection": "Mentions légales",
+  "termsOfService": "Conditions d'utilisation",
+  "termsAndConditions": "Termes et conditions",
+  "openSourceLicenses": "Licences open source",
+  "thirdPartyLicenses": "Licences tierces",
+  "developmentTeam": "Équipe de développement",
+  "developedBy": "Développé par",
+  "devTeamName": "L'équipe de développement Localizy",
+  "copyright": "© 2024 Localizy",
+  "allRightsReserved": "Tous droits réservés",
+  "madeWithLoveInVietnam": "Fait avec ❤️ au Vietnam",
+  "versionDisplay": "Version {version}",
+  "@versionDisplay": {
+    "placeholders": { "version": {"type": "String"} }
+  },
+
+  "businessDashboard": "Tableau de bord professionnel",
+  "overview": "Vue d'ensemble",
+  "totalLocations": "Emplacements totaux",
+  "recentActivities": "Activités récentes",
+  "failedToLoadData": "Impossible de charger les données",
+  "noActivitiesYet": "Aucune activité pour le moment",
+  "minutesAgo": "il y a {count}min",
+  "@minutesAgo": {
+    "placeholders": { "count": {"type": "int"} }
+  },
+  "hoursAgo": "il y a {count}h",
+  "@hoursAgo": {
+    "placeholders": { "count": {"type": "int"} }
+  },
+  "daysAgo": "il y a {count}j",
+  "@daysAgo": {
+    "placeholders": { "count": {"type": "int"} }
+  },
+  "idCopied": "ID copié"
 }

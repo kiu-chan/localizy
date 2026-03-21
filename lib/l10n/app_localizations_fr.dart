@@ -1438,4 +1438,206 @@ class AppLocalizationsFr extends AppLocalizations {
   String passwordChangeFailed(Object error) {
     return 'Impossible de modifier le mot de passe : $error';
   }
+
+  @override
+  String get createdBy => 'Créé par';
+
+  @override
+  String get verifiedBy => 'Vérifié par';
+
+  @override
+  String get notes => 'Notes';
+
+  @override
+  String get parkingAvailableSlots => 'Disponible / Total';
+
+  @override
+  String get parkingPriceLabel => 'Prix de stationnement';
+
+  @override
+  String get parkingInfoSection => 'Informations de stationnement';
+
+  @override
+  String get verifiedStatus => 'Vérifié';
+
+  @override
+  String get failedToLoadDetails => 'Impossible de charger les détails';
+
+  @override
+  String get searchAddressHint => 'Entrez une adresse, district, ville...';
+
+  @override
+  String get searching => 'Recherche...';
+
+  @override
+  String get noAddressesFound => 'Aucune adresse trouvée';
+
+  @override
+  String get searchTryDifferentKeywords =>
+      'Essayez de rechercher avec d\'autres mots-clés';
+
+  @override
+  String get parkingAvailableBadge => 'Parking disponible';
+
+  @override
+  String get totalParkingSpots => 'Places totales';
+
+  @override
+  String get availableParkingSpots => 'Places disponibles';
+
+  @override
+  String get pricePerHour => 'Prix/heure';
+
+  @override
+  String get viewOnMaps => 'Voir sur Maps';
+
+  @override
+  String get bookParking => 'Réserver un parking';
+
+  @override
+  String get navigatingToPayment => 'Navigation vers le paiement...';
+
+  @override
+  String get aboutLocalizy => 'À propos de Localizy';
+
+  @override
+  String get appDescription =>
+      'Votre solution intelligente pour la gestion\ndu stationnement et la vérification d\'adresses';
+
+  @override
+  String get keyFeatures => 'Fonctionnalités clés';
+
+  @override
+  String get smartParkingPaymentDesc =>
+      'Payez le stationnement facilement et en toute sécurité';
+
+  @override
+  String get licensePlateScanning => 'Lecture de plaques d\'immatriculation';
+
+  @override
+  String get licensePlateScanningDesc =>
+      'Reconnaissance OCR automatique pour une saisie rapide';
+
+  @override
+  String get addressVerificationDesc => 'Vérifiez et gérez vos adresses';
+
+  @override
+  String get realTimeNavigation => 'Navigation en temps réel';
+
+  @override
+  String get realTimeNavigationDesc =>
+      'Obtenez un itinéraire vers les parkings';
+
+  @override
+  String get transactionHistoryDesc =>
+      'Suivez tous vos paiements de stationnement';
+
+  @override
+  String get multiLanguageSupport => 'Support multilingue';
+
+  @override
+  String get multiLanguageSupportDesc => 'Disponible en plusieurs langues';
+
+  @override
+  String get appInformation => 'Informations sur l\'application';
+
+  @override
+  String get appNameLabel => 'Nom de l\'application';
+
+  @override
+  String get packageNameLabel => 'Nom du package';
+
+  @override
+  String get versionLabel => 'Version';
+
+  @override
+  String get buildNumberLabel => 'Numéro de build';
+
+  @override
+  String get platformLabel => 'Plateforme';
+
+  @override
+  String get releaseDateLabel => 'Date de sortie';
+
+  @override
+  String get contactInformation => 'Informations de contact';
+
+  @override
+  String copiedToClipboard(String label) {
+    return '$label copié dans le presse-papier';
+  }
+
+  @override
+  String get legalSection => 'Mentions légales';
+
+  @override
+  String get termsOfService => 'Conditions d\'utilisation';
+
+  @override
+  String get termsAndConditions => 'Termes et conditions';
+
+  @override
+  String get openSourceLicenses => 'Licences open source';
+
+  @override
+  String get thirdPartyLicenses => 'Licences tierces';
+
+  @override
+  String get developmentTeam => 'Équipe de développement';
+
+  @override
+  String get developedBy => 'Développé par';
+
+  @override
+  String get devTeamName => 'L\'équipe de développement Localizy';
+
+  @override
+  String get copyright => '© 2024 Localizy';
+
+  @override
+  String get allRightsReserved => 'Tous droits réservés';
+
+  @override
+  String get madeWithLoveInVietnam => 'Fait avec ❤️ au Vietnam';
+
+  @override
+  String versionDisplay(String version) {
+    return 'Version $version';
+  }
+
+  @override
+  String get businessDashboard => 'Tableau de bord professionnel';
+
+  @override
+  String get overview => 'Vue d\'ensemble';
+
+  @override
+  String get totalLocations => 'Emplacements totaux';
+
+  @override
+  String get recentActivities => 'Activités récentes';
+
+  @override
+  String get failedToLoadData => 'Impossible de charger les données';
+
+  @override
+  String get noActivitiesYet => 'Aucune activité pour le moment';
+
+  @override
+  String minutesAgo(int count) {
+    return 'il y a ${count}min';
+  }
+
+  @override
+  String hoursAgo(int count) {
+    return 'il y a ${count}h';
+  }
+
+  @override
+  String daysAgo(int count) {
+    return 'il y a ${count}j';
+  }
+
+  @override
+  String get idCopied => 'ID copié';
 }

@@ -2731,6 +2731,378 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'Impossible de modifier le mot de passe : {error}'**
   String passwordChangeFailed(Object error);
+
+  /// No description provided for @createdBy.
+  ///
+  /// In fr, this message translates to:
+  /// **'Créé par'**
+  String get createdBy;
+
+  /// No description provided for @verifiedBy.
+  ///
+  /// In fr, this message translates to:
+  /// **'Vérifié par'**
+  String get verifiedBy;
+
+  /// No description provided for @notes.
+  ///
+  /// In fr, this message translates to:
+  /// **'Notes'**
+  String get notes;
+
+  /// No description provided for @parkingAvailableSlots.
+  ///
+  /// In fr, this message translates to:
+  /// **'Disponible / Total'**
+  String get parkingAvailableSlots;
+
+  /// No description provided for @parkingPriceLabel.
+  ///
+  /// In fr, this message translates to:
+  /// **'Prix de stationnement'**
+  String get parkingPriceLabel;
+
+  /// No description provided for @parkingInfoSection.
+  ///
+  /// In fr, this message translates to:
+  /// **'Informations de stationnement'**
+  String get parkingInfoSection;
+
+  /// No description provided for @verifiedStatus.
+  ///
+  /// In fr, this message translates to:
+  /// **'Vérifié'**
+  String get verifiedStatus;
+
+  /// No description provided for @failedToLoadDetails.
+  ///
+  /// In fr, this message translates to:
+  /// **'Impossible de charger les détails'**
+  String get failedToLoadDetails;
+
+  /// No description provided for @searchAddressHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Entrez une adresse, district, ville...'**
+  String get searchAddressHint;
+
+  /// No description provided for @searching.
+  ///
+  /// In fr, this message translates to:
+  /// **'Recherche...'**
+  String get searching;
+
+  /// No description provided for @noAddressesFound.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucune adresse trouvée'**
+  String get noAddressesFound;
+
+  /// No description provided for @searchTryDifferentKeywords.
+  ///
+  /// In fr, this message translates to:
+  /// **'Essayez de rechercher avec d\'autres mots-clés'**
+  String get searchTryDifferentKeywords;
+
+  /// No description provided for @parkingAvailableBadge.
+  ///
+  /// In fr, this message translates to:
+  /// **'Parking disponible'**
+  String get parkingAvailableBadge;
+
+  /// No description provided for @totalParkingSpots.
+  ///
+  /// In fr, this message translates to:
+  /// **'Places totales'**
+  String get totalParkingSpots;
+
+  /// No description provided for @availableParkingSpots.
+  ///
+  /// In fr, this message translates to:
+  /// **'Places disponibles'**
+  String get availableParkingSpots;
+
+  /// No description provided for @pricePerHour.
+  ///
+  /// In fr, this message translates to:
+  /// **'Prix/heure'**
+  String get pricePerHour;
+
+  /// No description provided for @viewOnMaps.
+  ///
+  /// In fr, this message translates to:
+  /// **'Voir sur Maps'**
+  String get viewOnMaps;
+
+  /// No description provided for @bookParking.
+  ///
+  /// In fr, this message translates to:
+  /// **'Réserver un parking'**
+  String get bookParking;
+
+  /// No description provided for @navigatingToPayment.
+  ///
+  /// In fr, this message translates to:
+  /// **'Navigation vers le paiement...'**
+  String get navigatingToPayment;
+
+  /// No description provided for @aboutLocalizy.
+  ///
+  /// In fr, this message translates to:
+  /// **'À propos de Localizy'**
+  String get aboutLocalizy;
+
+  /// No description provided for @appDescription.
+  ///
+  /// In fr, this message translates to:
+  /// **'Votre solution intelligente pour la gestion\ndu stationnement et la vérification d\'adresses'**
+  String get appDescription;
+
+  /// No description provided for @keyFeatures.
+  ///
+  /// In fr, this message translates to:
+  /// **'Fonctionnalités clés'**
+  String get keyFeatures;
+
+  /// No description provided for @smartParkingPaymentDesc.
+  ///
+  /// In fr, this message translates to:
+  /// **'Payez le stationnement facilement et en toute sécurité'**
+  String get smartParkingPaymentDesc;
+
+  /// No description provided for @licensePlateScanning.
+  ///
+  /// In fr, this message translates to:
+  /// **'Lecture de plaques d\'immatriculation'**
+  String get licensePlateScanning;
+
+  /// No description provided for @licensePlateScanningDesc.
+  ///
+  /// In fr, this message translates to:
+  /// **'Reconnaissance OCR automatique pour une saisie rapide'**
+  String get licensePlateScanningDesc;
+
+  /// No description provided for @addressVerificationDesc.
+  ///
+  /// In fr, this message translates to:
+  /// **'Vérifiez et gérez vos adresses'**
+  String get addressVerificationDesc;
+
+  /// No description provided for @realTimeNavigation.
+  ///
+  /// In fr, this message translates to:
+  /// **'Navigation en temps réel'**
+  String get realTimeNavigation;
+
+  /// No description provided for @realTimeNavigationDesc.
+  ///
+  /// In fr, this message translates to:
+  /// **'Obtenez un itinéraire vers les parkings'**
+  String get realTimeNavigationDesc;
+
+  /// No description provided for @transactionHistoryDesc.
+  ///
+  /// In fr, this message translates to:
+  /// **'Suivez tous vos paiements de stationnement'**
+  String get transactionHistoryDesc;
+
+  /// No description provided for @multiLanguageSupport.
+  ///
+  /// In fr, this message translates to:
+  /// **'Support multilingue'**
+  String get multiLanguageSupport;
+
+  /// No description provided for @multiLanguageSupportDesc.
+  ///
+  /// In fr, this message translates to:
+  /// **'Disponible en plusieurs langues'**
+  String get multiLanguageSupportDesc;
+
+  /// No description provided for @appInformation.
+  ///
+  /// In fr, this message translates to:
+  /// **'Informations sur l\'application'**
+  String get appInformation;
+
+  /// No description provided for @appNameLabel.
+  ///
+  /// In fr, this message translates to:
+  /// **'Nom de l\'application'**
+  String get appNameLabel;
+
+  /// No description provided for @packageNameLabel.
+  ///
+  /// In fr, this message translates to:
+  /// **'Nom du package'**
+  String get packageNameLabel;
+
+  /// No description provided for @versionLabel.
+  ///
+  /// In fr, this message translates to:
+  /// **'Version'**
+  String get versionLabel;
+
+  /// No description provided for @buildNumberLabel.
+  ///
+  /// In fr, this message translates to:
+  /// **'Numéro de build'**
+  String get buildNumberLabel;
+
+  /// No description provided for @platformLabel.
+  ///
+  /// In fr, this message translates to:
+  /// **'Plateforme'**
+  String get platformLabel;
+
+  /// No description provided for @releaseDateLabel.
+  ///
+  /// In fr, this message translates to:
+  /// **'Date de sortie'**
+  String get releaseDateLabel;
+
+  /// No description provided for @contactInformation.
+  ///
+  /// In fr, this message translates to:
+  /// **'Informations de contact'**
+  String get contactInformation;
+
+  /// No description provided for @copiedToClipboard.
+  ///
+  /// In fr, this message translates to:
+  /// **'{label} copié dans le presse-papier'**
+  String copiedToClipboard(String label);
+
+  /// No description provided for @legalSection.
+  ///
+  /// In fr, this message translates to:
+  /// **'Mentions légales'**
+  String get legalSection;
+
+  /// No description provided for @termsOfService.
+  ///
+  /// In fr, this message translates to:
+  /// **'Conditions d\'utilisation'**
+  String get termsOfService;
+
+  /// No description provided for @termsAndConditions.
+  ///
+  /// In fr, this message translates to:
+  /// **'Termes et conditions'**
+  String get termsAndConditions;
+
+  /// No description provided for @openSourceLicenses.
+  ///
+  /// In fr, this message translates to:
+  /// **'Licences open source'**
+  String get openSourceLicenses;
+
+  /// No description provided for @thirdPartyLicenses.
+  ///
+  /// In fr, this message translates to:
+  /// **'Licences tierces'**
+  String get thirdPartyLicenses;
+
+  /// No description provided for @developmentTeam.
+  ///
+  /// In fr, this message translates to:
+  /// **'Équipe de développement'**
+  String get developmentTeam;
+
+  /// No description provided for @developedBy.
+  ///
+  /// In fr, this message translates to:
+  /// **'Développé par'**
+  String get developedBy;
+
+  /// No description provided for @devTeamName.
+  ///
+  /// In fr, this message translates to:
+  /// **'L\'équipe de développement Localizy'**
+  String get devTeamName;
+
+  /// No description provided for @copyright.
+  ///
+  /// In fr, this message translates to:
+  /// **'© 2024 Localizy'**
+  String get copyright;
+
+  /// No description provided for @allRightsReserved.
+  ///
+  /// In fr, this message translates to:
+  /// **'Tous droits réservés'**
+  String get allRightsReserved;
+
+  /// No description provided for @madeWithLoveInVietnam.
+  ///
+  /// In fr, this message translates to:
+  /// **'Fait avec ❤️ au Vietnam'**
+  String get madeWithLoveInVietnam;
+
+  /// No description provided for @versionDisplay.
+  ///
+  /// In fr, this message translates to:
+  /// **'Version {version}'**
+  String versionDisplay(String version);
+
+  /// No description provided for @businessDashboard.
+  ///
+  /// In fr, this message translates to:
+  /// **'Tableau de bord professionnel'**
+  String get businessDashboard;
+
+  /// No description provided for @overview.
+  ///
+  /// In fr, this message translates to:
+  /// **'Vue d\'ensemble'**
+  String get overview;
+
+  /// No description provided for @totalLocations.
+  ///
+  /// In fr, this message translates to:
+  /// **'Emplacements totaux'**
+  String get totalLocations;
+
+  /// No description provided for @recentActivities.
+  ///
+  /// In fr, this message translates to:
+  /// **'Activités récentes'**
+  String get recentActivities;
+
+  /// No description provided for @failedToLoadData.
+  ///
+  /// In fr, this message translates to:
+  /// **'Impossible de charger les données'**
+  String get failedToLoadData;
+
+  /// No description provided for @noActivitiesYet.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucune activité pour le moment'**
+  String get noActivitiesYet;
+
+  /// No description provided for @minutesAgo.
+  ///
+  /// In fr, this message translates to:
+  /// **'il y a {count}min'**
+  String minutesAgo(int count);
+
+  /// No description provided for @hoursAgo.
+  ///
+  /// In fr, this message translates to:
+  /// **'il y a {count}h'**
+  String hoursAgo(int count);
+
+  /// No description provided for @daysAgo.
+  ///
+  /// In fr, this message translates to:
+  /// **'il y a {count}j'**
+  String daysAgo(int count);
+
+  /// No description provided for @idCopied.
+  ///
+  /// In fr, this message translates to:
+  /// **'ID copié'**
+  String get idCopied;
 }
 
 class _AppLocalizationsDelegate

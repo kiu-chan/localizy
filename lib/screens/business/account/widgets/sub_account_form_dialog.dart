@@ -203,7 +203,7 @@ class _SubAccountFormSheetState extends State<_SubAccountFormSheet> {
                   _FormField(
                     controller: widget.nameCtrl,
                     label: l10n.fullName,
-                    hint: 'Nguyễn Văn A',
+                    hint: l10n.enterFullNameHint,
                     icon: Icons.person_outline,
                     validator: (v) => (v == null || v.trim().isEmpty)
                         ? l10n.pleaseEnterFullName
@@ -213,7 +213,7 @@ class _SubAccountFormSheetState extends State<_SubAccountFormSheet> {
                   _FormField(
                     controller: widget.emailCtrl,
                     label: l10n.email,
-                    hint: 'email@company.com',
+                    hint: l10n.enterEmailHint,
                     icon: Icons.email_outlined,
                     keyboardType: TextInputType.emailAddress,
                     validator: (v) {
@@ -283,7 +283,7 @@ class _SubAccountFormSheetState extends State<_SubAccountFormSheet> {
                   _FormField(
                     controller: widget.phoneCtrl,
                     label: l10n.phoneOptional,
-                    hint: '0901 234 567',
+                    hint: l10n.enterPhoneHint,
                     icon: Icons.phone_outlined,
                     keyboardType: TextInputType.phone,
                   ),

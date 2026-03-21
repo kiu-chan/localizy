@@ -581,6 +581,7 @@ class _MapPageState extends State<MapPage> with AutomaticKeepAliveClientMixin {
   }
 
   void _onAddressSelected(AddressResult address) {
+    final l10n = AppLocalizations.of(context);
     final position = LatLng(address.lat, address.lng);
 
     setState(() {
@@ -628,7 +629,7 @@ class _MapPageState extends State<MapPage> with AutomaticKeepAliveClientMixin {
         ),
         duration: const Duration(seconds: 4),
         action: SnackBarAction(
-          label: 'Directions',
+          label: l10n?.getDirections ?? 'Directions',
           textColor: Colors.white,
           onPressed: () {
             setState(() {

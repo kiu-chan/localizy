@@ -125,9 +125,9 @@ class _SubAccountDetailSheet extends StatelessWidget {
                   onTap: () {
                     Clipboard.setData(ClipboardData(text: account.id));
                     ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text('ID copied'),
-                        duration: Duration(seconds: 1),
+                      SnackBar(
+                        content: Text(l10n.idCopied),
+                        duration: const Duration(seconds: 1),
                       ),
                     );
                   },

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:localizy/api/sub_account_api.dart';
+import 'package:localizy/l10n/app_localizations.dart';
 
 class BusinessDashboardPage extends StatefulWidget {
   const BusinessDashboardPage({super.key});
@@ -44,12 +45,13 @@ class _BusinessDashboardPageState extends State<BusinessDashboardPage> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       backgroundColor: Colors.grey.shade100,
       appBar: AppBar(
-        title: const Text(
-          'Business Dashboard',
-          style: TextStyle(
+        title: Text(
+          l10n.businessDashboard,
+          style: const TextStyle(
             fontWeight: FontWeight.bold,
             color: Colors.white,
           ),
@@ -76,6 +78,8 @@ class _BusinessDashboardPageState extends State<BusinessDashboardPage> {
   }
 
   Widget _buildBody() {
+    final l10n = AppLocalizations.of(context)!;
+
     if (_isLoading) {
       return const Center(child: CircularProgressIndicator());
     }
@@ -90,7 +94,7 @@ class _BusinessDashboardPageState extends State<BusinessDashboardPage> {
               Icon(Icons.error_outline, size: 48, color: Colors.red.shade400),
               const SizedBox(height: 16),
               Text(
-                'Không thể tải dữ liệu',
+                l10n.failedToLoadData,
                 style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.w600,
@@ -107,7 +111,7 @@ class _BusinessDashboardPageState extends State<BusinessDashboardPage> {
               ElevatedButton.icon(
                 onPressed: _loadDashboard,
                 icon: const Icon(Icons.refresh),
-                label: const Text('Thử lại'),
+                label: Text(l10n.retry),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.blue.shade700,
                   foregroundColor: Colors.white,
@@ -144,21 +148,21 @@ class _BusinessDashboardPageState extends State<BusinessDashboardPage> {
                 bottomRight: Radius.circular(30),
               ),
             ),
-            child: const Column(
+            child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Welcome Back!',
-                  style: TextStyle(
+                  l10n.welcomeBack,
+                  style: const TextStyle(
                     fontSize: 24,
                     fontWeight: FontWeight.bold,
                     color: Colors.white,
                   ),
                 ),
-                SizedBox(height: 8),
+                const SizedBox(height: 8),
                 Text(
-                  'Business Account',
-                  style: TextStyle(
+                  l10n.businessAccount,
+                  style: const TextStyle(
                     fontSize: 16,
                     color: Colors.white70,
                   ),
@@ -175,9 +179,9 @@ class _BusinessDashboardPageState extends State<BusinessDashboardPage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
-                  'Overview',
-                  style: TextStyle(
+                Text(
+                  l10n.overview,
+                  style: const TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
                   ),
@@ -188,7 +192,7 @@ class _BusinessDashboardPageState extends State<BusinessDashboardPage> {
                     Expanded(
                       child: _buildStatCard(
                         icon: Icons.location_on,
-                        title: 'Total Locations',
+                        title: l10n.totalLocations,
                         value: '${dashboard.totalLocations}',
                         color: Colors.blue,
                       ),
@@ -197,7 +201,7 @@ class _BusinessDashboardPageState extends State<BusinessDashboardPage> {
                     Expanded(
                       child: _buildStatCard(
                         icon: Icons.people,
-                        title: 'Sub Accounts',
+                        title: l10n.subAccounts,
                         value: '${dashboard.subAccountCount}',
                         color: Colors.orange,
                       ),
@@ -206,9 +210,9 @@ class _BusinessDashboardPageState extends State<BusinessDashboardPage> {
                 ),
 
                 const SizedBox(height: 24),
-                const Text(
-                  'Recent Activities',
-                  style: TextStyle(
+                Text(
+                  l10n.recentActivities,
+                  style: const TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
                   ),
@@ -220,7 +224,7 @@ class _BusinessDashboardPageState extends State<BusinessDashboardPage> {
                     child: Padding(
                       padding: const EdgeInsets.symmetric(vertical: 32),
                       child: Text(
-                        'Chưa có hoạt động nào',
+                        l10n.noActivitiesYet,
                         style: TextStyle(color: Colors.grey.shade500),
                       ),
                     ),
@@ -287,6 +291,7 @@ class _BusinessDashboardPageState extends State<BusinessDashboardPage> {
   }
 
   Widget _buildActivityItem(RecentActivity activity) {
+    final l10n = AppLocalizations.of(context)!;
     final (icon, color) = _activityStyle(activity.type);
 
     // Format timestamp: hiển thị ngày giờ đơn giản
@@ -294,11 +299,11 @@ class _BusinessDashboardPageState extends State<BusinessDashboardPage> {
     final diff = now.difference(activity.timestamp);
     String timeLabel;
     if (diff.inMinutes < 60) {
-      timeLabel = '${diff.inMinutes}m ago';
+      timeLabel = l10n.minutesAgo(diff.inMinutes);
     } else if (diff.inHours < 24) {
-      timeLabel = '${diff.inHours}h ago';
+      timeLabel = l10n.hoursAgo(diff.inHours);
     } else {
-      timeLabel = '${diff.inDays}d ago';
+      timeLabel = l10n.daysAgo(diff.inDays);
     }
 
     final subtitle = activity.actorName != null

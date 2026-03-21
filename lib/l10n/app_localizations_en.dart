@@ -1406,4 +1406,203 @@ class AppLocalizationsEn extends AppLocalizations {
   String passwordChangeFailed(Object error) {
     return 'Failed to change password: $error';
   }
+
+  @override
+  String get createdBy => 'Created by';
+
+  @override
+  String get verifiedBy => 'Verified by';
+
+  @override
+  String get notes => 'Notes';
+
+  @override
+  String get parkingAvailableSlots => 'Available / Total';
+
+  @override
+  String get parkingPriceLabel => 'Parking price';
+
+  @override
+  String get parkingInfoSection => 'Parking information';
+
+  @override
+  String get verifiedStatus => 'Verified';
+
+  @override
+  String get failedToLoadDetails => 'Failed to load details';
+
+  @override
+  String get searchAddressHint => 'Enter address, district, city...';
+
+  @override
+  String get searching => 'Searching...';
+
+  @override
+  String get noAddressesFound => 'No addresses found';
+
+  @override
+  String get searchTryDifferentKeywords =>
+      'Try searching with different keywords';
+
+  @override
+  String get parkingAvailableBadge => 'Parking available';
+
+  @override
+  String get totalParkingSpots => 'Total spots';
+
+  @override
+  String get availableParkingSpots => 'Available spots';
+
+  @override
+  String get pricePerHour => 'Price/hour';
+
+  @override
+  String get viewOnMaps => 'View on Maps';
+
+  @override
+  String get bookParking => 'Book parking';
+
+  @override
+  String get navigatingToPayment => 'Navigating to payment...';
+
+  @override
+  String get aboutLocalizy => 'About Localizy';
+
+  @override
+  String get appDescription =>
+      'Your smart solution for parking\nmanagement and location verification';
+
+  @override
+  String get keyFeatures => 'Key Features';
+
+  @override
+  String get smartParkingPaymentDesc => 'Pay for parking easily and securely';
+
+  @override
+  String get licensePlateScanning => 'License Plate Scanning';
+
+  @override
+  String get licensePlateScanningDesc =>
+      'Automatic OCR recognition for quick entry';
+
+  @override
+  String get addressVerificationDesc => 'Verify and manage your locations';
+
+  @override
+  String get realTimeNavigation => 'Real-time Navigation';
+
+  @override
+  String get realTimeNavigationDesc => 'Get directions to parking locations';
+
+  @override
+  String get transactionHistoryDesc => 'Track all your parking payments';
+
+  @override
+  String get multiLanguageSupport => 'Multi-language Support';
+
+  @override
+  String get multiLanguageSupportDesc => 'Available in multiple languages';
+
+  @override
+  String get appInformation => 'App Information';
+
+  @override
+  String get appNameLabel => 'App Name';
+
+  @override
+  String get packageNameLabel => 'Package Name';
+
+  @override
+  String get versionLabel => 'Version';
+
+  @override
+  String get buildNumberLabel => 'Build Number';
+
+  @override
+  String get platformLabel => 'Platform';
+
+  @override
+  String get releaseDateLabel => 'Release Date';
+
+  @override
+  String get contactInformation => 'Contact Information';
+
+  @override
+  String copiedToClipboard(String label) {
+    return '$label copied to clipboard';
+  }
+
+  @override
+  String get legalSection => 'Legal';
+
+  @override
+  String get termsOfService => 'Terms of Service';
+
+  @override
+  String get termsAndConditions => 'Terms and conditions';
+
+  @override
+  String get openSourceLicenses => 'Open Source Licenses';
+
+  @override
+  String get thirdPartyLicenses => 'Third-party licenses';
+
+  @override
+  String get developmentTeam => 'Development Team';
+
+  @override
+  String get developedBy => 'Developed by';
+
+  @override
+  String get devTeamName => 'Localizy Development Team';
+
+  @override
+  String get copyright => '© 2024 Localizy';
+
+  @override
+  String get allRightsReserved => 'All rights reserved';
+
+  @override
+  String get madeWithLoveInVietnam => 'Made with ❤️ in Vietnam';
+
+  @override
+  String versionDisplay(String version) {
+    return 'Version $version';
+  }
+
+  @override
+  String get businessDashboard => 'Business Dashboard';
+
+  @override
+  String get overview => 'Overview';
+
+  @override
+  String get totalLocations => 'Total Locations';
+
+  @override
+  String get recentActivities => 'Recent Activities';
+
+  @override
+  String get failedToLoadData => 'Failed to load data';
+
+  @override
+  String get noActivitiesYet => 'No activities yet';
+
+  @override
+  String minutesAgo(int count) {
+    return '${count}m ago';
+  }
+
+  @override
+  String hoursAgo(int count) {
+    return '${count}h ago';
+  }
+
+  @override
+  String daysAgo(int count) {
+    return '${count}d ago';
+  }
+
+  @override
+  String get idCopied => 'ID copied';
 }

@@ -129,7 +129,7 @@ class _AddressSearchPageState extends State<AddressSearchPage> {
               controller: _searchController,
               focusNode: _searchFocusNode,
               decoration: InputDecoration(
-                hintText: 'Enter address, district, city...',
+                hintText: l10n.searchAddressHint,
                 prefixIcon: Icon(
                   Icons.search,
                   color: _searchFocusNode.hasFocus
@@ -196,6 +196,8 @@ class _AddressSearchPageState extends State<AddressSearchPage> {
   }
 
   Widget _buildSearchResults() {
+    final l10n = AppLocalizations.of(context)!;
+
     if (_searchController.text.isEmpty) {
       if (_isLoadingAll) {
         return Center(
@@ -207,7 +209,7 @@ class _AddressSearchPageState extends State<AddressSearchPage> {
       if (_allAddresses.isEmpty) {
         return Center(
           child: Text(
-            'No addresses found',
+            l10n.noAddressesFound,
             style: TextStyle(fontSize: 14, color: Colors.grey.shade600),
           ),
         );
@@ -231,7 +233,7 @@ class _AddressSearchPageState extends State<AddressSearchPage> {
               valueColor: AlwaysStoppedAnimation<Color>(Colors.purple.shade700),
             ),
             const SizedBox(height: 16),
-            const Text('Searching...'),
+            Text(l10n.searching),
           ],
         ),
       );
@@ -244,13 +246,13 @@ class _AddressSearchPageState extends State<AddressSearchPage> {
           children: [
             Icon(Icons.search_off, size: 64, color: Colors.grey.shade400),
             const SizedBox(height: 16),
-            const Text(
-              'No results found',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+            Text(
+              l10n.mapNoSearchResults,
+              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
             ),
             const SizedBox(height: 8),
             Text(
-              'Try searching with different keywords',
+              l10n.searchTryDifferentKeywords,
               style: TextStyle(fontSize: 14, color: Colors.grey.shade600),
             ),
           ],
@@ -464,6 +466,7 @@ class _AddressDetailSheetState extends State<_AddressDetailSheet> {
   }
 
   Widget _buildContent(ScrollController controller) {
+    final l10n = AppLocalizations.of(context)!;
     final d = _detail;
     final basic = widget.basicInfo;
 
@@ -505,9 +508,9 @@ class _AddressDetailSheetState extends State<_AddressDetailSheet> {
             if (code.isNotEmpty)
               _badge(code, Icons.qr_code, Colors.purple),
             if (isVerified)
-              _badge('Verified', Icons.verified, Colors.green),
+              _badge(l10n.verifiedStatus, Icons.verified, Colors.green),
             if (parkingAvailable)
-              _badge('Parking available', Icons.local_parking, Colors.blue),
+              _badge(l10n.parkingAvailableBadge, Icons.local_parking, Colors.blue),
           ],
         ),
 
@@ -516,24 +519,24 @@ class _AddressDetailSheetState extends State<_AddressDetailSheet> {
         const SizedBox(height: 12),
 
         // Info rows
-        _infoRow(Icons.location_city, 'City', cityName),
+        _infoRow(Icons.location_city, l10n.cityLabel, cityName),
         if (d?.userName != null && d!.userName.isNotEmpty) ...[
           const SizedBox(height: 12),
-          _infoRow(Icons.person, 'Added by', d.userName),
+          _infoRow(Icons.person, l10n.mapAddedBy, d.userName),
         ],
         if (d?.validatorName != null && d!.validatorName!.isNotEmpty) ...[
           const SizedBox(height: 12),
-          _infoRow(Icons.how_to_reg, 'Verified by', d.validatorName!),
+          _infoRow(Icons.how_to_reg, l10n.verifiedBy, d.validatorName!),
         ],
         const SizedBox(height: 12),
         _infoRow(
           Icons.map,
-          'Coordinates',
+          l10n.coordinates,
           '${widget.basicInfo['lat'].toStringAsFixed(6)}, ${widget.basicInfo['lng'].toStringAsFixed(6)}',
         ),
         if (d?.formattedCreatedAt != null) ...[
           const SizedBox(height: 12),
-          _infoRow(Icons.calendar_today, 'Created at', d!.formattedCreatedAt!),
+          _infoRow(Icons.calendar_today, l10n.createdAt, d!.formattedCreatedAt!),
         ],
 
         // Parking info
@@ -541,12 +544,12 @@ class _AddressDetailSheetState extends State<_AddressDetailSheet> {
           const SizedBox(height: 12),
           const Divider(),
           const SizedBox(height: 12),
-          _infoRow(Icons.local_parking, 'Total spots', '$totalSpots spots'),
+          _infoRow(Icons.local_parking, l10n.totalParkingSpots, '$totalSpots'),
           const SizedBox(height: 12),
-          _infoRow(Icons.check_circle_outline, 'Available spots', '$availableSpots spots'),
+          _infoRow(Icons.check_circle_outline, l10n.availableParkingSpots, '$availableSpots'),
           if (pricePerHour > 0) ...[
             const SizedBox(height: 12),
-            _infoRow(Icons.payments_outlined, 'Price/hour', d?.formattedPricePerHour ?? ''),
+            _infoRow(Icons.payments_outlined, l10n.pricePerHour, d?.formattedPricePerHour ?? ''),
           ],
         ],
 
@@ -554,7 +557,7 @@ class _AddressDetailSheetState extends State<_AddressDetailSheet> {
           const SizedBox(height: 12),
           const Divider(),
           const SizedBox(height: 12),
-          _infoRow(Icons.comment_outlined, 'Notes', d.comments!),
+          _infoRow(Icons.comment_outlined, l10n.notes, d.comments!),
         ],
 
         const SizedBox(height: 24),
@@ -569,7 +572,7 @@ class _AddressDetailSheetState extends State<_AddressDetailSheet> {
                   widget.basicInfo['lng'] as double,
                 ),
                 icon: const Icon(Icons.map_outlined, size: 18),
-                label: const Text('View on Maps'),
+                label: Text(l10n.viewOnMaps),
                 style: OutlinedButton.styleFrom(
                   padding: const EdgeInsets.symmetric(vertical: 12),
                   side: BorderSide(color: Colors.grey.shade300, width: 1.5),
@@ -586,11 +589,11 @@ class _AddressDetailSheetState extends State<_AddressDetailSheet> {
                   onPressed: () {
                     Navigator.pop(context);
                     ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Navigating to payment...')),
+                      SnackBar(content: Text(l10n.navigatingToPayment)),
                     );
                   },
                   icon: const Icon(Icons.payment, size: 18),
-                  label: const Text('Book parking'),
+                  label: Text(l10n.bookParking),
                   style: ElevatedButton.styleFrom(
                     padding: const EdgeInsets.symmetric(vertical: 12),
                     backgroundColor: Colors.green.shade700,

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:localizy/l10n/app_localizations.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
 class AboutPage extends StatefulWidget {
@@ -38,6 +39,7 @@ class _AboutPageState extends State<AboutPage> {
   }
 
   void _copyToClipboard(String text, String label) {
+    final l10n = AppLocalizations.of(context)!;
     Clipboard.setData(ClipboardData(text: text));
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
@@ -45,7 +47,7 @@ class _AboutPageState extends State<AboutPage> {
           children: [
             const Icon(Icons.check_circle, color: Colors.white),
             const SizedBox(width: 12),
-            Expanded(child: Text('$label copied to clipboard')),
+            Expanded(child: Text(l10n.copiedToClipboard(label))),
           ],
         ),
         backgroundColor: Colors.green.shade700,
@@ -58,12 +60,13 @@ class _AboutPageState extends State<AboutPage> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       backgroundColor: Colors.grey. shade50,
       appBar: AppBar(
-        title: const Text(
-          'About Localizy',
-          style:  TextStyle(fontWeight: FontWeight.w600),
+        title: Text(
+          l10n.aboutLocalizy,
+          style:  const TextStyle(fontWeight: FontWeight.w600),
         ),
         backgroundColor: Colors.green.shade700,
         foregroundColor: Colors.white,
@@ -133,7 +136,8 @@ class _AboutPageState extends State<AboutPage> {
                             borderRadius: BorderRadius.circular(20),
                           ),
                           child: Text(
-                            'Version ${_packageInfo?.version ?? '0.1.0'}${_packageInfo?.buildNumber. isNotEmpty == true ? ' (${_packageInfo! .buildNumber})' : ''}',
+                            l10n.versionDisplay(_packageInfo?.version ?? '0.1.0') +
+                                (_packageInfo?.buildNumber.isNotEmpty == true ? ' (${_packageInfo!.buildNumber})' : ''),
                             style: const TextStyle(
                               fontSize: 14,
                               color: Colors. white,
@@ -145,8 +149,8 @@ class _AboutPageState extends State<AboutPage> {
                         const SizedBox(height: 16),
 
                         // Description
-                        const Text(
-                          'Your smart solution for parking\nmanagement and location verification',
+                        Text(
+                          l10n.appDescription,
                           textAlign: TextAlign.center,
                           style: TextStyle(
                             fontSize: 16,
@@ -166,75 +170,75 @@ class _AboutPageState extends State<AboutPage> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment. start,
                       children: [
-                        _buildSectionTitle('Key Features'),
+                        _buildSectionTitle(l10n.keyFeatures),
                         const SizedBox(height: 12),
                         _buildFeatureCard(
                           Icons. local_parking,
-                          'Smart Parking Payment',
-                          'Pay for parking easily and securely',
+                          l10n.parkingPayment,
+                          l10n.smartParkingPaymentDesc,
                           Colors.blue,
                         ),
                         const SizedBox(height: 12),
                         _buildFeatureCard(
                           Icons.qr_code_scanner,
-                          'License Plate Scanning',
-                          'Automatic OCR recognition for quick entry',
+                          l10n.licensePlateScanning,
+                          l10n.licensePlateScanningDesc,
                           Colors.red,
                         ),
                         const SizedBox(height: 12),
                         _buildFeatureCard(
                           Icons. verified,
-                          'Address Verification',
-                          'Verify and manage your locations',
+                          l10n.addressVerification,
+                          l10n.addressVerificationDesc,
                           Colors.purple,
                         ),
                         const SizedBox(height: 12),
                         _buildFeatureCard(
                           Icons.navigation,
-                          'Real-time Navigation',
-                          'Get directions to parking locations',
+                          l10n.realTimeNavigation,
+                          l10n.realTimeNavigationDesc,
                           Colors.orange,
                         ),
                         const SizedBox(height: 12),
                         _buildFeatureCard(
                           Icons.history,
-                          'Transaction History',
-                          'Track all your parking payments',
+                          l10n.transactionHistory,
+                          l10n.transactionHistoryDesc,
                           Colors.teal,
                         ),
                         const SizedBox(height:  12),
                         _buildFeatureCard(
                           Icons.language,
-                          'Multi-language Support',
-                          'Available in multiple languages',
+                          l10n.multiLanguageSupport,
+                          l10n.multiLanguageSupportDesc,
                           Colors.indigo,
                         ),
 
                         const SizedBox(height: 24),
 
                         // App Information
-                        _buildSectionTitle('App Information'),
+                        _buildSectionTitle(l10n.appInformation),
                         const SizedBox(height: 12),
-                        _buildInfoCard(),
+                        _buildInfoCard(l10n),
 
                         const SizedBox(height: 24),
 
                         // Contact & Links
-                        _buildSectionTitle('Contact Information'),
+                        _buildSectionTitle(l10n.contactInformation),
                         const SizedBox(height: 12),
-                        _buildContactCard(),
+                        _buildContactCard(l10n),
 
                         const SizedBox(height:  24),
 
                         // Legal
-                        _buildSectionTitle('Legal'),
+                        _buildSectionTitle(l10n.legalSection),
                         const SizedBox(height: 12),
-                        _buildLegalCard(),
+                        _buildLegalCard(l10n),
 
                         const SizedBox(height: 24),
 
                         // Developer Info
-                        _buildSectionTitle('Development Team'),
+                        _buildSectionTitle(l10n.developmentTeam),
                         const SizedBox(height: 12),
                         _buildDeveloperCard(),
 
@@ -245,7 +249,7 @@ class _AboutPageState extends State<AboutPage> {
                           child: Column(
                             children: [
                               Text(
-                                '© 2024 Localizy',
+                                l10n.copyright,
                                 style: TextStyle(
                                   fontSize: 14,
                                   color: Colors.grey.shade600,
@@ -254,7 +258,7 @@ class _AboutPageState extends State<AboutPage> {
                               ),
                               const SizedBox(height: 4),
                               Text(
-                                'All rights reserved',
+                                l10n.allRightsReserved,
                                 style:  TextStyle(
                                   fontSize: 12,
                                   color: Colors.grey.shade500,
@@ -262,7 +266,7 @@ class _AboutPageState extends State<AboutPage> {
                               ),
                               const SizedBox(height: 16),
                               Text(
-                                'Made with ❤️ in Vietnam',
+                                l10n.madeWithLoveInVietnam,
                                 style: TextStyle(
                                   fontSize: 12,
                                   color:  Colors.grey.shade500,
@@ -350,7 +354,7 @@ class _AboutPageState extends State<AboutPage> {
     );
   }
 
-  Widget _buildInfoCard() {
+  Widget _buildInfoCard(AppLocalizations l10n) {
     return Container(
       padding: const EdgeInsets. all(20),
       decoration: BoxDecoration(
@@ -366,19 +370,19 @@ class _AboutPageState extends State<AboutPage> {
       ),
       child: Column(
         children: [
-          _buildInfoRow('App Name', _packageInfo?. appName ?? 'Localizy'),
+          _buildInfoRow(l10n.appNameLabel, _packageInfo?. appName ?? 'Localizy'),
           const SizedBox(height: 12),
-          _buildInfoRow('Package Name', _packageInfo?.packageName ?? '-'),
+          _buildInfoRow(l10n.packageNameLabel, _packageInfo?.packageName ?? '-'),
           const SizedBox(height: 12),
-          _buildInfoRow('Version', _packageInfo?.version ?? '0.1.0'),
+          _buildInfoRow(l10n.versionLabel, _packageInfo?.version ?? '0.1.0'),
           if (_packageInfo?.buildNumber.isNotEmpty == true) ...[
             const SizedBox(height:  12),
-            _buildInfoRow('Build Number', _packageInfo!.buildNumber),
+            _buildInfoRow(l10n.buildNumberLabel, _packageInfo!.buildNumber),
           ],
           const SizedBox(height: 12),
-          _buildInfoRow('Platform', 'Android & iOS'),
+          _buildInfoRow(l10n.platformLabel, 'Android & iOS'),
           const SizedBox(height: 12),
-          _buildInfoRow('Release Date', 'January 2024'),
+          _buildInfoRow(l10n.releaseDateLabel, 'January 2024'),
         ],
       ),
     );
@@ -410,7 +414,7 @@ class _AboutPageState extends State<AboutPage> {
     );
   }
 
-  Widget _buildContactCard() {
+  Widget _buildContactCard(AppLocalizations l10n) {
     return Container(
       padding: const EdgeInsets. all(20),
       decoration: BoxDecoration(
@@ -428,30 +432,30 @@ class _AboutPageState extends State<AboutPage> {
         children:  [
           _buildContactItem(
             Icons.email,
-            'Email',
+            l10n.email,
             'support@localizy.com',
-            () => _copyToClipboard('support@localizy.com', 'Email'),
+            () => _copyToClipboard('support@localizy.com', l10n.email),
           ),
           const Divider(height: 24),
           _buildContactItem(
             Icons.phone,
-            'Phone',
+            l10n.phone,
             '+84 123 456 789',
-            () => _copyToClipboard('+84123456789', 'Phone number'),
+            () => _copyToClipboard('+84123456789', l10n.phone),
           ),
           const Divider(height: 24),
           _buildContactItem(
             Icons.language,
-            'Website',
+            l10n.website,
             'www.localizy.com',
-            () => _copyToClipboard('www.localizy.com', 'Website'),
+            () => _copyToClipboard('www.localizy.com', l10n.website),
           ),
           const Divider(height: 24),
           _buildContactItem(
             Icons. location_city,
-            'Address',
+            l10n.address,
             'Ho Chi Minh City, Vietnam',
-            () => _copyToClipboard('Ho Chi Minh City, Vietnam', 'Address'),
+            () => _copyToClipboard('Ho Chi Minh City, Vietnam', l10n.address),
           ),
         ],
       ),
@@ -506,7 +510,7 @@ class _AboutPageState extends State<AboutPage> {
     );
   }
 
-  Widget _buildLegalCard() {
+  Widget _buildLegalCard(AppLocalizations l10n) {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
@@ -524,26 +528,26 @@ class _AboutPageState extends State<AboutPage> {
         children: [
           _buildLegalItem(
             Icons.privacy_tip_outlined,
-            'Privacy Policy',
-            'How we handle your data',
+            l10n.privacyPolicy,
+            l10n.readPrivacyPolicy,
             () {
-              _showComingSoon('Privacy Policy');
+              _showComingSoon(l10n.privacyPolicy);
             },
           ),
           const Divider(height: 24),
           _buildLegalItem(
             Icons.description_outlined,
-            'Terms of Service',
-            'Terms and conditions',
+            l10n.termsOfService,
+            l10n.termsAndConditions,
             () {
-              _showComingSoon('Terms of Service');
+              _showComingSoon(l10n.termsOfService);
             },
           ),
           const Divider(height: 24),
           _buildLegalItem(
             Icons. policy_outlined,
-            'Open Source Licenses',
-            'Third-party licenses',
+            l10n.openSourceLicenses,
+            l10n.thirdPartyLicenses,
             () {
               showLicensePage(
                 context: context,
@@ -618,6 +622,7 @@ class _AboutPageState extends State<AboutPage> {
   }
 
   Widget _buildDeveloperCard() {
+    final l10n = AppLocalizations.of(context)!;
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
@@ -652,16 +657,16 @@ class _AboutPageState extends State<AboutPage> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text(
-                      'Developed by',
-                      style:  TextStyle(
+                    Text(
+                      l10n.developedBy,
+                      style:  const TextStyle(
                         fontSize:  12,
                         color: Colors.grey,
                       ),
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      'Localizy Development Team',
+                      l10n.devTeamName,
                       style: TextStyle(
                         fontSize: 16,
                         fontWeight:  FontWeight.bold,
@@ -713,13 +718,14 @@ class _AboutPageState extends State<AboutPage> {
   }
 
   void _showComingSoon(String feature) {
+    final l10n = AppLocalizations.of(context)!;
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Row(
           children: [
             const Icon(Icons.info_outline, color: Colors.white),
             const SizedBox(width: 12),
-            Expanded(child: Text('$feature - Coming soon')),
+            Expanded(child: Text(l10n.featureComingSoon(feature))),
           ],
         ),
         backgroundColor: Colors.blue.shade700,
