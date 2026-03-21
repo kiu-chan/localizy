@@ -1151,6 +1151,10 @@ class AppLocalizationsFr extends AppLocalizations {
   String get validatorVerifyAddress => 'Vérifier l\'adresse';
 
   @override
+  String get validatorConfirmAppointmentDesc =>
+      'Veuillez confirmer que vous avez reçu et allez procéder à cette mission de validation.';
+
+  @override
   String get validatorVerifyAddressDesc =>
       'Confirmez que l\'adresse a été vérifiée sur place.';
 

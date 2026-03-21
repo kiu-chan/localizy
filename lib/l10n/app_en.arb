@@ -413,6 +413,7 @@
   "validatorVerify": "Verify",
   "validatorReject": "Reject",
   "validatorVerifyAddress": "Verify Address",
+  "validatorConfirmAppointmentDesc": "Please confirm that you have received and will proceed with this validation assignment.",
   "validatorVerifyAddressDesc": "Confirm the address has been verified on-site.",
   "validatorNotesHint": "e.g. Address verified on-site, location is accurate",
   "validatorRejectAddress": "Reject Address",

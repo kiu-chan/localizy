@@ -413,6 +413,7 @@
   "validatorVerify": "Vérifier",
   "validatorReject": "Rejeter",
   "validatorVerifyAddress": "Vérifier l'adresse",
+  "validatorConfirmAppointmentDesc": "Veuillez confirmer que vous avez reçu et allez procéder à cette mission de validation.",
   "validatorVerifyAddressDesc": "Confirmez que l'adresse a été vérifiée sur place.",
   "validatorNotesHint": "ex. Adresse vérifiée sur place, l'emplacement est exact",
   "validatorRejectAddress": "Rejeter l'adresse",

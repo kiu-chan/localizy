@@ -2210,6 +2210,12 @@ abstract class AppLocalizations {
   /// **'Vérifier l\'adresse'**
   String get validatorVerifyAddress;
 
+  /// No description provided for @validatorConfirmAppointmentDesc.
+  ///
+  /// In fr, this message translates to:
+  /// **'Veuillez confirmer que vous avez reçu et allez procéder à cette mission de validation.'**
+  String get validatorConfirmAppointmentDesc;
+
   /// No description provided for @validatorVerifyAddressDesc.
   ///
   /// In fr, this message translates to:
