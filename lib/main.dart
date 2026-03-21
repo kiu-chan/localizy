@@ -27,7 +27,7 @@ class MyApp extends StatelessWidget {
     return Consumer<LanguageManager>(
       builder: (context, languageManager, child) {
         return MaterialApp(
-          title: 'Citizen',
+          title: 'Citea',
           debugShowCheckedModeBanner: false,
           locale: languageManager.locale,
           supportedLocales: const [

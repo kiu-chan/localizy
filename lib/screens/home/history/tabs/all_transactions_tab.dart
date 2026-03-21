@@ -613,7 +613,7 @@ class _AllTransactionsTabState extends State<AllTransactionsTab>
                             size: 12, color: headerColor),
                         const SizedBox(width: 5),
                         Text(
-                          'Official Receipt · Citizen',
+                          'Official Receipt · Citea',
                           style: TextStyle(
                             color: Colors.grey.shade600,
                             fontSize: 11,

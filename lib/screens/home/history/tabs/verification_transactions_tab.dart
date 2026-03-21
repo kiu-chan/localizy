@@ -823,7 +823,7 @@ class _VerificationTransactionsTabState extends State<VerificationTransactionsTa
                             size: 12, color: headerColor),
                         SizedBox(width: 5),
                         Text(
-                          'Official Certificate · Citizen',
+                          'Official Certificate · Citea',
                           style: TextStyle(
                             color: Color(0xFF757575),
                             fontSize: 11,

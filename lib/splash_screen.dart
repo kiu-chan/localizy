@@ -14,7 +14,7 @@ class SplashScreen extends StatefulWidget {
 class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderStateMixin {
   late AnimationController _animationController;
   late Animation<double> _logoAnimation;
-  final String appName = 'Citizen';
+  final String appName = 'Citea';
   final List<bool> _visibleLetters = [];
 
   @override
@@ -140,7 +140,7 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
                     child: ClipRRect(
                       borderRadius: BorderRadius. circular(35),
                       child: Image.asset(
-                        'assets/icon/app_icon.png',
+                        'assets/icon/logo.png',
                         fit: BoxFit.cover,
                         errorBuilder: (context, error, stackTrace) {
                           // Fallback nếu không tìm thấy icon
