@@ -58,6 +58,14 @@ class AssignmentCard extends StatelessWidget {
     );
   }
 
+  String? _locationLabel(ValidationAssignment a) {
+    if (a.address?.lat != null && a.address?.lng != null) {
+      return '${a.address!.lat!.toStringAsFixed(5)}, ${a.address!.lng!.toStringAsFixed(5)}';
+    }
+    if (a.address?.cityCode.isNotEmpty == true) return a.address!.cityCode;
+    return null;
+  }
+
   String _formatDate(DateTime dt) {
     final l = dt.toLocal();
     return '${l.day.toString().padLeft(2, '0')}/${l.month.toString().padLeft(2, '0')}/${l.year}';
@@ -124,13 +132,18 @@ class AssignmentCard extends StatelessWidget {
                 const SizedBox(height: 6),
                 Row(
                   children: [
-                    Icon(Icons.location_on,
-                        size: 14, color: Colors.grey.shade500),
-                    const SizedBox(width: 4),
-                    Text(a.address?.cityCode ?? '-',
-                        style: TextStyle(
-                            fontSize: 13, color: Colors.grey.shade600)),
-                    const SizedBox(width: 16),
+                    if (_locationLabel(a) != null) ...[
+                      Icon(
+                        a.address?.lat != null ? Icons.my_location : Icons.location_on,
+                        size: 14,
+                        color: Colors.grey.shade500,
+                      ),
+                      const SizedBox(width: 4),
+                      Text(_locationLabel(a)!,
+                          style: TextStyle(
+                              fontSize: 13, color: Colors.grey.shade600)),
+                      const SizedBox(width: 16),
+                    ],
                     Icon(Icons.calendar_today,
                         size: 14, color: Colors.grey.shade500),
                     const SizedBox(width: 4),
