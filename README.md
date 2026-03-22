@@ -35,7 +35,7 @@ open Runner.xcworkspace
 
 1. Truy cập [Google Cloud Console](https://console.cloud.google.com/)
 2. Enable **Maps SDK for iOS**
-3. Tạo **API Key** → Giới hạn theo iOS Bundle ID:  `com.cameroon.localizy`
+3. Tạo **API Key** → Giới hạn theo iOS Bundle ID:  `com.cameroon.citea`
 4. Copy API key và thay vào `YOUR_API_KEY_HERE`
 
 ### 4. Rebuild
