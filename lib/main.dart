@@ -1,4 +1,6 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'firebase_options.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:localizy/l10n/app_localizations.dart';
 import 'package:localizy/splash_screen.dart';
@@ -9,6 +11,7 @@ import 'utils/config_manager.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   await ConfigManager.initialize();
   
   runApp(

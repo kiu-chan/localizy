@@ -30,6 +30,10 @@
   
   "resetPassword": "Reset password",
   "resetPasswordDescription": "Enter your email address and we will send you instructions to reset your password",
+  "signInWithGoogle": "Sign in with Google",
+  "orContinueWith": "Or continue with",
+  "googleLoginFailed": "Google sign-in failed",
+
   "sendRequest": "Send request",
   "checkEmail": "Check your email! ",
   "checkEmailDescription":  "We have sent password reset instructions to",

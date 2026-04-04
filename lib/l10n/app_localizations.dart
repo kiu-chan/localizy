@@ -254,6 +254,24 @@ abstract class AppLocalizations {
   /// **'Entrez votre adresse e-mail et nous vous enverrons des instructions pour réinitialiser votre mot de passe'**
   String get resetPasswordDescription;
 
+  /// No description provided for @signInWithGoogle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Se connecter avec Google'**
+  String get signInWithGoogle;
+
+  /// No description provided for @orContinueWith.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ou continuer avec'**
+  String get orContinueWith;
+
+  /// No description provided for @googleLoginFailed.
+  ///
+  /// In fr, this message translates to:
+  /// **'Échec de la connexion Google'**
+  String get googleLoginFailed;
+
   /// No description provided for @sendRequest.
   ///
   /// In fr, this message translates to:

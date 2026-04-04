@@ -30,6 +30,10 @@
   
   "resetPassword": "Réinitialiser le mot de passe",
   "resetPasswordDescription": "Entrez votre adresse e-mail et nous vous enverrons des instructions pour réinitialiser votre mot de passe",
+  "signInWithGoogle": "Se connecter avec Google",
+  "orContinueWith": "Ou continuer avec",
+  "googleLoginFailed": "Échec de la connexion Google",
+
   "sendRequest": "Envoyer la demande",
   "checkEmail": "Vérifiez votre e-mail! ",
   "checkEmailDescription":  "Nous avons envoyé des instructions de réinitialisation de mot de passe à",

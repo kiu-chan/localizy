@@ -88,6 +88,15 @@ class AppLocalizationsEn extends AppLocalizations {
       'Enter your email address and we will send you instructions to reset your password';
 
   @override
+  String get signInWithGoogle => 'Sign in with Google';
+
+  @override
+  String get orContinueWith => 'Or continue with';
+
+  @override
+  String get googleLoginFailed => 'Google sign-in failed';
+
+  @override
   String get sendRequest => 'Send request';
 
   @override

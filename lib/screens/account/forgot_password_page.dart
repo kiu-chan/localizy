@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:localizy/api/auth_api.dart';
 import 'package:localizy/l10n/app_localizations.dart';
 import 'dart:math' as math;
 
@@ -22,17 +23,26 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
   }
 
   void _handleResetPassword() async {
-    if (_formKey. currentState!.validate()) {
-      setState(() {
-        _isLoading = true;
-      });
+    if (!_formKey.currentState!.validate()) return;
 
-      await Future.delayed(const Duration(seconds: 2));
+    setState(() { _isLoading = true; });
 
-      setState(() {
-        _isLoading = false;
-        _emailSent = true;
-      });
+    try {
+      await AuthService.forgotPassword(email: _emailController.text.trim());
+      if (!mounted) return;
+      setState(() { _emailSent = true; });
+    } on AuthException catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(e.message), backgroundColor: Colors.red),
+      );
+    } catch (_) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Network error'), backgroundColor: Colors.red),
+      );
+    } finally {
+      if (mounted) setState(() { _isLoading = false; });
     }
   }
 

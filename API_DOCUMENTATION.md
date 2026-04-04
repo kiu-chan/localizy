@@ -141,7 +141,8 @@ Hệ thống sử dụng **xóa mềm (soft delete)** cho tất cả các bảng
 
 | Module | Mô tả | Link |
 |--------|-------|------|
-| 🔑 Auth | Đăng ký, đăng nhập, kiểm tra phiên | [auth.md](docs/auth.md) |
+| 🔌 Integration Guide | Hướng dẫn tích hợp cho Web & Mobile App | [integration-guide.md](docs/integration-guide.md) |
+| 🔑 Auth | Đăng ký, đăng nhập, quên/đặt lại mật khẩu | [auth.md](docs/auth.md) |
 | 📊 Dashboard | Tổng quan Admin & Validator | [admin-dashboard.md](docs/admin-dashboard.md) |
 | 👥 Users | Quản lý người dùng | [users.md](docs/users.md) |
 | 🏢 Business | Quản lý doanh nghiệp & tài khoản con | [business.md](docs/business.md) |

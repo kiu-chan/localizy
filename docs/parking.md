@@ -186,7 +186,85 @@ GET /api/parking?pageNumber={n}&pageSize={n}
 
 ---
 
-## 7. Gia hạn vé đỗ xe
+## 7. Lọc vé đỗ xe (Admin)
+
+```http
+GET /api/parking/filter?pageNumber={n}&pageSize={n}
+```
+
+**Authorization:** Admin
+
+**Query Parameters:**
+
+| Tham số | Kiểu | Mô tả |
+|---------|------|-------|
+| `status` | string | Lọc theo trạng thái: `active` \| `expired` \| `cancelled` |
+| `fromDate` | datetime | Lọc vé tạo từ ngày này (ISO 8601) |
+| `toDate` | datetime | Lọc vé tạo đến ngày này (ISO 8601) |
+| `addressId` | Guid | Lọc theo điểm đỗ xe |
+| `licensePlate` | string | Tìm kiếm theo biển số (chứa chuỗi) |
+| `pageNumber` | int | Trang hiện tại (default: 1) |
+| `pageSize` | int | Số bản ghi/trang (default: 20, max: 100) |
+
+**Examples:**
+```
+GET /api/parking/filter?status=active&pageNumber=1&pageSize=20
+GET /api/parking/filter?fromDate=2024-01-01T00:00:00Z&toDate=2024-01-31T23:59:59Z
+GET /api/parking/filter?licensePlate=30A&addressId=b2c3d4e5-...
+```
+
+**Response:** `200 OK` - PagedResult of Parking Ticket objects
+
+---
+
+## 8. Thống kê đỗ xe (Admin)
+
+```http
+GET /api/parking/stats
+```
+
+**Authorization:** Admin
+
+**Response:** `200 OK`
+```json
+{
+  "totalTickets": 350,
+  "activeTickets": 42,
+  "expiredTickets": 295,
+  "todayTickets": 18,
+  "totalRevenue": 7850000
+}
+```
+
+| Field | Mô tả |
+|-------|-------|
+| `totalTickets` | Tổng số vé đã tạo |
+| `activeTickets` | Số vé đang còn hiệu lực |
+| `expiredTickets` | Số vé đã hết hạn |
+| `todayTickets` | Số vé được tạo hôm nay |
+| `totalRevenue` | Tổng doanh thu (VND) |
+
+---
+
+## 9. Huỷ vé đỗ xe (Admin)
+
+```http
+PATCH /api/parking/{id}/cancel
+```
+
+**Authorization:** Admin
+
+**Response:** `200 OK` - Parking Ticket object với `status: "cancelled"`
+
+> Nếu vé đang **Active**, hệ thống tự động giải phóng 1 chỗ đậu tại bãi (`availableParkingSpots++`).
+
+**Errors:**
+- `400` - Vé đã bị huỷ trước đó
+- `404` - Vé không tồn tại
+
+---
+
+## 10. Gia hạn vé đỗ xe
 
 ```http
 POST /api/parking/{id}/extend

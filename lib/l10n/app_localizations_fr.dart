@@ -90,6 +90,15 @@ class AppLocalizationsFr extends AppLocalizations {
       'Entrez votre adresse e-mail et nous vous enverrons des instructions pour réinitialiser votre mot de passe';
 
   @override
+  String get signInWithGoogle => 'Se connecter avec Google';
+
+  @override
+  String get orContinueWith => 'Ou continuer avec';
+
+  @override
+  String get googleLoginFailed => 'Échec de la connexion Google';
+
+  @override
   String get sendRequest => 'Envoyer la demande';
 
   @override

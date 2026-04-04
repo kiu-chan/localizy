@@ -23,6 +23,7 @@ class _LoginPageState extends State<LoginPage> {
   final _passwordFocusNode = FocusNode();
   bool _isPasswordVisible = false;
   bool _isLoading = false;
+  bool _isGoogleLoading = false;
 
   @override
   void dispose() {
@@ -31,6 +32,42 @@ class _LoginPageState extends State<LoginPage> {
     _emailFocusNode.dispose();
     _passwordFocusNode.dispose();
     super.dispose();
+  }
+
+  Future<void> _handleGoogleLogin() async {
+    debugPrint('[Google Login] Starting Google sign-in...');
+    setState(() { _isGoogleLoading = true; });
+    try {
+      final user = await AuthService.googleLogin();
+      debugPrint('[Google Login] Success: email=${user.email} role=${user.role} userId=${user.userId}');
+      if (!mounted) return;
+      final role = user.role.toLowerCase();
+      if (role.contains('validator')) {
+        debugPrint('[Google Login] Navigating to ValidatorMainPage');
+        Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => const ValidatorMainPage()));
+      } else if (role.contains('business') || role.contains('subaccount')) {
+        debugPrint('[Google Login] Navigating to BusinessMainPage');
+        Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => const BusinessMainPage()));
+      } else {
+        debugPrint('[Google Login] Navigating to MainPage');
+        Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => const MainPage()));
+      }
+    } on AuthException catch (e) {
+      debugPrint('[Google Login] AuthException: ${e.message}');
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(e.message), backgroundColor: Colors.red),
+      );
+    } catch (e, st) {
+      debugPrint('[Google Login] Unexpected error: $e\n$st');
+      if (!mounted) return;
+      final l10n = AppLocalizations.of(context)!;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(l10n.googleLoginFailed), backgroundColor: Colors.red),
+      );
+    } finally {
+      if (mounted) setState(() { _isGoogleLoading = false; });
+    }
   }
 
   @override
@@ -352,6 +389,62 @@ Future<void> _handleLogin() async {
                               ),
                             ),
                           ],
+                        ),
+                      ),
+                      const SizedBox(height: 24),
+                      Row(
+                        children: [
+                          const Expanded(child: Divider(color: Colors.white54)),
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 12),
+                            child: Text(
+                              l10n.orContinueWith,
+                              style: const TextStyle(color: Colors.white70, fontSize: 13),
+                            ),
+                          ),
+                          const Expanded(child: Divider(color: Colors.white54)),
+                        ],
+                      ),
+                      const SizedBox(height: 16),
+                      SizedBox(
+                        width: double.infinity,
+                        height: 52,
+                        child: OutlinedButton.icon(
+                          onPressed: (_isLoading || _isGoogleLoading) ? null : _handleGoogleLogin,
+                          style: OutlinedButton.styleFrom(
+                            backgroundColor: Colors.white,
+                            side: BorderSide.none,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                          ),
+                          icon: _isGoogleLoading
+                              ? SizedBox(
+                                  width: 20,
+                                  height: 20,
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2,
+                                    color: Colors.green.shade700,
+                                  ),
+                                )
+                              : Image.network(
+                                  'https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg',
+                                  width: 22,
+                                  height: 22,
+                                  errorBuilder: (_, e, s) => Icon(
+                                    Icons.g_mobiledata,
+                                    color: Colors.green.shade700,
+                                    size: 24,
+                                  ),
+                                ),
+                          label: Text(
+                            l10n.signInWithGoogle,
+                            style: TextStyle(
+                              color: Colors.grey.shade800,
+                              fontWeight: FontWeight.w600,
+                              fontSize: 15,
+                            ),
+                          ),
                         ),
                       ),
                       const SizedBox(height: 24),
