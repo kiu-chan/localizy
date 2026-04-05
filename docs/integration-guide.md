@@ -1,24 +1,25 @@
-# 🔌 Hướng dẫn tích hợp API
+# 🔌 API Integration Guide
 
-Hướng dẫn tích hợp dành cho **Web (React/Next.js)** và **Mobile (Flutter/Dart)**.
-
----
-
-## Mục lục
-
-- [Cấu hình base URL](#cấu-hình-base-url)
-- [Xác thực & lưu token](#xác-thực--lưu-token)
-- [Đính kèm token vào request](#đính-kèm-token-vào-request)
-- [Xử lý token hết hạn](#xử-lý-token-hết-hạn)
-- [Luồng đăng nhập](#luồng-đăng-nhập)
-- [Luồng đăng nhập Google](#luồng-đăng-nhập-google)
-- [Luồng quên mật khẩu & đặt lại mật khẩu](#luồng-quên-mật-khẩu--đặt-lại-mật-khẩu)
-- [Xử lý lỗi chung](#xử-lý-lỗi-chung)
-- [Upload file](#upload-file)
+Integration guide for **Web (React/Next.js)** and **Mobile (Flutter/Dart)** apps.
 
 ---
 
-## Cấu hình base URL
+## Table of Contents
+
+- [Base URL configuration](#base-url-configuration)
+- [Authentication & token storage](#authentication--token-storage)
+- [Attaching the token to requests](#attaching-the-token-to-requests)
+- [Handling token expiry](#handling-token-expiry)
+- [Login flow](#login-flow)
+- [Google login flow](#google-login-flow)
+- [Forgot password & reset password flow](#forgot-password--reset-password-flow)
+- [Push Notification (FCM)](#push-notification-fcm)
+- [General error handling](#general-error-handling)
+- [File upload](#file-upload)
+
+---
+
+## Base URL configuration
 
 ### Web (React/Next.js)
 
@@ -46,12 +47,12 @@ class ApiConstants {
 
 ---
 
-## Xác thực & lưu token
+## Authentication & token storage
 
 ### Web
 
 ```ts
-// Sau khi login/register thành công
+// After a successful login/register
 localStorage.setItem('auth_token', response.token);
 localStorage.setItem('auth_user', JSON.stringify({
   userId: response.userId,
@@ -61,12 +62,12 @@ localStorage.setItem('auth_user', JSON.stringify({
 }));
 ```
 
-> **Lưu ý bảo mật:** Nếu ứng dụng có nguy cơ XSS, hãy dùng cookie `HttpOnly` thay vì `localStorage`.
+> **Security note:** If the application is vulnerable to XSS, use `HttpOnly` cookies instead of `localStorage`.
 
 ### Flutter
 
 ```dart
-// Dùng flutter_secure_storage
+// Use flutter_secure_storage
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 final _storage = FlutterSecureStorage();
@@ -86,7 +87,7 @@ Future<void> clearToken() async {
 
 ---
 
-## Đính kèm token vào request
+## Attaching the token to requests
 
 ### Web — Axios interceptor
 
@@ -133,9 +134,9 @@ final dio = Dio(BaseOptions(baseUrl: ApiConstants.baseUrl))
 
 ---
 
-## Xử lý token hết hạn
+## Handling token expiry
 
-Token JWT có hiệu lực **24 giờ**. Khi token hết hạn, server trả về `401`.
+JWT tokens are valid for **24 hours**. When a token expires, the server returns `401`.
 
 ### Web
 
@@ -154,7 +155,7 @@ api.interceptors.response.use(
 );
 ```
 
-Hoặc kiểm tra chủ động trước khi gọi API:
+Or proactively check before making API calls:
 
 ```ts
 async function verifySession(): Promise<boolean> {
@@ -175,7 +176,7 @@ async function verifySession(): Promise<boolean> {
 ### Flutter
 
 ```dart
-// Trong AuthInterceptor
+// In AuthInterceptor
 @override
 void onError(DioException err, ErrorInterceptorHandler handler) async {
   if (err.response?.statusCode == 401) {
@@ -189,7 +190,7 @@ void onError(DioException err, ErrorInterceptorHandler handler) async {
 
 ---
 
-## Luồng đăng nhập
+## Login flow
 
 ### Web
 
@@ -254,9 +255,9 @@ class AuthService {
 
 ---
 
-## Luồng đăng nhập Google
+## Google login flow
 
-Yêu cầu tích hợp **Firebase SDK** trên client để lấy `idToken`.
+Requires integrating the **Firebase SDK** on the client to obtain an `idToken`.
 
 ### Web
 
@@ -267,11 +268,11 @@ async function loginWithGoogle(): Promise<AuthResponse> {
   const auth = getAuth();
   const provider = new GoogleAuthProvider();
 
-  // 1. Đăng nhập Firebase, lấy idToken
+  // 1. Sign in with Firebase, get idToken
   const result = await signInWithPopup(auth, provider);
   const idToken = await result.user.getIdToken();
 
-  // 2. Gửi idToken lên server
+  // 2. Send idToken to server
   const { data } = await api.post<AuthResponse>('/auth/google-login', { idToken });
   localStorage.setItem('auth_token', data.token);
   return data;
@@ -288,11 +289,11 @@ class GoogleAuthService {
   final _googleSignIn = GoogleSignIn();
 
   Future<AuthResponse> loginWithGoogle() async {
-    // 1. Đăng nhập Google
+    // 1. Sign in with Google
     final googleUser = await _googleSignIn.signIn();
     final googleAuth = await googleUser!.authentication;
 
-    // 2. Lấy Firebase idToken
+    // 2. Get Firebase idToken
     final credential = GoogleAuthProvider.credential(
       accessToken: googleAuth.accessToken,
       idToken: googleAuth.idToken,
@@ -300,7 +301,7 @@ class GoogleAuthService {
     final userCred = await FirebaseAuth.instance.signInWithCredential(credential);
     final idToken = await userCred.user!.getIdToken();
 
-    // 3. Gửi idToken lên server
+    // 3. Send idToken to server
     final res = await dio.post('/auth/google-login', data: {'idToken': idToken});
     final auth = AuthResponse.fromJson(res.data);
     await saveToken(auth.token);
@@ -311,15 +312,15 @@ class GoogleAuthService {
 
 ---
 
-## Luồng quên mật khẩu & đặt lại mật khẩu
+## Forgot password & reset password flow
 
-### Bước 1 — User nhập email (trang "Quên mật khẩu")
+### Step 1 — User enters email (Forgot Password page)
 
 **Web:**
 ```ts
 async function forgotPassword(email: string): Promise<void> {
   await api.post('/auth/forgot-password', { email });
-  // Luôn thành công (200), không lộ email có tồn tại hay không
+  // Always succeeds (200), does not reveal whether the email exists
 }
 ```
 
@@ -330,11 +331,11 @@ Future<void> forgotPassword(String email) async {
 }
 ```
 
-### Bước 2 — Server gửi email chứa link
+### Step 2 — Server sends an email with a reset link
 
-Link dạng: `https://your-app.com/reset-password?token=abc123...`
+Link format: `https://your-app.com/reset-password?token=abc123...`
 
-### Bước 3 — Web đọc token từ URL và hiển thị form
+### Step 3 — Web reads token from URL and shows the form
 
 **Next.js (App Router):**
 ```tsx
@@ -348,24 +349,24 @@ export default function ResetPasswordPage() {
 
   async function handleSubmit(newPassword: string) {
     await api.post('/auth/reset-password', { token, newPassword });
-    // Chuyển về trang login
+    // Redirect to login
   }
 
-  if (!token) return <p>Link không hợp lệ.</p>;
+  if (!token) return <p>Invalid link.</p>;
 
   return (
     <form onSubmit={...}>
-      <input type="password" placeholder="Mật khẩu mới" />
-      <button type="submit">Đặt lại mật khẩu</button>
+      <input type="password" placeholder="New password" />
+      <button type="submit">Reset password</button>
     </form>
   );
 }
 ```
 
-**Flutter** — Deep link xử lý token:
+**Flutter** — Handle token via deep link:
 ```dart
-// Cấu hình deep link: yourapp://reset-password?token=...
-// Trong app, lắng nghe deep link và điều hướng
+// Configure deep link: yourapp://reset-password?token=...
+// In the app, listen for deep links and navigate accordingly
 GoRouter(
   routes: [
     GoRoute(
@@ -389,9 +390,138 @@ Future<void> resetPassword(String token, String newPassword) async {
 
 ---
 
-## Xử lý lỗi chung
+## Push Notification (FCM)
 
-Tất cả lỗi đều có dạng: `{ "message": "..." }`
+The server uses **Firebase Cloud Messaging (FCM)** to send push notifications to user devices when their verification request status changes.
+
+### Events that trigger notifications
+
+| Event | Title | When |
+|-------|-------|------|
+| Validator confirms appointment | Appointment confirmed | `status` → `Scheduled` |
+| Admin/Validator approves verification | Address verified | `status` → `Verified` |
+| Admin/Validator rejects | Verification request rejected | `status` → `Rejected` |
+
+### Data payload structure
+
+Every notification includes a `data` payload for the app to navigate to the correct screen:
+
+```json
+{
+  "validationId": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+  "requestId": "VAL-2024-042",
+  "type": "appointment_confirmed | address_verified | address_rejected"
+}
+```
+
+### Step 1 — Initialize Firebase and get the FCM Token
+
+#### Flutter
+
+```dart
+// pubspec.yaml
+// dependencies:
+//   firebase_core: ^3.x.x
+//   firebase_messaging: ^15.x.x
+
+import 'package:firebase_messaging/firebase_messaging.dart';
+
+class FcmService {
+  static Future<String?> getToken() async {
+    // Request permission (iOS)
+    await FirebaseMessaging.instance.requestPermission();
+    return await FirebaseMessaging.instance.getToken();
+  }
+}
+```
+
+### Step 2 — Register the FCM Token with the server after login
+
+After a successful login and receiving a JWT token, immediately call `PUT /api/auth/fcm-token`.
+
+#### Flutter
+
+```dart
+class AuthService {
+  Future<void> loginAndRegisterFcm(String email, String password) async {
+    // 1. Log in
+    final res = await dio.post('/auth/login', data: {
+      'email': email,
+      'password': password,
+    });
+    final auth = AuthResponse.fromJson(res.data);
+    await saveToken(auth.token);
+
+    // 2. Get FCM token and register it
+    final fcmToken = await FcmService.getToken();
+    if (fcmToken != null) {
+      await dio.put('/auth/fcm-token', data: {'fcmToken': fcmToken});
+    }
+  }
+}
+```
+
+> **Same for Google Login:** call `PUT /api/auth/fcm-token` immediately after receiving the JWT from `/auth/google-login`.
+
+### Step 3 — Update the token when Firebase refreshes it
+
+The FCM token may change. Listen for `onTokenRefresh` and update the server immediately when the token changes.
+
+#### Flutter
+
+```dart
+// In main() or the root widget's initState()
+FirebaseMessaging.instance.onTokenRefresh.listen((newToken) async {
+  // Update the new token (only when logged in)
+  final jwt = await getToken(); // User's JWT
+  if (jwt != null) {
+    await dio.put('/auth/fcm-token', data: {'fcmToken': newToken});
+  }
+});
+```
+
+### Step 4 — Handle incoming notifications
+
+#### Flutter
+
+```dart
+// Foreground notification
+FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+  final type = message.data['type'];
+  final requestId = message.data['requestId'];
+  final validationId = message.data['validationId'];
+
+  // Show local notification or update UI
+  showLocalNotification(
+    title: message.notification?.title ?? '',
+    body: message.notification?.body ?? '',
+  );
+});
+
+// Background / terminated — tap to open app
+FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
+  final type = message.data['type'];
+  final validationId = message.data['validationId'];
+
+  // Navigate to the detail screen
+  navigatorKey.currentState?.pushNamed(
+    '/validation-detail',
+    arguments: validationId,
+  );
+});
+```
+
+### Important notes
+
+- FCM tokens are **only needed for mobile**. Web apps do not need to integrate this.
+- If a user **has not registered an FCM token**, the server silently skips the notification — no error occurs.
+- Make sure `google-services.json` (Android) and `GoogleService-Info.plist` (iOS) are correctly configured in your Flutter project.
+
+---
+
+## General error handling
+
+All errors have the format: `{ "message": "..." }`
 
 ### Web
 
@@ -400,12 +530,12 @@ async function apiCall<T>(fn: () => Promise<T>): Promise<T> {
   try {
     return await fn();
   } catch (error: any) {
-    const message = error.response?.data?.message ?? 'Có lỗi xảy ra, vui lòng thử lại.';
+    const message = error.response?.data?.message ?? 'Something went wrong, please try again.';
     throw new Error(message);
   }
 }
 
-// Dùng:
+// Usage:
 try {
   await apiCall(() => login(email, password));
 } catch (e) {
@@ -420,12 +550,12 @@ Future<T> apiCall<T>(Future<T> Function() fn) async {
   try {
     return await fn();
   } on DioException catch (e) {
-    final message = e.response?.data?['message'] ?? 'Có lỗi xảy ra, vui lòng thử lại.';
+    final message = e.response?.data?['message'] ?? 'Something went wrong, please try again.';
     throw ApiException(message);
   }
 }
 
-// Dùng:
+// Usage:
 try {
   await apiCall(() => authService.login(email, password));
 } on ApiException catch (e) {
@@ -435,9 +565,9 @@ try {
 
 ---
 
-## Upload file
+## File upload
 
-Một số API nhận `multipart/form-data` (ví dụ: gửi yêu cầu xác minh với ảnh CCCD).
+Some APIs accept `multipart/form-data` (e.g. submitting a verification request with an ID document image).
 
 ### Web
 

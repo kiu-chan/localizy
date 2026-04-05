@@ -1,13 +1,13 @@
 # 🖼️ Home Slide APIs
 
-Quản lý các slide ảnh hiển thị trên trang chủ.
+Manages image slides displayed on the homepage.
 
 ### HomeSlide Response Object
 
 ```json
 {
   "id": "3fa85f64-...",
-  "content": "Chào mừng đến với Localizy",
+  "content": "Welcome to Localizy",
   "imageUrl": "/uploads/home-slides/slide1.jpg",
   "order": 1,
   "isActive": true,
@@ -18,7 +18,7 @@ Quản lý các slide ảnh hiển thị trên trang chủ.
 
 ---
 
-## 1. Lấy các slide đang active
+## 1. Get active slides
 
 ```http
 GET /api/homeslides/active?pageNumber={n}&pageSize={n}
@@ -36,7 +36,7 @@ GET /api/homeslides/active?pageNumber={n}&pageSize={n}
   "items": [
     {
       "id": "3fa85f64-...",
-      "content": "Chào mừng đến với Localizy",
+      "content": "Welcome to Localizy",
       "imageUrl": "/uploads/home-slides/slide1.jpg",
       "order": 1,
       "isActive": true,
@@ -55,7 +55,7 @@ GET /api/homeslides/active?pageNumber={n}&pageSize={n}
 
 ---
 
-## 2. Lấy tất cả slides (Admin)
+## 2. Get all slides (Admin)
 
 ```http
 GET /api/homeslides?pageNumber={n}&pageSize={n}
@@ -67,11 +67,11 @@ GET /api/homeslides?pageNumber={n}&pageSize={n}
 - `pageNumber` (int, default: 1)
 - `pageSize` (int, default: 20, max: 100)
 
-**Response:** `200 OK` - PagedResult of HomeSlide objects (bao gồm cả slide inactive)
+**Response:** `200 OK` - PagedResult of HomeSlide objects (includes inactive slides)
 
 ---
 
-## 3. Lấy slide theo ID
+## 3. Get slide by ID
 
 ```http
 GET /api/homeslides/{id}
@@ -83,7 +83,7 @@ GET /api/homeslides/{id}
 ```json
 {
   "id": "3fa85f64-...",
-  "content": "Chào mừng đến với Localizy",
+  "content": "Welcome to Localizy",
   "imageUrl": "/uploads/home-slides/slide1.jpg",
   "order": 1,
   "isActive": true,
@@ -93,11 +93,11 @@ GET /api/homeslides/{id}
 ```
 
 **Errors:**
-- `404` - Slide không tồn tại
+- `404` - Slide not found
 
 ---
 
-## 4. Tạo slide mới
+## 4. Create a slide
 
 ```http
 POST /api/homeslides
@@ -109,19 +109,19 @@ POST /api/homeslides
 
 **Form Fields:**
 
-| Field | Type | Required | Mô tả |
-|-------|------|----------|-------|
-| `image` | file | **Có** | File ảnh slide |
-| `content` | string | **Có** | Nội dung/tiêu đề slide |
-| `order` | integer | Không | Thứ tự hiển thị (default: 0) |
-| `isActive` | boolean | Không | Hiển thị hay không (default: true) |
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `image` | file | **Yes** | Slide image file |
+| `content` | string | **Yes** | Slide content/title |
+| `order` | integer | No | Display order (default: 0) |
+| `isActive` | boolean | No | Whether to display (default: true) |
 
 **cURL Example:**
 ```bash
 curl -X POST http://localhost:5088/api/homeslides \
   -H "Authorization: Bearer ADMIN_TOKEN" \
   -F "image=@/path/to/slide.jpg" \
-  -F "content=Chào mừng đến với Localizy" \
+  -F "content=Welcome to Localizy" \
   -F "order=1" \
   -F "isActive=true"
 ```
@@ -129,11 +129,11 @@ curl -X POST http://localhost:5088/api/homeslides \
 **Response:** `201 Created` - HomeSlide object
 
 **Errors:**
-- `400` - Thiếu file ảnh
+- `400` - Image file is missing
 
 ---
 
-## 5. Cập nhật slide
+## 5. Update a slide
 
 ```http
 PUT /api/homeslides/{id}
@@ -143,23 +143,23 @@ PUT /api/homeslides/{id}
 
 **Content-Type:** `multipart/form-data`
 
-**Form Fields:** (tất cả đều optional)
+**Form Fields:** (all optional)
 
-| Field | Type | Mô tả |
-|-------|------|-------|
-| `image` | file | Ảnh mới (nếu muốn thay ảnh) |
-| `content` | string | Nội dung mới |
-| `order` | integer | Thứ tự mới |
-| `isActive` | boolean | Trạng thái mới |
+| Field | Type | Description |
+|-------|------|-------------|
+| `image` | file | New image (to replace the existing one) |
+| `content` | string | New content |
+| `order` | integer | New display order |
+| `isActive` | boolean | New active status |
 
-**Response:** `200 OK` - HomeSlide object đã cập nhật
+**Response:** `200 OK` - Updated HomeSlide object
 
 **Errors:**
-- `404` - Slide không tồn tại
+- `404` - Slide not found
 
 ---
 
-## 6. Xóa slide
+## 6. Delete a slide
 
 ```http
 DELETE /api/homeslides/{id}
@@ -167,9 +167,9 @@ DELETE /api/homeslides/{id}
 
 **Authorization:** Admin
 
-> **Soft Delete:** Bản ghi không bị xóa vật lý. Cột `IsDeleted` được đặt `true` và `DeletedAt` được ghi nhận. File ảnh liên quan cũng bị xóa khỏi server (file vật lý vẫn được xóa).
+> **Soft Delete:** The record is not physically deleted. The `IsDeleted` column is set to `true` and `DeletedAt` is recorded. The associated image file is also removed from the server (the physical file is still deleted).
 
 **Response:** `204 No Content`
 
 **Errors:**
-- `404` - Slide không tồn tại
+- `404` - Slide not found

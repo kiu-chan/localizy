@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'firebase_options.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:localizy/l10n/app_localizations.dart';
+import 'package:localizy/services/notification_service.dart';
 import 'package:localizy/splash_screen.dart';
 import 'package:provider/provider.dart';
 import 'utils/language_manager.dart';
@@ -13,7 +14,8 @@ void main() async {
 
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   await ConfigManager.initialize();
-  
+  await NotificationService.initialize();
+
   runApp(
     ChangeNotifierProvider(
       create: (_) => LanguageManager(),
@@ -31,6 +33,7 @@ class MyApp extends StatelessWidget {
       builder: (context, languageManager, child) {
         return MaterialApp(
           title: 'Citea',
+          navigatorKey: navigatorKey,
           debugShowCheckedModeBanner: false,
           locale: languageManager.locale,
           supportedLocales: const [

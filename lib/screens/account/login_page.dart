@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:localizy/api/auth_api.dart';
 import 'package:localizy/l10n/app_localizations.dart';
+import 'package:localizy/services/notification_service.dart';
 import 'register_page.dart';
 import 'forgot_password_page.dart';
 import '../main_page.dart';
@@ -40,6 +41,10 @@ class _LoginPageState extends State<LoginPage> {
     try {
       final user = await AuthService.googleLogin();
       debugPrint('[Google Login] Success: email=${user.email} role=${user.role} userId=${user.userId}');
+
+      // Đăng ký FCM token lên server (non-blocking)
+      NotificationService.getAndRegisterToken();
+
       if (!mounted) return;
       final role = user.role.toLowerCase();
       if (role.contains('validator')) {
@@ -103,6 +108,9 @@ Future<void> _handleLogin() async {
     debugPrint('Attempt login: $email');
 
     final user = await AuthService.login(email: email, password: password);
+
+    // Đăng ký FCM token lên server (non-blocking)
+    NotificationService.getAndRegisterToken();
 
     if (!mounted) return;
 

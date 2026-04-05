@@ -7,7 +7,7 @@
   "key": "site_name",
   "value": "Localizy",
   "category": "general",
-  "description": "Tên website"
+  "description": "Website name"
 }
 ```
 
@@ -24,19 +24,19 @@
 
 ---
 
-## 1. Lấy cấu hình website
+## 1. Get website configuration
 
 ```http
 GET /api/settings/website-config
 ```
 
-**Authorization:** Public (không cần token)
+**Authorization:** Public (no token required)
 
 **Response:** `200 OK` - WebsiteConfig object
 
 ---
 
-## 2. Lấy tất cả settings
+## 2. Get all settings
 
 ```http
 GET /api/settings?pageNumber={n}&pageSize={n}
@@ -52,7 +52,7 @@ GET /api/settings?pageNumber={n}&pageSize={n}
 
 ---
 
-## 3. Lấy settings theo category
+## 3. Get settings by category
 
 ```http
 GET /api/settings/category/{category}?pageNumber={n}&pageSize={n}
@@ -61,7 +61,7 @@ GET /api/settings/category/{category}?pageNumber={n}&pageSize={n}
 **Authorization:** Admin
 
 **Path Parameters:**
-- `category`: Tên category (VD: `general`, `parking`, `payment`)
+- `category`: Category name (e.g. `general`, `parking`, `payment`)
 
 **Query Parameters:**
 - `pageNumber` (int, default: 1)
@@ -71,7 +71,7 @@ GET /api/settings/category/{category}?pageNumber={n}&pageSize={n}
 
 ---
 
-## 4. Lấy setting theo key
+## 4. Get setting by key
 
 ```http
 GET /api/settings/{key}
@@ -80,16 +80,16 @@ GET /api/settings/{key}
 **Authorization:** Admin
 
 **Path Parameters:**
-- `key`: Key của setting (VD: `site_name`)
+- `key`: Setting key (e.g. `site_name`)
 
 **Response:** `200 OK` - Setting object
 
 **Errors:**
-- `404` - Setting không tồn tại
+- `404` - Setting not found
 
 ---
 
-## 5. Cập nhật setting
+## 5. Update a setting
 
 ```http
 PUT /api/settings/{key}
@@ -98,17 +98,17 @@ PUT /api/settings/{key}
 **Authorization:** Admin
 
 **Path Parameters:**
-- `key`: Key của setting cần cập nhật
+- `key`: Key of the setting to update
 
 **Request Body:**
 ```json
 {
   "value": "Localizy Platform",
-  "description": "Mô tả mới (optional)"
+  "description": "New description (optional)"
 }
 ```
 
-**Response:** `200 OK` - Setting object đã cập nhật
+**Response:** `200 OK` - Updated Setting object
 
 **Errors:**
-- `404` - Setting không tồn tại
+- `404` - Setting not found

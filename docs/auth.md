@@ -1,6 +1,6 @@
 # 🔑 Auth APIs
 
-## 1. Đăng ký
+## 1. Register
 
 ```http
 POST /api/auth/register
@@ -33,7 +33,7 @@ POST /api/auth/register
 
 ---
 
-## 2. Đăng nhập
+## 2. Login
 
 ```http
 POST /api/auth/login
@@ -65,7 +65,7 @@ POST /api/auth/login
 
 ---
 
-## 3. Đăng nhập bằng Google (Firebase)
+## 3. Login with Google (Firebase)
 
 ```http
 POST /api/auth/google-login
@@ -80,7 +80,7 @@ POST /api/auth/google-login
 }
 ```
 
-> `idToken` lấy từ Firebase SDK sau khi người dùng đăng nhập Google thành công trên client.
+> `idToken` is obtained from the Firebase SDK after the user successfully signs in with Google on the client.
 
 **Response:** `200 OK`
 ```json
@@ -93,21 +93,21 @@ POST /api/auth/google-login
 }
 ```
 
-> Nếu email chưa tồn tại trong hệ thống, tài khoản mới sẽ được tạo tự động với role `User`.
+> If the email does not exist in the system, a new account is automatically created with the `User` role.
 
 **Errors:**
-- `401` - Firebase token không hợp lệ hoặc đã hết hạn
+- `401` - Invalid or expired Firebase token
   ```json
   { "message": "Invalid or expired Firebase token" }
   ```
-- `401` - Token không chứa email
+- `401` - Email not found in token
   ```json
   { "message": "Email not found in token" }
   ```
 
 ---
 
-## 4. Quên mật khẩu
+## 4. Forgot Password
 
 ```http
 POST /api/auth/forgot-password
@@ -125,17 +125,17 @@ POST /api/auth/forgot-password
 **Response:** `200 OK`
 ```json
 {
-  "message": "Nếu email tồn tại, chúng tôi đã gửi link đặt lại mật khẩu."
+  "message": "If the email exists, we have sent a password reset link."
 }
 ```
 
-> **Lưu ý:** API luôn trả về `200` dù email có tồn tại hay không — điều này ngăn kẻ tấn công dò tìm email hợp lệ.  
-> Link reset được gửi qua email có dạng: `{WEBSITE_BASE_URL}/reset-password?token=...`  
-> Token có hiệu lực **1 giờ**.
+> **Note:** The API always returns `200` regardless of whether the email exists — this prevents attackers from enumerating valid emails.  
+> The reset link is sent via email in the format: `{WEBSITE_BASE_URL}/reset-password?token=...`  
+> Token is valid for **1 hour**.
 
 ---
 
-## 5. Đặt lại mật khẩu
+## 5. Reset Password
 
 ```http
 POST /api/auth/reset-password
@@ -146,7 +146,7 @@ POST /api/auth/reset-password
 **Request Body:**
 ```json
 {
-  "token": "<token từ link trong email>",
+  "token": "<token from the reset email link>",
   "newPassword": "NewPassword123"
 }
 ```
@@ -154,32 +154,67 @@ POST /api/auth/reset-password
 **Response:** `200 OK`
 ```json
 {
-  "message": "Mật khẩu đã được đặt lại thành công."
+  "message": "Password has been reset successfully."
 }
 ```
 
 **Errors:**
-- `400` - Token không hợp lệ hoặc đã hết hạn
+- `400` - Invalid or expired token
   ```json
-  { "message": "Token không hợp lệ hoặc đã hết hạn" }
+  { "message": "Invalid or expired token" }
   ```
 
 ---
 
-## 6. Kiểm tra phiên đăng nhập
+## 6. Register FCM Token (Push Notifications)
+
+```http
+PUT /api/auth/fcm-token
+```
+
+**Authorization:** Authenticated (any role)
+
+Saves the device FCM token to the server to receive push notifications. Call this API after a successful login and after obtaining the FCM token from the Firebase SDK.
+
+**Request Body:**
+```json
+{
+  "fcmToken": "dHv3K2...Firebase_FCM_Device_Token"
+}
+```
+
+**Response:** `200 OK`
+```json
+{
+  "message": "FCM token updated successfully."
+}
+```
+
+**Errors:**
+- `401` - Invalid JWT token
+- `400` - User not found
+
+> **When to call again:**  
+> - After every login  
+> - When Firebase issues a new token (`onTokenRefresh`)  
+> - When the app restarts and the token has changed
+
+---
+
+## 7. Verify Session
 
 ```http
 GET /api/auth/verify
 ```
 
-**Authorization:** Public (token truyền qua header)
+**Authorization:** Public (token passed via header)
 
 **Headers:**
 ```
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
 ```
 
-**Response:** `200 OK` - Token còn hiệu lực
+**Response:** `200 OK` — Token is valid
 ```json
 {
   "message": "Session is valid",
@@ -189,11 +224,11 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
 ```
 
 **Errors:**
-- `400` - Thiếu hoặc sai định dạng Authorization header
+- `400` - Missing or malformed Authorization header
   ```json
   { "message": "Invalid token" }
   ```
-- `401` - Token hết hạn
+- `401` - Token expired
   ```json
   { "message": "Session has expired", "isExpired": true, "expiresAt": "2024-01-10T10:30:00Z" }
   ```

@@ -1,6 +1,6 @@
 # 📊 Admin Dashboard API
 
-Trả về tổng quan toàn hệ thống cho Admin, bao gồm thống kê users, địa chỉ, validations, parking và cities.
+Returns a system-wide overview for Admin, including stats for users, addresses, validations, parking, and cities.
 
 ```http
 GET /api/dashboard
@@ -44,19 +44,19 @@ GET /api/dashboard
     "inactiveCities": 2,
     "totalAddresses": 500,
     "topCities": [
-      { "id": "...", "name": "Hà Nội", "code": "HAN", "addressCount": 150 }
+      { "id": "...", "name": "Ha Noi", "code": "HAN", "addressCount": 150 }
     ]
   }
 }
 ```
 
-> 5 stats được fetch tuần tự (EF Core DbContext không hỗ trợ concurrent queries trên cùng một scoped instance).
+> The 5 stats are fetched sequentially (EF Core DbContext does not support concurrent queries on the same scoped instance).
 
 ---
 
 ## Validator Dashboard
 
-Lấy dữ liệu tổng quan cho Validator: thống kê task và 10 task được phân công gần nhất.
+Returns an overview for the Validator: task statistics and the 10 most recently assigned tasks.
 
 ```http
 GET /api/dashboard/validator
@@ -79,12 +79,12 @@ GET /api/dashboard/validator
 }
 ```
 
-| Field | Mô tả |
-|-------|-------|
-| `totalAssigned` | Tổng số task được phân công |
-| `assignedCount` | Task đang chờ xác nhận lịch hẹn |
-| `scheduledCount` | Task đã xác nhận lịch hẹn |
-| `verifiedCount` | Task đã xác minh thành công |
-| `rejectedCount` | Task đã từ chối |
-| `todayAppointments` | Số lịch hẹn hôm nay |
-| `recentAssignments` | 10 task được phân công gần nhất |
+| Field | Description |
+|-------|-------------|
+| `totalAssigned` | Total number of assigned tasks |
+| `assignedCount` | Tasks waiting for appointment confirmation |
+| `scheduledCount` | Tasks with confirmed appointments |
+| `verifiedCount` | Successfully verified tasks |
+| `rejectedCount` | Rejected tasks |
+| `todayAppointments` | Number of appointments scheduled for today |
+| `recentAssignments` | 10 most recently assigned tasks |

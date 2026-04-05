@@ -12,6 +12,14 @@
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="${GOOGLE_MAPS_API_KEY_ANDROID}"/>
+        <!-- FCM: notification channel mặc định cho background messages -->
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_channel_id"
+            android:value="citea_notifications"/>
+        <!-- FCM: icon mặc định cho notifications -->
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_icon"
+            android:resource="@mipmap/ic_launcher"/>
         <activity
             android:name=".MainActivity"
             android:exported="true"

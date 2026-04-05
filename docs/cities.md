@@ -5,9 +5,9 @@
 ```json
 {
   "id": "3fa85f64-...",
-  "name": "Hà Nội",
+  "name": "Ha Noi",
   "code": "HAN",
-  "description": "Thủ đô Việt Nam",
+  "description": "Capital of Vietnam",
   "isActive": true,
   "totalAddresses": 150,
   "createdAt": "2024-01-01T00:00:00Z",
@@ -15,21 +15,21 @@
 }
 ```
 
-> **Mã thành phố (`code`)** phải đúng **3 ký tự** (ví dụ: `HAN`, `HCM`, `DAN`). Đây là prefix dùng để sinh mã địa chỉ tự động.
+> **City code (`code`)** must be exactly **3 characters** (e.g. `HAN`, `HCM`, `DAN`). This is the prefix used to auto-generate address codes.
 
-### Danh sách thành phố mặc định
+### Default Cities
 
-| Thành phố | `code` |
-|-----------|--------|
-| Hà Nội | `HAN` |
-| Hồ Chí Minh | `HCM` |
-| Đà Nẵng | `DAN` |
-| Hải Phòng | `HPH` |
-| Cần Thơ | `CTH` |
+| City | `code` |
+|------|--------|
+| Ha Noi | `HAN` |
+| Ho Chi Minh | `HCM` |
+| Da Nang | `DAN` |
+| Hai Phong | `HPH` |
+| Can Tho | `CTH` |
 
 ---
 
-## 1. Thống kê cities
+## 1. City statistics
 
 ```http
 GET /api/cities/stats
@@ -45,14 +45,14 @@ GET /api/cities/stats
   "inactiveCities": 2,
   "totalAddresses": 500,
   "topCities": [
-    { "id": "3fa85f64-...", "name": "Hà Nội", "code": "HAN", "addressCount": 150 }
+    { "id": "3fa85f64-...", "name": "Ha Noi", "code": "HAN", "addressCount": 150 }
   ]
 }
 ```
 
 ---
 
-## 2. Tìm kiếm cities
+## 2. Search cities
 
 ```http
 GET /api/cities/search?searchTerm={term}&pageNumber={n}&pageSize={n}
@@ -61,7 +61,7 @@ GET /api/cities/search?searchTerm={term}&pageNumber={n}&pageSize={n}
 **Authorization:** Public
 
 **Query Parameters:**
-- `searchTerm`: Tìm theo `name` hoặc `code`
+- `searchTerm`: Search by `name` or `code`
 - `pageNumber` (int, default: 1)
 - `pageSize` (int, default: 20, max: 100)
 
@@ -69,7 +69,7 @@ GET /api/cities/search?searchTerm={term}&pageNumber={n}&pageSize={n}
 
 ---
 
-## 3. Lấy cities đang active
+## 3. Get active cities
 
 ```http
 GET /api/cities/active?pageNumber={n}&pageSize={n}
@@ -81,11 +81,11 @@ GET /api/cities/active?pageNumber={n}&pageSize={n}
 - `pageNumber` (int, default: 1)
 - `pageSize` (int, default: 20, max: 100)
 
-**Response:** `200 OK` - PagedResult of City objects (chỉ các city có `isActive = true`)
+**Response:** `200 OK` - PagedResult of City objects (only cities with `isActive = true`)
 
 ---
 
-## 4. Lấy tất cả cities
+## 4. Get all cities
 
 ```http
 GET /api/cities?pageNumber={n}&pageSize={n}
@@ -101,7 +101,7 @@ GET /api/cities?pageNumber={n}&pageSize={n}
 
 ---
 
-## 5. Lấy city theo ID
+## 5. Get city by ID
 
 ```http
 GET /api/cities/{id}
@@ -112,11 +112,11 @@ GET /api/cities/{id}
 **Response:** `200 OK` - City object
 
 **Errors:**
-- `404` - City không tồn tại
+- `404` - City not found
 
 ---
 
-## 6. Lấy city theo code
+## 6. Get city by code
 
 ```http
 GET /api/cities/code/{code}
@@ -129,11 +129,11 @@ GET /api/cities/code/{code}
 **Response:** `200 OK` - City object
 
 **Errors:**
-- `404` - City không tồn tại
+- `404` - City not found
 
 ---
 
-## 7. Tạo city mới
+## 7. Create a city
 
 ```http
 POST /api/cities
@@ -144,24 +144,24 @@ POST /api/cities
 **Request Body:**
 ```json
 {
-  "name": "Đà Nẵng",
+  "name": "Da Nang",
   "code": "DAN",
-  "description": "Thành phố biển miền Trung"
+  "description": "Coastal city in Central Vietnam"
 }
 ```
 
 **Validation:**
-- `name`: bắt buộc
-- `code`: bắt buộc, đúng **3 ký tự**, tự động chuyển thành chữ hoa, phải là duy nhất
+- `name`: required
+- `code`: required, exactly **3 characters**, automatically uppercased, must be unique
 
 **Response:** `201 Created` - City object
 
 **Errors:**
-- `400` - Code đã tồn tại hoặc không đúng 3 ký tự
+- `400` - Code already exists or is not exactly 3 characters
 
 ---
 
-## 8. Cập nhật city
+## 8. Update a city
 
 ```http
 PUT /api/cities/{id}
@@ -169,28 +169,28 @@ PUT /api/cities/{id}
 
 **Authorization:** Admin
 
-**Request Body:** (tất cả fields đều optional)
+**Request Body:** (all fields are optional)
 ```json
 {
-  "name": "Đà Nẵng",
+  "name": "Da Nang",
   "code": "DAN",
-  "description": "Thành phố biển miền Trung",
+  "description": "Coastal city in Central Vietnam",
   "isActive": true
 }
 ```
 
 **Validation:**
-- `code`: nếu có, phải đúng **3 ký tự** và không trùng với city khác
+- `code`: if provided, must be exactly **3 characters** and not duplicate another city
 
-**Response:** `200 OK` - City object đã cập nhật
+**Response:** `200 OK` - Updated City object
 
 **Errors:**
-- `400` - Code không đúng 3 ký tự hoặc đã tồn tại
-- `404` - City không tồn tại
+- `400` - Code is not 3 characters or already exists
+- `404` - City not found
 
 ---
 
-## 9. Xóa city
+## 9. Delete a city
 
 ```http
 DELETE /api/cities/{id}
@@ -198,12 +198,12 @@ DELETE /api/cities/{id}
 
 **Authorization:** Admin
 
-> **Soft Delete:** Bản ghi không bị xóa vật lý. Cột `IsDeleted` được đặt `true` và `DeletedAt` được ghi nhận.
+> **Soft Delete:** The record is not physically deleted. The `IsDeleted` column is set to `true` and `DeletedAt` is recorded.
 
 **Response:** `204 No Content`
 
 **Errors:**
-- `404` - City không tồn tại
+- `404` - City not found
 
 ---
 
@@ -215,7 +215,7 @@ PATCH /api/cities/{id}/toggle-active
 
 **Authorization:** Admin
 
-**Response:** `200 OK` - City object với `isActive` đã được đảo ngược
+**Response:** `200 OK` - City object with `isActive` toggled
 
 **Errors:**
-- `404` - City không tồn tại
+- `404` - City not found

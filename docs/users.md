@@ -18,12 +18,12 @@
 }
 ```
 
-> **Lưu ý:** `parentBusinessId` chỉ có giá trị khi `role = "SubAccount"`. Với các role khác, trường này là `null`.
-> **Lưu ý:** `avatarUrl` là `null` nếu user chưa upload ảnh đại diện.
+> **Note:** `parentBusinessId` is only populated when `role = "SubAccount"`. For other roles, this field is `null`.  
+> **Note:** `avatarUrl` is `null` if the user has not uploaded a profile picture.
 
 ---
 
-## 1. Lấy thống kê users
+## 1. Get user statistics
 
 ```http
 GET /api/users/stats
@@ -43,7 +43,7 @@ GET /api/users/stats
 
 ---
 
-## 2. Tìm kiếm users
+## 2. Search users
 
 ```http
 GET /api/users/search?searchTerm={term}&pageNumber={n}&pageSize={n}
@@ -52,7 +52,7 @@ GET /api/users/search?searchTerm={term}&pageNumber={n}&pageSize={n}
 **Authorization:** Admin
 
 **Query Parameters:**
-- `searchTerm` (string): Tìm theo name hoặc email
+- `searchTerm` (string): Search by name or email
 - `pageNumber` (int, default: 1)
 - `pageSize` (int, default: 20, max: 100)
 
@@ -79,7 +79,7 @@ GET /api/users/search?searchTerm={term}&pageNumber={n}&pageSize={n}
 
 ---
 
-## 3. Lấy tất cả users
+## 3. Get all users
 
 ```http
 GET /api/users?pageNumber={n}&pageSize={n}
@@ -95,7 +95,7 @@ GET /api/users?pageNumber={n}&pageSize={n}
 
 ---
 
-## 4. Lọc users theo role
+## 4. Filter users by role
 
 ```http
 GET /api/users/filter/role/{role}?pageNumber={n}&pageSize={n}
@@ -114,7 +114,7 @@ GET /api/users/filter/role/{role}?pageNumber={n}&pageSize={n}
 
 ---
 
-## 5. Lấy thông tin user theo ID
+## 5. Get user by ID
 
 ```http
 GET /api/users/{id}
@@ -129,7 +129,7 @@ GET /api/users/{id}
 
 ---
 
-## 6. Tạo user mới
+## 6. Create a new user
 
 ```http
 POST /api/users
@@ -157,7 +157,7 @@ POST /api/users
 
 ---
 
-## 7. Cập nhật user
+## 7. Update user
 
 ```http
 PUT /api/users/{id}
@@ -165,9 +165,9 @@ PUT /api/users/{id}
 
 **Authorization:** Authenticated
 
-> **Lưu ý:** Chỉ Admin mới có thể thay đổi `role`. User thường chỉ cập nhật được thông tin của chính mình.
+> **Note:** Only Admin can change the `role`. Regular users can only update their own information.
 
-**Request Body:** (tất cả fields đều optional)
+**Request Body:** (all fields are optional)
 ```json
 {
   "name": "Nguyen Van A Updated",
@@ -187,7 +187,7 @@ PUT /api/users/{id}
 
 ---
 
-## 8. Xóa user
+## 8. Delete user
 
 ```http
 DELETE /api/users/{id}
@@ -195,7 +195,7 @@ DELETE /api/users/{id}
 
 **Authorization:** Admin
 
-> **Soft Delete:** Bản ghi không bị xóa vật lý. Cột `IsDeleted` được đặt `true` và `DeletedAt` được ghi nhận. User sẽ không còn xuất hiện trong bất kỳ API nào.
+> **Soft Delete:** The record is not physically deleted. The `IsDeleted` column is set to `true` and `DeletedAt` is recorded. The user will no longer appear in any API.
 
 **Response:** `204 No Content`
 
@@ -204,7 +204,7 @@ DELETE /api/users/{id}
 
 ---
 
-## 9. Upload ảnh đại diện
+## 9. Upload profile picture
 
 ```http
 POST /api/users/{id}/avatar
@@ -213,25 +213,25 @@ Content-Type: multipart/form-data
 
 **Authorization:** Authenticated
 
-> **Lưu ý:** User chỉ có thể upload ảnh của chính mình. Admin có thể upload cho bất kỳ user nào. Ảnh cũ sẽ bị xóa tự động khi upload ảnh mới.
+> **Note:** Users can only upload their own picture. Admin can upload for any user. The old picture is automatically deleted when a new one is uploaded.
 
 **Form Data:**
-- `avatar` (file, bắt buộc): File ảnh đại diện
+- `avatar` (file, required): Profile picture file
 
-**Giới hạn:**
-- Định dạng: `.jpg`, `.jpeg`, `.png`, `.gif`, `.webp`
-- Dung lượng tối đa: **5MB**
+**Limits:**
+- Formats: `.jpg`, `.jpeg`, `.png`, `.gif`, `.webp`
+- Max size: **5MB**
 
-**Response:** `200 OK` - User object (với `avatarUrl` đã cập nhật)
+**Response:** `200 OK` - User object (with updated `avatarUrl`)
 
 **Errors:**
-- `400` - File không hợp lệ (sai định dạng, vượt 5MB, hoặc không có file)
-- `403` - Không có quyền upload ảnh cho user khác
+- `400` - Invalid file (wrong format, exceeds 5MB, or no file provided)
+- `403` - Not authorized to upload a picture for another user
 - `404` - User not found
 
 ---
 
-## 10. Đổi mật khẩu
+## 10. Change password
 
 ```http
 POST /api/users/{id}/change-password
@@ -247,7 +247,7 @@ POST /api/users/{id}/change-password
 }
 ```
 
-> **Lưu ý:** Admin có thể đổi mật khẩu của user khác mà không cần nhập `currentPassword`.
+> **Note:** Admin can change another user's password without providing `currentPassword`.
 
 **Response:** `200 OK`
 ```json
@@ -255,5 +255,5 @@ POST /api/users/{id}/change-password
 ```
 
 **Errors:**
-- `400` - Mật khẩu hiện tại không đúng
+- `400` - Current password is incorrect
 - `404` - User not found

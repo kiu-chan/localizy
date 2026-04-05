@@ -1,154 +1,156 @@
 # 🔄 Common Use Cases
 
-## Flow 1: User thường xác minh địa chỉ
+## Flow 1: Regular user verifies an address
 
 ```
-1. User đăng nhập
+1. User logs in
    POST /api/auth/login
 
-2. User gửi yêu cầu xác minh kèm ảnh CCCD và giấy tờ địa chỉ
+2. User submits a verification request with ID document and address proof
    POST /api/validations/verification-request
    (multipart/form-data: IdDocument, AddressProof, Latitude, Longitude, LocationName, AppointmentDate, ...)
 
-3. Admin xem danh sách yêu cầu
+3. Admin views the list of pending requests
    GET /api/validations?status=Pending
 
-4. Admin phân công validator
+4. Admin assigns a validator
    POST /api/validations/{id}/assign-validator
    { "validatorId": "..." }
 
-5. Validator xem task được phân công
+5. Validator views their assigned tasks
    GET /api/validations/my-assignments
 
-6. Validator xác nhận lịch hẹn
+6. Validator confirms the appointment
    POST /api/validations/{id}/confirm-appointment
+   🔔 Push notification sent to user: "Appointment confirmed"
 
-7. Validator đến thực địa, xác minh xong
+7. Validator goes on-site and completes verification
    POST /api/validations/{id}/verify
-   { "notes": "Đã xác minh, hợp lệ" }
+   { "notes": "Verified on-site, address is valid" }
+   🔔 Push notification sent to user: "Address verified"
 
-✅ Địa chỉ được thêm vào AddressCodes với status = Reviewed
+✅ Address is added to AddressCodes with status = Reviewed
 ```
 
 ---
 
-## Flow 2: Business thêm địa chỉ trực tiếp
+## Flow 2: Business adds an address directly
 
 ```
-1. Business đăng nhập (role = Business hoặc SubAccount)
+1. Business logs in (role = Business or SubAccount)
    POST /api/auth/login
 
-2. Thêm địa chỉ trực tiếp (không cần xác minh) — mã địa chỉ tự động sinh
+2. Add address directly (no verification required) — address code is auto-generated
    POST /api/addresses
-   { "name": "Văn phòng Công ty ABC", "fullAddress": "Tầng 5, 99 Láng Hạ, Q. Đống Đa, Hà Nội", "latitude": 21.02, "longitude": 105.85, "cityCode": "HAN" }
+   { "name": "Company ABC Office", "fullAddress": "Floor 5, 99 Lang Ha, Dong Da District, Hanoi", "latitude": 21.02, "longitude": 105.85, "cityCode": "HAN" }
 
-✅ Địa chỉ ngay lập tức có status = Reviewed
+✅ Address immediately has status = Reviewed
 ```
 
 ---
 
-## Flow 3: Business quản lý tài khoản con
+## Flow 3: Business manages sub-accounts
 
 ```
-1. Business đăng nhập
+1. Business logs in
    POST /api/auth/login
 
-2. Tạo tài khoản con cho nhân viên
+2. Create a sub-account for a staff member
    POST /api/business/sub-accounts
-   { "name": "Nhân viên A", "email": "staff.a@company.com", "password": "Pass@123", "phone": "0901234567" }
+   { "name": "Staff A", "email": "staff.a@company.com", "password": "Pass@123", "phone": "0901234567" }
 
-3. Nhân viên (SubAccount) đăng nhập và thêm địa chỉ
-   POST /api/auth/login  (dùng tài khoản sub-account)
+3. Staff member (SubAccount) logs in and adds an address
+   POST /api/auth/login  (using sub-account credentials)
    POST /api/addresses
-   { "name": "Chi nhánh Q.3", "cityCode": "HCM", "latitude": ..., "longitude": ... }
-   → Status = Reviewed ngay lập tức, mã địa chỉ tự động sinh (ví dụ: HCMB7X21)
+   { "name": "Branch District 3", "cityCode": "HCM", "latitude": ..., "longitude": ... }
+   → Status = Reviewed immediately, address code is auto-generated (e.g. HCMB7X21)
 
-4. Business xem tất cả địa chỉ của nhóm (cả mình lẫn sub-accounts)
+4. Business views all addresses for the group (self + sub-accounts)
    GET /api/business/addresses
 
-5. Business chỉ xem địa chỉ mà mình đã thêm
+5. Business views only addresses they added themselves
    GET /api/business/addresses/mine
 
-6. SubAccount xem tất cả địa chỉ trong nhóm (bao gồm địa chỉ của parent và các sub-account cùng cấp)
-   GET /api/business/addresses  (dùng token của SubAccount)
+6. SubAccount views all addresses in the group (parent + all peer sub-accounts)
+   GET /api/business/addresses  (using SubAccount token)
 
-7. Business cập nhật thông tin tài khoản con
+7. Business updates a sub-account's information
    PUT /api/business/sub-accounts/{subAccountId}
    { "phone": "0912345678" }
 ```
 
 ---
 
-## Flow 4: Admin xác minh trực tiếp (không qua validator)
+## Flow 4: Admin verifies directly (without a validator)
 
 ```
-1. Admin xem danh sách yêu cầu pending
+1. Admin views the list of pending requests
    GET /api/validations/filter/status/Pending
 
-2. Admin xác minh trực tiếp
+2. Admin verifies directly
    POST /api/validations/{id}/verify
-   { "notes": "Admin xác minh trực tiếp" }
+   { "notes": "Verified directly by Admin" }
+   🔔 Push notification sent to user: "Address verified"
 
-✅ Địa chỉ được thêm vào AddressCodes với status = Reviewed
+✅ Address is added to AddressCodes with status = Reviewed
 ```
 
 ---
 
-## Flow 5: Tìm kiếm địa chỉ
+## Flow 5: Search addresses
 
 ```
-# Tìm theo code, name, fullAddress, district hoặc cityCode
+# Search by code, name, fullAddress, district, or cityCode
 GET /api/addresses/search?searchTerm=HAN
 GET /api/addresses/search?searchTerm=HANA3K92
-GET /api/addresses/search?searchTerm=Phở+Bắc
-GET /api/addresses/search?searchTerm=Thanh+Xuân
+GET /api/addresses/search?searchTerm=Pho+Bac
 
-# Lấy tất cả tọa độ để hiển thị trên map
+# Get all coordinates for map display
 GET /api/addresses/coordinates
 
-# Lọc theo status
+# Filter by status
 GET /api/addresses/filter/status/Reviewed
 ```
 
 ---
 
-## Flow 6: Đăng ký và kiểm tra vé đỗ xe
+## Flow 6: Register and check parking tickets
 
 ```
-1. Lấy danh sách bãi đỗ xe để hiển thị trên map
+1. Get the list of parking zones for map display
    GET /api/addresses/parking-zones
 
-2. Đăng ký vé đỗ xe (có thể không cần đăng nhập)
+2. Purchase a parking ticket (login not required)
    POST /api/parking
    { "licensePlate": "30A-12345", "addressId": "3fa85f64-...", "duration": "4h", "paymentMethod": "momo" }
-   → Trả về ticketCode: "PKT12345678"
+   → Returns ticketCode: "PKT12345678"
 
-3. Kiểm tra vé theo mã vé
+3. Check ticket by ticket code
    GET /api/parking/ticket/PKT12345678
 
-4. Kiểm tra vé theo biển số (vé mới nhất)
+4. Check ticket by license plate (most recent ticket)
    GET /api/parking/license/30A-12345
 
-5. Gia hạn vé
+5. Extend a ticket
    POST /api/parking/{id}/extend
    { "duration": "2h", "paymentMethod": "momo" }
 
-6. User đã đăng nhập xem lịch sử vé đỗ xe
+6. Logged-in user views their parking ticket history
    GET /api/parking/my-tickets
 ```
 
 ---
 
-## Flow 7: Xem lịch sử giao dịch tổng hợp
+## Flow 7: View combined transaction history
 
 ```
-1. Lấy tất cả giao dịch (đỗ xe + xác minh) của user hiện tại
+1. Get all transactions (parking + verification) for the current user
    GET /api/transactions/my-transactions
-   → Trả về list sắp xếp theo ngày giảm dần, gồm cả type "parking" và "verification"
+   → Returns a list sorted by date descending, including both "parking" and "verification" types
 
-2. Chỉ xem lịch sử vé đỗ xe
+2. View only parking ticket history
    GET /api/parking/my-tickets
 
-3. Chỉ xem lịch sử xác minh địa chỉ
+3. View only address verification history
    GET /api/validations/my-validations
 ```

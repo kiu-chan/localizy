@@ -1,10 +1,10 @@
 # Localizy Server - API Documentation
 
-Tài liệu chi tiết về tất cả API endpoints của Localizy Server.
+Detailed documentation for all API endpoints of Localizy Server.
 
-## 📋 Danh sách tài liệu
+## 📋 Table of Contents
 
-- [Overview & Authentication](README.md) *(file này)*
+- [Overview & Authentication](README.md) *(this file)*
 - [Auth APIs](auth.md)
 - [Admin Dashboard API](admin-dashboard.md)
 - [User APIs](users.md)
@@ -43,9 +43,9 @@ ISO 8601: 2024-01-10T10:30:00Z
 
 ### JWT Bearer Token
 
-API sử dụng JWT (JSON Web Token) để xác thực người dùng.
+The API uses JWT (JSON Web Token) for user authentication.
 
-#### Cách lấy token:
+#### Obtain a token:
 ```http
 POST /api/auth/login
 Content-Type: application/json
@@ -56,13 +56,13 @@ Content-Type: application/json
 }
 ```
 
-#### Sử dụng token:
+#### Use the token:
 ```
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
 ```
 
 #### Token Properties:
-- **Expiration**: 24 giờ
+- **Expiration**: 24 hours
 - **Algorithm**: HS256
 - **Claims**: UserId, Email, Name, Role
 
@@ -70,23 +70,23 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
 
 | Level | Description |
 |-------|-------------|
-| **Public** | Không cần token |
-| **Authenticated** | Cần token hợp lệ (mọi role) |
-| **Admin** | Chỉ role Admin |
-| **Validator** | Chỉ role Validator |
-| **Admin,Validator** | Admin hoặc Validator |
-| **Business** | Chỉ role Business |
-| **Business,SubAccount** | Business hoặc SubAccount |
+| **Public** | No token required |
+| **Authenticated** | Valid token required (any role) |
+| **Admin** | Admin role only |
+| **Validator** | Validator role only |
+| **Admin,Validator** | Admin or Validator |
+| **Business** | Business role only |
+| **Business,SubAccount** | Business or SubAccount |
 
 ### User Roles
 
-| Role | Mô tả |
-|------|-------|
-| `User` | Người dùng thường - gửi yêu cầu xác minh địa chỉ |
-| `Admin` | Quản trị viên - quản lý toàn hệ thống |
-| `Validator` | Người xác minh - xác minh địa chỉ tại thực địa |
-| `Business` | Tài khoản doanh nghiệp - thêm địa chỉ trực tiếp |
-| `SubAccount` | Tài khoản phụ của doanh nghiệp - thêm địa chỉ trực tiếp |
+| Role | Description |
+|------|-------------|
+| `User` | Regular user — submits address verification requests |
+| `Admin` | Administrator — manages the entire system |
+| `Validator` | Field validator — verifies addresses on-site |
+| `Business` | Business account — adds addresses directly |
+| `SubAccount` | Sub-account of a business — adds addresses directly |
 
 ---
 
@@ -104,11 +104,11 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
 
 | Code | Status | Description |
 |------|--------|-------------|
-| 200 | OK | Request thành công |
-| 201 | Created | Tạo resource thành công |
-| 204 | No Content | Xóa thành công |
-| 400 | Bad Request | Dữ liệu không hợp lệ |
-| 401 | Unauthorized | Invalid token or expired |
-| 403 | Forbidden | Không có quyền truy cập |
-| 404 | Not Found | Resource không tồn tại |
-| 500 | Internal Server Error | Lỗi server |
+| 200 | OK | Request successful |
+| 201 | Created | Resource created successfully |
+| 204 | No Content | Deleted successfully |
+| 400 | Bad Request | Invalid data |
+| 401 | Unauthorized | Invalid or expired token |
+| 403 | Forbidden | Insufficient permissions |
+| 404 | Not Found | Resource does not exist |
+| 500 | Internal Server Error | Server error |

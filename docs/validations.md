@@ -1,6 +1,6 @@
 # ✅ Validation APIs
 
-Quản lý yêu cầu xác minh địa chỉ. Đây là flow cho người dùng thường yêu cầu xác minh địa chỉ của mình.
+Manages address verification requests. This is the flow for regular users to request verification of their address.
 
 ### Validation Status Flow
 
@@ -9,19 +9,19 @@ Pending → Assigned → Scheduled → Verified
                                ↘ Rejected
 ```
 
-| Status | Mô tả | Ai thực hiện |
-|--------|-------|--------------|
-| `Pending` | Mới gửi, chờ admin xử lý | - |
-| `Assigned` | Admin đã phân công validator | Admin |
-| `Scheduled` | Validator đã xác nhận lịch hẹn | Validator |
-| `Verified` | Đã xác minh thành công, địa chỉ vào danh sách | Admin/Validator |
-| `Rejected` | Bị từ chối | Admin/Validator |
+| Status | Description | Who performs it |
+|--------|-------------|-----------------|
+| `Pending` | Newly submitted, awaiting admin action | - |
+| `Assigned` | Admin has assigned a validator | Admin |
+| `Scheduled` | Validator has confirmed the appointment | Validator |
+| `Verified` | Successfully verified, address added to the list | Admin/Validator |
+| `Rejected` | Rejected | Admin/Validator |
 
-### Lưu ý về URL tài liệu
+### Note on document URLs
 
-> Tất cả các trường `idDocumentUrl` và `addressProofUrl` trong response đều trả về **full URL** (bao gồm scheme + host), giúp client có thể truy cập trực tiếp để xem tài liệu xác minh.
+> All `idDocumentUrl` and `addressProofUrl` fields in responses return **full URLs** (including scheme + host), allowing clients to access them directly to view verification documents.
 >
-> Ví dụ: `http://localhost:5088/uploads/verifications/cccd_xxx.jpg`
+> Example: `http://localhost:5088/uploads/verifications/cccd_xxx.jpg`
 
 ### Validation Response Object
 
@@ -36,7 +36,7 @@ Pending → Assigned → Scheduled → Verified
     "id": "a1b2c3d4-...",
     "code": "HANA3K92",
     "cityId": "d4e5f6a7-...",
-    "cityName": "Hà Nội",
+    "cityName": "Ha Noi",
     "coordinates": { "lat": 21.0285, "lng": 105.8542 }
   },
   "submittedBy": {
@@ -66,9 +66,9 @@ Pending → Assigned → Scheduled → Verified
 
 ---
 
-## Endpoints dành cho Admin
+## Admin Endpoints
 
-### 1. Thống kê validations
+### 1. Validation statistics
 
 ```http
 GET /api/validations/stats
@@ -90,7 +90,7 @@ GET /api/validations/stats
 
 ---
 
-### 2. Lấy tất cả validation requests
+### 2. Get all validation requests
 
 ```http
 GET /api/validations?pageNumber={n}&pageSize={n}
@@ -106,7 +106,7 @@ GET /api/validations?pageNumber={n}&pageSize={n}
 
 ---
 
-### 3. Tìm kiếm validations
+### 3. Search validations
 
 ```http
 GET /api/validations/search?searchTerm={term}&pageNumber={n}&pageSize={n}
@@ -115,7 +115,7 @@ GET /api/validations/search?searchTerm={term}&pageNumber={n}&pageSize={n}
 **Authorization:** Admin
 
 **Query Parameters:**
-- `searchTerm`: Tìm theo requestId, address code, tên người gửi, notes
+- `searchTerm`: Search by requestId, address code, submitter name, or notes
 - `pageNumber` (int, default: 1)
 - `pageSize` (int, default: 20, max: 100)
 
@@ -123,7 +123,7 @@ GET /api/validations/search?searchTerm={term}&pageNumber={n}&pageSize={n}
 
 ---
 
-### 4. Lọc theo status
+### 4. Filter by status
 
 ```http
 GET /api/validations/filter/status/{status}?pageNumber={n}&pageSize={n}
@@ -142,7 +142,7 @@ GET /api/validations/filter/status/{status}?pageNumber={n}&pageSize={n}
 
 ---
 
-### 5. Lọc theo priority
+### 5. Filter by priority
 
 ```http
 GET /api/validations/filter/priority/{priority}?pageNumber={n}&pageSize={n}
@@ -161,7 +161,7 @@ GET /api/validations/filter/priority/{priority}?pageNumber={n}&pageSize={n}
 
 ---
 
-### 6. Lấy validation theo ID
+### 6. Get validation by ID
 
 ```http
 GET /api/validations/{id}
@@ -173,7 +173,7 @@ GET /api/validations/{id}
 
 ---
 
-### 7. Lấy validation theo Request ID
+### 7. Get validation by Request ID
 
 ```http
 GET /api/validations/request/{requestId}
@@ -186,13 +186,13 @@ GET /api/validations/request/{requestId}
 **Response:** `200 OK` - Validation object
 
 **Errors:**
-- `404` - Validation request không tồn tại
+- `404` - Validation request not found
 
 ---
 
-### 8. Phân công validator
+### 8. Assign a validator
 
-Admin chỉ định validator sẽ đến xác minh địa chỉ.
+Admin assigns a validator to go verify the address.
 
 ```http
 POST /api/validations/{id}/assign-validator
@@ -207,17 +207,17 @@ POST /api/validations/{id}/assign-validator
 }
 ```
 
-**Response:** `200 OK` - Validation object với `status: "Assigned"`
+**Response:** `200 OK` - Validation object with `status: "Assigned"`
 
 **Errors:**
 - `400` - Validator not found
-- `404` - Validation request không tồn tại
+- `404` - Validation request not found
 
 ---
 
-### 9. Xác minh địa chỉ
+### 9. Verify an address
 
-Sau khi xác minh, địa chỉ sẽ được thêm vào danh sách `AddressCodes` với status `Reviewed`. Trường `fullAddress` từ yêu cầu xác minh sẽ được gán vào địa chỉ được tạo mới.
+After verification, the address is added to `AddressCodes` with `status = Reviewed`. The `fullAddress` from the verification request is assigned to the newly created address.
 
 ```http
 POST /api/validations/{id}/verify
@@ -228,15 +228,17 @@ POST /api/validations/{id}/verify
 **Request Body:**
 ```json
 {
-  "notes": "Đã xác minh thực địa, địa chỉ chính xác"
+  "notes": "Verified on-site, address is accurate"
 }
 ```
 
-**Response:** `200 OK` - Validation object với `status: "Verified"`
+**Response:** `200 OK` - Validation object with `status: "Verified"`
+
+> 🔔 **Push Notification:** The server automatically sends an FCM notification to the submitter's device (if an FCM token is registered) with the message **"Address verified"**.
 
 ---
 
-### 10. Từ chối validation
+### 10. Reject a validation
 
 ```http
 POST /api/validations/{id}/reject
@@ -247,20 +249,22 @@ POST /api/validations/{id}/reject
 **Request Body:**
 ```json
 {
-  "reason": "Tọa độ không khớp với địa chỉ thực tế"
+  "reason": "Coordinates do not match the actual address"
 }
 ```
 
-**Response:** `200 OK` - Validation object với `status: "Rejected"`
+**Response:** `200 OK` - Validation object with `status: "Rejected"`
 
 **Errors:**
-- `400` - Reason không được để trống
+- `400` - Reason must not be empty
+
+> 🔔 **Push Notification:** The server automatically sends an FCM notification to the submitter's device (if an FCM token is registered) with the message **"Verification request rejected"** including the reason.
 
 ---
 
-### 11. Cập nhật thông tin địa chỉ (Admin & Validator)
+### 11. Update address info (Admin & Validator)
 
-Admin hoặc Validator chỉnh sửa thông tin địa chỉ liên quan đến yêu cầu xác minh.
+Admin or Validator edits address information related to a verification request.
 
 ```http
 PUT /api/validations/{id}/address-info
@@ -268,37 +272,37 @@ PUT /api/validations/{id}/address-info
 
 **Authorization:** Admin, Validator
 
-**Điều kiện:**
-| Role | Điều kiện cho phép |
+**Conditions:**
+| Role | Allowed conditions |
 |------|-------------------|
-| `Admin` | Status là `Pending`, `Assigned`, hoặc `Scheduled` (trước khi Verified/Rejected) |
-| `Validator` | Được phân công cho request đó + Status là `Assigned` hoặc `Scheduled` |
+| `Admin` | Status is `Pending`, `Assigned`, or `Scheduled` (before Verified/Rejected) |
+| `Validator` | Assigned to the request + Status is `Assigned` or `Scheduled` |
 
-**Request Body:** (tất cả fields đều optional)
+**Request Body:** (all fields are optional)
 ```json
 {
-  "name": "Nhà hàng Phở Bắc",
-  "fullAddress": "123 Nguyễn Trãi, P. Thượng Đình, Q. Thanh Xuân, Hà Nội",
+  "name": "Pho Bac Restaurant",
+  "fullAddress": "123 Nguyen Trai, Thuong Dinh Ward, Thanh Xuan District, Hanoi",
   "cityId": "d4e5f6a7-5717-4562-b3fc-2c963f66afa6",
   "latitude": 21.0285,
   "longitude": 105.8542,
-  "locationName": "Nhà hàng Phở Bắc",
-  "notes": "Ghi chú cập nhật"
+  "locationName": "Pho Bac Restaurant",
+  "notes": "Updated note"
 }
 ```
 
-> **Lưu ý:** Nếu validation có `addressId` (địa chỉ đã tồn tại), các trường `name`, `fullAddress`, `cityId`, `latitude`, `longitude` sẽ được cập nhật trực tiếp vào bảng `AddressCodes`. Ngược lại, chỉ `latitude`, `longitude`, `locationName`, `notes` trên Validation được cập nhật.
+> **Note:** If the validation has an `addressId` (existing address), the fields `name`, `fullAddress`, `cityId`, `latitude`, `longitude` are updated directly in the `AddressCodes` table. Otherwise, only `latitude`, `longitude`, `locationName`, `notes` on the Validation are updated.
 
-**Response:** `200 OK` - Validation object đã cập nhật
+**Response:** `200 OK` - Updated Validation object
 
 **Errors:**
-- `400` - Không thể sửa sau khi đã Verified/Rejected
-- `403` - Validator không được phân công cho request này
-- `404` - Validation request không tồn tại
+- `400` - Cannot edit after Verified/Rejected
+- `403` - Validator is not assigned to this request
+- `404` - Validation request not found
 
 ---
 
-### 12. Cập nhật validation (Admin)
+### 12. Update validation (Admin)
 
 ```http
 PUT /api/validations/{id}
@@ -306,22 +310,22 @@ PUT /api/validations/{id}
 
 **Authorization:** Admin
 
-**Request Body:** (tất cả fields đều optional)
+**Request Body:** (all fields are optional)
 ```json
 {
   "priority": "High",
-  "notes": "Cập nhật ghi chú"
+  "notes": "Updated note"
 }
 ```
 
-**Response:** `200 OK` - Validation object đã cập nhật
+**Response:** `200 OK` - Updated Validation object
 
 **Errors:**
-- `404` - Validation request không tồn tại
+- `404` - Validation request not found
 
 ---
 
-### 13. Xóa validation
+### 13. Delete validation
 
 ```http
 DELETE /api/validations/{id}
@@ -329,17 +333,17 @@ DELETE /api/validations/{id}
 
 **Authorization:** Admin
 
-> **Soft Delete:** Bản ghi không bị xóa vật lý. Cột `IsDeleted` được đặt `true` và `DeletedAt` được ghi nhận.
+> **Soft Delete:** The record is not physically deleted. The `IsDeleted` column is set to `true` and `DeletedAt` is recorded.
 
 **Response:** `204 No Content`
 
 ---
 
-## Endpoints dành cho Validator
+## Validator Endpoints
 
-### 14. Xem các task được phân công
+### 14. View assigned tasks
 
-Validator xem danh sách các yêu cầu xác minh được Admin phân công.
+Validator views the list of verification requests assigned by Admin.
 
 ```http
 GET /api/validations/my-assignments?pageNumber={n}&pageSize={n}
@@ -351,13 +355,13 @@ GET /api/validations/my-assignments?pageNumber={n}&pageSize={n}
 - `pageNumber` (int, default: 1)
 - `pageSize` (int, default: 20, max: 100)
 
-**Response:** `200 OK` - PagedResult of Validation objects (chỉ các yêu cầu được phân công cho validator hiện tại)
+**Response:** `200 OK` - PagedResult of Validation objects (only requests assigned to the current validator)
 
 ---
 
-### 15. Xác nhận lịch hẹn
+### 15. Confirm appointment
 
-Validator xác nhận sẽ đến xác minh theo lịch hẹn đã đặt.
+Validator confirms they will attend the verification appointment.
 
 ```http
 POST /api/validations/{id}/confirm-appointment
@@ -365,19 +369,21 @@ POST /api/validations/{id}/confirm-appointment
 
 **Authorization:** Validator
 
-**Response:** `200 OK` - Validation object với `status: "Scheduled"`
+**Response:** `200 OK` - Validation object with `status: "Scheduled"`
 
 **Errors:**
-- `403` - Validation này không được phân công cho bạn
-- `404` - Validation request không tồn tại
+- `403` - This validation is not assigned to you
+- `404` - Validation request not found
+
+> 🔔 **Push Notification:** The server automatically sends an FCM notification to the submitter's device (if an FCM token is registered) with the message **"Appointment confirmed"** including the date and time.
 
 ---
 
-## Endpoints dành cho User
+## User Endpoints
 
-### 16. Gửi yêu cầu xác minh địa chỉ
+### 16. Submit an address verification request
 
-User thường gửi yêu cầu xác minh kèm tài liệu chứng minh.
+Regular users submit a verification request along with supporting documents.
 
 ```http
 POST /api/validations/verification-request
@@ -389,22 +395,22 @@ POST /api/validations/verification-request
 
 **Form Fields:**
 
-| Field | Type | Required | Mô tả |
-|-------|------|----------|-------|
-| `IdDocument` | file | Không | Ảnh CCCD hoặc Hộ chiếu |
-| `AddressProof` | file | Không | Giấy tờ chứng minh địa chỉ |
-| `AddressId` | string (Guid) | Không | ID địa chỉ hiện có (nếu cập nhật) |
-| `RequestType` | string | Không | `NewAddress` \| `UpdateAddress` (default: `NewAddress`) |
-| `Priority` | string | Không | `Low` \| `Medium` \| `High` (default: `Medium`) |
-| `IdType` | string | Không | Loại giấy tờ: `CCCD`, `Passport`, ... |
-| `Latitude` | double | Không | Vĩ độ của địa chỉ |
-| `Longitude` | double | Không | Kinh độ của địa chỉ |
-| `LocationName` | string | Không | Tên địa điểm (VD: "Nhà hàng Phở Bắc") |
-| `FullAddress` | string | Không | Địa chỉ đầy đủ (VD: "123 Nguyễn Trãi, Q. Thanh Xuân, Hà Nội") — sẽ được gán vào `Address.FullAddress` khi được xác nhận |
-| `PaymentMethod` | string | Không | Phương thức thanh toán |
-| `PaymentAmount` | decimal | Không | Số tiền thanh toán |
-| `AppointmentDate` | datetime | Không | Ngày hẹn xác minh |
-| `AppointmentTimeSlot` | string | Không | Khung giờ hẹn (VD: "9:00-11:00") |
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `IdDocument` | file | No | ID card or passport image |
+| `AddressProof` | file | No | Document proving the address |
+| `AddressId` | string (Guid) | No | Existing address ID (for updates) |
+| `RequestType` | string | No | `NewAddress` \| `UpdateAddress` (default: `NewAddress`) |
+| `Priority` | string | No | `Low` \| `Medium` \| `High` (default: `Medium`) |
+| `IdType` | string | No | Document type: `CCCD`, `Passport`, etc. |
+| `Latitude` | double | No | Address latitude |
+| `Longitude` | double | No | Address longitude |
+| `LocationName` | string | No | Location name (e.g. "Pho Bac Restaurant") |
+| `FullAddress` | string | No | Full address (e.g. "123 Nguyen Trai, Thanh Xuan District, Hanoi") — assigned to `Address.FullAddress` when approved |
+| `PaymentMethod` | string | No | Payment method |
+| `PaymentAmount` | decimal | No | Payment amount |
+| `AppointmentDate` | datetime | No | Verification appointment date |
+| `AppointmentTimeSlot` | string | No | Appointment time slot (e.g. "9:00-11:00") |
 
 **cURL Example:**
 ```bash
@@ -414,10 +420,9 @@ curl -X POST http://localhost:5088/api/validations/verification-request \
   -F "AddressProof=@/path/to/address_proof.pdf" \
   -F "IdType=CCCD" \
   -F "Latitude=21.0285" \
-
   -F "Longitude=105.8542" \
-  -F "LocationName=Nhà hàng Phở Bắc" \
-  -F "FullAddress=123 Nguyễn Trãi, P. Thượng Đình, Q. Thanh Xuân, Hà Nội" \
+  -F "LocationName=Pho Bac Restaurant" \
+  -F "FullAddress=123 Nguyen Trai, Thuong Dinh Ward, Thanh Xuan District, Hanoi" \
   -F "PaymentMethod=Cash" \
   -F "PaymentAmount=150000" \
   -F "AppointmentDate=2024-02-15T09:00:00Z" \
@@ -440,8 +445,8 @@ curl -X POST http://localhost:5088/api/validations/verification-request \
   "location": {
     "latitude": 21.0285,
     "longitude": 105.8542,
-    "locationName": "Nhà hàng Phở Bắc",
-    "fullAddress": "123 Nguyễn Trãi, P. Thượng Đình, Q. Thanh Xuân, Hà Nội"
+    "locationName": "Pho Bac Restaurant",
+    "fullAddress": "123 Nguyen Trai, Thuong Dinh Ward, Thanh Xuan District, Hanoi"
   },
   "payment": {
     "method": "Cash",
@@ -459,7 +464,7 @@ curl -X POST http://localhost:5088/api/validations/verification-request \
 
 ---
 
-### 17. Lấy chi tiết verification request
+### 17. Get verification request detail
 
 ```http
 GET /api/validations/verification-request/{id}
@@ -471,7 +476,7 @@ GET /api/validations/verification-request/{id}
 
 ---
 
-### 18. Lấy validations theo user ID
+### 18. Get validations by user ID
 
 ```http
 GET /api/validations/user/{userId}?pageNumber={n}&pageSize={n}
@@ -487,7 +492,7 @@ GET /api/validations/user/{userId}?pageNumber={n}&pageSize={n}
 
 ---
 
-### 19. Lấy validations của user hiện tại
+### 19. Get current user's validations
 
 ```http
 GET /api/validations/my-validations?pageNumber={n}&pageSize={n}
@@ -538,4 +543,4 @@ GET /api/validations/my-validations?pageNumber={n}&pageSize={n}
 }
 ```
 
-> **Lưu ý:** `appointmentInfo` là `null` nếu chưa có lịch hẹn.
+> **Note:** `appointmentInfo` is `null` if no appointment has been set.

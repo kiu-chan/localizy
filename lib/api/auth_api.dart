@@ -192,6 +192,18 @@ class AuthService {
     throw AuthException(message);
   }
 
+  /// Register FCM token with the server for push notifications.
+  /// Call this after every login and when Firebase issues a new token.
+  static Future<void> registerFcmToken(String fcmToken) async {
+    final resp = await MainApi.instance.putJson(
+      'api/auth/fcm-token',
+      {'fcmToken': fcmToken},
+    );
+    if (resp.statusCode != 200) {
+      debugPrint('[FCM] registerFcmToken failed: ${resp.statusCode} ${resp.body}');
+    }
+  }
+
   /// Remove stored token and user (logout).
   static Future<void> logout() async {
     await _storage.delete(key: _tokenKey);

@@ -1,6 +1,6 @@
 # 📈 Statistics API
 
-Trả về toàn bộ dữ liệu thống kê và phân tích cho trang Statistics của Admin, bao gồm tăng trưởng người dùng, địa chỉ, hoạt động validation, phân bổ theo thành phố/role và các chỉ số quan trọng.
+Returns all statistics and analytics data for the Admin Statistics page, including user growth, address growth, validation activity, distribution by city/role, and key metrics.
 
 ```http
 GET /api/statistics?timeRange=7days
@@ -10,9 +10,9 @@ GET /api/statistics?timeRange=7days
 
 ### Query Parameters
 
-| Tham số | Kiểu | Mặc định | Mô tả |
-|---------|------|----------|-------|
-| `timeRange` | string | `7days` | Khoảng thời gian: `7days` \| `30days` \| `90days` \| `1year` |
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `timeRange` | string | `7days` | Time range: `7days` \| `30days` \| `90days` \| `1year` |
 
 ---
 
@@ -34,7 +34,7 @@ GET /api/statistics?timeRange=7days
 
 ---
 
-### `summary` — Thống kê tổng quan
+### `summary` — Overall statistics
 
 ```json
 {
@@ -49,20 +49,20 @@ GET /api/statistics?timeRange=7days
 }
 ```
 
-| Field | Mô tả |
-|-------|-------|
-| `totalUsers` | Tổng số người dùng hiện tại |
-| `totalUsersChange` | % thay đổi so với kỳ trước |
-| `totalAddresses` | Tổng số địa chỉ hiện tại |
-| `totalAddressesChange` | % thay đổi so với kỳ trước |
-| `verifiedToday` | Số địa chỉ được xác minh hôm nay |
-| `verifiedTodayChange` | % thay đổi so với hôm qua |
-| `activeUsers` | Số người dùng đã tạo địa chỉ trong kỳ |
-| `activeUsersChange` | % thay đổi so với kỳ trước |
+| Field | Description |
+|-------|-------------|
+| `totalUsers` | Total current users |
+| `totalUsersChange` | % change compared to the previous period |
+| `totalAddresses` | Total current addresses |
+| `totalAddressesChange` | % change compared to the previous period |
+| `verifiedToday` | Number of addresses verified today |
+| `verifiedTodayChange` | % change compared to yesterday |
+| `activeUsers` | Users who created at least one address in the period |
+| `activeUsersChange` | % change compared to the previous period |
 
 ---
 
-### `userGrowth` — Tăng trưởng người dùng theo ngày
+### `userGrowth` — Daily user growth
 
 ```json
 [
@@ -70,16 +70,16 @@ GET /api/statistics?timeRange=7days
 ]
 ```
 
-| Field | Mô tả |
-|-------|-------|
-| `date` | Ngày (yyyy-MM-dd) |
-| `users` | Tổng tích lũy người dùng đến ngày đó |
-| `active` | Số người dùng đã tạo địa chỉ trong ngày |
-| `new` | Số người dùng mới đăng ký trong ngày |
+| Field | Description |
+|-------|-------------|
+| `date` | Date (yyyy-MM-dd) |
+| `users` | Cumulative total users up to that date |
+| `active` | Users who created an address on that day |
+| `new` | New users registered on that day |
 
 ---
 
-### `addressGrowth` — Tăng trưởng địa chỉ theo ngày
+### `addressGrowth` — Daily address growth
 
 ```json
 [
@@ -87,16 +87,16 @@ GET /api/statistics?timeRange=7days
 ]
 ```
 
-| Field | Mô tả |
-|-------|-------|
-| `date` | Ngày (yyyy-MM-dd) |
-| `total` | Tổng tích lũy địa chỉ đến ngày đó |
-| `verified` | Tổng địa chỉ đã được duyệt (status = Reviewed) đến ngày đó |
-| `pending` | Số địa chỉ đang chờ duyệt tạo trong ngày |
+| Field | Description |
+|-------|-------------|
+| `date` | Date (yyyy-MM-dd) |
+| `total` | Cumulative total addresses up to that date |
+| `verified` | Total reviewed addresses (status = Reviewed) up to that date |
+| `pending` | Pending addresses created on that day |
 
 ---
 
-### `validationActivity` — Hoạt động xác minh theo ngày
+### `validationActivity` — Daily verification activity
 
 ```json
 [
@@ -104,16 +104,16 @@ GET /api/statistics?timeRange=7days
 ]
 ```
 
-| Field | Mô tả |
-|-------|-------|
-| `date` | Ngày (yyyy-MM-dd) |
-| `verified` | Số yêu cầu được duyệt trong ngày (processedDate = ngày đó) |
-| `rejected` | Số yêu cầu bị từ chối trong ngày (processedDate = ngày đó) |
-| `pending` | Số yêu cầu đang chờ tạo trong ngày (createdAt <= ngày đó) |
+| Field | Description |
+|-------|-------------|
+| `date` | Date (yyyy-MM-dd) |
+| `verified` | Requests approved on that day (processedDate = that date) |
+| `rejected` | Requests rejected on that day (processedDate = that date) |
+| `pending` | Pending requests created up to that day (createdAt <= that date) |
 
 ---
 
-### `userRoleDistribution` — Phân bổ người dùng theo role
+### `userRoleDistribution` — User distribution by role
 
 ```json
 [
@@ -124,15 +124,15 @@ GET /api/statistics?timeRange=7days
 ]
 ```
 
-| Field | Mô tả |
-|-------|-------|
-| `name` | Tên role: `User` \| `Admin` \| `Validator` \| `Business` \| `SubAccount` |
-| `value` | Số lượng người dùng |
-| `percentage` | Tỷ lệ phần trăm |
+| Field | Description |
+|-------|-------------|
+| `name` | Role name: `User` \| `Admin` \| `Validator` \| `Business` \| `SubAccount` |
+| `value` | Number of users |
+| `percentage` | Percentage |
 
 ---
 
-### `topContributors` — Top người đóng góp nhiều nhất
+### `topContributors` — Top contributors
 
 ```json
 [
@@ -140,29 +140,29 @@ GET /api/statistics?timeRange=7days
 ]
 ```
 
-| Field | Mô tả |
-|-------|-------|
-| `rank` | Thứ hạng (1–10) |
-| `name` | Tên người dùng |
-| `addresses` | Tổng số địa chỉ đã tạo |
-| `verified` | Số địa chỉ được duyệt |
+| Field | Description |
+|-------|-------------|
+| `rank` | Rank (1–10) |
+| `name` | User name |
+| `addresses` | Total addresses created |
+| `verified` | Addresses that were approved |
 
 ---
 
-### `cityDistribution` — Phân bổ địa chỉ theo thành phố
+### `cityDistribution` — Address distribution by city
 
 ```json
 [
-  { "city": "Hà Nội", "count": 3245, "percentage": 57.1 },
+  { "city": "Ha Noi", "count": 3245, "percentage": 57.1 },
   { "city": "Others", "count": 173, "percentage": 3.0 }
 ]
 ```
 
-Top 5 thành phố có nhiều địa chỉ nhất + nhóm "Others" cho phần còn lại.
+Top 5 cities with the most addresses + an "Others" group for the rest.
 
 ---
 
-### `activityByHour` — Hoạt động theo giờ trong ngày
+### `activityByHour` — Activity by hour of day
 
 ```json
 [
@@ -171,11 +171,11 @@ Top 5 thành phố có nhiều địa chỉ nhất + nhóm "Others" cho phần c
 ]
 ```
 
-24 phần tử (00:00 → 23:00). `activity` là tổng số địa chỉ và yêu cầu xác minh được tạo trong giờ đó, tính trên toàn bộ `timeRange`.
+24 entries (00:00 → 23:00). `activity` is the total number of addresses and verification requests created in that hour, calculated across the entire `timeRange`.
 
 ---
 
-### `keyMetrics` — Chỉ số quan trọng
+### `keyMetrics` — Key metrics
 
 ```json
 {
@@ -188,11 +188,11 @@ Top 5 thành phố có nhiều địa chỉ nhất + nhóm "Others" cho phần c
 }
 ```
 
-| Field | Công thức | Mô tả |
-|-------|-----------|-------|
-| `avgResponseTimeHours` | avg(processedDate - submittedDate) | Thời gian phản hồi trung bình (giờ) cho các validation đã xử lý |
-| `verificationRate` | reviewed / totalAddresses × 100 | % địa chỉ đã được duyệt trên tổng số |
-| `userEngagement` | usersWithAddresses / totalUsers × 100 | % người dùng đã tạo ít nhất 1 địa chỉ |
-| `avgAddressesPerUser` | totalAddresses / totalUsers | Số địa chỉ trung bình mỗi người dùng |
-| `rejectionRate` | rejected / totalValidations × 100 | % yêu cầu xác minh bị từ chối |
-| `peakActivityHour` | giờ có activity cao nhất | Khung giờ hoạt động nhiều nhất |
+| Field | Formula | Description |
+|-------|---------|-------------|
+| `avgResponseTimeHours` | avg(processedDate - submittedDate) | Average response time (hours) for processed validations |
+| `verificationRate` | reviewed / totalAddresses × 100 | % of addresses that have been approved |
+| `userEngagement` | usersWithAddresses / totalUsers × 100 | % of users who created at least 1 address |
+| `avgAddressesPerUser` | totalAddresses / totalUsers | Average addresses per user |
+| `rejectionRate` | rejected / totalValidations × 100 | % of verification requests that were rejected |
+| `peakActivityHour` | hour with highest activity | The busiest hour of the day |

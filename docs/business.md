@@ -1,14 +1,14 @@
 # 🏢 Business APIs
 
-Quản lý tài khoản con (SubAccount) và xem địa chỉ theo nhóm doanh nghiệp.
+Manages sub-accounts and views addresses grouped by business.
 
-> **Lưu ý:** Tài khoản `SubAccount` có đầy đủ quyền thêm địa chỉ như `Business` (status tự động = `Reviewed`).
+> **Note:** `SubAccount` accounts have full permission to add addresses like `Business` (status is automatically `Reviewed`).
 
 ---
 
-## 1. Trang chủ doanh nghiệp (Dashboard)
+## 1. Business Dashboard
 
-Trả về tổng quan và hoạt động gần đây của nhóm doanh nghiệp.
+Returns an overview and recent activity for the business group.
 
 ```http
 GET /api/business/dashboard
@@ -16,11 +16,11 @@ GET /api/business/dashboard
 
 **Authorization:** Business, SubAccount
 
-**Hành vi theo role:**
-| Role | Kết quả trả về |
-|------|----------------|
-| `Business` | Thống kê của business + tất cả sub-accounts |
-| `SubAccount` | Thống kê của toàn nhóm (parent business + các sub-accounts) |
+**Behavior by role:**
+| Role | Data returned |
+|------|---------------|
+| `Business` | Stats for the business + all sub-accounts |
+| `SubAccount` | Stats for the entire group (parent business + all sub-accounts) |
 
 **Response:** `200 OK`
 ```json
@@ -33,7 +33,7 @@ GET /api/business/dashboard
       "title": "New location added",
       "subtitle": "Coffee Shop",
       "timestamp": "2026-02-27T10:00:00Z",
-      "actorName": "Nhân viên A"
+      "actorName": "Staff A"
     },
     {
       "type": "SubAccountCreated",
@@ -47,24 +47,24 @@ GET /api/business/dashboard
       "title": "Location updated",
       "subtitle": "Restaurant",
       "timestamp": "2026-02-26T10:00:00Z",
-      "actorName": "Nhân viên B"
+      "actorName": "Staff B"
     }
   ]
 }
 ```
 
 **Activity Types:**
-| Type | Mô tả | actorName |
-|------|--------|-----------|
-| `LocationAdded` | Địa chỉ mới được thêm | Tên người thêm |
-| `LocationUpdated` | Địa chỉ được cập nhật | Tên người sở hữu |
-| `SubAccountCreated` | Tài khoản con được tạo | `null` |
+| Type | Description | actorName |
+|------|-------------|-----------|
+| `LocationAdded` | A new address was added | Name of the person who added it |
+| `LocationUpdated` | An address was updated | Name of the owner |
+| `SubAccountCreated` | A sub-account was created | `null` |
 
-> `recentActivities` trả về tối đa **10 hoạt động gần nhất** sắp xếp theo thời gian mới nhất.
+> `recentActivities` returns a maximum of **10 most recent activities** sorted by newest first.
 
 ---
 
-## 2. Lấy danh sách tài khoản con
+## 2. Get sub-accounts
 
 ```http
 GET /api/business/sub-accounts?pageNumber={n}&pageSize={n}
@@ -82,7 +82,7 @@ GET /api/business/sub-accounts?pageNumber={n}&pageSize={n}
   "items": [
     {
       "id": "a1b2c3d4-5717-4562-b3fc-2c963f66afa6",
-      "name": "Nhân viên A",
+      "name": "Staff A",
       "phone": "0901234567",
       "email": "staff.a@company.com",
       "documents": null,
@@ -103,7 +103,7 @@ GET /api/business/sub-accounts?pageNumber={n}&pageSize={n}
 
 ---
 
-## 3. Tạo tài khoản con mới
+## 3. Create a sub-account
 
 ```http
 POST /api/business/sub-accounts
@@ -114,7 +114,7 @@ POST /api/business/sub-accounts
 **Request Body:**
 ```json
 {
-  "name": "Nhân viên B",
+  "name": "Staff B",
   "email": "staff.b@company.com",
   "password": "Password123",
   "phone": "0912345678",
@@ -123,9 +123,9 @@ POST /api/business/sub-accounts
 }
 ```
 
-> Role tự động được gán là `SubAccount`. Tài khoản con thuộc về Business đang đăng nhập.
+> Role is automatically set to `SubAccount`. The sub-account belongs to the currently logged-in Business.
 
-**Response:** `201 Created` - User object với `role: "SubAccount"` và `parentBusinessId` trỏ về Business
+**Response:** `201 Created` - User object with `role: "SubAccount"` and `parentBusinessId` pointing to the Business
 
 **Errors:**
 - `400` - Email is already in use
@@ -133,7 +133,7 @@ POST /api/business/sub-accounts
 
 ---
 
-## 4. Cập nhật tài khoản con
+## 4. Update a sub-account
 
 ```http
 PUT /api/business/sub-accounts/{id}
@@ -142,12 +142,12 @@ PUT /api/business/sub-accounts/{id}
 **Authorization:** Business
 
 **Path Parameters:**
-- `id`: ID của tài khoản con (phải thuộc Business đang đăng nhập)
+- `id`: ID of the sub-account (must belong to the currently logged-in Business)
 
-**Request Body:** (tất cả fields đều optional)
+**Request Body:** (all fields are optional)
 ```json
 {
-  "name": "Nhân viên B (đã đổi tên)",
+  "name": "Staff B (renamed)",
   "phone": "0987654321",
   "email": "staff.b.new@company.com",
   "dateOfBirth": "1998-05-20T00:00:00Z",
@@ -155,9 +155,9 @@ PUT /api/business/sub-accounts/{id}
 }
 ```
 
-> Role của tài khoản con không thể thay đổi qua API này.
+> The sub-account's role cannot be changed via this API.
 
-**Response:** `200 OK` - User object đã cập nhật
+**Response:** `200 OK` - Updated User object
 
 **Errors:**
 - `400` - Email is already in use
@@ -165,9 +165,9 @@ PUT /api/business/sub-accounts/{id}
 
 ---
 
-## 5. Lấy tất cả địa chỉ của nhóm doanh nghiệp
+## 5. Get all addresses for the business group
 
-Trả về địa chỉ của **cả doanh nghiệp lẫn tất cả tài khoản con**.
+Returns addresses for **both the business and all its sub-accounts**.
 
 ```http
 GET /api/business/addresses?pageNumber={n}&pageSize={n}
@@ -179,11 +179,11 @@ GET /api/business/addresses?pageNumber={n}&pageSize={n}
 - `pageNumber` (int, default: 1)
 - `pageSize` (int, default: 20, max: 100)
 
-**Hành vi theo role:**
-| Role | Kết quả trả về |
-|------|----------------|
-| `Business` | Địa chỉ của business + tất cả sub-accounts |
-| `SubAccount` | Địa chỉ của parent business + tất cả sub-accounts cùng cấp (bao gồm bản thân) |
+**Behavior by role:**
+| Role | Data returned |
+|------|---------------|
+| `Business` | Addresses of the business + all sub-accounts |
+| `SubAccount` | Addresses of the parent business + all peer sub-accounts (including itself) |
 
 **Response:** `200 OK` - PagedResult of Address objects
 
@@ -193,17 +193,17 @@ GET /api/business/addresses?pageNumber={n}&pageSize={n}
     {
       "id": "3fa85f64-...",
       "code": "HANX9K21",
-      "name": "Văn phòng chính",
+      "name": "Main Office",
       "userId": "3fa85f64-...",
-      "userName": "Công ty ABC",
+      "userName": "Company ABC",
       "status": "Reviewed"
     },
     {
       "id": "a1b2c3d4-...",
       "code": "HCMB3P54",
-      "name": "Chi nhánh Q.1",
+      "name": "Branch District 1",
       "userId": "a1b2c3d4-...",
-      "userName": "Nhân viên A",
+      "userName": "Staff A",
       "status": "Reviewed"
     }
   ],
@@ -218,9 +218,9 @@ GET /api/business/addresses?pageNumber={n}&pageSize={n}
 
 ---
 
-## 6. Lấy địa chỉ do tài khoản hiện tại thêm
+## 6. Get addresses added by the current account
 
-Chỉ trả về địa chỉ mà **chính tài khoản đang đăng nhập** đã thêm (không bao gồm sub-accounts hay parent).
+Returns only addresses added by **the currently logged-in account** (excludes sub-accounts and parent).
 
 ```http
 GET /api/business/addresses/mine?pageNumber={n}&pageSize={n}
@@ -239,14 +239,14 @@ GET /api/business/addresses/mine?pageNumber={n}&pageSize={n}
     {
       "id": "3fa85f64-...",
       "code": "HANX9K21",
-      "name": "Văn phòng chính",
-      "fullAddress": "Tầng 5, 99 Láng Hạ, Q. Đống Đa, Hà Nội",
+      "name": "Main Office",
+      "fullAddress": "Floor 5, 99 Lang Ha, Dong Da District, Hanoi",
       "latitude": 21.02,
       "longitude": 105.85,
       "status": "Reviewed",
       "isVerified": true,
       "userId": "3fa85f64-...",
-      "userName": "Công ty ABC",
+      "userName": "Company ABC",
       "createdAt": "2024-01-10T10:30:00Z"
     }
   ],

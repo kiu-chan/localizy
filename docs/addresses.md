@@ -1,16 +1,16 @@
 # 📍 Address APIs
 
-Quản lý danh sách địa chỉ (`AddressCodes`).
+Manages the address list (`AddressCodes`).
 
 ### Address Status
 
-| Status | Mô tả |
-|--------|-------|
-| `Pending` | Chờ xác minh (địa chỉ do User thường gửi) |
-| `Reviewed` | Đã được xác minh và chấp nhận |
-| `Rejected` | Bị từ chối |
+| Status | Description |
+|--------|-------------|
+| `Pending` | Awaiting verification (submitted by a regular User) |
+| `Reviewed` | Verified and accepted |
+| `Rejected` | Rejected |
 
-> **Lưu ý:** Business và SubAccount thêm địa chỉ sẽ có status `Reviewed` ngay lập tức, không cần xác minh.
+> **Note:** Addresses added by Business and SubAccount accounts have `Reviewed` status immediately — no verification required.
 
 ### Address Response Object
 
@@ -18,19 +18,19 @@ Quản lý danh sách địa chỉ (`AddressCodes`).
 {
   "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
   "code": "HANA3K92",
-  "name": "Nhà hàng Phở Bắc",
-  "fullAddress": "123 Nguyễn Trãi, P. Thượng Đình, Q. Thanh Xuân, Hà Nội",
+  "name": "Pho Bac Restaurant",
+  "fullAddress": "123 Nguyen Trai, Thuong Dinh Ward, Thanh Xuan District, Hanoi",
   "userId": "a1b2c3d4-...",
   "userName": "Nguyen Van A",
   "latitude": 21.0285,
   "longitude": 105.8542,
   "cityId": "d4e5f6a7-5717-4562-b3fc-2c963f66afa6",
-  "cityName": "Hà Nội",
+  "cityName": "Ha Noi",
   "status": "Reviewed",
   "isVerified": true,
   "validatorId": "b2c3d4e5-...",
   "validatorName": "Tran Van B",
-  "comments": "Đã xác minh tại thực địa",
+  "comments": "Verified on-site",
   "parkingAvailable": true,
   "totalParkingSpots": 20,
   "availableSpots": 15,
@@ -40,14 +40,14 @@ Quản lý danh sách địa chỉ (`AddressCodes`).
 }
 ```
 
-> **Ghi chú về mã địa chỉ (`code`):**
-> - Được **tự động sinh** bởi hệ thống, không do người dùng nhập.
-> - Format: `{CityCode}{5 ký tự ngẫu nhiên}` — tổng **8 ký tự** (`A-Z`, `0-9`).
-> - Ví dụ: City có `code = "HAN"` → `code = "HANA3K92"`
+> **Note on address code (`code`):**
+> - **Automatically generated** by the system — not entered by users.
+> - Format: `{CityCode}{5 random characters}` — **8 characters** total (`A-Z`, `0-9`).
+> - Example: City with `code = "HAN"` → address `code = "HANA3K92"`
 
 ---
 
-## 1. Thống kê địa chỉ
+## 1. Address statistics
 
 ```http
 GET /api/addresses/stats
@@ -67,7 +67,7 @@ GET /api/addresses/stats
 
 ---
 
-## 2. Tìm kiếm địa chỉ (simple)
+## 2. Search addresses
 
 ```http
 GET /api/addresses/search?searchTerm={term}&pageNumber={n}&pageSize={n}
@@ -76,9 +76,9 @@ GET /api/addresses/search?searchTerm={term}&pageNumber={n}&pageSize={n}
 **Authorization:** Public
 
 **Query Parameters:**
-- `searchTerm` (string): Tìm theo `code`, `name`, `fullAddress` hoặc `cityName`
-- `pageNumber` (int, default: 1): Số trang
-- `pageSize` (int, default: 20, max: 100): Số bản ghi mỗi trang
+- `searchTerm` (string): Search by `code`, `name`, `fullAddress`, or `cityName`
+- `pageNumber` (int, default: 1)
+- `pageSize` (int, default: 20, max: 100)
 
 **Response:** `200 OK`
 ```json
@@ -87,12 +87,12 @@ GET /api/addresses/search?searchTerm={term}&pageNumber={n}&pageSize={n}
     {
       "id": "3fa85f64-...",
       "code": "HANA3K92",
-      "name": "Nhà hàng Phở Bắc",
-      "fullAddress": "123 Nguyễn Trãi, P. Thượng Đình, Q. Thanh Xuân",
+      "name": "Pho Bac Restaurant",
+      "fullAddress": "123 Nguyen Trai, Thuong Dinh Ward, Thanh Xuan",
       "latitude": 21.0285,
       "longitude": 105.8542,
       "cityId": "d4e5f6a7-...",
-      "cityName": "Hà Nội",
+      "cityName": "Ha Noi",
       "status": "Reviewed",
       "isVerified": true,
       "parkingAvailable": false,
@@ -112,7 +112,7 @@ GET /api/addresses/search?searchTerm={term}&pageNumber={n}&pageSize={n}
 
 ---
 
-## 3. Lọc theo status
+## 3. Filter by status
 
 ```http
 GET /api/addresses/filter/status/{status}?pageNumber={n}&pageSize={n}
@@ -131,7 +131,7 @@ GET /api/addresses/filter/status/{status}?pageNumber={n}&pageSize={n}
 
 ---
 
-## 4. Lấy địa chỉ theo user
+## 4. Get addresses by user
 
 ```http
 GET /api/addresses/user/{userId}?pageNumber={n}&pageSize={n}
@@ -147,7 +147,7 @@ GET /api/addresses/user/{userId}?pageNumber={n}&pageSize={n}
 
 ---
 
-## 5. Lấy địa chỉ của user hiện tại
+## 5. Get current user's addresses
 
 ```http
 GET /api/addresses/my-addresses?pageNumber={n}&pageSize={n}
@@ -163,7 +163,7 @@ GET /api/addresses/my-addresses?pageNumber={n}&pageSize={n}
 
 ---
 
-## 6. Lấy tất cả địa chỉ
+## 6. Get all addresses
 
 ```http
 GET /api/addresses?pageNumber={n}&pageSize={n}
@@ -179,7 +179,7 @@ GET /api/addresses?pageNumber={n}&pageSize={n}
 
 ---
 
-## 7. Lấy tọa độ tất cả địa chỉ
+## 7. Get all address coordinates
 
 ```http
 GET /api/addresses/coordinates
@@ -203,7 +203,7 @@ GET /api/addresses/coordinates
 
 ---
 
-## 8. Lấy chi tiết địa chỉ
+## 8. Get address detail
 
 ```http
 GET /api/addresses/detail/{id}
@@ -211,11 +211,11 @@ GET /api/addresses/detail/{id}
 
 **Authorization:** Public
 
-**Response:** `200 OK` - Address object đầy đủ
+**Response:** `200 OK` - Full Address object
 
 ---
 
-## 9. Lấy địa chỉ theo ID
+## 9. Get address by ID
 
 ```http
 GET /api/addresses/{id}
@@ -226,11 +226,11 @@ GET /api/addresses/{id}
 **Response:** `200 OK` - Address object
 
 **Errors:**
-- `404` - Địa chỉ không tồn tại
+- `404` - Address not found
 
 ---
 
-## 10. Thêm địa chỉ mới
+## 10. Create a new address
 
 ```http
 POST /api/addresses
@@ -238,14 +238,14 @@ POST /api/addresses
 
 **Authorization:** Authenticated
 
-> **Mã địa chỉ được tự động sinh** — không cần truyền `code`. Hệ thống lấy `code` của thành phố (3 ký tự) từ `cityId` rồi ghép thêm 5 ký tự ngẫu nhiên, tạo thành mã 8 ký tự đảm bảo không trùng lặp.
+> **Address code is auto-generated** — do not pass `code`. The system takes the city `code` (3 characters) from `cityId` and appends 5 random characters to create a unique 8-character code.
 
 **Request Body:**
 ```json
 {
   "cityId": "d4e5f6a7-5717-4562-b3fc-2c963f66afa6",
-  "name": "Nhà hàng Phở Bắc",
-  "fullAddress": "123 Nguyễn Trãi, P. Thượng Đình, Q. Thanh Xuân, Hà Nội",
+  "name": "Pho Bac Restaurant",
+  "fullAddress": "123 Nguyen Trai, Thuong Dinh Ward, Thanh Xuan District, Hanoi",
   "latitude": 21.0285,
   "longitude": 105.8542,
   "parkingAvailable": false,
@@ -255,24 +255,24 @@ POST /api/addresses
 ```
 
 **Validation:**
-- `cityId`: bắt buộc, phải là ID của thành phố hợp lệ trong hệ thống (xem [cities.md](cities.md))
+- `cityId`: required, must be a valid city ID in the system (see [cities.md](cities.md))
 
-**Quy tắc theo role:**
-| Role | Status sau khi tạo |
-|------|--------------------|
-| `User` | `Pending` - cần xác minh |
-| `Admin` | `Pending` - cần xác minh |
-| `Business` | `Reviewed` - không cần xác minh |
-| `SubAccount` | `Reviewed` - không cần xác minh |
+**Role rules:**
+| Role | Status after creation |
+|------|-----------------------|
+| `User` | `Pending` — requires verification |
+| `Admin` | `Pending` — requires verification |
+| `Business` | `Reviewed` — no verification needed |
+| `SubAccount` | `Reviewed` — no verification needed |
 
-**Response:** `201 Created` - Address object (bao gồm `code` đã được sinh tự động)
+**Response:** `201 Created` - Address object (including the auto-generated `code`)
 
 **Errors:**
-- `400` - `cityId` không hợp lệ hoặc thành phố không tồn tại
+- `400` - Invalid `cityId` or city not found
 
 ---
 
-## 11. Cập nhật địa chỉ
+## 11. Update address
 
 ```http
 PUT /api/addresses/{id}
@@ -280,29 +280,29 @@ PUT /api/addresses/{id}
 
 **Authorization:** Authenticated
 
-**Request Body:** (tất cả fields đều optional)
+**Request Body:** (all fields are optional)
 ```json
 {
-  "name": "Nhà hàng Phở Bắc (đã đổi tên)",
-  "fullAddress": "456 Lê Duẩn, P. Điện Biên, Q. Ba Đình, Hà Nội",
+  "name": "Pho Bac Restaurant (renamed)",
+  "fullAddress": "456 Le Duan, Dien Bien Ward, Ba Dinh District, Hanoi",
   "latitude": 21.0290,
   "longitude": 105.8550,
   "cityId": "d4e5f6a7-5717-4562-b3fc-2c963f66afa6",
   "validatorId": "b2c3d4e5-...",
-  "comments": "Ghi chú cập nhật",
+  "comments": "Updated note",
   "parkingAvailable": true,
   "totalParkingSpots": 20,
   "pricePerHour": 10000
 }
 ```
 
-> **Lưu ý:** `code` không thể cập nhật — mã địa chỉ được sinh một lần tại thời điểm tạo và cố định.
+> **Note:** `code` cannot be updated — the address code is generated once at creation and is permanent.
 
 **Response:** `200 OK` - Address object
 
 ---
 
-## 12. Xóa địa chỉ
+## 12. Delete address
 
 ```http
 DELETE /api/addresses/{id}
@@ -310,13 +310,13 @@ DELETE /api/addresses/{id}
 
 **Authorization:** Admin
 
-> **Soft Delete:** Bản ghi không bị xóa vật lý. Cột `IsDeleted` được đặt `true` và `DeletedAt` được ghi nhận. Địa chỉ sẽ không còn xuất hiện trong bất kỳ API nào.
+> **Soft Delete:** The record is not physically deleted. The `IsDeleted` column is set to `true` and `DeletedAt` is recorded. The address will no longer appear in any API.
 
 **Response:** `204 No Content`
 
 ---
 
-## 13. Xác minh địa chỉ (Review)
+## 13. Review address
 
 ```http
 POST /api/addresses/{id}/review
@@ -327,15 +327,15 @@ POST /api/addresses/{id}/review
 **Request Body:**
 ```json
 {
-  "comments": "Đã xác minh thực địa, địa chỉ hợp lệ"
+  "comments": "Verified on-site, address is valid"
 }
 ```
 
-**Response:** `200 OK` - Address object với `status: "Reviewed"`
+**Response:** `200 OK` - Address object with `status: "Reviewed"`
 
 ---
 
-## 14. Từ chối địa chỉ
+## 14. Reject address
 
 ```http
 POST /api/addresses/{id}/reject
@@ -346,17 +346,17 @@ POST /api/addresses/{id}/reject
 **Request Body:**
 ```json
 {
-  "comments": "Địa chỉ không tồn tại tại tọa độ đã cung cấp"
+  "comments": "Address does not exist at the provided coordinates"
 }
 ```
 
-**Response:** `200 OK` - Address object với `status: "Rejected"`
+**Response:** `200 OK` - Address object with `status: "Rejected"`
 
 ---
 
-## 15. Lấy danh sách bãi đỗ xe
+## 15. Get parking zones
 
-Trả về các địa chỉ có `parkingAvailable = true` và `status = Reviewed`. `availableSpots` được tính động theo số vé đang active.
+Returns addresses with `parkingAvailable = true` and `status = Reviewed`. `availableSpots` is calculated dynamically based on active tickets.
 
 ```http
 GET /api/addresses/parking-zones?pageNumber={n}&pageSize={n}
@@ -375,12 +375,12 @@ GET /api/addresses/parking-zones?pageNumber={n}&pageSize={n}
     {
       "id": "3fa85f64-...",
       "code": "HANP7M21",
-      "name": "Bãi đỗ xe Trần Duy Hưng",
-      "fullAddress": "123 Trần Duy Hưng, Q. Cầu Giấy, Hà Nội",
+      "name": "Tran Duy Hung Parking",
+      "fullAddress": "123 Tran Duy Hung, Cau Giay District, Hanoi",
       "latitude": 21.0075,
       "longitude": 105.7989,
       "cityId": "d4e5f6a7-...",
-      "cityName": "Hà Nội",
+      "cityName": "Ha Noi",
       "status": "Reviewed",
       "isVerified": true,
       "parkingAvailable": true,

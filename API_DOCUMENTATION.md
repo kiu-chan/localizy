@@ -1,6 +1,6 @@
 # Localizy Server - API Documentation
 
-Tài liệu tổng quan về các API endpoints của Localizy Server.
+Overview of all API endpoints for Localizy Server.
 
 ---
 
@@ -25,7 +25,7 @@ ISO 8601: 2024-01-10T10:30:00Z
 
 ## 🔐 Authentication
 
-API sử dụng **JWT Bearer Token**. Token có hiệu lực 24 giờ, được lấy qua endpoint đăng nhập.
+The API uses **JWT Bearer Token**. Tokens are valid for 24 hours and obtained via the login endpoint.
 
 ```
 Authorization: Bearer <token>
@@ -33,25 +33,25 @@ Authorization: Bearer <token>
 
 ### Authorization Levels
 
-| Level | Mô tả |
-|-------|-------|
-| **Public** | Không cần token |
-| **Authenticated** | Cần token hợp lệ (mọi role) |
-| **Admin** | Chỉ role Admin |
-| **Validator** | Chỉ role Validator |
-| **Admin,Validator** | Admin hoặc Validator |
-| **Business** | Chỉ role Business |
-| **Business,SubAccount** | Business hoặc SubAccount |
+| Level | Description |
+|-------|-------------|
+| **Public** | No token required |
+| **Authenticated** | Valid token required (any role) |
+| **Admin** | Admin role only |
+| **Validator** | Validator role only |
+| **Admin,Validator** | Admin or Validator |
+| **Business** | Business role only |
+| **Business,SubAccount** | Business or SubAccount |
 
 ### User Roles
 
-| Role | Mô tả |
-|------|-------|
-| `User` | Người dùng thường - gửi yêu cầu xác minh địa chỉ |
-| `Admin` | Quản trị viên - quản lý toàn hệ thống |
-| `Validator` | Người xác minh - xác minh địa chỉ tại thực địa |
-| `Business` | Tài khoản doanh nghiệp - thêm địa chỉ trực tiếp |
-| `SubAccount` | Tài khoản phụ của doanh nghiệp - thêm địa chỉ trực tiếp |
+| Role | Description |
+|------|-------------|
+| `User` | Regular user — submits address verification requests |
+| `Admin` | Administrator — manages the entire system |
+| `Validator` | Field validator — verifies addresses on-site |
+| `Business` | Business account — adds addresses directly |
+| `SubAccount` | Sub-account of a business — adds addresses directly |
 
 ---
 
@@ -61,31 +61,31 @@ Authorization: Bearer <token>
 { "message": "Error description here" }
 ```
 
-| Code | Status | Mô tả |
-|------|--------|-------|
-| 200 | OK | Request thành công |
-| 201 | Created | Tạo resource thành công |
-| 204 | No Content | Xóa thành công |
-| 400 | Bad Request | Dữ liệu không hợp lệ |
-| 401 | Unauthorized | Token không hợp lệ hoặc hết hạn |
-| 403 | Forbidden | Không có quyền truy cập |
-| 404 | Not Found | Resource không tồn tại |
-| 500 | Internal Server Error | Lỗi server |
+| Code | Status | Description |
+|------|--------|-------------|
+| 200 | OK | Request successful |
+| 201 | Created | Resource created successfully |
+| 204 | No Content | Deleted successfully |
+| 400 | Bad Request | Invalid data |
+| 401 | Unauthorized | Invalid or expired token |
+| 403 | Forbidden | Insufficient permissions |
+| 404 | Not Found | Resource does not exist |
+| 500 | Internal Server Error | Server error |
 
 ---
 
 ## 📄 Pagination
 
-Tất cả các API trả về danh sách đều hỗ trợ phân trang qua query parameters.
+All list APIs support pagination via query parameters.
 
 ### Query Parameters
 
-| Tham số | Kiểu | Mặc định | Tối đa | Mô tả |
-|---------|------|----------|--------|-------|
-| `pageNumber` | int | `1` | - | Số trang (bắt đầu từ 1) |
-| `pageSize` | int | `20` | `100` | Số bản ghi mỗi trang |
+| Parameter | Type | Default | Max | Description |
+|-----------|------|---------|-----|-------------|
+| `pageNumber` | int | `1` | - | Page number (starts at 1) |
+| `pageSize` | int | `20` | `100` | Records per page |
 
-**Ví dụ:**
+**Examples:**
 ```
 GET /api/addresses?pageNumber=2&pageSize=10
 GET /api/users?pageNumber=1&pageSize=50
@@ -94,7 +94,7 @@ GET /api/validations/search?searchTerm=abc&pageNumber=1&pageSize=20
 
 ### Paged Response Format
 
-Tất cả list endpoints trả về định dạng `PagedResult<T>`:
+All list endpoints return `PagedResult<T>`:
 
 ```json
 {
@@ -108,50 +108,50 @@ Tất cả list endpoints trả về định dạng `PagedResult<T>`:
 }
 ```
 
-| Field | Mô tả |
-|-------|-------|
-| `items` | Danh sách bản ghi của trang hiện tại |
-| `totalCount` | Tổng số bản ghi (không phân trang) |
-| `pageNumber` | Trang hiện tại |
-| `pageSize` | Số bản ghi mỗi trang |
-| `totalPages` | Tổng số trang |
-| `hasPreviousPage` | Còn trang trước không |
-| `hasNextPage` | Còn trang sau không |
+| Field | Description |
+|-------|-------------|
+| `items` | Records for the current page |
+| `totalCount` | Total number of records (unpaginated) |
+| `pageNumber` | Current page |
+| `pageSize` | Records per page |
+| `totalPages` | Total number of pages |
+| `hasPreviousPage` | Whether a previous page exists |
+| `hasNextPage` | Whether a next page exists |
 
-> **Lưu ý:** Endpoint `GET /api/addresses/coordinates` không phân trang vì trả về toàn bộ tọa độ để hiển thị bản đồ.
+> **Note:** `GET /api/addresses/coordinates` does not paginate — it returns all coordinates for map display.
 
 ---
 
 ## 🗑️ Soft Delete
 
-Hệ thống sử dụng **xóa mềm (soft delete)** cho tất cả các bảng dữ liệu. Khi gọi API xóa:
+The system uses **soft delete** for all data tables. When a delete API is called:
 
-- Bản ghi **không bị xóa vật lý** khỏi cơ sở dữ liệu.
-- Cột `IsDeleted` được đặt thành `true`.
-- Cột `DeletedAt` được ghi nhận thời điểm xóa (UTC).
-- Tất cả các API `GET` sẽ **tự động lọc** bản ghi đã xóa — client không bao giờ thấy dữ liệu đã xóa.
+- Records are **not physically deleted** from the database.
+- The `IsDeleted` column is set to `true`.
+- The `DeletedAt` column records the deletion timestamp (UTC).
+- All `GET` APIs **automatically filter out** deleted records — clients never see deleted data.
 
-### Các bảng áp dụng Soft Delete
+### Tables with Soft Delete
 
 `AddressCodes`, `Cities`, `HomeSlides`, `ParkingTickets`, `Projects`, `Settings`, `Translations`, `Users`, `Validations`
 
 ---
 
-## 📚 Tài liệu chi tiết
+## 📚 Detailed Documentation
 
-| Module | Mô tả | Link |
-|--------|-------|------|
-| 🔌 Integration Guide | Hướng dẫn tích hợp cho Web & Mobile App | [integration-guide.md](docs/integration-guide.md) |
-| 🔑 Auth | Đăng ký, đăng nhập, quên/đặt lại mật khẩu | [auth.md](docs/auth.md) |
-| 📊 Dashboard | Tổng quan Admin & Validator | [admin-dashboard.md](docs/admin-dashboard.md) |
-| 👥 Users | Quản lý người dùng | [users.md](docs/users.md) |
-| 🏢 Business | Quản lý doanh nghiệp & tài khoản con | [business.md](docs/business.md) |
-| 📍 Addresses | Quản lý địa chỉ | [addresses.md](docs/addresses.md) |
-| ✅ Validations | Yêu cầu xác minh địa chỉ | [validations.md](docs/validations.md) |
-| 🅿️ Parking | Vé đỗ xe | [parking.md](docs/parking.md) |
-| 🔄 Transactions | Lịch sử giao dịch tổng hợp | [transactions.md](docs/transactions.md) |
-| 🏙️ Cities | Quản lý thành phố | [cities.md](docs/cities.md) |
-| ⚙️ Settings | Cấu hình hệ thống | [settings.md](docs/settings.md) |
-| 🖼️ Home Slides | Slide ảnh trang chủ | [home-slides.md](docs/home-slides.md) |
-| 📈 Statistics | Thống kê & phân tích dữ liệu | [statistics.md](docs/statistics.md) |
-| 🔄 Use Cases | Các luồng nghiệp vụ phổ biến | [use-cases.md](docs/use-cases.md) |
+| Module | Description | Link |
+|--------|-------------|------|
+| 🔌 Integration Guide | Integration guide for Web & Mobile apps | [integration-guide.md](docs/integration-guide.md) |
+| 🔑 Auth | Register, login, forgot/reset password, FCM token | [auth.md](docs/auth.md) |
+| 📊 Dashboard | Admin & Validator overview | [admin-dashboard.md](docs/admin-dashboard.md) |
+| 👥 Users | User management | [users.md](docs/users.md) |
+| 🏢 Business | Business accounts & sub-accounts | [business.md](docs/business.md) |
+| 📍 Addresses | Address management | [addresses.md](docs/addresses.md) |
+| ✅ Validations | Address verification requests | [validations.md](docs/validations.md) |
+| 🅿️ Parking | Parking tickets | [parking.md](docs/parking.md) |
+| 🔄 Transactions | Combined transaction history | [transactions.md](docs/transactions.md) |
+| 🏙️ Cities | City management | [cities.md](docs/cities.md) |
+| ⚙️ Settings | System configuration | [settings.md](docs/settings.md) |
+| 🖼️ Home Slides | Homepage image slides | [home-slides.md](docs/home-slides.md) |
+| 📈 Statistics | Statistics & analytics | [statistics.md](docs/statistics.md) |
+| 🔄 Use Cases | Common business flows | [use-cases.md](docs/use-cases.md) |

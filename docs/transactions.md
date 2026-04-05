@@ -1,6 +1,6 @@
 # 🔄 Transaction APIs
 
-Lịch sử giao dịch tổng hợp (đỗ xe + xác minh địa chỉ).
+Combined transaction history (parking + address verification).
 
 ### Transaction Response Object
 
@@ -19,23 +19,23 @@ Lịch sử giao dịch tổng hợp (đỗ xe + xác minh địa chỉ).
 }
 ```
 
-| Field | Mô tả |
-|-------|-------|
-| `type` | `parking` hoặc `verification` |
+| Field | Description |
+|-------|-------------|
+| `type` | `parking` or `verification` |
 | `status` | `success` \| `failed` \| `pending` |
-| `location` | Parking: `addressId` (Guid) của điểm đỗ xe; Verification: tọa độ `"Lat: x, Lng: y"` |
-| `licensePlate` | Chỉ có khi `type = parking` |
-| `duration` | Chỉ có khi `type = parking` |
+| `location` | Parking: `addressId` (Guid) of the parking location; Verification: coordinates `"Lat: x, Lng: y"` |
+| `licensePlate` | Only present when `type = parking` |
+| `duration` | Only present when `type = parking` |
 
-**Mapping trạng thái:**
+**Status mapping:**
 - Parking: `active/expired` → `success`, `cancelled` → `failed`
-- Verification: `verified` → `success`, `rejected` → `failed`, còn lại → `pending`
+- Verification: `verified` → `success`, `rejected` → `failed`, others → `pending`
 
 ---
 
-## 1. Lấy lịch sử giao dịch của user hiện tại
+## 1. Get current user's transaction history
 
-Trả về tổng hợp vé đỗ xe + yêu cầu xác minh địa chỉ, sắp xếp theo thời gian mới nhất.
+Returns a combined list of parking tickets + address verification requests, sorted by newest first.
 
 ```http
 GET /api/transactions/my-transactions?pageNumber={n}&pageSize={n}
@@ -83,4 +83,4 @@ GET /api/transactions/my-transactions?pageNumber={n}&pageSize={n}
 }
 ```
 
-> Kết quả được sắp xếp theo `date` giảm dần (mới nhất trước).
+> Results are sorted by `date` descending (newest first).
