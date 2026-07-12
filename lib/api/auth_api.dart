@@ -119,22 +119,34 @@ class AuthService {
     throw AuthException(message);
   }
 
+  static bool _googleSignInInitialized = false;
+
   /// Sign in with Google via Firebase, then authenticate with backend.
   static Future<AuthUser> googleLogin() async {
     debugPrint('[AuthService.googleLogin] Launching Google sign-in picker...');
-    final googleSignIn = GoogleSignIn();
-    final googleUser = await googleSignIn.signIn();
-    if (googleUser == null) {
-      debugPrint('[AuthService.googleLogin] User cancelled the sign-in dialog.');
-      throw AuthException('Google sign-in cancelled');
+    final googleSignIn = GoogleSignIn.instance;
+    if (!_googleSignInInitialized) {
+      await googleSignIn.initialize();
+      _googleSignInInitialized = true;
+    }
+
+    final GoogleSignInAccount googleUser;
+    try {
+      googleUser = await googleSignIn.authenticate();
+    } on GoogleSignInException catch (e) {
+      if (e.code == GoogleSignInExceptionCode.canceled) {
+        debugPrint('[AuthService.googleLogin] User cancelled the sign-in dialog.');
+        throw AuthException('Google sign-in cancelled');
+      }
+      debugPrint('[AuthService.googleLogin] Google sign-in failed: $e');
+      throw AuthException('Google sign-in failed');
     }
     debugPrint('[AuthService.googleLogin] Google user selected: ${googleUser.email}');
 
-    final googleAuth = await googleUser.authentication;
-    debugPrint('[AuthService.googleLogin] Got Google auth — accessToken=${googleAuth.accessToken != null ? 'present' : 'null'} idToken=${googleAuth.idToken != null ? 'present' : 'null'}');
+    final googleAuth = googleUser.authentication;
+    debugPrint('[AuthService.googleLogin] Got Google auth — idToken=${googleAuth.idToken != null ? 'present' : 'null'}');
 
     final credential = GoogleAuthProvider.credential(
-      accessToken: googleAuth.accessToken,
       idToken: googleAuth.idToken,
     );
     final userCredential = await FirebaseAuth.instance.signInWithCredential(credential);
