@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:localizy/api/address_api.dart';
-import 'package:localizy/configs/currency_config.dart';
-import 'package:localizy/configs/map_config.dart';
+import 'package:localizy/core/config/currency_config.dart';
+import 'package:localizy/core/config/map_config.dart';
 import 'package:localizy/l10n/app_localizations.dart';
 
 class ParkingZoneMapSelector extends StatefulWidget {

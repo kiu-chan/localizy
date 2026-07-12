@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:localizy/screens/account/login_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:async';
-import '../utils/config_manager.dart';
+import 'package:localizy/core/config/config_manager.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});

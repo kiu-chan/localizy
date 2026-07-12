@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:localizy/api/validator_api.dart';
-import 'package:localizy/configs/map_config.dart';
+import 'package:localizy/core/config/map_config.dart';
 import 'package:localizy/services/directions_service.dart';
 import 'package:localizy/screens/map/widgets/directions_panel.dart';
 import 'package:localizy/screens/map/widgets/map_type_selector.dart';

@@ -10,7 +10,7 @@ import 'package:localizy/screens/map/widgets/map_type_selector.dart';
 import 'package:localizy/screens/map/widgets/address_search_bar.dart';
 import 'package:localizy/screens/map/widgets/address_cluster_manager.dart';
 import 'package:localizy/screens/map/widgets/address_detail_bottom_sheet.dart';
-import 'package:localizy/configs/map_config.dart';
+import 'package:localizy/core/config/map_config.dart';
 import 'package:localizy/api/address_api.dart';
 
 class MapPage extends StatefulWidget {

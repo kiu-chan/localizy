@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:localizy/configs/currency_config.dart';
+import 'package:localizy/core/config/currency_config.dart';
 
 class DurationSelectionSection extends StatelessWidget {
   final Map<String, Map<String, dynamic>> durationPrices;

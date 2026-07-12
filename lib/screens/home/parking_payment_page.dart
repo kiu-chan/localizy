@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'package:localizy/api/parking_api.dart';
-import 'package:localizy/configs/currency_config.dart';
+import 'package:localizy/core/config/currency_config.dart';
 import 'package:localizy/l10n/app_localizations.dart';
 import 'package:localizy/screens/home/parking/vehicle_info_section.dart';
 import 'package:localizy/screens/home/parking/duration_selection_section.dart';

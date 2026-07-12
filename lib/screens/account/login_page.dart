@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:localizy/api/auth_api.dart';
 import 'package:localizy/l10n/app_localizations.dart';
-import 'package:localizy/services/notification_service.dart';
+import 'package:localizy/core/services/notification_service.dart';
 import 'register_page.dart';
 import 'forgot_password_page.dart';
 import '../main_page.dart';

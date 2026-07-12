@@ -8,7 +8,7 @@ import 'package:intl/intl.dart';
 import 'package:localizy/api/address_api.dart';
 import 'package:localizy/api/main_api.dart';
 import 'package:localizy/api/parking_api.dart';
-import 'package:localizy/configs/currency_config.dart';
+import 'package:localizy/core/config/currency_config.dart';
 import 'package:localizy/l10n/app_localizations.dart';
 import 'package:localizy/screens/home/parking/parking_zone_detail_map_page.dart';
 import 'package:path_provider/path_provider.dart';
