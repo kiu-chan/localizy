@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:localizy/l10n/app_localizations.dart';
-import 'package:localizy/screens/home/history/transaction_history_page.dart';
+import 'package:localizy/features/transactions/presentation/pages/transaction_history_page.dart';
 import 'package:localizy/screens/home/verification/address_verification_flow.dart';
 import 'package:localizy/screens/setting/about_page.dart';
 import 'package:localizy/screens/setting/account_settings_page.dart';
 import 'package:localizy/screens/setting/change_password_page.dart';
-import 'package:localizy/screens/account/login_page.dart';
+import 'package:localizy/features/auth/presentation/pages/login_page.dart';
 import 'package:localizy/utils/language_manager.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:localizy/services/logout_service.dart';

@@ -1,22 +1,22 @@
 import 'package:flutter/material.dart';
-import 'package:localizy/api/auth_api.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:localizy/l10n/app_localizations.dart';
-import 'package:localizy/core/services/notification_service.dart';
-import 'register_page.dart';
-import 'forgot_password_page.dart';
-import '../main_page.dart';
-import '../validator/validator_main_page.dart';
-import '../business/business_main_page.dart';
-import 'dart:math' as math;
 
-class LoginPage extends StatefulWidget {
+import '../../domain/auth_exception.dart';
+import '../providers/auth_provider.dart';
+import '../role_navigation.dart';
+import '../widgets/wave_background.dart';
+import 'forgot_password_page.dart';
+import 'register_page.dart';
+
+class LoginPage extends ConsumerStatefulWidget {
   const LoginPage({super.key});
 
   @override
-  State<LoginPage> createState() => _LoginPageState();
+  ConsumerState<LoginPage> createState() => _LoginPageState();
 }
 
-class _LoginPageState extends State<LoginPage> {
+class _LoginPageState extends ConsumerState<LoginPage> {
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
@@ -27,6 +27,16 @@ class _LoginPageState extends State<LoginPage> {
   bool _isGoogleLoading = false;
 
   @override
+  void initState() {
+    super.initState();
+    // Rebuild để cập nhật màu label theo focus/nội dung
+    _emailController.addListener(() => setState(() {}));
+    _passwordController.addListener(() => setState(() {}));
+    _emailFocusNode.addListener(() => setState(() {}));
+    _passwordFocusNode.addListener(() => setState(() {}));
+  }
+
+  @override
   void dispose() {
     _emailController.dispose();
     _passwordController.dispose();
@@ -35,30 +45,60 @@ class _LoginPageState extends State<LoginPage> {
     super.dispose();
   }
 
-  Future<void> _handleGoogleLogin() async {
-    debugPrint('[Google Login] Starting Google sign-in...');
-    setState(() { _isGoogleLoading = true; });
-    try {
-      final user = await AuthService.googleLogin();
-      debugPrint('[Google Login] Success: email=${user.email} role=${user.role} userId=${user.userId}');
+  Future<void> _handleLogin() async {
+    if (!_formKey.currentState!.validate()) return;
 
-      // Đăng ký FCM token lên server (non-blocking)
-      NotificationService.getAndRegisterToken();
+    setState(() => _isLoading = true);
+
+    try {
+      final user = await ref.read(authProvider.notifier).login(
+            email: _emailController.text.trim(),
+            password: _passwordController.text,
+          );
 
       if (!mounted) return;
-      final role = user.role.toLowerCase();
-      if (role.contains('validator')) {
-        debugPrint('[Google Login] Navigating to ValidatorMainPage');
-        Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => const ValidatorMainPage()));
-      } else if (role.contains('business') || role.contains('subaccount')) {
-        debugPrint('[Google Login] Navigating to BusinessMainPage');
-        Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => const BusinessMainPage()));
-      } else {
-        debugPrint('[Google Login] Navigating to MainPage');
-        Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => const MainPage()));
-      }
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(AppLocalizations.of(context)!.loginSuccess),
+          backgroundColor: Colors.green,
+        ),
+      );
+      navigateToRoleHome(context, user);
     } on AuthException catch (e) {
-      debugPrint('[Google Login] AuthException: ${e.message}');
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(e.message), backgroundColor: Colors.red),
+      );
+    } catch (e, st) {
+      debugPrint('Login error: $e\n$st');
+      if (!mounted) return;
+
+      final errMsg = e.toString();
+      final l10n = AppLocalizations.of(context)!;
+      String showMsg = l10n.loginFailed;
+      if (errMsg.contains('Failed host lookup') ||
+          errMsg.contains('SocketException')) {
+        showMsg =
+            'Network error: cannot reach API. Check API_BASE_URL and network.';
+      } else if (errMsg.contains('API_BASE_URL') ||
+          errMsg.contains('is not set')) {
+        showMsg = 'Configuration error: API_BASE_URL not set.';
+      }
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(showMsg), backgroundColor: Colors.red),
+      );
+    } finally {
+      if (mounted) setState(() => _isLoading = false);
+    }
+  }
+
+  Future<void> _handleGoogleLogin() async {
+    setState(() => _isGoogleLoading = true);
+    try {
+      final user = await ref.read(authProvider.notifier).googleLogin();
+      if (!mounted) return;
+      navigateToRoleHome(context, user);
+    } on AuthException catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(e.message), backgroundColor: Colors.red),
@@ -66,115 +106,25 @@ class _LoginPageState extends State<LoginPage> {
     } catch (e, st) {
       debugPrint('[Google Login] Unexpected error: $e\n$st');
       if (!mounted) return;
-      final l10n = AppLocalizations.of(context)!;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(l10n.googleLoginFailed), backgroundColor: Colors.red),
+        SnackBar(
+          content: Text(AppLocalizations.of(context)!.googleLoginFailed),
+          backgroundColor: Colors.red,
+        ),
       );
     } finally {
-      if (mounted) setState(() { _isGoogleLoading = false; });
+      if (mounted) setState(() => _isGoogleLoading = false);
     }
   }
-
-  @override
-  void initState() {
-    super.initState();
-    // Lắng nghe sự thay đổi để rebuild UI
-    _emailController.addListener(() {
-      setState(() {});
-    });
-    _passwordController.addListener(() {
-      setState(() {});
-    });
-    _emailFocusNode.addListener(() {
-      setState(() {});
-    });
-    _passwordFocusNode.addListener(() {
-      setState(() {});
-    });
-  }
-
-Future<void> _handleLogin() async {
-  if (!_formKey.currentState!.validate()) return;
-
-  setState(() {
-    _isLoading = true;
-  });
-
-  try {
-    final email = _emailController.text.trim();
-    final password = _passwordController.text;
-
-    // Debug: print request info (không in password ra log thực tế nếu sensitive)
-    debugPrint('Attempt login: $email');
-
-    final user = await AuthService.login(email: email, password: password);
-
-    // Đăng ký FCM token lên server (non-blocking)
-    NotificationService.getAndRegisterToken();
-
-    if (!mounted) return;
-
-    debugPrint('Login success: ${user.email} role=${user.role}');
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(AppLocalizations.of(context)!.loginSuccess),
-        backgroundColor: Colors.green,
-      ),
-    );
-
-    final role = user.role.toLowerCase();
-    if (role.contains('validator')) {
-      Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => const ValidatorMainPage()));
-    } else if (role.contains('business') || role.contains('subaccount')) {
-      Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => const BusinessMainPage()));
-    } else {
-      Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => const MainPage()));
-    }
-  } on AuthException catch (e, st) {
-    debugPrint('AuthException: ${e.message}\n$st');
-    if (!mounted) return;
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(e.message), backgroundColor: Colors.red),
-    );
-  } catch (e, st) {
-    // Log full error and stacktrace for debugging
-    debugPrint('Login error: $e\n$st');
-
-    // If it's a network issue, show a clearer message
-    final errMsg = e.toString();
-    final l10n = AppLocalizations.of(context)!;
-    String showMsg = l10n.loginFailed; // generic
-
-    if (errMsg.contains('Failed host lookup') || errMsg.contains('SocketException')) {
-      showMsg = 'Network error: cannot reach API. Check API_BASE_URL and network.'; // temporary for dev
-    } else if (errMsg.contains('API_BASE_URL') || errMsg.contains('is not set')) {
-      showMsg = 'Configuration error: API_BASE_URL not set or MainApi not initialized.';
-    }
-
-    if (!mounted) return;
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(showMsg), backgroundColor: Colors.red),
-    );
-  } finally {
-    if (mounted) {
-      setState(() {
-        _isLoading = false;
-      });
-    }
-  }
-}
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations. of(context)!;
-    
+    final l10n = AppLocalizations.of(context)!;
+
     return Scaffold(
       body: Stack(
         children: [
-          // Wave Background
           const WaveBackground(),
-          
-          // Login Content
           SafeArea(
             child: Center(
               child: SingleChildScrollView(
@@ -192,12 +142,12 @@ Future<void> _handleLogin() async {
                           boxShadow: [
                             BoxShadow(
                               color: Colors.black.withValues(alpha: 0.2),
-                              blurRadius:  20,
+                              blurRadius: 20,
                               offset: const Offset(0, 10),
                             ),
                           ],
                         ),
-                        child:  ClipOval(
+                        child: ClipOval(
                           child: Image.asset(
                             'assets/icon/logo.png',
                             width: 80,
@@ -207,7 +157,7 @@ Future<void> _handleLogin() async {
                               return Icon(
                                 Icons.eco,
                                 size: 60,
-                                color: Colors. green.shade700,
+                                color: Colors.green.shade700,
                               );
                             },
                           ),
@@ -215,9 +165,9 @@ Future<void> _handleLogin() async {
                       ),
                       const SizedBox(height: 40),
                       Text(
-                        l10n. welcomeBack,
-                        style:  const TextStyle(
-                          fontSize:  32,
+                        l10n.welcomeBack,
+                        style: const TextStyle(
+                          fontSize: 32,
                           fontWeight: FontWeight.bold,
                           color: Colors.white,
                         ),
@@ -225,9 +175,9 @@ Future<void> _handleLogin() async {
                       const SizedBox(height: 8),
                       Text(
                         l10n.loginToContinue,
-                        style:  const TextStyle(
-                          fontSize:  16,
-                          color:  Colors.white70,
+                        style: const TextStyle(
+                          fontSize: 16,
+                          color: Colors.white70,
                         ),
                       ),
                       const SizedBox(height: 40),
@@ -244,27 +194,29 @@ Future<void> _handleLogin() async {
                             ),
                           ],
                         ),
-                        child:  Column(
+                        child: Column(
                           children: [
                             TextFormField(
-                              controller:  _emailController,
+                              controller: _emailController,
                               focusNode: _emailFocusNode,
                               keyboardType: TextInputType.emailAddress,
                               decoration: InputDecoration(
                                 labelText: l10n.email,
                                 labelStyle: TextStyle(
-                                  color:  (_emailFocusNode.hasFocus || _emailController.text. isNotEmpty)
+                                  color: (_emailFocusNode.hasFocus ||
+                                          _emailController.text.isNotEmpty)
                                       ? Colors.black
                                       : Colors.grey,
                                 ),
                                 floatingLabelStyle: TextStyle(
-                                  color: (_emailFocusNode.hasFocus || _emailController.text. isNotEmpty)
+                                  color: (_emailFocusNode.hasFocus ||
+                                          _emailController.text.isNotEmpty)
                                       ? Colors.black
                                       : Colors.grey,
                                 ),
-                                prefixIcon:  Icon(
+                                prefixIcon: Icon(
                                   Icons.email_outlined,
-                                  color:  Colors.green.shade700,
+                                  color: Colors.green.shade700,
                                 ),
                                 border: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(12),
@@ -290,19 +242,21 @@ Future<void> _handleLogin() async {
                             const SizedBox(height: 20),
                             TextFormField(
                               controller: _passwordController,
-                              focusNode:  _passwordFocusNode,
+                              focusNode: _passwordFocusNode,
                               obscureText: !_isPasswordVisible,
                               decoration: InputDecoration(
                                 labelText: l10n.password,
                                 labelStyle: TextStyle(
-                                  color:  (_passwordFocusNode.hasFocus || _passwordController.text.isNotEmpty)
+                                  color: (_passwordFocusNode.hasFocus ||
+                                          _passwordController.text.isNotEmpty)
                                       ? Colors.black
                                       : Colors.grey,
                                 ),
                                 floatingLabelStyle: TextStyle(
-                                  color: (_passwordFocusNode.hasFocus || _passwordController.text.isNotEmpty)
-                                      ? Colors. black
-                                      : Colors. grey,
+                                  color: (_passwordFocusNode.hasFocus ||
+                                          _passwordController.text.isNotEmpty)
+                                      ? Colors.black
+                                      : Colors.grey,
                                 ),
                                 prefixIcon: Icon(
                                   Icons.lock_outlined,
@@ -315,18 +269,18 @@ Future<void> _handleLogin() async {
                                         : Icons.visibility,
                                     color: Colors.green.shade700,
                                   ),
-                                  onPressed:  () {
+                                  onPressed: () {
                                     setState(() {
                                       _isPasswordVisible = !_isPasswordVisible;
                                     });
                                   },
                                 ),
                                 border: OutlineInputBorder(
-                                  borderRadius:  BorderRadius.circular(12),
+                                  borderRadius: BorderRadius.circular(12),
                                 ),
                                 focusedBorder: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(12),
-                                  borderSide:  BorderSide(
+                                  borderSide: BorderSide(
                                     color: Colors.green.shade700,
                                     width: 2,
                                   ),
@@ -336,7 +290,7 @@ Future<void> _handleLogin() async {
                                 if (value == null || value.isEmpty) {
                                   return l10n.pleaseEnterPassword;
                                 }
-                                if (value. length < 6) {
+                                if (value.length < 6) {
                                   return l10n.passwordMinLength;
                                 }
                                 return null;
@@ -344,10 +298,10 @@ Future<void> _handleLogin() async {
                             ),
                             const SizedBox(height: 12),
                             Align(
-                              alignment:  Alignment.centerRight,
+                              alignment: Alignment.centerRight,
                               child: TextButton(
-                                onPressed:  () {
-                                  Navigator. push(
+                                onPressed: () {
+                                  Navigator.push(
                                     context,
                                     MaterialPageRoute(
                                       builder: (context) =>
@@ -356,7 +310,7 @@ Future<void> _handleLogin() async {
                                   );
                                 },
                                 child: Text(
-                                  l10n. forgotPassword,
+                                  l10n.forgotPassword,
                                   style: TextStyle(
                                     color: Colors.green.shade700,
                                     fontWeight: FontWeight.w600,
@@ -366,12 +320,12 @@ Future<void> _handleLogin() async {
                             ),
                             const SizedBox(height: 24),
                             SizedBox(
-                              width:  double.infinity,
+                              width: double.infinity,
                               height: 56,
                               child: ElevatedButton(
                                 onPressed: _isLoading ? null : _handleLogin,
                                 style: ElevatedButton.styleFrom(
-                                  backgroundColor: Colors.green. shade700,
+                                  backgroundColor: Colors.green.shade700,
                                   foregroundColor: Colors.white,
                                   shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(12),
@@ -382,7 +336,7 @@ Future<void> _handleLogin() async {
                                     ? const SizedBox(
                                         height: 24,
                                         width: 24,
-                                        child:  CircularProgressIndicator(
+                                        child: CircularProgressIndicator(
                                           color: Colors.white,
                                           strokeWidth: 2,
                                         ),
@@ -391,7 +345,7 @@ Future<void> _handleLogin() async {
                                         l10n.login,
                                         style: const TextStyle(
                                           fontSize: 18,
-                                          fontWeight:  FontWeight.bold,
+                                          fontWeight: FontWeight.bold,
                                         ),
                                       ),
                               ),
@@ -407,7 +361,8 @@ Future<void> _handleLogin() async {
                             padding: const EdgeInsets.symmetric(horizontal: 12),
                             child: Text(
                               l10n.orContinueWith,
-                              style: const TextStyle(color: Colors.white70, fontSize: 13),
+                              style: const TextStyle(
+                                  color: Colors.white70, fontSize: 13),
                             ),
                           ),
                           const Expanded(child: Divider(color: Colors.white54)),
@@ -418,7 +373,9 @@ Future<void> _handleLogin() async {
                         width: double.infinity,
                         height: 52,
                         child: OutlinedButton.icon(
-                          onPressed: (_isLoading || _isGoogleLoading) ? null : _handleGoogleLogin,
+                          onPressed: (_isLoading || _isGoogleLoading)
+                              ? null
+                              : _handleGoogleLogin,
                           style: OutlinedButton.styleFrom(
                             backgroundColor: Colors.white,
                             side: BorderSide.none,
@@ -475,7 +432,7 @@ Future<void> _handleLogin() async {
                             child: Text(
                               l10n.register,
                               style: const TextStyle(
-                                color:  Colors.white,
+                                color: Colors.white,
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
@@ -491,160 +448,5 @@ Future<void> _handleLogin() async {
         ],
       ),
     );
-  }
-}
-
-// Widget hiệu ứng gợn sóng
-class WaveBackground extends StatefulWidget {
-  const WaveBackground({super.key});
-
-  @override
-  State<WaveBackground> createState() => _WaveBackgroundState();
-}
-
-class _WaveBackgroundState extends State<WaveBackground>
-    with TickerProviderStateMixin {
-  late AnimationController _controller1;
-  late AnimationController _controller2;
-  late AnimationController _controller3;
-
-  @override
-  void initState() {
-    super.initState();
-    
-    _controller1 = AnimationController(
-      vsync: this,
-      duration: const Duration(seconds:  5),
-    )..repeat();
-
-    _controller2 = AnimationController(
-      vsync: this,
-      duration: const Duration(seconds: 7),
-    )..repeat();
-
-    _controller3 = AnimationController(
-      vsync:  this,
-      duration: const Duration(seconds: 9),
-    )..repeat();
-  }
-
-  @override
-  void dispose() {
-    _controller1.dispose();
-    _controller2.dispose();
-    _controller3.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin:  Alignment.topCenter,
-          end: Alignment.bottomCenter,
-          colors: [
-            Colors.green.shade400,
-            Colors.green.shade700,
-          ],
-        ),
-      ),
-      child: Stack(
-        children: [
-          AnimatedBuilder(
-            animation: _controller1,
-            builder: (context, child) {
-              return CustomPaint(
-                painter: WavePainter(
-                  animationValue: _controller1.value,
-                  color: Colors.white.withValues(alpha: 0.08),
-                  amplitude: 30,
-                  frequency: 1.5,
-                  offset: 0,
-                ),
-                size: Size.infinite,
-              );
-            },
-          ),
-          AnimatedBuilder(
-            animation: _controller2,
-            builder: (context, child) {
-              return CustomPaint(
-                painter: WavePainter(
-                  animationValue: _controller2.value,
-                  color: Colors.white.withValues(alpha: 0.06),
-                  amplitude: 40,
-                  frequency: 1.2,
-                  offset: 100,
-                ),
-                size: Size.infinite,
-              );
-            },
-          ),
-          AnimatedBuilder(
-            animation: _controller3,
-            builder: (context, child) {
-              return CustomPaint(
-                painter:  WavePainter(
-                  animationValue: _controller3.value,
-                  color: Colors.white.withValues(alpha: 0.04),
-                  amplitude: 50,
-                  frequency: 1.0,
-                  offset: 200,
-                ),
-                size: Size.infinite,
-              );
-            },
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class WavePainter extends CustomPainter {
-  final double animationValue;
-  final Color color;
-  final double amplitude;
-  final double frequency;
-  final double offset;
-
-  WavePainter({
-    required this. animationValue,
-    required this.color,
-    required this. amplitude,
-    required this.frequency,
-    required this.offset,
-  });
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    final paint = Paint()
-      ..color = color
-      ..style = PaintingStyle.fill;
-
-    final path = Path();
-    path.moveTo(0, 0);
-    
-    for (double y = 0; y <= size.height; y += 1) {
-      final waveValue = math.sin(
-        (y / size.height * 2 * math.pi * frequency) + 
-        (animationValue * 2 * math.pi) + 
-        (offset / 100)
-      ) * amplitude;
-      
-      path.lineTo(waveValue + size.width / 2, y);
-    }
-    
-    path.lineTo(size.width, size.height);
-    path.lineTo(size.width, 0);
-    path.close();
-
-    canvas.drawPath(path, paint);
-  }
-
-  @override
-  bool shouldRepaint(WavePainter oldDelegate) {
-    return oldDelegate.animationValue != animationValue;
   }
 }

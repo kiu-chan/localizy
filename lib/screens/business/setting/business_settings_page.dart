@@ -6,7 +6,7 @@ import 'package:localizy/l10n/app_localizations.dart';
 import 'package:localizy/screens/setting/about_page.dart';
 import 'package:localizy/screens/setting/account_settings_page.dart';
 import 'package:localizy/screens/setting/change_password_page.dart';
-import 'package:localizy/screens/account/login_page.dart';
+import 'package:localizy/features/auth/presentation/pages/login_page.dart';
 import 'package:localizy/utils/language_manager.dart';
 import 'package:localizy/services/logout_service.dart';
 import 'package:provider/provider.dart';

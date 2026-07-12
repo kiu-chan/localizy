@@ -1,17 +1,19 @@
 import 'package:flutter/material.dart';
-import 'package:localizy/screens/account/login_page.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:localizy/features/auth/presentation/pages/login_page.dart';
+import 'package:localizy/features/auth/presentation/providers/auth_provider.dart';
+import 'package:localizy/features/auth/presentation/role_navigation.dart';
 import 'dart:async';
-import 'package:localizy/core/config/config_manager.dart';
 
-class SplashScreen extends StatefulWidget {
+class SplashScreen extends ConsumerStatefulWidget {
   const SplashScreen({super.key});
 
   @override
-  State<SplashScreen> createState() => _SplashScreenState();
+  ConsumerState<SplashScreen> createState() => _SplashScreenState();
 }
 
-class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderStateMixin {
+class _SplashScreenState extends ConsumerState<SplashScreen>
+    with SingleTickerProviderStateMixin {
   late AnimationController _animationController;
   late Animation<double> _logoAnimation;
   final String appName = 'Citea';
@@ -66,18 +68,16 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
 
   Future<void> _initializeApp() async {
     try {
-      // Load các cấu hình cần thiết
-      await ConfigManager.initialize();
-      
-      // Kiểm tra trạng thái đăng nhập
-      await SharedPreferences.getInstance();
-      
-      if (mounted) {
-        // Chuyển đến màn hình phù hợp
+      // Có phiên đăng nhập đã lưu → vào thẳng màn hình chính theo role,
+      // không bắt đăng nhập lại.
+      final user = await ref.read(authProvider.future);
+
+      if (!mounted) return;
+      if (user != null) {
+        navigateToRoleHome(context, user);
+      } else {
         Navigator.of(context).pushReplacement(
-          MaterialPageRoute(
-            builder: (context) => const LoginPage(),
-          ),
+          MaterialPageRoute(builder: (context) => const LoginPage()),
         );
       }
     } catch (e) {
@@ -85,9 +85,7 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
       // Vẫn chuyển màn hình ngay cả khi có lỗi
       if (mounted) {
         Navigator.of(context).pushReplacement(
-          MaterialPageRoute(
-            builder: (context) => const LoginPage(),
-          ),
+          MaterialPageRoute(builder: (context) => const LoginPage()),
         );
       }
     }

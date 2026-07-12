@@ -1,10 +1,13 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart' show ProviderScope;
+import 'package:flutter_riverpod/flutter_riverpod.dart'
+    show ProviderContainer, UncontrolledProviderScope;
 import 'firebase_options.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:localizy/core/network/api_client.dart';
 import 'package:localizy/core/services/notification_service.dart';
 import 'package:localizy/core/theme/app_theme.dart';
+import 'package:localizy/features/auth/presentation/session_expiry.dart';
 import 'package:localizy/l10n/app_localizations.dart';
 import 'package:localizy/splash_screen.dart';
 import 'package:provider/provider.dart';
@@ -18,10 +21,16 @@ void main() async {
   await ConfigManager.initialize();
   await NotificationService.initialize();
 
+  // Container tạo tường minh để handler 401 (ngoài cây widget) cũng
+  // truy cập được authProvider.
+  final container = ProviderContainer();
+  ApiClient.onUnauthorized = makeSessionExpiryHandler(container);
+
   runApp(
-    // ProviderScope (Riverpod) chạy song song với Provider trong quá trình
-    // migrate — xem docs/ARCHITECTURE_MIGRATION.md. Provider sẽ gỡ ở Giai đoạn 6.
-    ProviderScope(
+    // Riverpod chạy song song với Provider trong quá trình migrate —
+    // xem docs/ARCHITECTURE_MIGRATION.md. Provider sẽ gỡ ở Giai đoạn 6.
+    UncontrolledProviderScope(
+      container: container,
       child: ChangeNotifierProvider(
         create: (_) => LanguageManager(),
         child: const MyApp(),

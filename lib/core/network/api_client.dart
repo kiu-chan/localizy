@@ -39,6 +39,18 @@ class ApiClient {
   /// Key used by AuthService / storage to persist token.
   static const String _tokenKey = 'auth_token';
 
+  /// Gọi khi server trả 401 cho request ngoài nhóm api/auth/
+  /// (token hết hạn). Gắn handler trong main() — xem
+  /// features/auth/presentation/session_expiry.dart.
+  static void Function()? onUnauthorized;
+
+  http.Response _checkUnauthorized(Uri uri, http.Response resp) {
+    if (resp.statusCode == 401 && !uri.path.contains('/auth/')) {
+      onUnauthorized?.call();
+    }
+    return resp;
+  }
+
   // ── Tương thích ngược với MainApi.instance (gỡ ở Giai đoạn 6) ──────────────
 
   static ApiClient? _instance;
@@ -126,7 +138,7 @@ class ApiClient {
       {Map<String, String>? headers}) async {
     final uri = _buildUri(pathOrUrl);
     final merged = await _mergeHeaders(headers, null);
-    return http.get(uri, headers: merged);
+    return _checkUnauthorized(uri, await http.get(uri, headers: merged));
   }
 
   /// Send DELETE request.
@@ -136,9 +148,10 @@ class ApiClient {
     final merged =
         await _mergeHeaders(headers, body != null ? 'application/json' : null);
     if (body != null) {
-      return http.delete(uri, headers: merged, body: json.encode(body));
+      return _checkUnauthorized(
+          uri, await http.delete(uri, headers: merged, body: json.encode(body)));
     }
-    return http.delete(uri, headers: merged);
+    return _checkUnauthorized(uri, await http.delete(uri, headers: merged));
   }
 
   /// Send POST request with JSON body. Automatically attaches Authorization header if token is stored.
@@ -147,7 +160,8 @@ class ApiClient {
       {Map<String, String>? headers}) async {
     final uri = _buildUri(pathOrUrl);
     final h = await _mergeHeaders(headers, 'application/json');
-    return http.post(uri, headers: h, body: json.encode(body));
+    return _checkUnauthorized(
+        uri, await http.post(uri, headers: h, body: json.encode(body)));
   }
 
   /// Send PUT request with JSON body.
@@ -155,7 +169,8 @@ class ApiClient {
       {Map<String, String>? headers}) async {
     final uri = _buildUri(pathOrUrl);
     final h = await _mergeHeaders(headers, 'application/json');
-    return http.put(uri, headers: h, body: json.encode(body));
+    return _checkUnauthorized(
+        uri, await http.put(uri, headers: h, body: json.encode(body)));
   }
 
   /// Send PATCH request with JSON body.
@@ -163,7 +178,8 @@ class ApiClient {
       {Map<String, String>? headers}) async {
     final uri = _buildUri(pathOrUrl);
     final h = await _mergeHeaders(headers, 'application/json');
-    return http.patch(uri, headers: h, body: json.encode(body));
+    return _checkUnauthorized(
+        uri, await http.patch(uri, headers: h, body: json.encode(body)));
   }
 
   /// Call GET and decode JSON response body; throws [ApiException] if status

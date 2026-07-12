@@ -83,16 +83,16 @@ Quy ước mỗi feature:
 **Mục tiêu:** migrate 1 feature nhỏ, độc lập làm **khuôn mẫu** cho mọi feature sau.
 Chọn transactions vì: model `Transaction` đã có sẵn, chỉ đọc dữ liệu (ít rủi ro), nhưng UI đủ phức tạp (3 tab, filter) để làm mẫu đại diện.
 
-- [ ] `domain/`: tách class `Transaction` ra khỏi `api/transaction_api.dart`
-- [ ] `data/`: `TransactionRepository` (instance) + `transactionRepositoryProvider`
-- [ ] `presentation/providers/`: `AsyncNotifier` cho danh sách giao dịch + filter theo loại
-- [ ] Refactor 4 file UI (hiện ~3.800 dòng, logic trộn UI):
+- [x] `domain/`: tách class `Transaction` ra khỏi `api/transaction_api.dart`
+- [x] `data/`: `TransactionRepository` (instance) + `transactionRepositoryProvider`
+- [x] `presentation/providers/`: `AsyncNotifier` cho danh sách giao dịch + filter theo loại
+- [x] Refactor 4 file UI (hiện ~3.800 dòng, logic trộn UI):
   - `transaction_history_page.dart`
   - `tabs/all_transactions_tab.dart` (1.008 dòng)
   - `tabs/parking_transactions_tab.dart` (969 dòng)
   - `tabs/verification_transactions_tab.dart` (1.089 dòng)
   - 3 tab đang lặp logic gần giống nhau → gom về 1 provider + 1 widget list dùng chung, tab chỉ khác filter
-- [ ] Xóa `api/transaction_api.dart` cũ
+- [x] Xóa `api/transaction_api.dart` cũ
 
 **Kiểm tra hoàn thành:** màn lịch sử giao dịch chạy đúng (load, refresh, filter, error state); đây là **code mẫu chuẩn** — mọi feature sau copy theo cấu trúc này.
 
@@ -102,12 +102,12 @@ Chọn transactions vì: model `Transaction` đã có sẵn, chỉ đọc dữ l
 
 **Mục tiêu:** migrate auth trước các feature lớn, vì mọi feature khác phụ thuộc trạng thái đăng nhập/token/role.
 
-- [ ] `domain/`: `User`, `AuthState` (unauthenticated / authenticated / loading)
-- [ ] `data/`: gom `api/auth_api.dart` (257 dòng), `api/user_profile_service.dart`, `services/logout_service.dart` → `AuthRepository` (token qua `flutter_secure_storage`)
-- [ ] `presentation/providers/`: `authProvider` (`AsyncNotifier<AuthState>`) — nguồn sự thật duy nhất về user + role (user / validator / business)
-- [ ] Migrate 3 màn: `login_page.dart`, `register_page.dart`, `forgot_password_page.dart` (gồm cả Google Sign-In, Firebase Auth)
-- [ ] `splash_screen.dart` + điều hướng theo role (`main_page` / `validator_main_page` / `business_main_page`) đọc từ `authProvider` thay vì tự check
-- [ ] Xử lý 401 tập trung: `ApiClient` bắn sự kiện → `authProvider` logout + điều hướng về login
+- [x] `domain/`: `User`, `AuthState` (unauthenticated / authenticated / loading)
+- [x] `data/`: gom `api/auth_api.dart` (257 dòng), `api/user_profile_service.dart`, `services/logout_service.dart` → `AuthRepository` (token qua `flutter_secure_storage`)
+- [x] `presentation/providers/`: `authProvider` (`AsyncNotifier<AuthState>`) — nguồn sự thật duy nhất về user + role (user / validator / business)
+- [x] Migrate 3 màn: `login_page.dart`, `register_page.dart`, `forgot_password_page.dart` (gồm cả Google Sign-In, Firebase Auth)
+- [x] `splash_screen.dart` + điều hướng theo role (`main_page` / `validator_main_page` / `business_main_page`) đọc từ `authProvider` thay vì tự check
+- [x] Xử lý 401 tập trung: `ApiClient` bắn sự kiện → `authProvider` logout + điều hướng về login
 
 **Kiểm tra hoàn thành:** login/logout/register cả 3 role, token hết hạn tự về màn login.
 
@@ -176,8 +176,8 @@ Thứ tự theo mức độ quan trọng với người dùng cuối. Mỗi feat
 |---|---|---|---|
 | 0 | Chuẩn bị nền | ½ ngày | ✅ |
 | 1 | Core layer | 1–2 ngày | ✅ |
-| 2 | Feature mẫu: Transactions | 2–3 ngày | ⬜ |
-| 3 | Auth & Session | 3–4 ngày | ⬜ |
+| 2 | Feature mẫu: Transactions | 2–3 ngày | ✅ |
+| 3 | Auth & Session | 3–4 ngày | ✅ |
 | 4a–4e | Parking, Verification, Map, OCR, Home | 10–15 ngày | ⬜ |
 | 5 | Validator & Business | 3–5 ngày | ⬜ |
 | 6 | Settings & dọn dẹp | 1–2 ngày | ⬜ |
