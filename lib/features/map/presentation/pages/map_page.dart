@@ -4,16 +4,18 @@ import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:localizy/l10n/app_localizations.dart';
-import 'package:localizy/services/directions_service.dart';
-import 'package:localizy/screens/map/widgets/directions_panel.dart';
-import 'package:localizy/screens/map/widgets/map_type_selector.dart';
-import 'package:localizy/screens/map/widgets/address_search_bar.dart';
-import 'package:localizy/screens/map/widgets/address_cluster_manager.dart';
-import 'package:localizy/screens/map/widgets/address_detail_bottom_sheet.dart';
+import 'package:localizy/features/map/data/directions_service.dart';
+import 'package:localizy/features/map/presentation/widgets/directions_panel.dart';
+import 'package:localizy/features/map/presentation/widgets/map_type_selector.dart';
+import 'package:localizy/features/map/presentation/widgets/address_search_bar.dart';
+import 'package:localizy/features/map/presentation/widgets/address_cluster_manager.dart';
+import 'package:localizy/features/map/presentation/widgets/address_detail_bottom_sheet.dart';
 import 'package:localizy/core/config/map_config.dart';
-import 'package:localizy/api/address_api.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:localizy/features/map/data/address_repository.dart';
+import 'package:localizy/features/map/domain/address_models.dart';
 
-class MapPage extends StatefulWidget {
+class MapPage extends ConsumerStatefulWidget {
   final Function(bool)? onNavigationStateChanged;
 
   const MapPage({
@@ -22,10 +24,11 @@ class MapPage extends StatefulWidget {
   });
 
   @override
-  State<MapPage> createState() => _MapPageState();
+  ConsumerState<MapPage> createState() => _MapPageState();
 }
 
-class _MapPageState extends State<MapPage> with AutomaticKeepAliveClientMixin {
+class _MapPageState extends ConsumerState<MapPage>
+    with AutomaticKeepAliveClientMixin {
   GoogleMapController? _mapController;
   LatLng _currentPosition = MapConfig.defaultPosition;
   bool _isLoading = true;
@@ -208,7 +211,8 @@ class _MapPageState extends State<MapPage> with AutomaticKeepAliveClientMixin {
 
   Future<void> _fetchApiAddresses() async {
     try {
-      final list = await AddressApi.fetchCoordinates();
+      final list =
+          await ref.read(addressRepositoryProvider).fetchCoordinates();
       _addressClusterManager.setAddresses(list);
     } catch (e) {
       debugPrint('Failed to fetch API addresses: $e');

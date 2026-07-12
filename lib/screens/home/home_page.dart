@@ -6,7 +6,7 @@ import 'package:localizy/l10n/app_localizations.dart';
 import 'package:localizy/features/verification/presentation/pages/address_verification_flow.dart';
 import 'package:localizy/features/parking/presentation/pages/parking_payment_page.dart';
 import 'package:localizy/features/parking/presentation/pages/payment_check_page.dart';
-import 'package:localizy/screens/home/address_search_page.dart';
+import 'package:localizy/features/map/presentation/pages/address_search_page.dart';
 import 'package:localizy/features/transactions/presentation/pages/transaction_history_page.dart';
 import 'package:localizy/screens/ocr/license_plate_scanner_screen.dart';
 import 'package:localizy/api/slide_api.dart';

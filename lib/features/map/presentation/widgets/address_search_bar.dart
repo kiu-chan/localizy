@@ -1,8 +1,11 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:localizy/api/address_api.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class AddressSearchBar extends StatefulWidget {
+import '../../data/address_repository.dart';
+import '../../domain/address_models.dart';
+
+class AddressSearchBar extends ConsumerStatefulWidget {
   final Function(AddressResult) onAddressSelected;
 
   const AddressSearchBar({
@@ -11,10 +14,10 @@ class AddressSearchBar extends StatefulWidget {
   });
 
   @override
-  State<AddressSearchBar> createState() => _AddressSearchBarState();
+  ConsumerState<AddressSearchBar> createState() => _AddressSearchBarState();
 }
 
-class _AddressSearchBarState extends State<AddressSearchBar> {
+class _AddressSearchBarState extends ConsumerState<AddressSearchBar> {
   final TextEditingController _searchController = TextEditingController();
   final FocusNode _searchFocusNode = FocusNode();
   List<AddressSearchResult> _searchResults = [];
@@ -72,7 +75,7 @@ class _AddressSearchBarState extends State<AddressSearchBar> {
     if (query.isEmpty) return;
 
     try {
-      final results = await AddressApi.search(query);
+      final results = await ref.read(addressRepositoryProvider).search(query);
       
       if (!mounted) return;
       

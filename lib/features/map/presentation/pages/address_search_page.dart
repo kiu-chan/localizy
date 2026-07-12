@@ -1,17 +1,20 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:localizy/api/address_api.dart';
 import 'package:localizy/l10n/app_localizations.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-class AddressSearchPage extends StatefulWidget {
+import '../../data/address_repository.dart';
+import '../../domain/address_models.dart';
+
+class AddressSearchPage extends ConsumerStatefulWidget {
   const AddressSearchPage({super.key});
 
   @override
-  State<AddressSearchPage> createState() => _AddressSearchPageState();
+  ConsumerState<AddressSearchPage> createState() => _AddressSearchPageState();
 }
 
-class _AddressSearchPageState extends State<AddressSearchPage> {
+class _AddressSearchPageState extends ConsumerState<AddressSearchPage> {
   final _searchController = TextEditingController();
   final _searchFocusNode = FocusNode();
 
@@ -38,7 +41,7 @@ class _AddressSearchPageState extends State<AddressSearchPage> {
   Future<void> _loadAllAddresses() async {
     setState(() => _isLoadingAll = true);
     try {
-      final items = await AddressApi.fetchAll();
+      final items = await ref.read(addressRepositoryProvider).fetchAll();
       setState(() {
         _allAddresses = items.map((a) => _addressItemToMap(a)).toList();
         _isLoadingAll = false;
@@ -72,7 +75,8 @@ class _AddressSearchPageState extends State<AddressSearchPage> {
     setState(() => _isSearching = true);
 
     try {
-      final items = await AddressApi.searchItems(query);
+      final items =
+          await ref.read(addressRepositoryProvider).searchItems(query);
       setState(() {
         _searchResults = items.map((a) => _addressItemToMap(a)).toList();
         _isSearching = false;
@@ -355,17 +359,18 @@ class _AddressSearchPageState extends State<AddressSearchPage> {
   }
 }
 
-class _AddressDetailSheet extends StatefulWidget {
+class _AddressDetailSheet extends ConsumerStatefulWidget {
   final String addressId;
   final Map<String, dynamic> basicInfo;
 
   const _AddressDetailSheet({required this.addressId, required this.basicInfo});
 
   @override
-  State<_AddressDetailSheet> createState() => _AddressDetailSheetState();
+  ConsumerState<_AddressDetailSheet> createState() =>
+      _AddressDetailSheetState();
 }
 
-class _AddressDetailSheetState extends State<_AddressDetailSheet> {
+class _AddressDetailSheetState extends ConsumerState<_AddressDetailSheet> {
   AddressDetail? _detail;
   bool _isLoading = true;
   GoogleMapController? _mapController;
@@ -384,7 +389,8 @@ class _AddressDetailSheetState extends State<_AddressDetailSheet> {
 
   Future<void> _loadDetail() async {
     try {
-      final detail = await AddressApi.getDetail(widget.addressId);
+      final detail =
+          await ref.read(addressRepositoryProvider).getDetail(widget.addressId);
       if (mounted) setState(() { _detail = detail; _isLoading = false; });
     } catch (e) {
       if (mounted) setState(() => _isLoading = false);

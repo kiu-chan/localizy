@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:localizy/api/city_api.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:localizy/features/map/data/city_repository.dart';
+import 'package:localizy/features/map/domain/city.dart';
 import 'package:localizy/l10n/app_localizations.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:localizy/features/verification/presentation/pages/map_picker_page.dart';
 
-class MapConfirmationPage extends StatefulWidget {
+class MapConfirmationPage extends ConsumerStatefulWidget {
   final Map<String, double>? initialLocation;
   final String? initialLocationName;
   final String? initialCityId;
@@ -25,10 +27,11 @@ class MapConfirmationPage extends StatefulWidget {
   });
 
   @override
-  State<MapConfirmationPage> createState() => _MapConfirmationPageState();
+  ConsumerState<MapConfirmationPage> createState() =>
+      _MapConfirmationPageState();
 }
 
-class _MapConfirmationPageState extends State<MapConfirmationPage> {
+class _MapConfirmationPageState extends ConsumerState<MapConfirmationPage> {
   Map<String, double>? _selectedLocation;
   String _address = '';
   GoogleMapController? _mapController;
@@ -65,7 +68,7 @@ class _MapConfirmationPageState extends State<MapConfirmationPage> {
 
   Future<void> _loadCities() async {
     try {
-      final cities = await CityApi.getActiveCities();
+      final cities = await ref.read(cityRepositoryProvider).getActiveCities();
       if (mounted) {
         setState(() {
           _cities = cities;

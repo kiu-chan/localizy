@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:localizy/l10n/app_localizations.dart';
 import 'home/home_page.dart';
-import 'map/map_page.dart';
+import 'package:localizy/features/map/presentation/pages/map_page.dart';
 import 'setting/settings_page.dart';
 
 class MainPage extends StatefulWidget {

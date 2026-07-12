@@ -1,31 +1,12 @@
-import 'package:localizy/api/main_api.dart';
+// Tương thích ngược: logic thành phố đã chuyển về features/map/.
+// Facade này sẽ bị xóa ở Giai đoạn 6 của lộ trình migrate.
+// Code mới dùng cityRepositoryProvider / activeCitiesProvider.
+import 'package:localizy/features/map/data/city_repository.dart';
+import 'package:localizy/features/map/domain/city.dart';
 
-class CityItem {
-  final String id;
-  final String name;
-  final String code;
-
-  const CityItem({required this.id, required this.name, required this.code});
-
-  factory CityItem.fromJson(Map<String, dynamic> json) => CityItem(
-        id: json['id'] as String? ?? '',
-        name: json['name'] as String? ?? '',
-        code: json['code'] as String? ?? '',
-      );
-}
+export 'package:localizy/features/map/domain/city.dart';
 
 class CityApi {
-  /// GET /api/cities/active — Public
-  static Future<List<CityItem>> getActiveCities() async {
-    final data = await MainApi.instance.getJson('api/cities/active');
-    final List<dynamic> items;
-    if (data is Map<String, dynamic> && data.containsKey('items')) {
-      items = data['items'] as List<dynamic>;
-    } else if (data is List) {
-      items = data;
-    } else {
-      return [];
-    }
-    return items.map((e) => CityItem.fromJson(e as Map<String, dynamic>)).toList();
-  }
+  static Future<List<CityItem>> getActiveCities() =>
+      CityRepository.instance.getActiveCities();
 }

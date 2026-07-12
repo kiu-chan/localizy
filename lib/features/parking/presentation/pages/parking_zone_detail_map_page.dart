@@ -5,9 +5,9 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:localizy/core/config/currency_config.dart';
 import 'package:localizy/core/config/map_config.dart';
-import 'package:localizy/screens/map/widgets/directions_panel.dart';
-import 'package:localizy/screens/map/widgets/map_type_selector.dart';
-import 'package:localizy/services/directions_service.dart';
+import 'package:localizy/features/map/presentation/widgets/directions_panel.dart';
+import 'package:localizy/features/map/presentation/widgets/map_type_selector.dart';
+import 'package:localizy/features/map/data/directions_service.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class ParkingZoneDetailMapPage extends StatefulWidget {

@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:localizy/api/address_api.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:localizy/l10n/app_localizations.dart';
+
+import '../../data/address_repository.dart';
+import '../../domain/address_models.dart';
 
 /// Callback khi người dùng chọn chỉ đường
 typedef OnGetDirections = void Function(AddressCoordinate address);
 
 /// Bottom sheet hiển thị thông tin chi tiết địa chỉ
-class AddressDetailBottomSheet extends StatefulWidget {
+class AddressDetailBottomSheet extends ConsumerStatefulWidget {
   final String addressId;
   final double lat;
   final double lng;
@@ -40,10 +43,12 @@ class AddressDetailBottomSheet extends StatefulWidget {
   }
 
   @override
-  State<AddressDetailBottomSheet> createState() => _AddressDetailBottomSheetState();
+  ConsumerState<AddressDetailBottomSheet> createState() =>
+      _AddressDetailBottomSheetState();
 }
 
-class _AddressDetailBottomSheetState extends State<AddressDetailBottomSheet> {
+class _AddressDetailBottomSheetState
+    extends ConsumerState<AddressDetailBottomSheet> {
   AddressDetail? _detail;
   bool _isLoading = true;
   String? _errorMessage;
@@ -56,7 +61,8 @@ class _AddressDetailBottomSheetState extends State<AddressDetailBottomSheet> {
 
   Future<void> _loadDetail() async {
     try {
-      final detail = await AddressApi.getDetail(widget.addressId);
+      final detail =
+          await ref.read(addressRepositoryProvider).getDetail(widget.addressId);
       if (mounted) {
         setState(() {
           _detail = detail;

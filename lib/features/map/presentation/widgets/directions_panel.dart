@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:localizy/services/directions_service.dart';
+import 'package:localizy/features/map/data/directions_service.dart';
 import 'package:localizy/l10n/app_localizations.dart';
 
 class DirectionsPanel extends StatefulWidget {

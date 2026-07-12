@@ -125,8 +125,8 @@ Thứ tự theo mức độ quan trọng với người dùng cuối. Mỗi feat
 - [x] State của wizard (bước hiện tại, dữ liệu đã nhập, ảnh upload) → 1 `Notifier` duy nhất thay vì truyền qua constructor từng màn
 
 ### 4c. Map & Address
-- [ ] `api/address_api.dart` (437 dòng), `api/city_api.dart`, `services/directions_service.dart` + `screens/map/*`, `address_search_page.dart`
-- [ ] `map_page.dart` (775 dòng): tách cluster manager, search, directions thành các provider riêng
+- [x] `api/address_api.dart` (437 dòng), `api/city_api.dart`, `services/directions_service.dart` + `screens/map/*`, `address_search_page.dart`
+- [x] `map_page.dart` (775 dòng): tách cluster manager, search, directions thành các provider riêng
 
 ### 4d. OCR (quét biển số)
 - [ ] `services/plate_recognition_service.dart` (414 dòng), `models/plate_country.dart` + `screens/ocr/*`
