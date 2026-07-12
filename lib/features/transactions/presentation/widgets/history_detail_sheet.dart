@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:localizy/screens/home/parking/parking_zone_detail_map_page.dart';
+import 'package:localizy/features/parking/presentation/pages/parking_zone_detail_map_page.dart';
 
 import '../../domain/history_entry.dart';
 import 'detail_row.dart';
 import 'history_format.dart';
-import 'receipt_share.dart';
-import 'receipt_widget.dart';
+import 'package:localizy/core/widgets/receipt_share.dart';
+import 'package:localizy/core/widgets/receipt_widget.dart';
 
 /// Mở bottom sheet chi tiết giao dịch.
 void showHistoryDetailSheet(

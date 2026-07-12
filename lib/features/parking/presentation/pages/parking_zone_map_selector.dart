@@ -1,20 +1,29 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geolocator/geolocator.dart';
-import 'package:localizy/api/address_api.dart';
 import 'package:localizy/core/config/currency_config.dart';
 import 'package:localizy/core/config/map_config.dart';
 import 'package:localizy/l10n/app_localizations.dart';
 
-class ParkingZoneMapSelector extends StatefulWidget {
+import '../../data/parking_repository.dart';
+import '../../domain/parking_zone.dart';
+
+extension _ZonePosition on ParkingZone {
+  LatLng get position => LatLng(latitude, longitude);
+}
+
+class ParkingZoneMapSelector extends ConsumerStatefulWidget {
   const ParkingZoneMapSelector({super.key});
 
   @override
-  State<ParkingZoneMapSelector> createState() => _ParkingZoneMapSelectorState();
+  ConsumerState<ParkingZoneMapSelector> createState() =>
+      _ParkingZoneMapSelectorState();
 }
 
-class _ParkingZoneMapSelectorState extends State<ParkingZoneMapSelector> {
+class _ParkingZoneMapSelectorState
+    extends ConsumerState<ParkingZoneMapSelector> {
   GoogleMapController? _mapController;
   LatLng _currentPosition = MapConfig.defaultPosition;
   String? _selectedZone;
@@ -33,18 +42,11 @@ class _ParkingZoneMapSelectorState extends State<ParkingZoneMapSelector> {
 
   Future<void> _loadParkingZones() async {
     try {
-      final zones = await AddressApi.getParkingZones();
+      final zones =
+          await ref.read(parkingRepositoryProvider).getParkingZones();
       if (!mounted) return;
       setState(() {
-        _parkingZones = zones.map((z) => ParkingZone(
-          id: z.id,
-          code: z.code,
-          name: z.name,
-          position: LatLng(z.latitude, z.longitude),
-          availableSpots: z.availableSpots,
-          totalSpots: z.totalSpots,
-          pricePerHour: z.pricePerHour,
-        )).toList();
+        _parkingZones = zones;
       });
       _addParkingZoneMarkers();
     } catch (_) {
@@ -570,23 +572,3 @@ class _ParkingZoneMapSelectorState extends State<ParkingZoneMapSelector> {
   }
 }
 
-// Model class for Parking Zone
-class ParkingZone {
-  final String id;
-  final String code;
-  final String name;
-  final LatLng position;
-  final int availableSpots;
-  final int totalSpots;
-  final int pricePerHour;
-
-  ParkingZone({
-    required this.id,
-    required this.code,
-    required this.name,
-    required this. position,
-    required this.availableSpots,
-    required this.totalSpots,
-    required this.pricePerHour,
-  });
-}

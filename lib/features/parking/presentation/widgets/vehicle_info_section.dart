@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:localizy/screens/ocr/license_plate_scanner_screen.dart';
-import 'package:localizy/screens/home/parking/parking_zone_map_selector.dart';
+
+import '../../domain/parking_zone.dart';
+import '../pages/parking_zone_map_selector.dart';
 
 class VehicleInfoSection extends StatefulWidget {
   final TextEditingController licensePlateController;

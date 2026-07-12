@@ -1,25 +1,29 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
-import 'package:localizy/api/parking_api.dart';
 import 'package:localizy/core/config/currency_config.dart';
 import 'package:localizy/l10n/app_localizations.dart';
-import 'package:localizy/screens/home/parking/vehicle_info_section.dart';
-import 'package:localizy/screens/home/parking/duration_selection_section.dart';
-import 'package:localizy/screens/home/parking/payment_method_section.dart';
 
-class ParkingPaymentPage extends StatefulWidget {
+import '../../data/parking_repository.dart';
+import '../../domain/parking_ticket.dart';
+import '../widgets/duration_selection_section.dart';
+import '../widgets/payment_method_section.dart';
+import '../widgets/vehicle_info_section.dart';
+
+class ParkingPaymentPage extends ConsumerStatefulWidget {
   const ParkingPaymentPage({super.key});
 
   @override
-  State<ParkingPaymentPage> createState() => _ParkingPaymentPageState();
+  ConsumerState<ParkingPaymentPage> createState() =>
+      _ParkingPaymentPageState();
 }
 
-class _ParkingPaymentPageState extends State<ParkingPaymentPage> {
+class _ParkingPaymentPageState extends ConsumerState<ParkingPaymentPage> {
   final _formKey = GlobalKey<FormState>();
   final _licensePlateController = TextEditingController();
   final _parkingZoneController = TextEditingController();
-  
+
   String? _selectedPaymentMethod;
   String? _selectedDuration;
   String? _selectedAddressId;
@@ -28,12 +32,12 @@ class _ParkingPaymentPageState extends State<ParkingPaymentPage> {
   bool _zoneSelected = false;
 
   Map<String, Map<String, dynamic>> get _durationPrices => {
-    '1h': {'price': _pricePerHour, 'label': '1 hour', 'icon': Icons.access_time},
-    '2h': {'price': _pricePerHour * 2, 'label': '2 hours', 'icon': Icons.access_time},
-    '4h': {'price': _pricePerHour * 4, 'label': '4 hours', 'icon': Icons.schedule},
-    '8h': {'price': _pricePerHour * 8, 'label': '8 hours', 'icon': Icons.schedule},
-    '1day': {'price': _pricePerHour * 24, 'label': '1 day', 'icon': Icons.today},
-  };
+        '1h': {'price': _pricePerHour, 'label': '1 hour', 'icon': Icons.access_time},
+        '2h': {'price': _pricePerHour * 2, 'label': '2 hours', 'icon': Icons.access_time},
+        '4h': {'price': _pricePerHour * 4, 'label': '4 hours', 'icon': Icons.schedule},
+        '8h': {'price': _pricePerHour * 8, 'label': '8 hours', 'icon': Icons.schedule},
+        '1day': {'price': _pricePerHour * 24, 'label': '1 day', 'icon': Icons.today},
+      };
 
   @override
   void dispose() {
@@ -67,12 +71,11 @@ class _ParkingPaymentPageState extends State<ParkingPaymentPage> {
     });
   }
 
-  String _formatCurrency(num amount) => CurrencyConfig.format(amount.toDouble());
+  String _formatCurrency(num amount) =>
+      CurrencyConfig.format(amount.toDouble());
 
   Future<void> _processPayment() async {
-    if (!_formKey.currentState!.validate()) {
-      return;
-    }
+    if (!_formKey.currentState!.validate()) return;
 
     if (_selectedPaymentMethod == null) {
       _showErrorSnackBar('Please select a payment method');
@@ -84,7 +87,6 @@ class _ParkingPaymentPageState extends State<ParkingPaymentPage> {
       return;
     }
 
-    // Show loading dialog
     showDialog(
       context: context,
       barrierDismissible: false,
@@ -100,24 +102,19 @@ class _ParkingPaymentPageState extends State<ParkingPaymentPage> {
                 height: 60,
                 child: CircularProgressIndicator(
                   strokeWidth: 5,
-                  valueColor: AlwaysStoppedAnimation<Color>(Colors.green.shade700),
+                  valueColor:
+                      AlwaysStoppedAnimation<Color>(Colors.green.shade700),
                 ),
               ),
               const SizedBox(height: 24),
               const Text(
                 'Processing payment...',
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.w600,
-                ),
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
               ),
               const SizedBox(height: 8),
               Text(
                 'Please wait a moment',
-                style: TextStyle(
-                  fontSize: 14,
-                  color: Colors.grey.shade600,
-                ),
+                style: TextStyle(fontSize: 14, color: Colors.grey.shade600),
               ),
             ],
           ),
@@ -126,12 +123,12 @@ class _ParkingPaymentPageState extends State<ParkingPaymentPage> {
     );
 
     try {
-      final ticket = await ParkingApi.createTicket(
-        licensePlate: _licensePlateController.text.trim(),
-        addressId: _selectedAddressId!,
-        duration: _selectedDuration!,
-        paymentMethod: _selectedPaymentMethod!,
-      );
+      final ticket = await ref.read(parkingRepositoryProvider).createTicket(
+            licensePlate: _licensePlateController.text.trim(),
+            addressId: _selectedAddressId!,
+            duration: _selectedDuration!,
+            paymentMethod: _selectedPaymentMethod!,
+          );
 
       if (!mounted) return;
       Navigator.pop(context); // Close loading dialog
@@ -162,69 +159,50 @@ class _ParkingPaymentPageState extends State<ParkingPaymentPage> {
 
   void _showSuccessDialog(ParkingTicket ticket) {
     final l10n = AppLocalizations.of(context)!;
-    final ticketCode = ticket.ticketCode;
-    final startTime = ticket.startTime;
-    final endTime = ticket.endTime;
-    final amount = ticket.amount;
-    final licensePlate = ticket.licensePlate;
     final parkingZone = _parkingZoneController.text.trim();
-    final paymentMethod = ticket.paymentMethod;
-    
+
     showDialog(
       context: context,
       barrierDismissible: false,
       builder: (context) => Dialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
         child: SingleChildScrollView(
-          child:  Padding(
+          child: Padding(
             padding: const EdgeInsets.all(24.0),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                // Success icon
                 Container(
                   width: 80,
                   height: 80,
                   decoration: BoxDecoration(
-                    color:  Colors.green.shade50,
+                    color: Colors.green.shade50,
                     shape: BoxShape.circle,
                   ),
                   child: Icon(
                     Icons.check_circle,
-                    color: Colors. green.shade600,
+                    color: Colors.green.shade600,
                     size: 56,
                   ),
                 ),
-                
-                const SizedBox(height:  24),
-                
+                const SizedBox(height: 24),
                 const Text(
                   'Payment Successful!',
-                  style:  TextStyle(
-                    fontSize:  24,
-                    fontWeight: FontWeight.bold,
-                  ),
+                  style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
                 ),
-                
                 const SizedBox(height: 8),
-                
                 Text(
                   'Your parking ticket has been activated',
                   textAlign: TextAlign.center,
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: Colors. grey.shade600,
-                  ),
+                  style: TextStyle(fontSize: 14, color: Colors.grey.shade600),
                 ),
-                
                 const SizedBox(height: 24),
-                
                 // Ticket code
                 Container(
                   padding: const EdgeInsets.all(20),
                   decoration: BoxDecoration(
                     gradient: LinearGradient(
-                      colors: [Colors.green. shade400, Colors.green.shade700],
+                      colors: [Colors.green.shade400, Colors.green.shade700],
                     ),
                     borderRadius: BorderRadius.circular(16),
                   ),
@@ -240,23 +218,25 @@ class _ParkingPaymentPageState extends State<ParkingPaymentPage> {
                       ),
                       const SizedBox(height: 12),
                       Text(
-                        ticketCode,
+                        ticket.ticketCode,
                         style: const TextStyle(
                           fontSize: 28,
                           fontWeight: FontWeight.bold,
-                          color: Colors. white,
+                          color: Colors.white,
                           letterSpacing: 2,
                         ),
                       ),
                       const SizedBox(height: 12),
-                      OutlinedButton. icon(
-                        onPressed:  () {
-                          Clipboard.setData(ClipboardData(text: ticketCode));
+                      OutlinedButton.icon(
+                        onPressed: () {
+                          Clipboard.setData(
+                              ClipboardData(text: ticket.ticketCode));
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
                               content: const Row(
                                 children: [
-                                  Icon(Icons.check, color: Colors.white, size: 20),
+                                  Icon(Icons.check,
+                                      color: Colors.white, size: 20),
                                   SizedBox(width: 8),
                                   Text('Code copied'),
                                 ],
@@ -264,19 +244,20 @@ class _ParkingPaymentPageState extends State<ParkingPaymentPage> {
                               backgroundColor: Colors.green.shade700,
                               behavior: SnackBarBehavior.floating,
                               shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius. circular(10),
+                                borderRadius: BorderRadius.circular(10),
                               ),
                               duration: const Duration(seconds: 2),
                             ),
                           );
                         },
-                        icon: const Icon(Icons.copy, size: 16, color: Colors.white),
+                        icon: const Icon(Icons.copy,
+                            size: 16, color: Colors.white),
                         label: const Text(
                           'Copy Code',
                           style: TextStyle(color: Colors.white),
                         ),
                         style: OutlinedButton.styleFrom(
-                          side: const BorderSide(color:  Colors.white, width: 2),
+                          side: const BorderSide(color: Colors.white, width: 2),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(8),
                           ),
@@ -285,9 +266,7 @@ class _ParkingPaymentPageState extends State<ParkingPaymentPage> {
                     ],
                   ),
                 ),
-                
                 const SizedBox(height: 24),
-                
                 // Ticket details
                 Container(
                   padding: const EdgeInsets.all(16),
@@ -301,7 +280,7 @@ class _ParkingPaymentPageState extends State<ParkingPaymentPage> {
                       _buildDetailRow(
                         Icons.directions_car,
                         'License Plate',
-                        licensePlate.toUpperCase(),
+                        ticket.licensePlate.toUpperCase(),
                       ),
                       const Divider(height: 20),
                       _buildDetailRow(
@@ -319,46 +298,44 @@ class _ParkingPaymentPageState extends State<ParkingPaymentPage> {
                       _buildDetailRow(
                         Icons.schedule,
                         'Start Time',
-                        DateFormat('HH:mm - dd/MM/yyyy').format(startTime),
+                        DateFormat('HH:mm - dd/MM/yyyy').format(ticket.startTime),
                       ),
                       const Divider(height: 20),
                       _buildDetailRow(
                         Icons.event_available,
                         'End Time',
-                        DateFormat('HH:mm - dd/MM/yyyy').format(endTime),
+                        DateFormat('HH:mm - dd/MM/yyyy').format(ticket.endTime),
                       ),
                       const Divider(height: 20),
                       _buildDetailRow(
                         Icons.payments,
                         'Payment',
-                        _getPaymentMethodName(l10n, paymentMethod),
+                        _getPaymentMethodName(l10n, ticket.paymentMethod),
                         isHighlight: true,
                       ),
                       const Divider(height: 20),
                       _buildDetailRow(
                         Icons.attach_money,
                         'Amount',
-                        _formatCurrency(amount),
+                        _formatCurrency(ticket.amount),
                         isHighlight: true,
                       ),
                     ],
                   ),
                 ),
-                
                 const SizedBox(height: 24),
-                
-                // Action buttons
                 Row(
                   children: [
                     Expanded(
                       child: OutlinedButton(
-                        onPressed:  () {
+                        onPressed: () {
                           Navigator.pop(context); // Close dialog
                           Navigator.pop(context); // Back to home
                         },
                         style: OutlinedButton.styleFrom(
                           padding: const EdgeInsets.symmetric(vertical: 14),
-                          side: BorderSide(color: Colors.grey.shade300, width: 2),
+                          side:
+                              BorderSide(color: Colors.grey.shade300, width: 2),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(12),
                           ),
@@ -366,16 +343,14 @@ class _ParkingPaymentPageState extends State<ParkingPaymentPage> {
                         child: const Text(
                           'Close',
                           style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w600,
-                          ),
+                              fontSize: 16, fontWeight: FontWeight.w600),
                         ),
                       ),
                     ),
                     const SizedBox(width: 12),
                     Expanded(
                       child: ElevatedButton(
-                        onPressed:  () {
+                        onPressed: () {
                           Navigator.pop(context);
                           Navigator.pop(context);
                         },
@@ -390,10 +365,8 @@ class _ParkingPaymentPageState extends State<ParkingPaymentPage> {
                         ),
                         child: const Text(
                           'View Ticket',
-                          style:  TextStyle(
-                            fontSize:  16,
-                            fontWeight: FontWeight.w600,
-                          ),
+                          style: TextStyle(
+                              fontSize: 16, fontWeight: FontWeight.w600),
                         ),
                       ),
                     ),
@@ -407,7 +380,8 @@ class _ParkingPaymentPageState extends State<ParkingPaymentPage> {
     );
   }
 
-  Widget _buildDetailRow(IconData icon, String label, String value, {bool isHighlight = false}) {
+  Widget _buildDetailRow(IconData icon, String label, String value,
+      {bool isHighlight = false}) {
     return Row(
       children: [
         Icon(
@@ -415,22 +389,19 @@ class _ParkingPaymentPageState extends State<ParkingPaymentPage> {
           size: 20,
           color: isHighlight ? Colors.green.shade700 : Colors.grey.shade600,
         ),
-        const SizedBox(width:  12),
+        const SizedBox(width: 12),
         Expanded(
           child: Text(
             label,
-            style: TextStyle(
-              fontSize: 14,
-              color: Colors.grey.shade600,
-            ),
+            style: TextStyle(fontSize: 14, color: Colors.grey.shade600),
           ),
         ),
         Text(
           value,
           style: TextStyle(
-            fontSize:  14,
-            fontWeight: isHighlight ? FontWeight.bold :  FontWeight.w600,
-            color: isHighlight ? Colors. green.shade700 : Colors. black87,
+            fontSize: 14,
+            fontWeight: isHighlight ? FontWeight.bold : FontWeight.w600,
+            color: isHighlight ? Colors.green.shade700 : Colors.black87,
           ),
         ),
       ],
@@ -444,18 +415,18 @@ class _ParkingPaymentPageState extends State<ParkingPaymentPage> {
       case 'zalopay':
         return l10n.paymentZaloPay;
       case 'bank':
-        return l10n. paymentBankTransfer;
+        return l10n.paymentBankTransfer;
       case 'card':
-        return l10n. paymentCard;
-      default: 
+        return l10n.paymentCard;
+      default:
         return method;
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations. of(context)!;
-    
+    final l10n = AppLocalizations.of(context)!;
+
     return Scaffold(
       backgroundColor: Colors.grey.shade50,
       appBar: AppBar(
@@ -481,9 +452,9 @@ class _ParkingPaymentPageState extends State<ParkingPaymentPage> {
                     Container(
                       width: double.infinity,
                       padding: const EdgeInsets.all(20),
-                      decoration:  BoxDecoration(
+                      decoration: BoxDecoration(
                         gradient: LinearGradient(
-                          colors: [Colors.green. shade400, Colors.green.shade700],
+                          colors: [Colors.green.shade400, Colors.green.shade700],
                           begin: Alignment.topLeft,
                           end: Alignment.bottomRight,
                         ),
@@ -491,8 +462,8 @@ class _ParkingPaymentPageState extends State<ParkingPaymentPage> {
                         boxShadow: [
                           BoxShadow(
                             color: Colors.green.shade200,
-                            blurRadius:  10,
-                            offset:  const Offset(0, 4),
+                            blurRadius: 10,
+                            offset: const Offset(0, 4),
                           ),
                         ],
                       ),
@@ -513,12 +484,12 @@ class _ParkingPaymentPageState extends State<ParkingPaymentPage> {
                           const SizedBox(width: 16),
                           const Expanded(
                             child: Column(
-                              crossAxisAlignment:  CrossAxisAlignment.start,
+                              crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
                                   'Quick Payment',
                                   style: TextStyle(
-                                    fontSize:  18,
+                                    fontSize: 18,
                                     fontWeight: FontWeight.bold,
                                     color: Colors.white,
                                   ),
@@ -527,7 +498,7 @@ class _ParkingPaymentPageState extends State<ParkingPaymentPage> {
                                 Text(
                                   'Safe & Convenient',
                                   style: TextStyle(
-                                    fontSize:  14,
+                                    fontSize: 14,
                                     color: Colors.white70,
                                   ),
                                 ),
@@ -537,41 +508,30 @@ class _ParkingPaymentPageState extends State<ParkingPaymentPage> {
                         ],
                       ),
                     ),
-                    
                     const SizedBox(height: 24),
-                    
-                    // Vehicle Information Section
                     VehicleInfoSection(
                       licensePlateController: _licensePlateController,
                       parkingZoneController: _parkingZoneController,
                       onZoneSelected: _onZoneSelected,
                     ),
-                    
                     const SizedBox(height: 24),
-                    
-                    // Duration Selection Section
                     DurationSelectionSection(
                       durationPrices: _durationPrices,
                       selectedDuration: _selectedDuration,
                       onSelectDuration: _selectDuration,
                       zoneSelected: _zoneSelected,
                     ),
-                    
                     const SizedBox(height: 24),
-                    
-                    // Payment Method Section
                     PaymentMethodSection(
                       selectedPaymentMethod: _selectedPaymentMethod,
                       onSelectPaymentMethod: _selectPaymentMethod,
                     ),
-                    
                     const SizedBox(height: 80),
                   ],
                 ),
               ),
             ),
           ),
-          
           // Bottom payment bar
           if (_selectedDuration != null)
             Container(
@@ -581,7 +541,7 @@ class _ParkingPaymentPageState extends State<ParkingPaymentPage> {
                 boxShadow: [
                   BoxShadow(
                     color: Colors.black.withValues(alpha: 0.1),
-                    blurRadius:  10,
+                    blurRadius: 10,
                     offset: const Offset(0, -2),
                   ),
                 ],
@@ -595,10 +555,7 @@ class _ParkingPaymentPageState extends State<ParkingPaymentPage> {
                       children: [
                         const Text(
                           'Total Payment',
-                          style: TextStyle(
-                            fontSize: 16,
-                            color: Colors.grey,
-                          ),
+                          style: TextStyle(fontSize: 16, color: Colors.grey),
                         ),
                         Text(
                           _formatCurrency(_parkingFee),
@@ -612,11 +569,11 @@ class _ParkingPaymentPageState extends State<ParkingPaymentPage> {
                     ),
                     const SizedBox(height: 12),
                     SizedBox(
-                      width:  double.infinity,
+                      width: double.infinity,
                       height: 56,
                       child: ElevatedButton(
                         onPressed: _processPayment,
-                        style:  ElevatedButton.styleFrom(
+                        style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.green.shade700,
                           foregroundColor: Colors.white,
                           shape: RoundedRectangleBorder(
@@ -625,7 +582,7 @@ class _ParkingPaymentPageState extends State<ParkingPaymentPage> {
                           elevation: 0,
                         ),
                         child: Row(
-                          mainAxisAlignment:  MainAxisAlignment.center,
+                          mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             const Icon(Icons.lock, size: 20),
                             const SizedBox(width: 8),
@@ -634,7 +591,7 @@ class _ParkingPaymentPageState extends State<ParkingPaymentPage> {
                                   ? 'Pay Now'
                                   : 'Select Payment Method',
                               style: const TextStyle(
-                                fontSize:  18,
+                                fontSize: 18,
                                 fontWeight: FontWeight.w600,
                               ),
                             ),

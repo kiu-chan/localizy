@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:localizy/api/city_api.dart';
 import 'package:localizy/l10n/app_localizations.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:localizy/screens/home/verification/map_picker_page.dart';
+import 'package:localizy/features/verification/presentation/pages/map_picker_page.dart';
 
 class MapConfirmationPage extends StatefulWidget {
   final Map<String, double>? initialLocation;

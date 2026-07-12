@@ -118,11 +118,11 @@ Chọn transactions vì: model `Transaction` đã có sẵn, chỉ đọc dữ l
 Thứ tự theo mức độ quan trọng với người dùng cuối. Mỗi feature là 1 PR, theo đúng khuôn của Giai đoạn 2.
 
 ### 4a. Parking (thanh toán đỗ xe)
-- [ ] `api/parking_api.dart` + màn `home/parking/*`, `parking_payment_page.dart`, `payment_check_page.dart` (1.085 dòng — tách logic thanh toán vào provider)
+- [x] `api/parking_api.dart` + màn `home/parking/*`, `parking_payment_page.dart`, `payment_check_page.dart` (1.085 dòng — tách logic thanh toán vào provider)
 
 ### 4b. Verification (xác minh địa chỉ)
-- [ ] `api/verification_api.dart` + flow `home/verification/*` (7 màn wizard)
-- [ ] State của wizard (bước hiện tại, dữ liệu đã nhập, ảnh upload) → 1 `Notifier` duy nhất thay vì truyền qua constructor từng màn
+- [x] `api/verification_api.dart` + flow `home/verification/*` (7 màn wizard)
+- [x] State của wizard (bước hiện tại, dữ liệu đã nhập, ảnh upload) → 1 `Notifier` duy nhất thay vì truyền qua constructor từng màn
 
 ### 4c. Map & Address
 - [ ] `api/address_api.dart` (437 dòng), `api/city_api.dart`, `services/directions_service.dart` + `screens/map/*`, `address_search_page.dart`

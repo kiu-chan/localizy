@@ -2,13 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:localizy/core/network/api_client.dart';
-import 'package:localizy/screens/home/parking/parking_zone_detail_map_page.dart';
+import 'package:localizy/features/parking/presentation/pages/parking_zone_detail_map_page.dart';
 
 import '../../domain/validation_entry.dart';
 import 'detail_row.dart';
 import 'history_format.dart';
-import 'receipt_share.dart';
-import 'receipt_widget.dart';
+import 'package:localizy/core/widgets/receipt_share.dart';
+import 'package:localizy/core/widgets/receipt_widget.dart';
 
 /// Mở bottom sheet chi tiết yêu cầu xác minh địa chỉ.
 void showValidationDetailSheet(BuildContext context, ValidationEntry entry) {
