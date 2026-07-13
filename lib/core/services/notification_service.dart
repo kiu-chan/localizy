@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:localizy/api/auth_api.dart';
 import 'package:localizy/features/home/presentation/pages/main_page.dart';
-import 'package:localizy/screens/validator/validator_main_page.dart';
-import 'package:localizy/screens/business/business_main_page.dart';
+import 'package:localizy/features/validator/presentation/pages/validator_main_page.dart';
+import 'package:localizy/features/business/presentation/pages/business_main_page.dart';
 
 // Channel dùng cho local notifications trên Android
 const AndroidNotificationChannel _channel = AndroidNotificationChannel(

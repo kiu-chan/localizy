@@ -142,11 +142,11 @@ Thứ tự theo mức độ quan trọng với người dùng cuối. Mỗi feat
 ## Giai đoạn 5 — Feature theo role: Validator & Business (3–5 ngày)
 
 ### 5a. Validator
-- [ ] `api/validator_api.dart` (346 dòng) + `screens/validator/*` (dashboard, request list, schedule, assignment map)
+- [x] `api/validator_api.dart` (346 dòng) + `screens/validator/*` (dashboard, request list, schedule, assignment map)
 
 ### 5b. Business
-- [ ] `api/sub_account_api.dart` + `screens/business/*` (dashboard, map, sub-account)
-- [ ] `business_map_page.dart` + form snapshot: state form → provider
+- [x] `api/sub_account_api.dart` + `screens/business/*` (dashboard, map, sub-account)
+- [x] `business_map_page.dart` + form snapshot: state form → provider
 
 ---
 
@@ -179,7 +179,7 @@ Thứ tự theo mức độ quan trọng với người dùng cuối. Mỗi feat
 | 2 | Feature mẫu: Transactions | 2–3 ngày | ✅ |
 | 3 | Auth & Session | 3–4 ngày | ✅ |
 | 4a–4e | Parking, Verification, Map, OCR, Home | 10–15 ngày | ✅ |
-| 5 | Validator & Business | 3–5 ngày | ⬜ |
+| 5 | Validator & Business | 3–5 ngày | ✅ |
 | 6 | Settings & dọn dẹp | 1–2 ngày | ⬜ |
 | 7 | Test (chạy song song) | — | ⬜ |
 
