@@ -4,14 +4,11 @@ import 'package:localizy/core/network/api_client.dart';
 import 'package:localizy/features/auth/data/auth_repository.dart';
 import 'package:localizy/features/auth/presentation/pages/login_page.dart';
 import 'package:localizy/features/auth/presentation/providers/auth_provider.dart';
+import 'package:localizy/features/settings/presentation/pages/about_page.dart';
+import 'package:localizy/features/settings/presentation/pages/account_settings_page.dart';
+import 'package:localizy/features/settings/presentation/pages/change_password_page.dart';
+import 'package:localizy/features/settings/presentation/providers/language_provider.dart';
 import 'package:localizy/l10n/app_localizations.dart';
-import 'package:localizy/screens/setting/about_page.dart';
-import 'package:localizy/screens/setting/account_settings_page.dart';
-import 'package:localizy/screens/setting/change_password_page.dart';
-import 'package:localizy/utils/language_manager.dart';
-// `hide` để tránh đụng tên Provider/Consumer với flutter_riverpod;
-// LanguageManager đọc qua context.watch (sẽ chuyển sang Riverpod ở Giai đoạn 6).
-import 'package:provider/provider.dart' hide Provider, Consumer;
 
 class SettingsPage extends ConsumerStatefulWidget {
   const SettingsPage({super.key});
@@ -74,11 +71,10 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    final languageManager = context.watch<LanguageManager>();
-    final validLanguages = ['fr', 'en'];
+    final locale = ref.watch(languageProvider);
     final currentLanguage =
-        validLanguages.contains(languageManager.locale.languageCode)
-            ? languageManager.locale.languageCode
+        LanguageNotifier.supportedCodes.contains(locale.languageCode)
+            ? locale.languageCode
             : 'fr';
 
     final name = (_profile?['name'] ?? _profile?['fullName']) as String? ??
@@ -148,8 +144,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                   _buildSectionTitle(l10n.preferences),
                   const SizedBox(height: 12),
                   _buildCard([
-                    _buildLanguageSelector(
-                        context, languageManager, currentLanguage, l10n),
+                    _buildLanguageSelector(context, currentLanguage, l10n),
                   ]),
 
                   const SizedBox(height: 24),
@@ -359,7 +354,6 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
 
   Widget _buildLanguageSelector(
     BuildContext context,
-    LanguageManager languageManager,
     String currentLanguage,
     AppLocalizations l10n,
   ) {
@@ -416,7 +410,8 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
               ],
               onChanged: (String? newValue) {
                 if (newValue != null) {
-                  languageManager.changeLanguage(newValue);
+                  final notifier = ref.read(languageProvider.notifier);
+                  notifier.changeLanguage(newValue);
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
                       content: Row(
@@ -424,7 +419,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                           const Icon(Icons.check_circle, color: Colors.white),
                           const SizedBox(width: 12),
                           Text(l10n.languageChangedTo(
-                              languageManager.getLanguageName(newValue))),
+                              notifier.getLanguageName(newValue))),
                         ],
                       ),
                       backgroundColor: Colors.green.shade700,

@@ -1,6 +1,5 @@
 import 'dart:convert';
 
-import 'package:flutter/foundation.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -51,18 +50,14 @@ class ApiClient {
     return resp;
   }
 
-  // ── Tương thích ngược với MainApi.instance (gỡ ở Giai đoạn 6) ──────────────
+  // ── Singleton cho code ngoài cây widget (không có `ref`) ───────────────────
 
   static ApiClient? _instance;
 
-  /// Singleton cũ — code mới dùng [apiClientProvider] thay vì gọi trực tiếp.
+  /// Singleton lazy — chỉ dùng cho service tĩnh ngoài Riverpod
+  /// (vd: [AuthRepository.instance] trong NotificationService).
+  /// Trong widget/repository luôn ưu tiên [apiClientProvider].
   static ApiClient get instance => _instance ??= ApiClient.fromEnv();
-
-  /// Khởi tạo singleton từ .env (giữ nguyên hành vi MainApi.initialize).
-  static void initialize() {
-    _instance = ApiClient.fromEnv();
-    debugPrint('ApiClient initialized with base URL: ${_instance!.baseUrl}');
-  }
 
   // ── Request helpers ─────────────────────────────────────────────────────────
 

@@ -15,11 +15,6 @@ final activeCitiesProvider = FutureProvider<List<CityItem>>(
 class CityRepository {
   CityRepository(this._client);
 
-  // ── Tương thích ngược cho facade CityApi (gỡ ở Giai đoạn 6) ────────────────
-  static CityRepository? _instance;
-  static CityRepository get instance =>
-      _instance ??= CityRepository(ApiClient.instance);
-
   final ApiClient _client;
 
   /// GET /api/cities/active — Public

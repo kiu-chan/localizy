@@ -223,6 +223,24 @@ class AuthRepository {
         resp.body, 'Failed to upload avatar: ${resp.statusCode}'));
   }
 
+  /// POST /api/users/{id}/change-password — đổi mật khẩu user hiện tại.
+  Future<void> changePassword({
+    required String currentPassword,
+    required String newPassword,
+  }) async {
+    final userId = await getStoredUserId();
+    if (userId == null || userId.isEmpty) {
+      throw Exception('Not logged in');
+    }
+    final resp = await _client.postJson('api/users/$userId/change-password', {
+      'currentPassword': currentPassword,
+      'newPassword': newPassword,
+    });
+    if (resp.statusCode >= 200 && resp.statusCode < 300) return;
+    throw Exception(
+        _errorMessage(resp.body, 'Error ${resp.statusCode}'));
+  }
+
   // ── Helpers ────────────────────────────────────────────────────────────────
 
   /// Parse response 200 → lưu phiên → trả User; ngược lại ném AuthException.

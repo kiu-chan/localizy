@@ -152,12 +152,15 @@ Thứ tự theo mức độ quan trọng với người dùng cuối. Mỗi feat
 
 ## Giai đoạn 6 — Settings, l10n & dọn dẹp (1–2 ngày)
 
-- [ ] Migrate `screens/setting/*` + settings của validator/business → `features/settings/`
-- [ ] `utils/language_manager.dart` (ChangeNotifier) → `languageProvider` (Riverpod `Notifier`)
-- [ ] Gỡ package `provider` khỏi `pubspec.yaml`, bỏ `ChangeNotifierProvider` trong `main.dart`
-- [ ] Xóa các thư mục rỗng: `lib/api/`, `lib/services/`, `lib/screens/`, `lib/utils/`, `lib/models/`, `lib/configs/`
-- [ ] Xóa các re-export tạm tạo ở Giai đoạn 1
-- [ ] Cập nhật `README.md` mô tả kiến trúc mới
+- [x] Migrate `screens/setting/*` + settings của validator/business → `features/settings/`
+- [x] `utils/language_manager.dart` (ChangeNotifier) → `languageProvider` (Riverpod `Notifier`)
+- [x] Gỡ package `provider` khỏi `pubspec.yaml`, bỏ `ChangeNotifierProvider` trong `main.dart`
+- [x] Xóa các thư mục rỗng: `lib/api/`, `lib/services/`, `lib/screens/`, `lib/utils/`, `lib/models/`, `lib/configs/`
+- [x] Xóa các re-export tạm tạo ở Giai đoạn 1 (facades + static `.instance` thừa của repository)
+- [x] Cập nhật `README.md` mô tả kiến trúc mới
+- Còn 2 singleton hợp lệ: `ApiClient.instance` + `AuthRepository.instance` cho `NotificationService`
+  (service tĩnh ngoài cây widget, không có `ref`). Mọi nơi khác đi qua provider.
+- `change-password` chuyển vào `AuthRepository.changePassword`.
 
 ---
 
@@ -180,7 +183,7 @@ Thứ tự theo mức độ quan trọng với người dùng cuối. Mỗi feat
 | 3 | Auth & Session | 3–4 ngày | ✅ |
 | 4a–4e | Parking, Verification, Map, OCR, Home | 10–15 ngày | ✅ |
 | 5 | Validator & Business | 3–5 ngày | ✅ |
-| 6 | Settings & dọn dẹp | 1–2 ngày | ⬜ |
+| 6 | Settings & dọn dẹp | 1–2 ngày | ✅ |
 | 7 | Test (chạy song song) | — | ⬜ |
 
 **Tổng: khoảng 4–6 tuần** nếu làm toàn thời gian, hoặc rải 2–3 tháng nếu làm xen kẽ với tính năng mới. Giai đoạn 0→3 nên làm liền mạch; từ Giai đoạn 4 có thể giãn ra, migrate feature nào khi có dịp chạm vào feature đó.

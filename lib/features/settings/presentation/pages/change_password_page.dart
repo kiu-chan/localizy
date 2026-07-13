@@ -1,18 +1,17 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
-import 'package:localizy/api/auth_api.dart';
-import 'package:localizy/api/main_api.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:localizy/features/auth/data/auth_repository.dart';
 import 'package:localizy/l10n/app_localizations.dart';
 
-class ChangePasswordPage extends StatefulWidget {
+class ChangePasswordPage extends ConsumerStatefulWidget {
   const ChangePasswordPage({super.key});
 
   @override
-  State<ChangePasswordPage> createState() => _ChangePasswordPageState();
+  ConsumerState<ChangePasswordPage> createState() =>
+      _ChangePasswordPageState();
 }
 
-class _ChangePasswordPageState extends State<ChangePasswordPage> {
+class _ChangePasswordPageState extends ConsumerState<ChangePasswordPage> {
   final _formKey = GlobalKey<FormState>();
   final _currentPasswordController = TextEditingController();
   final _newPasswordController = TextEditingController();
@@ -37,42 +36,27 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
     final l10n = AppLocalizations.of(context)!;
     setState(() => _saving = true);
     try {
-      final userId = await AuthService.getStoredUserId();
-      if (userId == null || userId.isEmpty) throw Exception('Not logged in');
+      await ref.read(authRepositoryProvider).changePassword(
+            currentPassword: _currentPasswordController.text,
+            newPassword: _newPasswordController.text,
+          );
 
-      final body = {
-        'currentPassword': _currentPasswordController.text,
-        'newPassword': _newPasswordController.text,
-      };
-      final resp = await MainApi.instance.postJson('api/users/$userId/change-password', body);
-
-      if (resp.statusCode >= 200 && resp.statusCode < 300) {
-        if (!mounted) return;
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Row(
-              children: [
-                const Icon(Icons.check_circle, color: Colors.white),
-                const SizedBox(width: 12),
-                Text(l10n.passwordChangeSuccess),
-              ],
-            ),
-            backgroundColor: Colors.green.shade700,
-            behavior: SnackBarBehavior.floating,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Row(
+            children: [
+              const Icon(Icons.check_circle, color: Colors.white),
+              const SizedBox(width: 12),
+              Text(l10n.passwordChangeSuccess),
+            ],
           ),
-        );
-        Navigator.pop(context);
-      } else {
-        String message = 'Error ${resp.statusCode}';
-        try {
-          final decoded = json.decode(resp.body);
-          if (decoded is Map && decoded['message'] != null) {
-            message = decoded['message'].toString();
-          }
-        } catch (_) {}
-        throw Exception(message);
-      }
+          backgroundColor: Colors.green.shade700,
+          behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+        ),
+      );
+      Navigator.pop(context);
     } catch (e) {
       if (mounted) {
         final l10n = AppLocalizations.of(context)!;

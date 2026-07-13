@@ -1,19 +1,21 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:localizy/api/user_profile_service.dart';
-import 'package:localizy/api/main_api.dart';
+import 'package:localizy/core/network/api_client.dart';
+import 'package:localizy/features/auth/data/auth_repository.dart';
 import 'package:localizy/l10n/app_localizations.dart';
 
-class AccountSettingsPage extends StatefulWidget {
+class AccountSettingsPage extends ConsumerStatefulWidget {
   const AccountSettingsPage({super.key});
 
   @override
-  State<AccountSettingsPage> createState() => _AccountSettingsPageState();
+  ConsumerState<AccountSettingsPage> createState() =>
+      _AccountSettingsPageState();
 }
 
-class _AccountSettingsPageState extends State<AccountSettingsPage> {
+class _AccountSettingsPageState extends ConsumerState<AccountSettingsPage> {
   final _nameController = TextEditingController();
   final _emailController = TextEditingController();
   final _phoneController = TextEditingController();
@@ -40,7 +42,8 @@ class _AccountSettingsPageState extends State<AccountSettingsPage> {
   Future<void> _loadProfile() async {
     setState(() => _loading = true);
     try {
-      final profile = await UserProfileService.fetchCurrentUserProfile();
+      final profile =
+          await ref.read(authRepositoryProvider).fetchCurrentUserProfile();
       if (!mounted) return;
       setState(() {
         _nameController.text = profile['name']?.toString() ?? '';
@@ -64,9 +67,10 @@ class _AccountSettingsPageState extends State<AccountSettingsPage> {
   String? _toFullUrl(String? path) {
     if (path == null || path.isEmpty) return null;
     if (path.toLowerCase().startsWith('http')) return path;
-    final base = MainApi.instance.baseUrl.endsWith('/')
-        ? MainApi.instance.baseUrl.substring(0, MainApi.instance.baseUrl.length - 1)
-        : MainApi.instance.baseUrl;
+    final baseUrl = ref.read(apiClientProvider).baseUrl;
+    final base = baseUrl.endsWith('/')
+        ? baseUrl.substring(0, baseUrl.length - 1)
+        : baseUrl;
     return '$base$path';
   }
 
@@ -98,11 +102,12 @@ class _AccountSettingsPageState extends State<AccountSettingsPage> {
     final l10n = AppLocalizations.of(context)!;
     setState(() => _saving = true);
     try {
+      final repo = ref.read(authRepositoryProvider);
       if (_avatarFile != null) {
-        await UserProfileService.uploadAvatar(avatarFile: _avatarFile!);
+        await repo.uploadAvatar(avatarFile: _avatarFile!);
       }
 
-      await UserProfileService.updateProfile(
+      await repo.updateProfile(
         name: _nameController.text.trim().isEmpty ? null : _nameController.text.trim(),
         email: _emailController.text.trim().isEmpty ? null : _emailController.text.trim(),
         phone: _phoneController.text.trim().isEmpty ? null : _phoneController.text.trim(),

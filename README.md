@@ -50,4 +50,55 @@ flutter run
 
 ---
 
+# Kiến trúc
+
+App dùng **feature-first + Riverpod** (Clean Architecture rút gọn, không có lớp use-case).
+Toàn bộ mã nằm trong `lib/features/` và `lib/core/` — không còn `screens/`, `api/`,
+`services/`, `utils/`, `models/`.
+
+## Cấu trúc thư mục
+
+```
+lib/
+├── core/                      # Dùng chung mọi feature
+│   ├── network/               # ApiClient (apiClientProvider) + ApiException
+│   ├── config/                # ConfigManager, currency, map config
+│   ├── services/              # NotificationService (FCM)
+│   ├── theme/                 # AppTheme
+│   └── widgets/               # Widget tái sử dụng (receipt, ...)
+├── features/
+│   ├── auth/                  # Đăng nhập, phiên, điều hướng theo role
+│   ├── home/                  # Trang chủ + slides, MainPage (role user)
+│   ├── map/                   # Bản đồ, tìm địa chỉ, chỉ đường
+│   ├── ocr/                   # Quét biển số (ML Kit)
+│   ├── parking/               # Thanh toán & tra cứu vé đỗ xe
+│   ├── transactions/          # Lịch sử giao dịch & xác minh
+│   ├── verification/          # Wizard xác minh địa chỉ
+│   ├── validator/             # Role Validator (dashboard, lịch, phân công)
+│   ├── business/              # Role Business (dashboard, sub-account, bản đồ)
+│   └── settings/              # Cài đặt, hồ sơ, đổi mật khẩu, ngôn ngữ
+├── main.dart                  # ProviderContainer + MaterialApp
+└── splash_screen.dart
+```
+
+Mỗi feature chia 3 lớp:
+
+- **`domain/`** — model thuần Dart (`fromJson`), không phụ thuộc Flutter/HTTP.
+- **`data/`** — repository (nhận `ApiClient` qua constructor) + `xxxRepositoryProvider`.
+- **`presentation/`** — `providers/` (Riverpod), `pages/`, `widgets/`.
+
+## Quy ước state (Riverpod)
+
+- Đọc dữ liệu async: `FutureProvider`; làm mới bằng `ref.invalidate(...)`.
+- State có hành vi: `Notifier` / `AsyncNotifier` (vd `authProvider`, `languageProvider`).
+- Widget dùng `ConsumerWidget` / `ConsumerStatefulWidget`; đọc `AsyncValue` qua `.when(...)`.
+- Nguồn sự thật phiên đăng nhập: `authProvider`; 401 xử lý tập trung ở
+  `features/auth/presentation/session_expiry.dart`.
+- Service ngoài cây widget (vd `NotificationService`) dùng `AuthRepository.instance` /
+  `ApiClient.instance` — đây là **hai singleton duy nhất còn lại**, mọi nơi khác đi qua provider.
+
+Chi tiết lộ trình migrate: xem [docs/ARCHITECTURE_MIGRATION.md](docs/ARCHITECTURE_MIGRATION.md).
+
+---
+
 **Lưu ý**:  File `Secrets.plist` đã được thêm vào `.gitignore` và sẽ không được commit. 

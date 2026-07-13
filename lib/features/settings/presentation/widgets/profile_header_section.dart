@@ -1,18 +1,20 @@
 import 'package:flutter/material.dart';
-import 'package:localizy/api/auth_api.dart';
-import 'package:localizy/api/user_profile_service.dart';
-import 'package:localizy/api/main_api.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:localizy/core/network/api_client.dart';
+import 'package:localizy/features/auth/data/auth_repository.dart';
 import 'package:localizy/l10n/app_localizations.dart';
-import 'package:localizy/screens/setting/account_settings_page.dart';
 
-class ProfileHeaderSection extends StatefulWidget {
+import '../pages/account_settings_page.dart';
+
+class ProfileHeaderSection extends ConsumerStatefulWidget {
   const ProfileHeaderSection({super.key});
 
   @override
-  State<ProfileHeaderSection> createState() => _ProfileHeaderSectionState();
+  ConsumerState<ProfileHeaderSection> createState() =>
+      _ProfileHeaderSectionState();
 }
 
-class _ProfileHeaderSectionState extends State<ProfileHeaderSection> {
+class _ProfileHeaderSectionState extends ConsumerState<ProfileHeaderSection> {
   Map<String, dynamic>? _profile;
 
   @override
@@ -22,7 +24,7 @@ class _ProfileHeaderSectionState extends State<ProfileHeaderSection> {
   }
 
   Future<void> _loadProfile() async {
-    final stored = await AuthService.getStoredUser();
+    final stored = await ref.read(authRepositoryProvider).getStoredUser();
     if (stored != null && mounted) {
       setState(() {
         _profile = {
@@ -34,7 +36,8 @@ class _ProfileHeaderSectionState extends State<ProfileHeaderSection> {
     }
 
     try {
-      final fetched = await UserProfileService.fetchCurrentUserProfile();
+      final fetched =
+          await ref.read(authRepositoryProvider).fetchCurrentUserProfile();
       if (mounted) {
         setState(() {
           _profile = fetched;
@@ -48,9 +51,10 @@ class _ProfileHeaderSectionState extends State<ProfileHeaderSection> {
   String? _avatarUrl(String? avatarPath) {
     if (avatarPath == null || avatarPath.isEmpty) return null;
     if (avatarPath.toLowerCase().startsWith('http')) return avatarPath;
-    final base = MainApi.instance.baseUrl.endsWith('/')
-        ? MainApi.instance.baseUrl.substring(0, MainApi.instance.baseUrl.length - 1)
-        : MainApi.instance.baseUrl;
+    final baseUrl = ref.read(apiClientProvider).baseUrl;
+    final base = baseUrl.endsWith('/')
+        ? baseUrl.substring(0, baseUrl.length - 1)
+        : baseUrl;
     return '$base$avatarPath';
   }
 

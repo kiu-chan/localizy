@@ -1,10 +1,8 @@
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:localizy/api/auth_api.dart';
-import 'package:localizy/features/home/presentation/pages/main_page.dart';
-import 'package:localizy/features/validator/presentation/pages/validator_main_page.dart';
-import 'package:localizy/features/business/presentation/pages/business_main_page.dart';
+import 'package:localizy/features/auth/data/auth_repository.dart';
+import 'package:localizy/features/auth/presentation/role_navigation.dart';
 
 // Channel dùng cho local notifications trên Android
 const AndroidNotificationChannel _channel = AndroidNotificationChannel(
@@ -79,7 +77,7 @@ class NotificationService {
     try {
       final token = await FirebaseMessaging.instance.getToken();
       if (token != null) {
-        await AuthService.registerFcmToken(token);
+        await AuthRepository.instance.registerFcmToken(token);
         debugPrint('[FCM] Token registered with server.');
       }
     } catch (e) {
@@ -128,24 +126,14 @@ class NotificationService {
   /// Điều hướng đến màn hình chính dựa theo role đã lưu.
   static Future<void> _navigateToRelevantScreen() async {
     try {
-      final user = await AuthService.getStoredUser();
+      final user = await AuthRepository.instance.getStoredUser();
       if (user == null) return;
 
       final context = navigatorKey.currentContext;
       if (context == null || !context.mounted) return;
 
-      final role = user.role.toLowerCase();
-      Widget destination;
-      if (role.contains('validator')) {
-        destination = const ValidatorMainPage();
-      } else if (role.contains('business') || role.contains('subaccount')) {
-        destination = const BusinessMainPage();
-      } else {
-        destination = const MainPage();
-      }
-
       Navigator.of(context).pushAndRemoveUntil(
-        MaterialPageRoute(builder: (_) => destination),
+        MaterialPageRoute(builder: (_) => homePageForRole(user)),
         (route) => false,
       );
     } catch (e) {
@@ -155,9 +143,9 @@ class NotificationService {
 
   static Future<void> _onTokenRefresh(String newToken) async {
     try {
-      final jwt = await AuthService.getToken();
+      final jwt = await AuthRepository.instance.getToken();
       if (jwt != null) {
-        await AuthService.registerFcmToken(newToken);
+        await AuthRepository.instance.registerFcmToken(newToken);
         debugPrint('[FCM] Token refreshed and re-registered.');
       }
     } catch (e) {

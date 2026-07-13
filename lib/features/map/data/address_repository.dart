@@ -12,11 +12,6 @@ final addressRepositoryProvider = Provider<AddressRepository>(
 class AddressRepository {
   AddressRepository(this._client);
 
-  // ── Tương thích ngược cho facade AddressApi (gỡ ở Giai đoạn 6) ─────────────
-  static AddressRepository? _instance;
-  static AddressRepository get instance =>
-      _instance ??= AddressRepository(ApiClient.instance);
-
   final ApiClient _client;
 
   /// Trích xuất danh sách items từ PagedResult hoặc List thuần
