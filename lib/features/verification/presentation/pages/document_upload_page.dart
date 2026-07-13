@@ -1,11 +1,13 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:localizy/core/theme/app_colors.dart';
+import 'package:localizy/features/verification/presentation/widgets/verification_ui.dart';
 import 'package:localizy/l10n/app_localizations.dart';
 
 class DocumentUploadPage extends StatefulWidget {
   final File? initialIdDocument;
-  final File?   initialAddressProof;
+  final File? initialAddressProof;
   final String initialIdType;
   final Function(File, File, String)? onDocumentsUploaded;
 
@@ -22,10 +24,10 @@ class DocumentUploadPage extends StatefulWidget {
 }
 
 class _DocumentUploadPageState extends State<DocumentUploadPage> {
-  File?   _idDocument;
-  File?  _addressProof;
+  File? _idDocument;
+  File? _addressProof;
   final ImagePicker _picker = ImagePicker();
-  
+
   String _selectedIdType = 'cmnd';
 
   @override
@@ -38,34 +40,41 @@ class _DocumentUploadPageState extends State<DocumentUploadPage> {
 
   Future<void> _pickImage(String documentType) async {
     final localizations = AppLocalizations.of(context)!;
-    
+
     try {
       final XFile? pickedFile = await showModalBottomSheet<XFile>(
         context: context,
-        builder: (BuildContext context) {
+        backgroundColor: AppColors.surface,
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+        ),
+        builder: (BuildContext sheetContext) {
           return SafeArea(
-            child:   Wrap(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
               children: [
-                ListTile(
-                  leading:  const Icon(Icons.photo_library),
-                  title: Text(localizations.chooseFromGallery),
-                  onTap: () async {
-                    final file = await _picker.pickImage(source: ImageSource.gallery);
-                    if (context.mounted) {
-                      Navigator.pop(context, file);
-                    }
-                  },
+                Container(
+                  width: 40,
+                  height: 4,
+                  margin: const EdgeInsets.symmetric(vertical: 12),
+                  decoration: BoxDecoration(
+                    color: AppColors.border,
+                    borderRadius: BorderRadius.circular(2),
+                  ),
                 ),
-                ListTile(
-                  leading: const Icon(Icons.camera_alt),
-                  title:  Text(localizations.takePhoto),
-                  onTap: () async {
-                    final file = await _picker.pickImage(source: ImageSource.camera);
-                    if (context.mounted) {
-                      Navigator.pop(context, file);
-                    }
-                  },
+                _buildSourceTile(
+                  icon: Icons.photo_library_outlined,
+                  label: localizations.chooseFromGallery,
+                  source: ImageSource.gallery,
+                  sheetContext: sheetContext,
                 ),
+                _buildSourceTile(
+                  icon: Icons.camera_alt_outlined,
+                  label: localizations.takePhoto,
+                  source: ImageSource.camera,
+                  sheetContext: sheetContext,
+                ),
+                const SizedBox(height: 8),
               ],
             ),
           );
@@ -84,10 +93,41 @@ class _DocumentUploadPageState extends State<DocumentUploadPage> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('${localizations.errorSelectingImage}:  $e')),
+          SnackBar(content: Text('${localizations.errorSelectingImage}: $e')),
         );
       }
     }
+  }
+
+  Widget _buildSourceTile({
+    required IconData icon,
+    required String label,
+    required ImageSource source,
+    required BuildContext sheetContext,
+  }) {
+    return ListTile(
+      leading: Container(
+        padding: const EdgeInsets.all(8),
+        decoration: BoxDecoration(
+          color: AppColors.primary.withValues(alpha: 0.1),
+          borderRadius: BorderRadius.circular(10),
+        ),
+        child: Icon(icon, color: AppColors.primary, size: 20),
+      ),
+      title: Text(
+        label,
+        style: const TextStyle(
+          fontWeight: FontWeight.w500,
+          color: AppColors.ink,
+        ),
+      ),
+      onTap: () async {
+        final file = await _picker.pickImage(source: source);
+        if (sheetContext.mounted) {
+          Navigator.pop(sheetContext, file);
+        }
+      },
+    );
   }
 
   void _removeImage(String documentType) {
@@ -100,263 +140,157 @@ class _DocumentUploadPageState extends State<DocumentUploadPage> {
     });
   }
 
-  bool _canProceed() {
-    return _idDocument != null && _addressProof != null;
-  }
+  bool _canProceed() => _idDocument != null && _addressProof != null;
 
   void _proceedToNextStep() {
     if (_canProceed()) {
-      if (widget.onDocumentsUploaded != null) {
-        widget.onDocumentsUploaded! (_idDocument!, _addressProof!, _selectedIdType);
-      }
+      widget.onDocumentsUploaded
+          ?.call(_idDocument!, _addressProof!, _selectedIdType);
     }
   }
 
   @override
   Widget build(BuildContext context) {
     final localizations = AppLocalizations.of(context)!;
-    
-    return SingleChildScrollView(
-      padding:   const EdgeInsets.all(16.0),
-      child: Column(
-        crossAxisAlignment:  CrossAxisAlignment.start,
-        children: [
-          const SizedBox(height: 16),
-          
-          // Introduction
-          Card(
-            elevation:  2,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: Padding(
-              padding: const EdgeInsets. all(16.0),
-              child: Row(
-                children: [
-                  Icon(
-                    Icons.info_outline,
-                    color: const Color(0xFF4285F4),
-                    size: 32,
-                  ),
-                  const SizedBox(width: 16),
-                  Expanded(
-                    child: Text(
-                      localizations. documentUploadIntro,
-                      style: const TextStyle(fontSize: 14),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-          
-          const SizedBox(height: 24),
-          
-          // ID Document Section
-          Text(
-            localizations. idDocumentSection,
-            style: const TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-              color: Color(0xFF2D3142),
-            ),
-          ),
-          
-          const SizedBox(height: 12),
-          
-          // ID Type Selection
-          Container(
-            padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(
-              color: const Color(0xFFF5F7FA),
-              borderRadius: BorderRadius.circular(12),
-            ),
+
+    return Column(
+      children: [
+        Expanded(
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.fromLTRB(16, 16, 16, 24),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  localizations. documentType,
-                  style: const TextStyle(
-                    fontSize:  14,
-                    fontWeight: FontWeight.w500,
-                  ),
+                VerificationInfoBanner(
+                    text: localizations.documentUploadIntro),
+                const SizedBox(height: 24),
+                VerificationSectionTitle(localizations.idDocumentSection),
+                const SizedBox(height: 12),
+                _buildIdTypeSelector(localizations),
+                const SizedBox(height: 12),
+                _buildDocumentUploadCard(
+                  title: _selectedIdType == 'cmnd'
+                      ? localizations.idCardCCCD
+                      : localizations.passport,
+                  description: localizations.idDocumentDescription,
+                  icon: Icons.credit_card,
+                  document: _idDocument,
+                  onUpload: () => _pickImage('id'),
+                  onRemove: () => _removeImage('id'),
                 ),
-                const SizedBox(height: 8),
-                RadioGroup<String>(
-                  groupValue: _selectedIdType,
-                  onChanged: (value) {
-                    setState(() {
-                      _selectedIdType = value!;
-                    });
-                  },
-                  child: Row(
-                    children: [
-                      Expanded(
-                        child: _buildRadioOption(
-                          value: 'cmnd',
-                          label: localizations.idCardCCCD,
-                          groupValue: _selectedIdType,
-                        ),
-                      ),
-                      const SizedBox(width: 8),
-                      Expanded(
-                        child: _buildRadioOption(
-                          value: 'passport',
-                          label: localizations.passport,
-                          groupValue: _selectedIdType,
-                        ),
-                      ),
-                    ],
-                  ),
+                const SizedBox(height: 24),
+                VerificationSectionTitle(localizations.addressProofSection),
+                const SizedBox(height: 12),
+                _buildDocumentUploadCard(
+                  title: localizations.addressProofTitle,
+                  description: localizations.addressProofDescription,
+                  icon: Icons.receipt_long,
+                  document: _addressProof,
+                  onUpload: () => _pickImage('address'),
+                  onRemove: () => _removeImage('address'),
+                ),
+                const SizedBox(height: 24),
+                VerificationNotesCard(
+                  title: localizations.importantNotesTitle,
+                  notes: [
+                    localizations.noteImageMustBeClear,
+                    localizations.noteDocumentMustBeValid,
+                    localizations.noteAddressMustMatch,
+                    localizations.noteSupportedFormats,
+                  ],
                 ),
               ],
             ),
           ),
-          
-          const SizedBox(height: 12),
-          
-          // ID Document Upload
-          _buildDocumentUploadCard(
-            title:  _selectedIdType == 'cmnd' ? localizations.idCardCCCD : localizations.passport,
-            description: localizations.idDocumentDescription,
-            icon: Icons.credit_card,
-            color: const Color(0xFF4285F4),
-            document: _idDocument,
-            onUpload: () => _pickImage('id'),
-            onRemove: () => _removeImage('id'),
-          ),
-          
-          const SizedBox(height: 24),
-          
-          // Address Proof Section
-          Text(
-            localizations.addressProofSection,
-            style: const TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-              color: Color(0xFF2D3142),
-            ),
-          ),
-          
-          const SizedBox(height: 12),
-          
-          _buildDocumentUploadCard(
-            title: localizations.addressProofTitle,
-            description: localizations.addressProofDescription,
-            icon: Icons.receipt_long,
-            color: const Color(0xFF4285F4),
-            document: _addressProof,
-            onUpload:  () => _pickImage('address'),
-            onRemove: () => _removeImage('address'),
-          ),
-          
-          const SizedBox(height: 24),
-          
-          // Important Notes
-          Card(
-            elevation: 2,
-            color: Colors.amber.shade50,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: Padding(
-              padding:  const EdgeInsets.all(16.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      Icon(
-                        Icons.warning_amber,
-                        color: Colors.orange. shade700,
-                      ),
-                      const SizedBox(width: 8),
-                      Text(
-                        localizations.importantNotesTitle,
-                        style: const TextStyle(
-                          fontSize:  16,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 12),
-                  _buildNoteItem(localizations. noteImageMustBeClear),
-                  _buildNoteItem(localizations. noteDocumentMustBeValid),
-                  _buildNoteItem(localizations.noteAddressMustMatch),
-                  _buildNoteItem(localizations.noteSupportedFormats),
-                ],
-              ),
-            ),
-          ),
-          
-          const SizedBox(height: 24),
-          
-          // Continue Button
-          SizedBox(
-            width: double.infinity,
-            height: 50,
-            child: ElevatedButton(
-              onPressed: _canProceed() ? _proceedToNextStep : null,
-              style:  ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFF4285F4),
-                foregroundColor: Colors.white,
-                disabledBackgroundColor: Colors. grey[300],
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius. circular(12),
-                ),
-              ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    localizations.continueButton,
-                    style:  const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight. bold,
-                    ),
-                  ),
-                  const SizedBox(width: 8),
-                  const Icon(Icons.arrow_forward),
-                ],
-              ),
-            ),
-          ),
-          
-          const SizedBox(height: 24),
-        ],
-      ),
+        ),
+        _buildBottomBar(localizations),
+      ],
     );
   }
 
-  Widget _buildRadioOption({
-    required String value,
-    required String label,
-    required String groupValue,
-  }) {
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(8),
-        border: Border.all(
-          color: groupValue == value ? const Color(0xFF4285F4) : Colors.grey.shade300,
-          width: 2,
-        ),
-      ),
-      child: RadioListTile<String>(
-        value: value,
-        title: FittedBox(
-          fit: BoxFit.scaleDown,
-          alignment: Alignment.centerLeft,
-          child: Text(
-            label,
-            style: const TextStyle(fontSize: 14),
-            maxLines: 1,
+  Widget _buildIdTypeSelector(AppLocalizations localizations) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          localizations.documentType,
+          style: const TextStyle(
+            fontSize: 13,
+            fontWeight: FontWeight.w500,
+            color: AppColors.muted,
           ),
         ),
-        dense: true,
-        contentPadding: const EdgeInsets.symmetric(horizontal: 4),
-        activeColor: const Color(0xFF4285F4),
+        const SizedBox(height: 8),
+        Container(
+          padding: const EdgeInsets.all(4),
+          decoration: BoxDecoration(
+            color: AppColors.fill,
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: Row(
+            children: [
+              Expanded(
+                child: _buildSegment(
+                  value: 'cmnd',
+                  label: localizations.idCardCCCD,
+                  icon: Icons.credit_card,
+                ),
+              ),
+              Expanded(
+                child: _buildSegment(
+                  value: 'passport',
+                  label: localizations.passport,
+                  icon: Icons.book_outlined,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildSegment({
+    required String value,
+    required String label,
+    required IconData icon,
+  }) {
+    final isSelected = _selectedIdType == value;
+
+    return GestureDetector(
+      onTap: () => setState(() => _selectedIdType = value),
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 180),
+        curve: Curves.easeOut,
+        padding: const EdgeInsets.symmetric(vertical: 10),
+        decoration: BoxDecoration(
+          color: isSelected ? AppColors.surface : Colors.transparent,
+          borderRadius: BorderRadius.circular(9),
+          boxShadow: isSelected ? AppShadows.cardList : null,
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              icon,
+              size: 18,
+              color: isSelected ? AppColors.primary : AppColors.muted,
+            ),
+            const SizedBox(width: 8),
+            Flexible(
+              child: Text(
+                label,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
+                  color: isSelected ? AppColors.primary : AppColors.muted,
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -365,151 +299,207 @@ class _DocumentUploadPageState extends State<DocumentUploadPage> {
     required String title,
     required String description,
     required IconData icon,
-    required Color color,
     required File? document,
     required VoidCallback onUpload,
     required VoidCallback onRemove,
   }) {
     final localizations = AppLocalizations.of(context)!;
-    
-    return Card(
-      elevation:  3,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
+    final hasDocument = document != null;
+
+    return Container(
+      decoration: verificationCardDecoration(
+        borderColor: hasDocument ? AppColors.success.withValues(alpha: 0.4) : null,
       ),
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment:  CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Container(
-                  padding: const EdgeInsets.all(10),
-                  decoration: BoxDecoration(
-                    color: color. withValues(alpha: 0.1),
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  child: Icon(
-                    icon,
-                    color: color,
-                    size: 24,
-                  ),
-                ),
-                const SizedBox(width:  12),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment. start,
-                    children: [
-                      Text(
-                        title,
-                        style: const TextStyle(
-                          fontSize:  16,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      const SizedBox(height:  4),
-                      Text(
-                        description,
-                        style:  TextStyle(
-                          fontSize: 12,
-                          color: Colors.grey[600],
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 16),
-            if (document == null)
-              SizedBox(
-                width: double.infinity,
-                child: OutlinedButton. icon(
-                  onPressed:  onUpload,
-                  icon: const Icon(Icons.upload_file),
-                  label: Text(localizations.uploadDocument),
-                  style: OutlinedButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(vertical: 12),
-                    side: BorderSide(color: color),
-                    foregroundColor: color,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                  ),
-                ),
-              )
-            else
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
               Container(
-                width: double.infinity,
-                padding: const EdgeInsets.all(12),
+                padding: const EdgeInsets.all(10),
                 decoration: BoxDecoration(
-                  color: const Color(0xFFEBF3FF),
-                  borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: Color(0xFF4285F4).withValues(alpha: 0.3)),
+                  color: AppColors.primary.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(10),
                 ),
+                child: Icon(icon, color: AppColors.primary, size: 22),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
                 child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(8),
-                      child: Image.file(
-                        document,
-                        height: 200,
-                        width: double.infinity,
-                        fit: BoxFit.cover,
+                    Text(
+                      title,
+                      style: const TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.bold,
+                        color: AppColors.ink,
                       ),
                     ),
-                    const SizedBox(height: 12),
-                    Row(
-                      children: [
-                        const Icon(
-                          Icons.check_circle,
-                          color: Color(0xFF4285F4),
-                          size: 20,
-                        ),
-                        const SizedBox(width: 8),
-                        Expanded(
-                          child: Text(
-                            localizations.uploaded,
-                            style: const TextStyle(
-                              color: Color(0xFF4285F4),
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                        ),
-                        TextButton. icon(
-                          onPressed:  onRemove,
-                          icon:  const Icon(Icons.delete, size: 18),
-                          label: Text(localizations.delete),
-                          style: TextButton.styleFrom(
-                            foregroundColor: Colors.red,
-                          ),
-                        ),
-                      ],
+                    const SizedBox(height: 2),
+                    Text(
+                      description,
+                      style: const TextStyle(
+                        fontSize: 12,
+                        height: 1.35,
+                        color: AppColors.muted,
+                      ),
                     ),
                   ],
                 ),
               ),
+              if (hasDocument) ...[
+                const SizedBox(width: 8),
+                const Icon(Icons.check_circle,
+                    color: AppColors.success, size: 22),
+              ],
+            ],
+          ),
+          const SizedBox(height: 14),
+          if (hasDocument)
+            _buildPreview(document, onUpload, onRemove, localizations)
+          else
+            _buildDropZone(onUpload, localizations.uploadDocument),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildDropZone(VoidCallback onUpload, String label) {
+    return InkWell(
+      onTap: onUpload,
+      borderRadius: BorderRadius.circular(12),
+      child: Container(
+        width: double.infinity,
+        padding: const EdgeInsets.symmetric(vertical: 20),
+        decoration: BoxDecoration(
+          color: AppColors.primary.withValues(alpha: 0.04),
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: AppColors.primary.withValues(alpha: 0.35)),
+        ),
+        child: Column(
+          children: [
+            const Icon(Icons.cloud_upload_outlined,
+                color: AppColors.primary, size: 26),
+            const SizedBox(height: 8),
+            Text(
+              label,
+              style: const TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.w600,
+                color: AppColors.primary,
+              ),
+            ),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildNoteItem(String text) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 8.0),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
+  Widget _buildPreview(
+    File document,
+    VoidCallback onChange,
+    VoidCallback onRemove,
+    AppLocalizations localizations,
+  ) {
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(12),
+      child: Stack(
         children: [
-          const Text(
-            '• ',
-            style: TextStyle(fontSize: 16),
+          Image.file(
+            document,
+            height: 180,
+            width: double.infinity,
+            fit: BoxFit.cover,
           ),
+          Positioned(
+            top: 8,
+            right: 8,
+            child: Row(
+              children: [
+                _buildPreviewAction(
+                  icon: Icons.autorenew,
+                  tooltip: localizations.tapToChange,
+                  onTap: onChange,
+                ),
+                const SizedBox(width: 8),
+                _buildPreviewAction(
+                  icon: Icons.delete_outline,
+                  tooltip: localizations.delete,
+                  color: AppColors.danger,
+                  onTap: onRemove,
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildPreviewAction({
+    required IconData icon,
+    required String tooltip,
+    required VoidCallback onTap,
+    Color color = AppColors.ink,
+  }) {
+    return Tooltip(
+      message: tooltip,
+      child: Material(
+        color: AppColors.surface,
+        shape: const CircleBorder(),
+        clipBehavior: Clip.antiAlias,
+        child: InkWell(
+          onTap: onTap,
+          child: Padding(
+            padding: const EdgeInsets.all(7),
+            child: Icon(icon, size: 18, color: color),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildBottomBar(AppLocalizations localizations) {
+    final canProceed = _canProceed();
+    final uploadedCount =
+        [_idDocument, _addressProof].where((f) => f != null).length;
+
+    return VerificationBottomBar(
+      child: Row(
+        children: [
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+            decoration: BoxDecoration(
+              color: AppColors.fill,
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: Row(
+              children: [
+                Icon(
+                  canProceed ? Icons.check_circle : Icons.description_outlined,
+                  size: 16,
+                  color: canProceed ? AppColors.success : AppColors.muted,
+                ),
+                const SizedBox(width: 6),
+                Text(
+                  '$uploadedCount/2',
+                  style: TextStyle(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w600,
+                    color: canProceed ? AppColors.success : AppColors.muted,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(width: 12),
           Expanded(
-            child: Text(
-              text,
-              style: const TextStyle(fontSize: 13),
+            child: VerificationPrimaryButton(
+              label: localizations.continueButton,
+              icon: Icons.arrow_forward,
+              onPressed: canProceed ? _proceedToNextStep : null,
             ),
           ),
         ],

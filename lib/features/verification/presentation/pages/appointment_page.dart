@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:localizy/core/theme/app_colors.dart';
+import 'package:localizy/features/verification/presentation/widgets/verification_ui.dart';
 import 'package:localizy/l10n/app_localizations.dart';
 
 class AppointmentPage extends StatefulWidget {
-  final DateTime?  initialDate;
+  final DateTime? initialDate;
   final TimeOfDay? initialTime;
   final Function(Map<String, dynamic>) onNext;
   final VoidCallback onPrevious;
@@ -22,7 +24,7 @@ class AppointmentPage extends StatefulWidget {
 class _AppointmentPageState extends State<AppointmentPage> {
   DateTime? _selectedDate;
   TimeOfDay? _selectedTime;
-  String?  _selectedTimeSlot;
+  String? _selectedTimeSlot;
 
   final List<Map<String, dynamic>> _timeSlots = [
     {'time': '08:00 - 10:00', 'available': true},
@@ -51,9 +53,9 @@ class _AppointmentPageState extends State<AppointmentPage> {
       builder: (context, child) {
         return Theme(
           data: Theme.of(context).copyWith(
-            colorScheme:  ColorScheme.light(
-              primary: const Color(0xFF4285F4),
-              onPrimary:  Colors.white,
+            colorScheme: const ColorScheme.light(
+              primary: AppColors.primary,
+              onPrimary: AppColors.surface,
             ),
           ),
           child: child!,
@@ -78,7 +80,7 @@ class _AppointmentPageState extends State<AppointmentPage> {
         final parts = startTime.split(':');
         if (parts.length == 2) {
           _selectedTime = TimeOfDay(
-            hour: int.parse(parts[0]. trim()),
+            hour: int.parse(parts[0].trim()),
             minute: int.parse(parts[1].trim()),
           );
         }
@@ -100,13 +102,13 @@ class _AppointmentPageState extends State<AppointmentPage> {
 
   String _formatDate(DateTime date) {
     final locale = Localizations.localeOf(context).languageCode;
-    
+
     if (locale == 'vi') {
       final weekdays = ['CN', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7'];
       return '${weekdays[date.weekday % 7]}, ${date.day}/${date.month}/${date.year}';
     } else if (locale == 'fr') {
       final weekdays = ['Dim', 'Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam'];
-      return '${weekdays[date. weekday % 7]}, ${date.day}/${date.month}/${date.year}';
+      return '${weekdays[date.weekday % 7]}, ${date.day}/${date.month}/${date.year}';
     } else {
       // English
       final weekdays = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
@@ -116,204 +118,140 @@ class _AppointmentPageState extends State<AppointmentPage> {
 
   @override
   Widget build(BuildContext context) {
+    final localizations = AppLocalizations.of(context)!;
+
     return Column(
       children: [
         Expanded(
           child: SingleChildScrollView(
-            padding: const EdgeInsets.all(16.0),
+            padding: const EdgeInsets.fromLTRB(16, 16, 16, 24),
             child: Column(
-              crossAxisAlignment:  CrossAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const SizedBox(height: 8),
-                
-                // Introduction Card
-                _buildIntroCard(),
-                
-                const SizedBox(height: 20),
-                
-                // Date Selection Section
-                _buildDateSection(),
-                
+                VerificationInfoBanner(text: localizations.appointmentIntro),
+                const SizedBox(height: 24),
+                VerificationSectionTitle(localizations.selectDate),
+                const SizedBox(height: 12),
+                _buildDatePicker(localizations),
                 if (_selectedDate != null) ...[
-                  const SizedBox(height: 20),
-                  _buildTimeSlotSection(),
+                  const SizedBox(height: 24),
+                  VerificationSectionTitle(localizations.selectTimeSlot),
+                  const SizedBox(height: 12),
+                  _buildTimeSlots(),
                 ],
-                
                 if (_selectedDate != null && _selectedTimeSlot != null) ...[
                   const SizedBox(height: 20),
-                  _buildSummaryCard(),
+                  _buildSummaryCard(localizations),
                 ],
-                
-                const SizedBox(height: 20),
-                
-                // Notes section
-                _buildNotesCard(),
-                
-                const SizedBox(height: 80), // Space for button
+                const SizedBox(height: 24),
+                VerificationNotesCard(
+                  title: localizations.importantNotes,
+                  notes: [
+                    localizations.noteStaffWillArrive,
+                    localizations.notePleaseBePresent,
+                    localizations.notePrepareOriginalDocs,
+                  ],
+                ),
               ],
             ),
           ),
         ),
-        
-        // Fixed bottom button
-        _buildBottomButton(),
+        VerificationBottomBar(
+          child: SizedBox(
+            width: double.infinity,
+            child: VerificationPrimaryButton(
+              label: localizations.confirmAppointment,
+              icon: Icons.arrow_forward,
+              onPressed: _selectedDate != null && _selectedTimeSlot != null
+                  ? _confirmAppointment
+                  : null,
+            ),
+          ),
+        ),
       ],
     );
   }
 
-  Widget _buildIntroCard() {
-    final localizations = AppLocalizations.of(context)!;
-    
-    return Card(
-      elevation:  2,
-      shape:  RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
+  Widget _buildDatePicker(AppLocalizations localizations) {
+    final hasDate = _selectedDate != null;
+
+    return InkWell(
+      onTap: _selectDate,
+      borderRadius: BorderRadius.circular(16),
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        decoration: verificationCardDecoration(
+          borderColor: hasDate ? AppColors.primary : null,
+        ).copyWith(
+          color: hasDate ? AppColors.primarySurface : AppColors.surface,
+        ),
         child: Row(
           children: [
-            Icon(
-              Icons.info_outline,
-              color: const Color(0xFF4285F4),
-              size: 28,
+            Container(
+              padding: const EdgeInsets.all(10),
+              decoration: BoxDecoration(
+                color: AppColors.primary.withValues(alpha: 0.1),
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: const Icon(Icons.calendar_today,
+                  color: AppColors.primary, size: 20),
             ),
-            const SizedBox(width: 12),
+            const SizedBox(width: 14),
             Expanded(
-              child:  Text(
-                localizations.appointmentIntro,
-                style:  const TextStyle(fontSize: 14),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    hasDate
+                        ? _formatDate(_selectedDate!)
+                        : localizations.selectDate,
+                    style: TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.bold,
+                      color: hasDate ? AppColors.ink : AppColors.muted,
+                    ),
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    hasDate
+                        ? localizations.tapToChange
+                        : localizations.selectDateSuitable,
+                    style: const TextStyle(
+                      fontSize: 12,
+                      color: AppColors.muted,
+                    ),
+                  ),
+                ],
               ),
             ),
+            const Icon(Icons.arrow_forward_ios,
+                size: 14, color: AppColors.disabled),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildDateSection() {
-    final localizations = AppLocalizations.of(context)!;
-    
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          localizations.selectDate,
-          style: const TextStyle(
-            fontSize: 18,
-            fontWeight: FontWeight. bold,
-          ),
-        ),
-        const SizedBox(height: 12),
-        InkWell(
-          onTap: _selectDate,
-          child: Container(
-            padding:  const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: _selectedDate != null
-                  ? const Color(0xFFEBF3FF)
-                  : Colors.grey[100],
-              borderRadius: BorderRadius.circular(12),
-              border: Border.all(
-                color: _selectedDate != null
-                    ? const Color(0xFF4285F4)
-                    : Colors.grey.shade300,
-                width: 2,
-              ),
-            ),
-            child:  Row(
-              children: [
-                Icon(
-                  Icons. calendar_today,
-                  color: _selectedDate != null
-                      ? const Color(0xFF4285F4)
-                      : Colors.grey,
-                  size: 24,
-                ),
-                const SizedBox(width: 16),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment. start,
-                    children: [
-                      Text(
-                        _selectedDate != null 
-                            ?  _formatDate(_selectedDate!) 
-                            : localizations.selectDate,
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight:  FontWeight.bold,
-                          color: _selectedDate != null 
-                              ? Colors.black 
-                              : Colors.grey,
-                        ),
-                      ),
-                      const SizedBox(height: 4),
-                      Text(
-                        _selectedDate != null 
-                            ?  localizations.tapToChange
-                            : localizations.selectDateSuitable,
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: Colors.grey[600],
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                Icon(
-                  Icons.arrow_forward_ios,
-                  size: 16,
-                  color: Colors.grey[400],
-                ),
-              ],
-            ),
-          ),
-        ),
-      ],
-    );
-  }
+  Widget _buildTimeSlots() {
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final cardWidth = (constraints.maxWidth - 12) / 2;
 
-  Widget _buildTimeSlotSection() {
-    final localizations = AppLocalizations.of(context)!;
-    
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          localizations.selectTimeSlot,
-          style: const TextStyle(
-            fontSize: 18,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        const SizedBox(height: 12),
-        LayoutBuilder(
-          builder: (context, constraints) {
-            final cardWidth = (constraints.maxWidth - 12) / 2;
-            final cardHeight = cardWidth * 0.55;
-            
-            return Wrap(
-              spacing: 12,
-              runSpacing: 12,
-              children: _timeSlots.map((slot) {
-                final isAvailable = slot['available'] as bool;
-                final time = slot['time'] as String;
-                final isSelected = _selectedTimeSlot == time;
-                
-                return SizedBox(
-                  width:  cardWidth,
-                  height:  cardHeight,
-                  child:  _buildTimeSlotCard(
-                    time: time,
-                    isAvailable: isAvailable,
-                    isSelected: isSelected,
-                  ),
-                );
-              }).toList(),
+        return Wrap(
+          spacing: 12,
+          runSpacing: 12,
+          children: _timeSlots.map((slot) {
+            return SizedBox(
+              width: cardWidth,
+              child: _buildTimeSlotCard(
+                time: slot['time'] as String,
+                isAvailable: slot['available'] as bool,
+                isSelected: _selectedTimeSlot == slot['time'],
+              ),
             );
-          },
-        ),
-      ],
+          }).toList(),
+        );
+      },
     );
   }
 
@@ -323,118 +261,109 @@ class _AppointmentPageState extends State<AppointmentPage> {
     required bool isSelected,
   }) {
     final localizations = AppLocalizations.of(context)!;
-    
+
+    final Color background = !isAvailable
+        ? AppColors.fill
+        : isSelected
+            ? AppColors.primary
+            : AppColors.surface;
+    final Color foreground = !isAvailable
+        ? AppColors.disabled
+        : isSelected
+            ? AppColors.surface
+            : AppColors.ink;
+
     return InkWell(
       onTap: isAvailable ? () => _selectTimeSlot(time) : null,
-      borderRadius: BorderRadius.circular(12),
-      child: Container(
+      borderRadius: BorderRadius.circular(14),
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 160),
+        padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 10),
         decoration: BoxDecoration(
-          color: ! isAvailable
-              ? Colors. grey[200]
-              : isSelected
-                  ? const Color(0xFF4285F4)
-                  : Colors.white,
-          borderRadius: BorderRadius.circular(12),
+          color: background,
+          borderRadius: BorderRadius.circular(14),
           border: Border.all(
-            color: !isAvailable
-                ? Colors.grey.shade300
-                : isSelected
-                    ? const Color(0xFF4285F4)
-                    : Colors.grey.shade300,
-            width: 2,
+            color: isSelected && isAvailable
+                ? AppColors.primary
+                : AppColors.border,
           ),
+          boxShadow: isAvailable ? AppShadows.cardList : null,
         ),
-        child: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Icon(
-                Icons.access_time,
-                color: !isAvailable
-                    ? Colors.grey
-                    : isSelected
-                        ? Colors.white
-                        : const Color(0xFF4285F4),
-                size: 22,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              isAvailable ? Icons.access_time : Icons.event_busy,
+              size: 20,
+              color: !isAvailable
+                  ? AppColors.disabled
+                  : isSelected
+                      ? AppColors.surface
+                      : AppColors.primary,
+            ),
+            const SizedBox(height: 6),
+            Text(
+              time,
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 13,
+                fontWeight: FontWeight.bold,
+                color: foreground,
               ),
-              const SizedBox(height: 6),
+            ),
+            if (!isAvailable) ...[
+              const SizedBox(height: 2),
               Text(
-                time,
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: 13,
-                  fontWeight: FontWeight.bold,
-                  color: !isAvailable
-                      ? Colors.grey
-                      :  isSelected
-                          ? Colors. white
-                          : Colors.black,
+                localizations.fullyBooked,
+                style: const TextStyle(
+                  fontSize: 10,
+                  color: AppColors.disabled,
                 ),
               ),
-              if (!isAvailable) ...[
-                const SizedBox(height: 4),
-                Text(
-                  localizations.fullyBooked,
-                  style: TextStyle(
-                    fontSize: 10,
-                    color: Colors. grey[600],
-                  ),
-                ),
-              ],
             ],
-          ),
+          ],
         ),
       ),
     );
   }
 
-  Widget _buildSummaryCard() {
-    final localizations = AppLocalizations.of(context)!;
-    
-    return Card(
-      elevation: 2,
-      color: const Color(0xFFEBF3FF),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-        side: const BorderSide(color: Color(0xFF4285F4), width: 2),
-      ),
-      child: Padding(
-        padding: const EdgeInsets. all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Icon(
-                  Icons.check_circle,
-                  color: const Color(0xFF4285F4),
-                  size: 24,
+  Widget _buildSummaryCard(AppLocalizations localizations) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: verificationCardDecoration(
+        borderColor: AppColors.primary.withValues(alpha: 0.4),
+      ).copyWith(color: AppColors.primarySurface),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              const Icon(Icons.check_circle,
+                  color: AppColors.primary, size: 20),
+              const SizedBox(width: 8),
+              Text(
+                localizations.yourAppointment,
+                style: const TextStyle(
+                  fontSize: 15,
+                  fontWeight: FontWeight.bold,
+                  color: AppColors.ink,
                 ),
-                const SizedBox(width: 12),
-                Text(
-                  localizations.yourAppointment,
-                  style: const TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ],
-            ),
-            const Divider(height: 24),
-            _buildSummaryRow(
-              Icons.calendar_today,
-              localizations.date,
-              _formatDate(_selectedDate!),
-            ),
-            const SizedBox(height: 12),
-            _buildSummaryRow(
-              Icons.access_time,
-              localizations.timeSlot,
-              _selectedTimeSlot!,
-            ),
-          ],
-        ),
+              ),
+            ],
+          ),
+          const Divider(height: 20, color: AppColors.border),
+          _buildSummaryRow(
+            Icons.calendar_today,
+            localizations.date,
+            _formatDate(_selectedDate!),
+          ),
+          const SizedBox(height: 12),
+          _buildSummaryRow(
+            Icons.access_time,
+            localizations.timeSlot,
+            _selectedTimeSlot!,
+          ),
+        ],
       ),
     );
   }
@@ -443,7 +372,7 @@ class _AppointmentPageState extends State<AppointmentPage> {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Icon(icon, size: 20, color: const Color(0xFF4285F4)),
+        Icon(icon, size: 18, color: AppColors.primary),
         const SizedBox(width: 12),
         Expanded(
           child: Column(
@@ -451,10 +380,7 @@ class _AppointmentPageState extends State<AppointmentPage> {
             children: [
               Text(
                 label,
-                style: const TextStyle(
-                  fontSize: 12,
-                  color: Colors.grey,
-                ),
+                style: const TextStyle(fontSize: 12, color: AppColors.muted),
               ),
               const SizedBox(height: 2),
               Text(
@@ -462,108 +388,13 @@ class _AppointmentPageState extends State<AppointmentPage> {
                 style: const TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.w600,
+                  color: AppColors.ink,
                 ),
               ),
             ],
           ),
         ),
       ],
-    );
-  }
-
-  Widget _buildNotesCard() {
-    final localizations = AppLocalizations.of(context)!;
-    
-    return Card(
-      elevation: 2,
-      color: Colors.amber.shade50,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Icon(Icons.warning_amber, color: Colors.orange.shade700),
-                const SizedBox(width: 8),
-                Text(
-                  localizations.importantNotes,
-                  style: const TextStyle(
-                    fontSize:  16,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 12),
-            _buildNoteItem(localizations.noteStaffWillArrive),
-            _buildNoteItem(localizations. notePleaseBePresent),
-            _buildNoteItem(localizations.notePrepareOriginalDocs),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildNoteItem(String text) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 8.0),
-      child: Row(
-        crossAxisAlignment:  CrossAxisAlignment.start,
-        children: [
-          const Text('• ', style: TextStyle(fontSize: 16)),
-          Expanded(
-            child: Text(text, style: const TextStyle(fontSize: 13)),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildBottomButton() {
-    final localizations = AppLocalizations.of(context)!;
-    final canProceed = _selectedDate != null && _selectedTimeSlot != null;
-    
-    return Container(
-      padding: const EdgeInsets.all(16.0),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        boxShadow: [
-          BoxShadow(
-            color:  Colors.grey.withValues(alpha: 0.2),
-            blurRadius: 8,
-            offset: const Offset(0, -2),
-          ),
-        ],
-      ),
-      child: SafeArea(
-        child: SizedBox(
-          width: double.infinity,
-          height: 50,
-          child: ElevatedButton(
-            onPressed: canProceed ? _confirmAppointment : null,
-            style:  ElevatedButton.styleFrom(
-              backgroundColor: const Color(0xFF4285F4),
-              foregroundColor: Colors.white,
-              disabledBackgroundColor: Colors. grey[300],
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
-              elevation: 0,
-            ),
-            child: Text(
-              localizations.confirmAppointment,
-              style:  const TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          ),
-        ),
-      ),
     );
   }
 }

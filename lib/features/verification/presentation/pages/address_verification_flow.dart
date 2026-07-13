@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:localizy/core/theme/app_colors.dart';
 import 'package:localizy/l10n/app_localizations.dart';
 
 import '../providers/verification_flow_provider.dart';
@@ -30,8 +31,8 @@ class AddressVerificationFlow extends ConsumerWidget {
       child: Scaffold(
         appBar: AppBar(
           title: Text(localizations.addressVerification),
-          backgroundColor: const Color(0xFF1565C0),
-          foregroundColor: Colors.white,
+          backgroundColor: AppColors.primaryDark,
+          foregroundColor: AppColors.surface,
           leading: IconButton(
             icon: const Icon(Icons.arrow_back),
             onPressed: () {
@@ -190,45 +191,50 @@ class _ProgressStepper extends StatelessWidget {
     final stepTitles = _stepTitles(context);
 
     return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withValues(alpha: 0.1),
-            blurRadius: 4,
-            offset: const Offset(0, 2),
-          ),
-        ],
+      padding: const EdgeInsets.fromLTRB(20, 16, 20, 14),
+      decoration: const BoxDecoration(
+        color: AppColors.surface,
+        border: Border(bottom: BorderSide(color: AppColors.border)),
       ),
       child: Column(
         children: [
           Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: List.generate(_totalSteps, (index) {
-              return Row(
-                children: [
-                  _buildStepDot(index),
-                  if (index < _totalSteps - 1) _buildStepLine(index),
-                ],
-              );
+            children: List.generate(_totalSteps * 2 - 1, (index) {
+              if (index.isOdd) {
+                return Expanded(child: _buildStepLine(index ~/ 2));
+              }
+              return _buildStepDot(index ~/ 2);
             }),
           ),
-          const SizedBox(height: 12),
-          Text(
-            localizations.stepProgress(
-              currentStep + 1,
-              _totalSteps,
-              stepTitles[currentStep],
-            ),
-            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-          ),
-          const SizedBox(height: 4),
-          Text(
-            localizations.percentComplete(
-              (((currentStep + 1) / _totalSteps) * 100).toInt(),
-            ),
-            style: TextStyle(fontSize: 14, color: Colors.grey[600]),
+          const SizedBox(height: 14),
+          Row(
+            children: [
+              Expanded(
+                child: Text(
+                  localizations.stepProgress(
+                    currentStep + 1,
+                    stepTitles[currentStep],
+                    _totalSteps,
+                  ),
+                  style: const TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.w600,
+                    color: AppColors.ink,
+                  ),
+                ),
+              ),
+              const SizedBox(width: 8),
+              Text(
+                localizations.percentComplete(
+                  (((currentStep + 1) / _totalSteps) * 100).toInt(),
+                ),
+                style: const TextStyle(
+                  fontSize: 13,
+                  fontWeight: FontWeight.w500,
+                  color: AppColors.muted,
+                ),
+              ),
+            ],
           ),
         ],
       ),
@@ -238,29 +244,38 @@ class _ProgressStepper extends StatelessWidget {
   Widget _buildStepDot(int index) {
     final isCompleted = index < currentStep;
     final isCurrent = index == currentStep;
+    final isDone = isCompleted || isCurrent;
 
-    return Container(
-      width: 32,
-      height: 32,
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 220),
+      width: 28,
+      height: 28,
       decoration: BoxDecoration(
         shape: BoxShape.circle,
-        color: isCompleted || isCurrent
-            ? const Color(0xFF4285F4)
-            : Colors.grey.shade300,
+        color: isDone ? AppColors.primary : AppColors.surface,
         border: Border.all(
-          color: isCurrent ? const Color(0xFF1565C0) : Colors.transparent,
-          width: 2,
+          color: isDone ? AppColors.primary : AppColors.border,
+          width: 1.5,
         ),
+        boxShadow: isCurrent
+            ? [
+                BoxShadow(
+                  color: AppColors.primary.withValues(alpha: 0.3),
+                  blurRadius: 8,
+                  spreadRadius: 1,
+                ),
+              ]
+            : null,
       ),
       child: Center(
         child: isCompleted
-            ? const Icon(Icons.check, color: Colors.white, size: 18)
+            ? const Icon(Icons.check, color: AppColors.surface, size: 16)
             : Text(
                 '${index + 1}',
                 style: TextStyle(
-                  color: isCurrent ? Colors.white : Colors.grey[600],
+                  color: isCurrent ? AppColors.surface : AppColors.disabled,
                   fontWeight: FontWeight.bold,
-                  fontSize: 14,
+                  fontSize: 13,
                 ),
               ),
       ),
@@ -269,10 +284,12 @@ class _ProgressStepper extends StatelessWidget {
 
   Widget _buildStepLine(int index) {
     return Container(
-      width: 40,
       height: 2,
-      color:
-          index < currentStep ? const Color(0xFF4285F4) : Colors.grey.shade300,
+      margin: const EdgeInsets.symmetric(horizontal: 4),
+      decoration: BoxDecoration(
+        color: index < currentStep ? AppColors.primary : AppColors.border,
+        borderRadius: BorderRadius.circular(1),
+      ),
     );
   }
 }

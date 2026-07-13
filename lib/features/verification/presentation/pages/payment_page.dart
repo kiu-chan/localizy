@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:localizy/core/config/currency_config.dart';
+import 'package:localizy/core/theme/app_colors.dart';
+import 'package:localizy/features/verification/presentation/widgets/verification_ui.dart';
 import 'package:localizy/l10n/app_localizations.dart';
 
 class PaymentPage extends StatefulWidget {
@@ -38,17 +40,20 @@ class _PaymentPageState extends State<PaymentPage> {
 
   void _processPayment() {
     final localizations = AppLocalizations.of(context)!;
-    
+
     if (_selectedPaymentMethod != null) {
       showDialog(
         context: context,
         barrierDismissible: false,
         builder: (context) => AlertDialog(
-          title:  Row(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+          title: Row(
             children: [
               const CircularProgressIndicator(),
               const SizedBox(width: 16),
-              Text(localizations. processing),
+              Text(localizations.processing),
             ],
           ),
           content: Text(localizations.pleaseWaitAMoment),
@@ -57,7 +62,7 @@ class _PaymentPageState extends State<PaymentPage> {
 
       // Simulate payment processing
       Future.delayed(const Duration(seconds: 2), () {
-        if(mounted) {
+        if (mounted) {
           Navigator.pop(context); // Close loading dialog
           widget.onNext(_selectedPaymentMethod!);
         }
@@ -70,275 +75,114 @@ class _PaymentPageState extends State<PaymentPage> {
   @override
   Widget build(BuildContext context) {
     final localizations = AppLocalizations.of(context)!;
-    
-    return SingleChildScrollView(
-      padding: const EdgeInsets.all(16.0),
-      child: Column(
-        crossAxisAlignment:  CrossAxisAlignment.start,
-        children: [
-          const SizedBox(height: 16),
-          
-          // Introduction
-          Card(
-            elevation: 2,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: Padding(
-              padding:  const EdgeInsets.all(16.0),
-              child: Row(
-                children: [
-                  Icon(
-                    Icons. info_outline,
-                    color: const Color(0xFF4285F4),
-                    size: 32,
-                  ),
-                  const SizedBox(width: 16),
-                  Expanded(
-                    child:  Text(
-                      localizations.paymentIntro,
-                      style: const TextStyle(fontSize: 14),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-          
-          const SizedBox(height: 24),
-          
-          // Fee summary
-          Container(
-            padding: const EdgeInsets.all(20),
-            decoration: BoxDecoration(
-              gradient: const LinearGradient(
-                colors: [Color(0xFF1565C0), Color(0xFF4285F4)],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-              ),
-              borderRadius: BorderRadius.circular(16),
-              boxShadow: [
-                BoxShadow(
-                  color: const Color(0xFF4285F4).withValues(alpha: 0.2),
-                  blurRadius: 8,
-                  offset: const Offset(0, 4),
-                ),
-              ],
-            ),
+
+    return Column(
+      children: [
+        Expanded(
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.fromLTRB(16, 16, 16, 24),
             child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  localizations.totalPayment,
-                  style: const TextStyle(
-                    fontSize:  16,
-                    color: Colors.white70,
-                  ),
+                VerificationInfoBanner(text: localizations.paymentIntro),
+                const SizedBox(height: 20),
+                _buildFeeSummary(localizations),
+                const SizedBox(height: 24),
+                VerificationSectionTitle(localizations.selectPaymentMethod),
+                const SizedBox(height: 12),
+                _buildPaymentMethodCard(
+                  method: 'momo',
+                  icon: Icons.account_balance_wallet,
+                  title: localizations.paymentMomo,
+                  description: localizations.paymentMomoDescription,
                 ),
-                const SizedBox(height: 8),
-                Text(
-                  _formatCurrency(_verificationFee),
-                  style: const TextStyle(
-                    fontSize:  32,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
-                  ),
+                const SizedBox(height: 10),
+                _buildPaymentMethodCard(
+                  method: 'zalopay',
+                  icon: Icons.payment,
+                  title: localizations.paymentZaloPay,
+                  description: localizations.paymentZaloPayDescription,
                 ),
-                const SizedBox(height: 4),
-                Text(
-                  localizations.addressVerificationFee,
-                  style: const TextStyle(
-                    fontSize:  14,
-                    color: Colors. white70,
-                  ),
+                const SizedBox(height: 10),
+                _buildPaymentMethodCard(
+                  method: 'bank',
+                  icon: Icons.account_balance,
+                  title: localizations.paymentBankTransfer,
+                  description: localizations.paymentBankTransferDescription,
+                ),
+                const SizedBox(height: 10),
+                _buildPaymentMethodCard(
+                  method: 'card',
+                  icon: Icons.credit_card,
+                  title: localizations.paymentCard,
+                  description: localizations.paymentCardDescription,
+                ),
+                const SizedBox(height: 24),
+                _buildFeeBreakdown(localizations),
+                const SizedBox(height: 24),
+                VerificationNotesCard(
+                  title: localizations.importantNotes,
+                  notes: [
+                    localizations.noteFeeNonRefundable,
+                    localizations.noteReceiveInvoice,
+                    localizations.noteVerificationStartsAfterPayment,
+                  ],
                 ),
               ],
             ),
           ),
-          
-          const SizedBox(height: 24),
-          
-          // Payment methods
+        ),
+        _buildBottomBar(localizations),
+      ],
+    );
+  }
+
+  Widget _buildFeeSummary(AppLocalizations localizations) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.symmetric(vertical: 22, horizontal: 20),
+      decoration: BoxDecoration(
+        gradient: const LinearGradient(
+          colors: [AppColors.primaryDark, AppColors.primary],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: AppColors.primary.withValues(alpha: 0.25),
+            blurRadius: 16,
+            offset: const Offset(0, 6),
+          ),
+        ],
+      ),
+      child: Column(
+        children: [
           Text(
-            localizations.selectPaymentMethod,
-            style:  const TextStyle(
-              fontSize:  18,
-              fontWeight:  FontWeight.bold,
+            localizations.totalPayment,
+            style: TextStyle(
+              fontSize: 13,
+              fontWeight: FontWeight.w500,
+              color: AppColors.surface.withValues(alpha: 0.8),
             ),
           ),
-          
-          const SizedBox(height: 16),
-          
-          _buildPaymentMethodCard(
-            method: 'momo',
-            icon: Icons. account_balance_wallet,
-            title: localizations.paymentMomo,
-            description: localizations.paymentMomoDescription,
-            color: const Color(0xFF4285F4),
-          ),
-          
-          const SizedBox(height: 12),
-          
-          _buildPaymentMethodCard(
-            method:  'zalopay',
-            icon: Icons.payment,
-            title: localizations.paymentZaloPay,
-            description:  localizations.paymentZaloPayDescription,
-            color: const Color(0xFF4285F4),
-          ),
-          
-          const SizedBox(height: 12),
-          
-          _buildPaymentMethodCard(
-            method: 'bank',
-            icon: Icons.account_balance,
-            title: localizations. paymentBankTransfer,
-            description:  localizations.paymentBankTransferDescription,
-            color: const Color(0xFF4285F4),
-          ),
-          
-          const SizedBox(height: 12),
-          
-          _buildPaymentMethodCard(
-            method: 'card',
-            icon: Icons.credit_card,
-            title: localizations.paymentCard,
-            description: localizations. paymentCardDescription,
-            color: const Color(0xFF4285F4),
-          ),
-          
-          const SizedBox(height: 24),
-          
-          // Fee breakdown
-          Card(
-            elevation: 2,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: Padding(
-              padding:  const EdgeInsets.all(16.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    localizations.feeDetails,
-                    style: const TextStyle(
-                      fontSize: 16,
-                      fontWeight:  FontWeight.bold,
-                    ),
-                  ),
-                  const Divider(height: 24),
-                  _buildFeeRow(
-                    localizations.basicVerificationFee,
-                    _formatCurrency(_basicFee),
-                  ),
-                  _buildFeeRow(
-                    localizations.travelFee,
-                    _formatCurrency(_travelFee),
-                  ),
-                  const Divider(height: 24),
-                  _buildFeeRow(
-                    localizations.total,
-                    _formatCurrency(_verificationFee),
-                    isTotal: true,
-                  ),
-                ],
-              ),
+          const SizedBox(height: 6),
+          Text(
+            _formatCurrency(_verificationFee),
+            style: const TextStyle(
+              fontSize: 32,
+              fontWeight: FontWeight.bold,
+              color: AppColors.surface,
             ),
           ),
-          
-          const SizedBox(height:  24),
-          
-          // Important notes
-          Card(
-            elevation: 2,
-            color: Colors.amber. shade50,
-            shape: RoundedRectangleBorder(
-              borderRadius:  BorderRadius.circular(12),
-            ),
-            child: Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment. start,
-                children: [
-                  Row(
-                    children: [
-                      Icon(
-                        Icons.warning_amber,
-                        color: Colors.orange.shade700,
-                      ),
-                      const SizedBox(width: 8),
-                      Text(
-                        localizations.importantNotes,
-                        style: const TextStyle(
-                          fontSize:  16,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 12),
-                  _buildNoteItem(localizations. noteFeeNonRefundable),
-                  _buildNoteItem(localizations. noteReceiveInvoice),
-                  _buildNoteItem(localizations.noteVerificationStartsAfterPayment),
-                ],
-              ),
+          const SizedBox(height: 4),
+          Text(
+            localizations.addressVerificationFee,
+            style: TextStyle(
+              fontSize: 13,
+              color: AppColors.surface.withValues(alpha: 0.8),
             ),
           ),
-          
-          const SizedBox(height: 24),
-          
-          // Payment button
-          SizedBox(
-            width: double.infinity,
-            height: 50,
-            child: ElevatedButton(
-              onPressed: _selectedPaymentMethod != null ?  _processPayment : null,
-              style: ElevatedButton. styleFrom(
-                backgroundColor: const Color(0xFF4285F4),
-                foregroundColor: Colors.white,
-                disabledBackgroundColor: Colors. grey[300],
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-              ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const Icon(Icons.lock),
-                  const SizedBox(width: 8),
-                  Text(
-                    _selectedPaymentMethod != null
-                        ? '${localizations.payButton} ${_formatCurrency(_verificationFee)}'
-                        : localizations. selectPaymentMethod,
-                    style: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-          
-          const SizedBox(height: 16),
-          
-          // Security note
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(Icons.security, size: 16, color: Colors.grey[600]),
-              const SizedBox(width: 8),
-              Text(
-                localizations.securedBySSL,
-                style: TextStyle(
-                  fontSize: 12,
-                  color: Colors. grey[600],
-                ),
-              ),
-            ],
-          ),
-          
-          const SizedBox(height: 24),
         ],
       ),
     );
@@ -349,123 +193,166 @@ class _PaymentPageState extends State<PaymentPage> {
     required IconData icon,
     required String title,
     required String description,
-    required Color color,
   }) {
     final isSelected = _selectedPaymentMethod == method;
-    
-    return Card(
-      elevation: isSelected ?  4 : 2,
-      shape: RoundedRectangleBorder(
-        borderRadius:  BorderRadius.circular(12),
-        side: BorderSide(
-          color: isSelected ? const Color(0xFF4285F4) : Colors.transparent,
-          width: 2,
+
+    return InkWell(
+      onTap: () => _selectPaymentMethod(method),
+      borderRadius: BorderRadius.circular(16),
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 160),
+        padding: const EdgeInsets.all(14),
+        decoration: verificationCardDecoration(
+          borderColor: isSelected ? AppColors.primary : null,
+        ).copyWith(
+          color: isSelected ? AppColors.primarySurface : AppColors.surface,
         ),
-      ),
-      child: InkWell(
-        onTap: () => _selectPaymentMethod(method),
-        borderRadius: BorderRadius.circular(12),
-        child: Padding(
-          padding: const EdgeInsets. all(16.0),
-          child: Row(
-            children:  [
-              Container(
-                padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color: color. withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child:  Icon(
-                  icon,
-                  color: color,
-                  size:  28,
-                ),
+        child: Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(10),
+              decoration: BoxDecoration(
+                color: AppColors.primary.withValues(alpha: 0.1),
+                borderRadius: BorderRadius.circular(10),
               ),
-              const SizedBox(width:  16),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      title,
-                      style: const TextStyle(
-                        fontSize:  16,
-                        fontWeight: FontWeight.bold,
-                      ),
+              child: Icon(icon, color: AppColors.primary, size: 24),
+            ),
+            const SizedBox(width: 14),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    style: const TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.bold,
+                      color: AppColors.ink,
                     ),
-                    const SizedBox(height:  4),
-                    Text(
-                      description,
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: Colors. grey[600],
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(width: 12),
-              Container(
-                width: 24,
-                height: 24,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  border: Border.all(
-                    color: isSelected ? const Color(0xFF4285F4) : Colors.grey,
-                    width: 2,
                   ),
-                  color: isSelected ? const Color(0xFF4285F4) : Colors.transparent,
-                ),
-                child: isSelected
-                    ?  const Icon(
-                        Icons. check,
-                        size: 16,
-                        color: Colors. white,
-                      )
-                    : null,
+                  const SizedBox(height: 2),
+                  Text(
+                    description,
+                    style: const TextStyle(
+                      fontSize: 12,
+                      height: 1.35,
+                      color: AppColors.muted,
+                    ),
+                  ),
+                ],
               ),
-            ],
-          ),
+            ),
+            const SizedBox(width: 10),
+            Container(
+              width: 22,
+              height: 22,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: isSelected ? AppColors.primary : Colors.transparent,
+                border: Border.all(
+                  color: isSelected ? AppColors.primary : AppColors.border,
+                  width: 2,
+                ),
+              ),
+              child: isSelected
+                  ? const Icon(Icons.check,
+                      size: 14, color: AppColors.surface)
+                  : null,
+            ),
+          ],
         ),
       ),
     );
   }
 
-  Widget _buildFeeRow(String label, String amount, {bool isTotal = false}) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 4.0),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children:  [
+  Widget _buildFeeBreakdown(AppLocalizations localizations) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: verificationCardDecoration(),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
           Text(
-            label,
-            style: TextStyle(
-              fontSize: isTotal ? 16 : 14,
-              fontWeight: isTotal ? FontWeight.bold : FontWeight.normal,
+            localizations.feeDetails,
+            style: const TextStyle(
+              fontSize: 15,
+              fontWeight: FontWeight.bold,
+              color: AppColors.ink,
             ),
           ),
-          Text(
-            amount,
-            style: TextStyle(
-              fontSize: isTotal ? 16 : 14,
-              fontWeight: isTotal ? FontWeight.bold : FontWeight.normal,
-              color: isTotal ? const Color(0xFF4285F4) : null,
-            ),
+          const Divider(height: 24, color: AppColors.border),
+          _buildFeeRow(
+            localizations.basicVerificationFee,
+            _formatCurrency(_basicFee),
+          ),
+          const SizedBox(height: 8),
+          _buildFeeRow(
+            localizations.travelFee,
+            _formatCurrency(_travelFee),
+          ),
+          const Divider(height: 24, color: AppColors.border),
+          _buildFeeRow(
+            localizations.total,
+            _formatCurrency(_verificationFee),
+            isTotal: true,
           ),
         ],
       ),
     );
   }
 
-  Widget _buildNoteItem(String text) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 8.0),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
+  Widget _buildFeeRow(String label, String amount, {bool isTotal = false}) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Text(
+          label,
+          style: TextStyle(
+            fontSize: isTotal ? 15 : 13.5,
+            fontWeight: isTotal ? FontWeight.bold : FontWeight.normal,
+            color: isTotal ? AppColors.ink : AppColors.muted,
+          ),
+        ),
+        Text(
+          amount,
+          style: TextStyle(
+            fontSize: isTotal ? 16 : 13.5,
+            fontWeight: isTotal ? FontWeight.bold : FontWeight.w500,
+            color: isTotal ? AppColors.primary : AppColors.ink,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildBottomBar(AppLocalizations localizations) {
+    final hasMethod = _selectedPaymentMethod != null;
+
+    return VerificationBottomBar(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
         children: [
-          const Text('• ', style: TextStyle(fontSize: 16)),
-          Expanded(
-            child: Text(text, style: const TextStyle(fontSize: 13)),
+          SizedBox(
+            width: double.infinity,
+            child: VerificationPrimaryButton(
+              label: hasMethod
+                  ? '${localizations.payButton} ${_formatCurrency(_verificationFee)}'
+                  : localizations.selectPaymentMethod,
+              leadingIcon: Icons.lock,
+              onPressed: hasMethod ? _processPayment : null,
+            ),
+          ),
+          const SizedBox(height: 8),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Icon(Icons.security, size: 14, color: AppColors.muted),
+              const SizedBox(width: 6),
+              Text(
+                localizations.securedBySSL,
+                style: const TextStyle(fontSize: 11.5, color: AppColors.muted),
+              ),
+            ],
           ),
         ],
       ),

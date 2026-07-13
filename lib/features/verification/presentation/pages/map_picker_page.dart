@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:localizy/core/theme/app_colors.dart';
+import 'package:localizy/features/verification/presentation/widgets/verification_ui.dart';
 import 'package:localizy/l10n/app_localizations.dart';
 
 class MapPickerPage extends StatefulWidget {
@@ -110,8 +112,8 @@ class _MapPickerPageState extends State<MapPickerPage> {
       return Scaffold(
         appBar: AppBar(
           title: Text(localizations.selectLocation),
-          backgroundColor: Colors.green.shade700,
-          foregroundColor: Colors.white,
+          backgroundColor: AppColors.primaryDark,
+          foregroundColor: AppColors.surface,
         ),
         body: const Center(child: CircularProgressIndicator()),
       );
@@ -120,8 +122,8 @@ class _MapPickerPageState extends State<MapPickerPage> {
     return Scaffold(
       appBar: AppBar(
         title:  Text(localizations.selectLocation),
-        backgroundColor: Colors.green. shade700,
-        foregroundColor: Colors.white,
+        backgroundColor: AppColors.primaryDark,
+        foregroundColor: AppColors.surface,
       ),
       body: Stack(
         children: [
@@ -146,7 +148,7 @@ class _MapPickerPageState extends State<MapPickerPage> {
               child: Icon(
                 Icons.location_on,
                 size: 50,
-                color:  Colors.red.shade700,
+                color: AppColors.danger,
                 shadows: const [
                   Shadow(
                     blurRadius: 10,
@@ -163,39 +165,46 @@ class _MapPickerPageState extends State<MapPickerPage> {
             top:  16,
             left: 16,
             right: 16,
-            child: Card(
-              elevation: 4,
+            child: Container(
+              decoration: verificationCardDecoration(),
               child: Padding(
-                padding: const EdgeInsets.all(16),
+                padding: const EdgeInsets.all(14),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisSize: MainAxisSize. min,
                   children: [
                     Row(
                       children: [
-                        Icon(Icons.info_outline, color: Colors.blue.shade700),
+                        const Icon(Icons.info_outline,
+                            color: AppColors.primary, size: 20),
                         const SizedBox(width: 8),
                         Expanded(
                           child: Text(
                             localizations.mapPickerInstruction,
-                            style: const TextStyle(fontWeight: FontWeight.bold),
+                            style: const TextStyle(
+                              fontSize: 13.5,
+                              fontWeight: FontWeight.w600,
+                              color: AppColors.ink,
+                            ),
                           ),
                         ),
                       ],
                     ),
-                    const Divider(height: 16),
+                    const Divider(height: 16, color: AppColors.border),
                     Row(
                       children: [
-                        Icon(Icons.gps_fixed, size: 18, color: Colors. red.shade700),
+                        const Icon(Icons.gps_fixed,
+                            size: 18, color: AppColors.danger),
                         const SizedBox(width: 8),
                         Expanded(
                           child: Text(
                             'Lat: ${_centerLocation. latitude.toStringAsFixed(6)}\n'
                             'Lng: ${_centerLocation. longitude.toStringAsFixed(6)}',
                             style: const TextStyle(
-                              fontSize:  13,
+                              fontSize: 13,
                               fontWeight: FontWeight.w600,
                               fontFamily: 'monospace',
+                              color: AppColors.ink,
                             ),
                           ),
                         ),
@@ -214,8 +223,8 @@ class _MapPickerPageState extends State<MapPickerPage> {
             child: FloatingActionButton(
               heroTag: 'my_location',
               onPressed:  _moveToMyLocation,
-              backgroundColor: Colors.white,
-              child: Icon(Icons.my_location, color: Colors.green. shade700),
+              backgroundColor: AppColors.surface,
+              child: const Icon(Icons.my_location, color: AppColors.primary),
             ),
           ),
 
@@ -225,24 +234,10 @@ class _MapPickerPageState extends State<MapPickerPage> {
             right: 16,
             bottom: 16,
             child: SafeArea(
-              child: ElevatedButton(
+              child: VerificationPrimaryButton(
+                label: localizations.confirmLocation,
+                icon: Icons.check,
                 onPressed: _onConfirm,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.green.shade700,
-                  foregroundColor:  Colors.white,
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  elevation: 4,
-                ),
-                child: Text(
-                  localizations.confirmLocation,
-                  style: const TextStyle(
-                    fontSize:  16,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
               ),
             ),
           ),

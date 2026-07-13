@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:localizy/core/theme/app_colors.dart';
 import 'package:localizy/features/map/data/city_repository.dart';
 import 'package:localizy/features/map/domain/city.dart';
+import 'package:localizy/features/verification/presentation/widgets/verification_ui.dart';
 import 'package:localizy/l10n/app_localizations.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:localizy/features/verification/presentation/pages/map_picker_page.dart';
@@ -136,6 +138,39 @@ class _MapConfirmationPageState extends ConsumerState<MapConfirmationPage> {
     });
   }
 
+  InputDecoration _fieldDecoration({
+    required String hint,
+    required IconData icon,
+    String? label,
+    EdgeInsetsGeometry? iconPadding,
+  }) {
+    return InputDecoration(
+      labelText: label,
+      hintText: hint,
+      hintStyle: const TextStyle(color: AppColors.disabled, fontSize: 14),
+      filled: true,
+      fillColor: AppColors.surface,
+      prefixIcon: Padding(
+        padding: iconPadding ?? EdgeInsets.zero,
+        child: Icon(icon, color: AppColors.muted, size: 20),
+      ),
+      contentPadding:
+          const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(14),
+        borderSide: const BorderSide(color: AppColors.border),
+      ),
+      enabledBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(14),
+        borderSide: const BorderSide(color: AppColors.border),
+      ),
+      focusedBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(14),
+        borderSide: const BorderSide(color: AppColors.primary, width: 1.5),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final localizations = AppLocalizations.of(context)!;
@@ -144,77 +179,51 @@ class _MapConfirmationPageState extends ConsumerState<MapConfirmationPage> {
       children: [
         Expanded(
           child: SingleChildScrollView(
-            padding: const EdgeInsets.all(16.0),
+            padding: const EdgeInsets.fromLTRB(16, 16, 16, 24),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const SizedBox(height: 8),
-
-                // Introduction
-                Card(
-                  elevation: 2,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: Row(
-                      children: [
-                        const Icon(Icons.info_outline,
-                            color: Color(0xFF4285F4), size: 28),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: Text(
-                            localizations.mapConfirmIntro,
-                            style: const TextStyle(fontSize: 14),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-
+                VerificationInfoBanner(text: localizations.mapConfirmIntro),
                 const SizedBox(height: 20),
 
                 // Map preview
-                SizedBox(
-                  height: 250,
+                Container(
+                  height: 240,
                   width: double.infinity,
-                  child: Container(
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(16),
-                      border: Border.all(
-                          color: Colors.grey.shade300, width: 2),
-                    ),
-                    clipBehavior: Clip.antiAlias,
-                    child: _selectedLocation == null
-                        ? _buildEmptyMapPlaceholder()
-                        : _buildMapPreview(),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(16),
+                    border: Border.all(color: AppColors.border),
+                    boxShadow: AppShadows.cardList,
                   ),
+                  clipBehavior: Clip.antiAlias,
+                  child: _selectedLocation == null
+                      ? _buildEmptyMapPlaceholder(localizations)
+                      : _buildMapPreview(),
                 ),
+                const SizedBox(height: 12),
 
-                const SizedBox(height: 16),
-
-                // Select location button
                 SizedBox(
                   width: double.infinity,
                   child: OutlinedButton.icon(
                     onPressed: _openMapPicker,
                     icon: Icon(
                       _selectedLocation == null
-                          ? Icons.add_location
-                          : Icons.edit_location,
+                          ? Icons.add_location_alt_outlined
+                          : Icons.edit_location_alt_outlined,
+                      size: 20,
                     ),
                     label: Text(
                       _selectedLocation == null
                           ? localizations.selectLocationOnMap
                           : localizations.changeLocation,
+                      style: const TextStyle(fontWeight: FontWeight.w600),
                     ),
                     style: OutlinedButton.styleFrom(
                       padding: const EdgeInsets.symmetric(vertical: 14),
-                      side: const BorderSide(
-                          color: Color(0xFF4285F4), width: 2),
-                      foregroundColor: const Color(0xFF4285F4),
+                      side: const BorderSide(color: AppColors.primary),
+                      foregroundColor: AppColors.primary,
+                      backgroundColor:
+                          AppColors.primary.withValues(alpha: 0.04),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12),
                       ),
@@ -223,41 +232,26 @@ class _MapConfirmationPageState extends ConsumerState<MapConfirmationPage> {
                 ),
 
                 if (_selectedLocation != null) ...[
-                  const SizedBox(height: 16),
-
-                  // Coordinates card
-                  Card(
-                    elevation: 2,
-                    color: const Color(0xFFEBF3FF),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      side: const BorderSide(
-                          color: Color(0xFF4285F4), width: 2),
-                    ),
-                    child: Padding(
-                      padding: const EdgeInsets.all(16.0),
-                      child: _buildLocationRow(
-                        Icons.location_on,
-                        localizations.coordinates,
-                        _address,
-                      ),
+                  const SizedBox(height: 12),
+                  Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.all(14),
+                    decoration: verificationCardDecoration(
+                      borderColor: AppColors.primary.withValues(alpha: 0.4),
+                    ).copyWith(color: AppColors.primarySurface),
+                    child: _buildLocationRow(
+                      Icons.location_on,
+                      localizations.coordinates,
+                      _address,
                     ),
                   ),
                 ],
 
-                const SizedBox(height: 20),
+                const SizedBox(height: 24),
 
                 // ── City dropdown ──
-                Text(
-                  localizations.selectCity,
-                  style: TextStyle(
-                    fontSize: 15,
-                    fontWeight: FontWeight.bold,
-                    color: const Color(0xFF2D3142),
-                  ),
-                ),
+                _buildFieldLabel(localizations.selectCity),
                 const SizedBox(height: 8),
-
                 if (_isLoadingCities)
                   const Center(
                     child: Padding(
@@ -267,17 +261,14 @@ class _MapConfirmationPageState extends ConsumerState<MapConfirmationPage> {
                   )
                 else
                   DropdownButtonFormField<String>(
-                    // ignore: deprecated_member_use
-                    value: _selectedCityId,
-                    decoration: InputDecoration(
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      prefixIcon: const Icon(Icons.location_city),
-                      hintText: localizations.selectCityHint,
-                      contentPadding: const EdgeInsets.symmetric(
-                          horizontal: 16, vertical: 14),
+                    initialValue: _selectedCityId,
+                    decoration: _fieldDecoration(
+                      hint: localizations.selectCityHint,
+                      icon: Icons.location_city,
                     ),
+                    icon: const Icon(Icons.keyboard_arrow_down,
+                        color: AppColors.muted),
+                    borderRadius: BorderRadius.circular(14),
                     items: _cities.map((city) {
                       return DropdownMenuItem<String>(
                         value: city.id,
@@ -296,113 +287,86 @@ class _MapConfirmationPageState extends ConsumerState<MapConfirmationPage> {
                 const SizedBox(height: 20),
 
                 // ── Full address ──
-                Text(
-                  localizations.fullAddressLabel,
-                  style: TextStyle(
-                    fontSize: 15,
-                    fontWeight: FontWeight.bold,
-                    color: const Color(0xFF2D3142),
-                  ),
-                ),
+                _buildFieldLabel(localizations.fullAddressLabel),
                 const SizedBox(height: 8),
-
                 TextFormField(
                   controller: _fullAddressController,
                   maxLines: 3,
-                  decoration: InputDecoration(
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    prefixIcon: const Padding(
-                      padding: EdgeInsets.only(bottom: 40),
-                      child: Icon(Icons.home_outlined),
-                    ),
-                    hintText: localizations.fullAddressHint,
-                    contentPadding: const EdgeInsets.symmetric(
-                        horizontal: 16, vertical: 14),
+                  style: const TextStyle(fontSize: 14, color: AppColors.ink),
+                  decoration: _fieldDecoration(
+                    hint: localizations.fullAddressHint,
+                    icon: Icons.home_outlined,
+                    iconPadding: const EdgeInsets.only(bottom: 40),
                   ),
                   onChanged: (_) => setState(() {}),
                 ),
 
                 const SizedBox(height: 20),
 
-                // Location name
+                // ── Location name (optional) ──
+                _buildFieldLabel(localizations.mapLocationNameLabel),
+                const SizedBox(height: 8),
                 TextFormField(
                   controller: _locationNameController,
-                  decoration: InputDecoration(
-                    labelText: localizations.mapLocationNameLabel,
-                    hintText: localizations.mapLocationNameHint,
-                    prefixIcon: const Icon(Icons.label_outline),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
+                  style: const TextStyle(fontSize: 14, color: AppColors.ink),
+                  decoration: _fieldDecoration(
+                    hint: localizations.mapLocationNameHint,
+                    icon: Icons.label_outline,
                   ),
                 ),
 
-                const SizedBox(height: 20),
+                const SizedBox(height: 24),
 
-                // Important notes
-                Card(
-                  elevation: 2,
-                  color: Colors.amber.shade50,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          children: [
-                            Icon(Icons.warning_amber,
-                                color: Colors.orange.shade700),
-                            const SizedBox(width: 8),
-                            Text(
-                              localizations.importantNotes,
-                              style: const TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 12),
-                        _buildNoteItem(localizations.notePleaseMarkExactly),
-                        _buildNoteItem(localizations.noteCheckCoordinates),
-                        _buildNoteItem(localizations.noteLocationWillBeUsed),
-                      ],
-                    ),
-                  ),
+                VerificationNotesCard(
+                  title: localizations.importantNotes,
+                  notes: [
+                    localizations.notePleaseMarkExactly,
+                    localizations.noteCheckCoordinates,
+                    localizations.noteLocationWillBeUsed,
+                  ],
                 ),
-
-                const SizedBox(height: 80),
               ],
             ),
           ),
         ),
-
-        // Fixed bottom button
-        _buildBottomButton(),
+        VerificationBottomBar(
+          child: SizedBox(
+            width: double.infinity,
+            child: VerificationPrimaryButton(
+              label: localizations.confirmAndContinue,
+              icon: Icons.arrow_forward,
+              onPressed: _canProceed() ? _confirmLocation : null,
+            ),
+          ),
+        ),
       ],
     );
   }
 
-  Widget _buildEmptyMapPlaceholder() {
-    final localizations = AppLocalizations.of(context)!;
+  Widget _buildFieldLabel(String text) {
+    return Text(
+      text,
+      style: const TextStyle(
+        fontSize: 14,
+        fontWeight: FontWeight.w600,
+        color: AppColors.ink,
+      ),
+    );
+  }
 
+  Widget _buildEmptyMapPlaceholder(AppLocalizations localizations) {
     return Container(
       width: double.infinity,
       height: double.infinity,
-      color: Colors.grey[200],
+      color: AppColors.fill,
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(Icons.map, size: 80, color: Colors.grey[400]),
-          const SizedBox(height: 16),
+          const Icon(Icons.map_outlined, size: 56, color: AppColors.disabled),
+          const SizedBox(height: 12),
           Text(
             localizations.noLocationSelected,
-            style: TextStyle(fontSize: 16, color: Colors.grey[600]),
+            style: const TextStyle(fontSize: 14, color: AppColors.muted),
           ),
         ],
       ),
@@ -445,7 +409,7 @@ class _MapConfirmationPageState extends ConsumerState<MapConfirmationPage> {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Icon(icon, size: 20, color: const Color(0xFF4285F4)),
+        Icon(icon, size: 18, color: AppColors.primary),
         const SizedBox(width: 12),
         Expanded(
           child: Column(
@@ -453,79 +417,21 @@ class _MapConfirmationPageState extends ConsumerState<MapConfirmationPage> {
             children: [
               Text(
                 label,
-                style: TextStyle(fontSize: 12, color: Colors.grey[600]),
+                style: const TextStyle(fontSize: 12, color: AppColors.muted),
               ),
-              const SizedBox(height: 4),
+              const SizedBox(height: 2),
               Text(
                 value,
                 style: const TextStyle(
-                    fontSize: 14, fontWeight: FontWeight.w500),
+                  fontSize: 13.5,
+                  fontWeight: FontWeight.w600,
+                  color: AppColors.ink,
+                ),
               ),
             ],
           ),
         ),
       ],
-    );
-  }
-
-  Widget _buildNoteItem(String text) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 8.0),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Text('• ', style: TextStyle(fontSize: 16)),
-          Expanded(
-              child: Text(text, style: const TextStyle(fontSize: 13))),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildBottomButton() {
-    final localizations = AppLocalizations.of(context)!;
-
-    return Container(
-      padding: const EdgeInsets.all(16.0),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withValues(alpha: 0.2),
-            blurRadius: 8,
-            offset: const Offset(0, -2),
-          ),
-        ],
-      ),
-      child: SafeArea(
-        child: SizedBox(
-          width: double.infinity,
-          height: 50,
-          child: ElevatedButton(
-            onPressed: _canProceed() ? _confirmLocation : null,
-            style: ElevatedButton.styleFrom(
-              backgroundColor: const Color(0xFF4285F4),
-              foregroundColor: Colors.white,
-              disabledBackgroundColor: Colors.grey[300],
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
-            ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  localizations.confirmAndContinue,
-                  style: const TextStyle(
-                      fontSize: 16, fontWeight: FontWeight.bold),
-                ),
-                const SizedBox(width: 8),
-                const Icon(Icons.arrow_forward),
-              ],
-            ),
-          ),
-        ),
-      ),
     );
   }
 }
