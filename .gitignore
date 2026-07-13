@@ -62,3 +62,7 @@ key.properties
 google-services.json
 GoogleService-Info.plist
 lib/firebase_options.dart
+
+# Claude Code (hướng dẫn/cấu hình cục bộ, không đẩy lên git)
+CLAUDE.md
+.claude/
