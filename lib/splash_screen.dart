@@ -167,25 +167,18 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
                     duration: const Duration(milliseconds: 300),
                     curve: Curves.easeOutBack,
                     builder: (context, value, child) {
-                      return Opacity(
-                        opacity: value. clamp(0.0, 1.0), // Đảm bảo opacity luôn trong khoảng 0.0-1.0
-                        child: Transform.translate(
-                          offset: Offset(0, -20 * (1 - value)),
-                          child: Text(
-                            appName[index],
-                            style: const TextStyle(
-                              fontSize: 48,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.white,
-                              letterSpacing: 2,
-                              shadows: [
-                                Shadow(
-                                  color: Colors. black26,
-                                  offset:  Offset(2, 2),
-                                  blurRadius: 4,
-                                ),
-                              ],
+                      return Transform.translate(
+                        offset: Offset(0, -20 * (1 - value)),
+                        child: Text(
+                          appName[index],
+                          style: TextStyle(
+                            fontSize: 48,
+                            fontWeight: FontWeight.bold,
+                            // Fade bằng alpha của màu chữ thay vì Opacity layer.
+                            color: Colors.white.withValues(
+                              alpha: value.clamp(0.0, 1.0),
                             ),
+                            letterSpacing: 2,
                           ),
                         ),
                       );
