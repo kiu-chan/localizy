@@ -64,6 +64,8 @@ Future<AddLocationDialogResult?> showAddLocationDialog(
     cities = await ref.read(activeCitiesProvider.future);
   } catch (_) {}
 
+  if (!context.mounted) return null;
+
   String? selectedCityId = snapshot?.cityId.isNotEmpty == true
       ? snapshot!.cityId
       : (cities.isNotEmpty ? cities.first.id : null);
@@ -227,7 +229,7 @@ Future<AddLocationDialogResult?> showAddLocationDialog(
                         ),
                         const SizedBox(height: 12),
                         DropdownButtonFormField<String>(
-                          value: selectedCityId,
+                          initialValue: selectedCityId,
                           decoration: InputDecoration(
                             labelText: l10n.mapCityCode,
                             prefixIcon: const Icon(

@@ -389,7 +389,7 @@ class _HomePageState extends ConsumerState<HomePage> {
   }) {
     // If the slide contains an imageUrl, show it as background with an overlay and content text.
     if (slide.imageUrl != null && slide.imageUrl!.isNotEmpty) {
-      return Container(
+      return SizedBox(
         width: double.infinity,
         child: Stack(
           fit: StackFit.expand,

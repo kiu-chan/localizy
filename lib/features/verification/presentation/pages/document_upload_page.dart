@@ -182,34 +182,32 @@ class _DocumentUploadPageState extends State<DocumentUploadPage> {
                   ),
                 ),
                 const SizedBox(height: 8),
-                Row(
-                  children: [
-                    Expanded(
-                      child: _buildRadioOption(
-                        value:  'cmnd',
-                        label: localizations.idCardCCCD,
-                        groupValue:  _selectedIdType,
-                        onChanged: (value) {
-                          setState(() {
-                            _selectedIdType = value!;
-                          });
-                        },
+                RadioGroup<String>(
+                  groupValue: _selectedIdType,
+                  onChanged: (value) {
+                    setState(() {
+                      _selectedIdType = value!;
+                    });
+                  },
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: _buildRadioOption(
+                          value: 'cmnd',
+                          label: localizations.idCardCCCD,
+                          groupValue: _selectedIdType,
+                        ),
                       ),
-                    ),
-                    const SizedBox(width: 8),
-                    Expanded(
-                      child:  _buildRadioOption(
-                        value: 'passport',
-                        label: localizations.passport,
-                        groupValue: _selectedIdType,
-                        onChanged: (value) {
-                          setState(() {
-                            _selectedIdType = value!;
-                          });
-                        },
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: _buildRadioOption(
+                          value: 'passport',
+                          label: localizations.passport,
+                          groupValue: _selectedIdType,
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ],
             ),
@@ -335,7 +333,6 @@ class _DocumentUploadPageState extends State<DocumentUploadPage> {
     required String value,
     required String label,
     required String groupValue,
-    required Function(String?) onChanged,
   }) {
     return Container(
       decoration: BoxDecoration(
@@ -348,8 +345,6 @@ class _DocumentUploadPageState extends State<DocumentUploadPage> {
       ),
       child: RadioListTile<String>(
         value: value,
-        groupValue: groupValue,
-        onChanged: onChanged,
         title: FittedBox(
           fit: BoxFit.scaleDown,
           alignment: Alignment.centerLeft,

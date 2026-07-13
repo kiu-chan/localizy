@@ -2,9 +2,9 @@
 
 ## Google Maps API Key Setup
 
-### 1. Tạo file Secrets.plist
+### 1. Create the Secrets.plist file
 
-Tạo file `ios/Runner/Secrets.plist`:
+Create `ios/Runner/Secrets.plist`:
 
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
@@ -17,26 +17,26 @@ Tạo file `ios/Runner/Secrets.plist`:
 </plist>
 ```
 
-### 2. Thêm vào Xcode
+### 2. Add it to Xcode
 
 ```bash
-# Mở Xcode
+# Open Xcode
 cd ios
 open Runner.xcworkspace
 ```
 
-1. Click chuột phải vào folder **Runner** → **"Add Files to Runner..."**
-2. Chọn file `Secrets.plist`
+1. Right-click the **Runner** folder → **"Add Files to Runner..."**
+2. Select the `Secrets.plist` file
 3. ✅ Check **"Copy items if needed"**
 4. ✅ Check **"Add to targets: Runner"**
 5. Click **"Add"**
 
-### 3. Lấy API Key
+### 3. Get an API Key
 
-1. Truy cập [Google Cloud Console](https://console.cloud.google.com/)
+1. Go to the [Google Cloud Console](https://console.cloud.google.com/)
 2. Enable **Maps SDK for iOS**
-3. Tạo **API Key** → Giới hạn theo iOS Bundle ID:  `com.cameroon.citea`
-4. Copy API key và thay vào `YOUR_API_KEY_HERE`
+3. Create an **API Key** → restrict it to the iOS Bundle ID: `com.cameroon.citea`
+4. Copy the API key and replace `YOUR_API_KEY_HERE`
 
 ### 4. Rebuild
 
@@ -50,55 +50,53 @@ flutter run
 
 ---
 
-# Kiến trúc
+# Architecture
 
-App dùng **feature-first + Riverpod** (Clean Architecture rút gọn, không có lớp use-case).
-Toàn bộ mã nằm trong `lib/features/` và `lib/core/` — không còn `screens/`, `api/`,
+The app uses **feature-first + Riverpod** (slimmed-down Clean Architecture, no use-case layer).
+All code lives under `lib/features/` and `lib/core/` — no more `screens/`, `api/`,
 `services/`, `utils/`, `models/`.
 
-## Cấu trúc thư mục
+## Directory structure
 
 ```
 lib/
-├── core/                      # Dùng chung mọi feature
+├── core/                      # Shared across all features
 │   ├── network/               # ApiClient (apiClientProvider) + ApiException
 │   ├── config/                # ConfigManager, currency, map config
 │   ├── services/              # NotificationService (FCM)
 │   ├── theme/                 # AppTheme
-│   └── widgets/               # Widget tái sử dụng (receipt, ...)
+│   └── widgets/               # Reusable widgets (receipt, ...)
 ├── features/
-│   ├── auth/                  # Đăng nhập, phiên, điều hướng theo role
-│   ├── home/                  # Trang chủ + slides, MainPage (role user)
-│   ├── map/                   # Bản đồ, tìm địa chỉ, chỉ đường
-│   ├── ocr/                   # Quét biển số (ML Kit)
-│   ├── parking/               # Thanh toán & tra cứu vé đỗ xe
-│   ├── transactions/          # Lịch sử giao dịch & xác minh
-│   ├── verification/          # Wizard xác minh địa chỉ
-│   ├── validator/             # Role Validator (dashboard, lịch, phân công)
-│   ├── business/              # Role Business (dashboard, sub-account, bản đồ)
-│   └── settings/              # Cài đặt, hồ sơ, đổi mật khẩu, ngôn ngữ
+│   ├── auth/                  # Login, session, role-based navigation
+│   ├── home/                  # Home page + slides, MainPage (user role)
+│   ├── map/                   # Map, address search, directions
+│   ├── ocr/                   # License plate scanning (ML Kit)
+│   ├── parking/               # Parking payment & ticket lookup
+│   ├── transactions/          # Transaction & verification history
+│   ├── verification/          # Address verification wizard
+│   ├── validator/             # Validator role (dashboard, schedule, assignments)
+│   ├── business/              # Business role (dashboard, sub-accounts, map)
+│   └── settings/              # Settings, profile, change password, language
 ├── main.dart                  # ProviderContainer + MaterialApp
 └── splash_screen.dart
 ```
 
-Mỗi feature chia 3 lớp:
+Each feature is split into 3 layers:
 
-- **`domain/`** — model thuần Dart (`fromJson`), không phụ thuộc Flutter/HTTP.
-- **`data/`** — repository (nhận `ApiClient` qua constructor) + `xxxRepositoryProvider`.
+- **`domain/`** — pure Dart models (`fromJson`), no Flutter/HTTP dependency.
+- **`data/`** — repository (receives `ApiClient` via the constructor) + `xxxRepositoryProvider`.
 - **`presentation/`** — `providers/` (Riverpod), `pages/`, `widgets/`.
 
-## Quy ước state (Riverpod)
+## State conventions (Riverpod)
 
-- Đọc dữ liệu async: `FutureProvider`; làm mới bằng `ref.invalidate(...)`.
-- State có hành vi: `Notifier` / `AsyncNotifier` (vd `authProvider`, `languageProvider`).
-- Widget dùng `ConsumerWidget` / `ConsumerStatefulWidget`; đọc `AsyncValue` qua `.when(...)`.
-- Nguồn sự thật phiên đăng nhập: `authProvider`; 401 xử lý tập trung ở
+- Async reads: `FutureProvider`; refresh with `ref.invalidate(...)`.
+- Behavioral state: `Notifier` / `AsyncNotifier` (e.g. `authProvider`, `languageProvider`).
+- Widgets use `ConsumerWidget` / `ConsumerStatefulWidget`; read `AsyncValue` via `.when(...)`.
+- Single source of truth for the session: `authProvider`; 401 is handled centrally in
   `features/auth/presentation/session_expiry.dart`.
-- Service ngoài cây widget (vd `NotificationService`) dùng `AuthRepository.instance` /
-  `ApiClient.instance` — đây là **hai singleton duy nhất còn lại**, mọi nơi khác đi qua provider.
-
-Chi tiết lộ trình migrate: xem [docs/ARCHITECTURE_MIGRATION.md](docs/ARCHITECTURE_MIGRATION.md).
+- Services outside the widget tree (e.g. `NotificationService`) use `AuthRepository.instance` /
+  `ApiClient.instance` — these are the **only two remaining singletons**; everywhere else goes through providers.
 
 ---
 
-**Lưu ý**:  File `Secrets.plist` đã được thêm vào `.gitignore` và sẽ không được commit. 
+**Note**: `Secrets.plist` is listed in `.gitignore` and will not be committed.

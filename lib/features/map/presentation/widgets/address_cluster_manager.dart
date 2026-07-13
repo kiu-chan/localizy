@@ -29,8 +29,10 @@ typedef OnMarkersUpdated = void Function(Set<Marker> markers);
 class AddressClusterManager {
   late cluster.ClusterManager<AddressClusterItem> _clusterManager;
   List<AddressClusterItem> _clusterItems = [];
-  double _currentZoom;
-  
+
+  /// Zoom hiện tại của camera; cập nhật trong [onCameraMove].
+  double currentZoom;
+
   final OnMarkersUpdated onMarkersUpdated;
   final OnAddressTapped? onAddressTapped;
   final OnClusterTapped? onClusterTapped;
@@ -46,7 +48,7 @@ class AddressClusterManager {
     this.iconDisplaySize = 25,
     this.clusterColor = const Color(0xFF43A047),
     double initialZoom = 14.0,
-  }) : _currentZoom = initialZoom {
+  }) : currentZoom = initialZoom {
     _initClusterManager();
   }
 
@@ -81,7 +83,7 @@ class AddressClusterManager {
               : clusterData.items.first.address.id),
       onTap: () {
         if (isCluster) {
-          onClusterTapped?.call(clusterData.location, _currentZoom);
+          onClusterTapped?.call(clusterData.location, currentZoom);
         } else {
           onAddressTapped?.call(clusterData.items.first.address);
         }
@@ -163,20 +165,12 @@ class AddressClusterManager {
 
   /// Xử lý khi camera di chuyển
   void onCameraMove(CameraPosition position) {
-    _currentZoom = position.zoom;
+    currentZoom = position.zoom;
     _clusterManager.onCameraMove(position);
   }
 
   /// Cập nhật map khi camera dừng
   void updateMap() {
     _clusterManager.updateMap();
-  }
-
-  /// Lấy zoom hiện tại
-  double get currentZoom => _currentZoom;
-
-  /// Cập nhật zoom
-  set currentZoom(double zoom) {
-    _currentZoom = zoom;
   }
 }
