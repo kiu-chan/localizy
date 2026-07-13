@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:localizy/screens/ocr/license_plate_scanner_screen.dart';
+import 'package:localizy/features/ocr/presentation/pages/license_plate_scanner_screen.dart';
 
 import '../../domain/parking_zone.dart';
 import '../pages/parking_zone_map_selector.dart';

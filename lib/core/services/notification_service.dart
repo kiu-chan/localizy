@@ -2,7 +2,7 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:localizy/api/auth_api.dart';
-import 'package:localizy/screens/main_page.dart';
+import 'package:localizy/features/home/presentation/pages/main_page.dart';
 import 'package:localizy/screens/validator/validator_main_page.dart';
 import 'package:localizy/screens/business/business_main_page.dart';
 

@@ -129,11 +129,11 @@ Thứ tự theo mức độ quan trọng với người dùng cuối. Mỗi feat
 - [x] `map_page.dart` (775 dòng): tách cluster manager, search, directions thành các provider riêng
 
 ### 4d. OCR (quét biển số)
-- [ ] `services/plate_recognition_service.dart` (414 dòng), `models/plate_country.dart` + `screens/ocr/*`
-- [ ] Camera lifecycle giữ trong `StatefulWidget`, kết quả nhận dạng đưa qua provider
+- [x] `services/plate_recognition_service.dart` (414 dòng), `models/plate_country.dart` + `screens/ocr/*`
+- [x] Camera lifecycle giữ trong `StatefulWidget`, kết quả nhận dạng đưa qua provider
 
 ### 4e. Home & Slides
-- [ ] `api/slide_api.dart` + `home_page.dart`, `main_page.dart`
+- [x] `api/slide_api.dart` + `home_page.dart`, `main_page.dart`
 
 **Kiểm tra hoàn thành mỗi feature:** flow end-to-end chạy đúng trên cả Android & iOS trước khi merge.
 
@@ -178,7 +178,7 @@ Thứ tự theo mức độ quan trọng với người dùng cuối. Mỗi feat
 | 1 | Core layer | 1–2 ngày | ✅ |
 | 2 | Feature mẫu: Transactions | 2–3 ngày | ✅ |
 | 3 | Auth & Session | 3–4 ngày | ✅ |
-| 4a–4e | Parking, Verification, Map, OCR, Home | 10–15 ngày | ⬜ |
+| 4a–4e | Parking, Verification, Map, OCR, Home | 10–15 ngày | ✅ |
 | 5 | Validator & Business | 3–5 ngày | ⬜ |
 | 6 | Settings & dọn dẹp | 1–2 ngày | ⬜ |
 | 7 | Test (chạy song song) | — | ⬜ |

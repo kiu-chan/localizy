@@ -8,17 +8,20 @@ import 'package:localizy/features/parking/presentation/pages/parking_payment_pag
 import 'package:localizy/features/parking/presentation/pages/payment_check_page.dart';
 import 'package:localizy/features/map/presentation/pages/address_search_page.dart';
 import 'package:localizy/features/transactions/presentation/pages/transaction_history_page.dart';
-import 'package:localizy/screens/ocr/license_plate_scanner_screen.dart';
-import 'package:localizy/api/slide_api.dart';
+import 'package:localizy/features/ocr/presentation/pages/license_plate_scanner_screen.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class HomePage extends StatefulWidget {
+import '../../data/slide_repository.dart';
+import '../../domain/home_slide.dart';
+
+class HomePage extends ConsumerStatefulWidget {
   const HomePage({super.key});
 
   @override
-  State<HomePage> createState() => _HomePageState();
+  ConsumerState<HomePage> createState() => _HomePageState();
 }
 
-class _HomePageState extends State<HomePage> {
+class _HomePageState extends ConsumerState<HomePage> {
   final PageController _pageController = PageController();
   Timer? _timer;
   int _currentPage = 0;
@@ -39,7 +42,7 @@ class _HomePageState extends State<HomePage> {
 
   Future<void> _loadSlidesWithCache() async {
     // 1. Hiển thị cache ngay lập tức (nếu có)
-    final cached = await SlideService.getCachedSlides();
+    final cached = await ref.read(slideRepositoryProvider).getCachedSlides();
     if (mounted && cached.isNotEmpty) {
       setState(() {
         _apiSlides = cached;
@@ -54,7 +57,8 @@ class _HomePageState extends State<HomePage> {
 
   Future<void> _fetchSlides() async {
     try {
-      final slides = await SlideService.getActiveSlides();
+      final slides =
+          await ref.read(slideRepositoryProvider).getActiveSlides();
       if (mounted) {
         setState(() {
           _apiSlides = slides;

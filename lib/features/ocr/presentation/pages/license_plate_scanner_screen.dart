@@ -3,11 +3,11 @@ import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:localizy/l10n/app_localizations.dart';
-import 'package:localizy/models/plate_country.dart';
-import '../../services/plate_recognition_service.dart';
-import 'widgets/scanner_camera_view.dart';
-import 'widgets/scanner_captured_image_view.dart';
-import 'widgets/scanner_help_bottom_sheet.dart';
+import 'package:localizy/features/ocr/domain/plate_country.dart';
+import '../../data/plate_recognition_service.dart';
+import '../widgets/scanner_camera_view.dart';
+import '../widgets/scanner_captured_image_view.dart';
+import '../widgets/scanner_help_bottom_sheet.dart';
 
 class LicensePlateScannerScreen extends StatefulWidget {
   const LicensePlateScannerScreen({super.key});

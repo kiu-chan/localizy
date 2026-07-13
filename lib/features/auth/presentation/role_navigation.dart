@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:localizy/screens/business/business_main_page.dart';
-import 'package:localizy/screens/main_page.dart';
+import 'package:localizy/features/home/presentation/pages/main_page.dart';
 import 'package:localizy/screens/validator/validator_main_page.dart';
 
 import '../domain/user.dart';

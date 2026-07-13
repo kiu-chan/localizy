@@ -2,7 +2,7 @@ import 'dart:io';
 import 'package:google_mlkit_text_recognition/google_mlkit_text_recognition.dart';
 import 'package:flutter/foundation.dart';
 import 'package:image/image.dart' as img;
-import 'package:localizy/models/plate_country.dart';
+import 'package:localizy/features/ocr/domain/plate_country.dart';
 import 'package:path_provider/path_provider.dart';
 
 class PlateRecognitionService {
