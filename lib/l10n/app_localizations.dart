@@ -323,7 +323,7 @@ abstract class AppLocalizations {
   /// No description provided for @welcomeToLocalizy.
   ///
   /// In fr, this message translates to:
-  /// **'Bienvenue sur Localizy'**
+  /// **'Bienvenue sur Citea'**
   String get welcomeToLocalizy;
 
   /// No description provided for @homePage.
@@ -2873,7 +2873,7 @@ abstract class AppLocalizations {
   /// No description provided for @aboutLocalizy.
   ///
   /// In fr, this message translates to:
-  /// **'À propos de Localizy'**
+  /// **'À propos de Citea'**
   String get aboutLocalizy;
 
   /// No description provided for @appDescription.
@@ -3041,13 +3041,13 @@ abstract class AppLocalizations {
   /// No description provided for @devTeamName.
   ///
   /// In fr, this message translates to:
-  /// **'L\'équipe de développement Localizy'**
+  /// **'L\'équipe de développement Citea'**
   String get devTeamName;
 
   /// No description provided for @copyright.
   ///
   /// In fr, this message translates to:
-  /// **'© 2024 Localizy'**
+  /// **'© 2026 Citea'**
   String get copyright;
 
   /// No description provided for @allRightsReserved.
@@ -3056,11 +3056,11 @@ abstract class AppLocalizations {
   /// **'Tous droits réservés'**
   String get allRightsReserved;
 
-  /// No description provided for @madeWithLoveInVietnam.
+  /// No description provided for @codedWithLove.
   ///
   /// In fr, this message translates to:
-  /// **'Fait avec ❤️ au Vietnam'**
-  String get madeWithLoveInVietnam;
+  /// **'Codé avec ❤️'**
+  String get codedWithLove;
 
   /// No description provided for @versionDisplay.
   ///

@@ -122,7 +122,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get settings => 'Settings';
 
   @override
-  String get welcomeToLocalizy => 'Welcome to Localizy';
+  String get welcomeToLocalizy => 'Welcome to Citea';
 
   @override
   String get homePage => 'Home page';
@@ -1479,7 +1479,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get navigatingToPayment => 'Navigating to payment...';
 
   @override
-  String get aboutLocalizy => 'About Localizy';
+  String get aboutLocalizy => 'About Citea';
 
   @override
   String get appDescription =>
@@ -1567,16 +1567,16 @@ class AppLocalizationsEn extends AppLocalizations {
   String get developedBy => 'Developed by';
 
   @override
-  String get devTeamName => 'Localizy Development Team';
+  String get devTeamName => 'Citea Development Team';
 
   @override
-  String get copyright => '© 2024 Localizy';
+  String get copyright => '© 2026 Citea';
 
   @override
   String get allRightsReserved => 'All rights reserved';
 
   @override
-  String get madeWithLoveInVietnam => 'Made with ❤️ in Vietnam';
+  String get codedWithLove => 'Coded with ❤️';
 
   @override
   String versionDisplay(String version) {

@@ -115,7 +115,7 @@ class _AboutPageState extends State<AboutPage> {
 
                         // App Name
                         Text(
-                          _packageInfo?.appName ?? 'Localizy',
+                          _packageInfo?.appName ?? 'Citea',
                           style: const TextStyle(
                             fontSize: 32,
                             fontWeight: FontWeight.bold,
@@ -266,7 +266,7 @@ class _AboutPageState extends State<AboutPage> {
                               ),
                               const SizedBox(height: 16),
                               Text(
-                                l10n.madeWithLoveInVietnam,
+                                l10n.codedWithLove,
                                 style: TextStyle(
                                   fontSize: 12,
                                   color:  Colors.grey.shade500,
@@ -370,7 +370,7 @@ class _AboutPageState extends State<AboutPage> {
       ),
       child: Column(
         children: [
-          _buildInfoRow(l10n.appNameLabel, _packageInfo?. appName ?? 'Localizy'),
+          _buildInfoRow(l10n.appNameLabel, _packageInfo?. appName ?? 'Citea'),
           const SizedBox(height: 12),
           _buildInfoRow(l10n.packageNameLabel, _packageInfo?.packageName ?? '-'),
           const SizedBox(height: 12),
@@ -433,29 +433,29 @@ class _AboutPageState extends State<AboutPage> {
           _buildContactItem(
             Icons.email,
             l10n.email,
-            'support@localizy.com',
-            () => _copyToClipboard('support@localizy.com', l10n.email),
+            'support@citea.fr',
+            () => _copyToClipboard('support@citea.fr', l10n.email),
           ),
           const Divider(height: 24),
           _buildContactItem(
             Icons.phone,
             l10n.phone,
-            '+84 123 456 789',
-            () => _copyToClipboard('+84123456789', l10n.phone),
+            '+33 1 23 45 67 89',
+            () => _copyToClipboard('+33123456789', l10n.phone),
           ),
           const Divider(height: 24),
           _buildContactItem(
             Icons.language,
             l10n.website,
-            'www.localizy.com',
-            () => _copyToClipboard('www.localizy.com', l10n.website),
+            'www.citea.fr',
+            () => _copyToClipboard('www.citea.fr', l10n.website),
           ),
           const Divider(height: 24),
           _buildContactItem(
             Icons. location_city,
             l10n.address,
-            'Ho Chi Minh City, Vietnam',
-            () => _copyToClipboard('Ho Chi Minh City, Vietnam', l10n.address),
+            'Paris, France',
+            () => _copyToClipboard('Paris, France', l10n.address),
           ),
         ],
       ),
@@ -551,7 +551,7 @@ class _AboutPageState extends State<AboutPage> {
             () {
               showLicensePage(
                 context: context,
-                applicationName: _packageInfo?.appName ?? 'Localizy',
+                applicationName: _packageInfo?.appName ?? 'Citea',
                 applicationVersion: _packageInfo?.version ??  '0.1.0',
                 applicationIcon: Container(
                   padding: const EdgeInsets.all(8),
@@ -636,84 +636,46 @@ class _AboutPageState extends State<AboutPage> {
           ),
         ],
       ),
-      child: Column(
+      child: Row(
         children: [
-          Row(
-            children: [
-              Container(
-                padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color:  Colors.blue.shade50,
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child:  Icon(
-                  Icons.code,
-                  color: Colors. blue.shade700,
-                  size: 28,
-                ),
-              ),
-              const SizedBox(width: 16),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      l10n.developedBy,
-                      style:  const TextStyle(
-                        fontSize:  12,
-                        color: Colors.grey,
-                      ),
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      l10n.devTeamName,
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight:  FontWeight.bold,
-                        color: Colors. grey.shade800,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 16),
           Container(
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: Colors.grey.shade50,
-              borderRadius: BorderRadius.circular(8),
+              color:  Colors.blue.shade50,
+              borderRadius: BorderRadius.circular(12),
             ),
-            child:  Row(
-              mainAxisAlignment:  MainAxisAlignment.spaceAround,
+            child:  Icon(
+              Icons.code,
+              color: Colors. blue.shade700,
+              size: 28,
+            ),
+          ),
+          const SizedBox(width: 16),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                _buildTechBadge(Icons.phone_android, 'Flutter'),
-                _buildTechBadge(Icons.cloud, 'Firebase'),
-                _buildTechBadge(Icons. map, 'Google Maps'),
-                _buildTechBadge(Icons.camera_alt, 'ML Kit'),
+                Text(
+                  l10n.developedBy,
+                  style:  const TextStyle(
+                    fontSize:  12,
+                    color: Colors.grey,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  l10n.devTeamName,
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight:  FontWeight.bold,
+                    color: Colors. grey.shade800,
+                  ),
+                ),
               ],
             ),
           ),
         ],
       ),
-    );
-  }
-
-  Widget _buildTechBadge(IconData icon, String label) {
-    return Column(
-      children: [
-        Icon(icon, color: Colors.green.shade700, size: 24),
-        const SizedBox(height: 4),
-        Text(
-          label,
-          style: TextStyle(
-            fontSize:  10,
-            color: Colors.grey.shade600,
-            fontWeight: FontWeight.w600,
-          ),
-        ),
-      ],
     );
   }
 

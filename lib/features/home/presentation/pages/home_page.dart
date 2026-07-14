@@ -180,10 +180,7 @@ class _HomePageState extends ConsumerState<HomePage> {
                       itemCount: slides.length,
                       itemBuilder: (context, index) {
                         final slide = slides[index];
-                        return _buildHeaderSlide(
-                          l10n: l10n,
-                          slide: slide,
-                        );
+                        return _buildHeaderSlide(slide: slide);
                       },
                     ),
 
@@ -383,10 +380,9 @@ class _HomePageState extends ConsumerState<HomePage> {
     );
   }
 
-  Widget _buildHeaderSlide({
-    required AppLocalizations l10n,
-    required HomeSlide slide,
-  }) {
+  Widget _buildHeaderSlide({required HomeSlide slide}) {
+    final hasContent = slide.content.isNotEmpty;
+
     // If the slide contains an imageUrl, show it as background with an overlay and content text.
     if (slide.imageUrl != null && slide.imageUrl!.isNotEmpty) {
       return SizedBox(
@@ -400,34 +396,35 @@ class _HomePageState extends ConsumerState<HomePage> {
               placeholder: (context, url) => Container(color: Colors.grey.shade300),
               errorWidget: (context, url, error) => Container(color: Colors.grey.shade300),
             ),
-            Container(
-              // dark overlay to ensure text is readable
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [
-                    Colors.black.withValues(alpha: 0.35),
-                    Colors.black.withValues(alpha: 0.15),
+            if (hasContent)
+              Container(
+                // dark overlay to ensure text is readable
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [
+                      Colors.black.withValues(alpha: 0.35),
+                      Colors.black.withValues(alpha: 0.15),
+                    ],
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                  ),
+                ),
+                padding: const EdgeInsets.all(24),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      slide.content,
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(
+                        fontSize: 22,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      ),
+                    ),
                   ],
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
                 ),
               ),
-              padding: const EdgeInsets.all(24),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    slide.content.isNotEmpty ? slide.content : l10n.welcomeToLocalizy,
-                    textAlign: TextAlign.center,
-                    style: const TextStyle(
-                      fontSize: 22,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
-                    ),
-                  ),
-                ],
-              ),
-            ),
           ],
         ),
       );
@@ -472,16 +469,18 @@ class _HomePageState extends ConsumerState<HomePage> {
               ),
             ),
           ),
-          const SizedBox(height: 20),
-          Text(
-            slide.content.isNotEmpty ? slide.content : l10n.welcomeToLocalizy,
-            textAlign: TextAlign.center,
-            style: const TextStyle(
-              fontSize: 28,
-              fontWeight: FontWeight.bold,
-              color: Colors.white,
+          if (hasContent) ...[
+            const SizedBox(height: 20),
+            Text(
+              slide.content,
+              textAlign: TextAlign.center,
+              style: const TextStyle(
+                fontSize: 28,
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
+              ),
             ),
-          ),
+          ],
         ],
       ),
     );

@@ -44,7 +44,7 @@
   "map": "Map",
   "settings": "Settings",
   
-  "welcomeToLocalizy": "Welcome to Localizy",
+  "welcomeToLocalizy": "Welcome to Citea",
   "homePage": "Home page",
   
   "viewAndExploreMap": "View and explore map",
@@ -560,7 +560,7 @@
   "bookParking": "Book parking",
   "navigatingToPayment": "Navigating to payment...",
 
-  "aboutLocalizy": "About Localizy",
+  "aboutLocalizy": "About Citea",
   "appDescription": "Your smart solution for parking\nmanagement and location verification",
   "keyFeatures": "Key Features",
   "smartParkingPaymentDesc": "Pay for parking easily and securely",
@@ -591,10 +591,10 @@
   "thirdPartyLicenses": "Third-party licenses",
   "developmentTeam": "Development Team",
   "developedBy": "Developed by",
-  "devTeamName": "Localizy Development Team",
-  "copyright": "© 2024 Localizy",
+  "devTeamName": "Citea Development Team",
+  "copyright": "© 2026 Citea",
   "allRightsReserved": "All rights reserved",
-  "madeWithLoveInVietnam": "Made with ❤️ in Vietnam",
+  "codedWithLove": "Coded with ❤️",
   "versionDisplay": "Version {version}",
   "@versionDisplay": {
     "placeholders": { "version": {"type": "String"} }

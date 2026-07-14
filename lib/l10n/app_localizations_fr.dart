@@ -124,7 +124,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get settings => 'Paramètres';
 
   @override
-  String get welcomeToLocalizy => 'Bienvenue sur Localizy';
+  String get welcomeToLocalizy => 'Bienvenue sur Citea';
 
   @override
   String get homePage => 'Page d\'accueil';
@@ -1511,7 +1511,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get navigatingToPayment => 'Navigation vers le paiement...';
 
   @override
-  String get aboutLocalizy => 'À propos de Localizy';
+  String get aboutLocalizy => 'À propos de Citea';
 
   @override
   String get appDescription =>
@@ -1602,16 +1602,16 @@ class AppLocalizationsFr extends AppLocalizations {
   String get developedBy => 'Développé par';
 
   @override
-  String get devTeamName => 'L\'équipe de développement Localizy';
+  String get devTeamName => 'L\'équipe de développement Citea';
 
   @override
-  String get copyright => '© 2024 Localizy';
+  String get copyright => '© 2026 Citea';
 
   @override
   String get allRightsReserved => 'Tous droits réservés';
 
   @override
-  String get madeWithLoveInVietnam => 'Fait avec ❤️ au Vietnam';
+  String get codedWithLove => 'Codé avec ❤️';
 
   @override
   String versionDisplay(String version) {
