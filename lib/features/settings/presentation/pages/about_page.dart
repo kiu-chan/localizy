@@ -3,6 +3,8 @@ import 'package:flutter/services.dart';
 import 'package:localizy/l10n/app_localizations.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
+import 'privacy_policy_page.dart';
+
 class AboutPage extends StatefulWidget {
   const AboutPage({super.key});
 
@@ -531,7 +533,12 @@ class _AboutPageState extends State<AboutPage> {
             l10n.privacyPolicy,
             l10n.readPrivacyPolicy,
             () {
-              _showComingSoon(l10n.privacyPolicy);
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const PrivacyPolicyPage(),
+                ),
+              );
             },
           ),
           const Divider(height: 24),

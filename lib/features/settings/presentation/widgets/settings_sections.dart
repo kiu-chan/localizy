@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:localizy/features/auth/presentation/pages/login_page.dart';
 import 'package:localizy/features/auth/presentation/providers/auth_provider.dart';
@@ -10,6 +11,7 @@ import 'package:package_info_plus/package_info_plus.dart';
 import '../pages/about_page.dart';
 import '../pages/account_settings_page.dart';
 import '../pages/change_password_page.dart';
+import '../pages/privacy_policy_page.dart';
 import '../providers/language_provider.dart';
 
 class SettingsSections extends ConsumerStatefulWidget {
@@ -169,7 +171,12 @@ class _SettingsSectionsState extends ConsumerState<SettingsSections> {
                 subtitle: l10n.readPrivacyPolicy,
                 color: const Color(0xFF4285F4),
                 onTap: () {
-                  _showComingSoon(context, l10n, l10n.privacyPolicy);
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const PrivacyPolicyPage(),
+                    ),
+                  );
                 },
               ),
               _buildDivider(),
@@ -481,89 +488,256 @@ class _SettingsSectionsState extends ConsumerState<SettingsSections> {
   }
 
   void _showSupportDialog(BuildContext context, AppLocalizations l10n) {
-    showDialog(
+    const primary = Color(0xFF4285F4);
+
+    showModalBottomSheet(
       context: context,
-      builder: (context) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        title: Row(
-          children: [
-            const Icon(Icons.support_agent, color: Color(0xFF4285F4)),
-            const SizedBox(width: 12),
-            Text(l10n.helpAndSupport),
-          ],
-        ),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              l10n.howCanWeHelp,
-              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
-            ),
-            const SizedBox(height: 16),
-            _buildSupportOption(
-                Icons.email, l10n.emailUs, 'support@localizy.com'),
-            const SizedBox(height: 12),
-            _buildSupportOption(Icons.phone, l10n.callUs, '+84 123 456 789'),
-            const SizedBox(height: 12),
-            _buildSupportOption(Icons.chat, l10n.liveChat, l10n.available247),
-            const SizedBox(height: 16),
-            Text(
-              l10n.respondWithin24h,
-              style: const TextStyle(fontSize: 12, color: Colors.grey),
-            ),
-          ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: Text(l10n.close),
+      backgroundColor: Colors.white,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      clipBehavior: Clip.hardEdge,
+      builder: (sheetContext) => SafeArea(
+        top: false,
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              // Header
+              Container(
+                padding: const EdgeInsets.fromLTRB(24, 12, 12, 20),
+                decoration: const BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [Color(0xFF4285F4), Color(0xFF6BA4F8)],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ),
+                ),
+                child: Column(
+                  children: [
+                    Container(
+                      width: 40,
+                      height: 4,
+                      margin: const EdgeInsets.only(bottom: 14),
+                      decoration: BoxDecoration(
+                        color: Colors.white.withValues(alpha: 0.4),
+                        borderRadius: BorderRadius.circular(2),
+                      ),
+                    ),
+                    Row(
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.all(10),
+                          decoration: BoxDecoration(
+                            color: Colors.white.withValues(alpha: 0.2),
+                            shape: BoxShape.circle,
+                          ),
+                          child: const Icon(Icons.support_agent,
+                              color: Colors.white, size: 28),
+                        ),
+                        const SizedBox(width: 14),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                l10n.helpAndSupport,
+                                style: const TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white,
+                                ),
+                              ),
+                              const SizedBox(height: 2),
+                              Text(
+                                l10n.howCanWeHelp,
+                                style: TextStyle(
+                                  fontSize: 13,
+                                  color: Colors.white.withValues(alpha: 0.9),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        IconButton(
+                          onPressed: () => Navigator.pop(sheetContext),
+                          icon: const Icon(Icons.close_rounded,
+                              color: Colors.white, size: 22),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+
+              // Contact options
+              Padding(
+                padding: const EdgeInsets.fromLTRB(20, 20, 20, 24),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    _buildSupportOption(
+                      context,
+                      l10n,
+                      icon: Icons.email_outlined,
+                      title: l10n.emailUs,
+                      value: 'support@localizy.com',
+                      copyable: true,
+                    ),
+                    const SizedBox(height: 12),
+                    _buildSupportOption(
+                      context,
+                      l10n,
+                      icon: Icons.phone_outlined,
+                      title: l10n.callUs,
+                      value: '+84 123 456 789',
+                      copyable: true,
+                    ),
+                    const SizedBox(height: 12),
+                    _buildSupportOption(
+                      context,
+                      l10n,
+                      icon: Icons.chat_bubble_outline_rounded,
+                      title: l10n.liveChat,
+                      value: l10n.available247,
+                      copyable: false,
+                    ),
+                    const SizedBox(height: 16),
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 12, vertical: 10),
+                      decoration: BoxDecoration(
+                        color: primary.withValues(alpha: 0.06),
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: Row(
+                        children: [
+                          const Icon(Icons.schedule_rounded,
+                              size: 16, color: primary),
+                          const SizedBox(width: 8),
+                          Expanded(
+                            child: Text(
+                              l10n.respondWithin24h,
+                              style: const TextStyle(
+                                fontSize: 12,
+                                color: Color(0xFF5B6478),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
           ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSupportOption(
+    BuildContext context,
+    AppLocalizations l10n, {
+    required IconData icon,
+    required String title,
+    required String value,
+    required bool copyable,
+  }) {
+    const primary = Color(0xFF4285F4);
+
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: const Color(0xFFF7F8FB),
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: Colors.grey.shade200),
+      ),
+      child: Row(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(9),
+            decoration: BoxDecoration(
+              color: primary.withValues(alpha: 0.1),
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: Icon(icon, color: primary, size: 20),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  style: const TextStyle(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w600,
+                    color: Color(0xFF2D3142),
+                  ),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  value,
+                  style: const TextStyle(
+                    fontSize: 13,
+                    color: Color(0xFF5B6478),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          if (copyable)
+            Material(
+              color: Colors.transparent,
+              child: InkWell(
+                onTap: () => _copyToClipboard(context, l10n, title, value),
+                borderRadius: BorderRadius.circular(10),
+                child: Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(10),
+                    border: Border.all(color: Colors.grey.shade200),
+                  ),
+                  child: const Icon(Icons.copy_rounded,
+                      size: 18, color: primary),
+                ),
+              ),
+            ),
         ],
       ),
     );
   }
 
-  Widget _buildSupportOption(IconData icon, String title, String subtitle) {
-    return Row(
-      children: [
-        Icon(icon, color: const Color(0xFF4285F4), size: 20),
-        const SizedBox(width: 12),
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+  Future<void> _copyToClipboard(
+    BuildContext context,
+    AppLocalizations l10n,
+    String label,
+    String value,
+  ) async {
+    await Clipboard.setData(ClipboardData(text: value));
+    if (!context.mounted) return;
+    ScaffoldMessenger.of(context)
+      ..hideCurrentSnackBar()
+      ..showSnackBar(
+        SnackBar(
+          content: Row(
             children: [
-              Text(
-                title,
-                style: const TextStyle(fontWeight: FontWeight.w600),
-              ),
-              Text(
-                subtitle,
-                style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
-              ),
+              const Icon(Icons.check_circle, color: Colors.white),
+              const SizedBox(width: 12),
+              Expanded(child: Text(l10n.copiedToClipboard(label))),
             ],
           ),
+          backgroundColor: const Color(0xFF4285F4),
+          behavior: SnackBarBehavior.floating,
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+          duration: const Duration(seconds: 2),
         ),
-      ],
-    );
-  }
-
-  void _showComingSoon(
-      BuildContext context, AppLocalizations l10n, String feature) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Row(
-          children: [
-            const Icon(Icons.info_outline, color: Colors.white),
-            const SizedBox(width: 12),
-            Expanded(child: Text(l10n.featureComingSoon(feature))),
-          ],
-        ),
-        backgroundColor: const Color(0xFF4285F4),
-        behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-        duration: const Duration(seconds: 2),
-      ),
-    );
+      );
   }
 }

@@ -1653,4 +1653,67 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get idCopied => 'ID copié';
+
+  @override
+  String get privacyPolicySubtitle =>
+      'Comment nous collectons, utilisons et protégeons vos données';
+
+  @override
+  String get privacyLastUpdated => 'Dernière mise à jour : 16 juillet 2026';
+
+  @override
+  String get privacyIntroTitle => 'Introduction';
+
+  @override
+  String get privacyIntroBody =>
+      'Citea (« nous », « notre ») s\'engage à protéger votre vie privée. Cette politique explique comment nous collectons, utilisons et protégeons vos informations personnelles lorsque vous utilisez nos services de paiement de stationnement et de vérification d\'adresse.';
+
+  @override
+  String get privacyCollectTitle => 'Informations que nous collectons';
+
+  @override
+  String get privacyCollectBody =>
+      '• Informations de compte : nom, adresse e-mail et numéro de téléphone\n• Données de localisation : la position GPS de votre appareil, utilisée pour trouver les zones de stationnement à proximité et vérifier les adresses\n• Informations sur le véhicule : plaques d\'immatriculation saisies ou scannées\n• Documents : photos et documents téléchargés pour la vérification d\'adresse\n• Données de transaction : historique des paiements de stationnement et reçus';
+
+  @override
+  String get privacyUseTitle => 'Comment nous utilisons vos informations';
+
+  @override
+  String get privacyUseBody =>
+      'Nous utilisons vos informations pour :\n• Traiter les paiements de stationnement et émettre des reçus\n• Vérifier votre adresse et gérer les lieux vérifiés\n• Afficher les zones de stationnement à proximité sur la carte\n• Envoyer des notifications importantes concernant vos sessions de stationnement\n• Améliorer nos services et fournir une assistance client';
+
+  @override
+  String get privacyShareTitle => 'Partage des données';
+
+  @override
+  String get privacyShareBody =>
+      'Nous ne vendons pas vos données personnelles. Nous partageons uniquement des informations avec :\n• Les prestataires de paiement, pour traiter vos transactions en toute sécurité\n• Les autorités municipales, lorsque nécessaire pour la gestion du stationnement\n• Les prestataires de services qui nous aident à exploiter l\'application (hébergement, cartes)\n• Les autorités publiques, lorsque la loi l\'exige';
+
+  @override
+  String get privacySecurityTitle => 'Sécurité des données';
+
+  @override
+  String get privacySecurityBody =>
+      'Vos données sont chiffrées en transit et au repos. L\'accès est limité au personnel autorisé et nous révisons régulièrement nos pratiques de sécurité pour protéger vos informations contre tout accès non autorisé, perte ou utilisation abusive.';
+
+  @override
+  String get privacyRetentionTitle => 'Conservation des données';
+
+  @override
+  String get privacyRetentionBody =>
+      'Nous conservons vos données uniquement le temps nécessaire pour fournir nos services et respecter nos obligations légales. Les enregistrements de transactions sont conservés conformément aux lois comptables applicables. Vous pouvez demander la suppression de votre compte à tout moment.';
+
+  @override
+  String get privacyRightsTitle => 'Vos droits';
+
+  @override
+  String get privacyRightsBody =>
+      'Conformément au RGPD, vous avez le droit de :\n• Accéder aux données personnelles que nous détenons à votre sujet\n• Corriger des données inexactes ou incomplètes\n• Demander la suppression de vos données\n• Vous opposer à certains traitements ou les restreindre\n• Recevoir vos données dans un format portable\n• Retirer votre consentement à tout moment';
+
+  @override
+  String get privacyContactTitle => 'Nous contacter';
+
+  @override
+  String get privacyContactBody =>
+      'Si vous avez des questions concernant cette politique de confidentialité ou la manière dont nous traitons vos données, contactez-nous à :';
 }

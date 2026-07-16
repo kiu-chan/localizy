@@ -1618,4 +1618,67 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get idCopied => 'ID copied';
+
+  @override
+  String get privacyPolicySubtitle =>
+      'How we collect, use and protect your data';
+
+  @override
+  String get privacyLastUpdated => 'Last updated: July 16, 2026';
+
+  @override
+  String get privacyIntroTitle => 'Introduction';
+
+  @override
+  String get privacyIntroBody =>
+      'Citea (\"we\", \"our\") is committed to protecting your privacy. This policy explains how we collect, use and safeguard your personal information when you use our parking payment and address verification services.';
+
+  @override
+  String get privacyCollectTitle => 'Information we collect';
+
+  @override
+  String get privacyCollectBody =>
+      '• Account information: name, email address and phone number\n• Location data: your device\'s GPS position, used to find nearby parking zones and verify addresses\n• Vehicle information: license plate numbers you enter or scan\n• Documents: photos and documents you upload for address verification\n• Transaction data: parking payment history and receipts';
+
+  @override
+  String get privacyUseTitle => 'How we use your information';
+
+  @override
+  String get privacyUseBody =>
+      'We use your information to:\n• Process parking payments and issue receipts\n• Verify your address and manage verified locations\n• Display nearby parking zones on the map\n• Send important notifications about your parking sessions\n• Improve our services and provide customer support';
+
+  @override
+  String get privacyShareTitle => 'Data sharing';
+
+  @override
+  String get privacyShareBody =>
+      'We do not sell your personal data. We only share information with:\n• Payment providers, to process your transactions securely\n• Municipal authorities, when required for parking management\n• Service providers that help us operate the app (hosting, maps)\n• Public authorities, when required by law';
+
+  @override
+  String get privacySecurityTitle => 'Data security';
+
+  @override
+  String get privacySecurityBody =>
+      'Your data is encrypted in transit and at rest. Access is restricted to authorized personnel, and we regularly review our security practices to protect your information from unauthorized access, loss or misuse.';
+
+  @override
+  String get privacyRetentionTitle => 'Data retention';
+
+  @override
+  String get privacyRetentionBody =>
+      'We keep your data only as long as necessary to provide our services and comply with legal obligations. Transaction records are retained according to applicable accounting laws. You can request deletion of your account at any time.';
+
+  @override
+  String get privacyRightsTitle => 'Your rights';
+
+  @override
+  String get privacyRightsBody =>
+      'In accordance with the GDPR, you have the right to:\n• Access the personal data we hold about you\n• Correct inaccurate or incomplete data\n• Request deletion of your data\n• Object to or restrict certain processing\n• Receive your data in a portable format\n• Withdraw your consent at any time';
+
+  @override
+  String get privacyContactTitle => 'Contact us';
+
+  @override
+  String get privacyContactBody =>
+      'If you have any questions about this privacy policy or how we handle your data, contact us at:';
 }
