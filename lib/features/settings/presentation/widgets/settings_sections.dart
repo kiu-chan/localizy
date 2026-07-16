@@ -12,6 +12,8 @@ import '../pages/about_page.dart';
 import '../pages/account_settings_page.dart';
 import '../pages/change_password_page.dart';
 import '../pages/privacy_policy_page.dart';
+import '../pages/terms_of_service_page.dart';
+import '../providers/website_config_provider.dart';
 import '../providers/language_provider.dart';
 
 class SettingsSections extends ConsumerStatefulWidget {
@@ -53,6 +55,9 @@ class _SettingsSectionsState extends ConsumerState<SettingsSections> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    // Nạp sẵn cấu hình website (liên hệ + pháp lý) cho sheet support
+    // và các trang Privacy/Terms.
+    ref.watch(websiteConfigProvider);
 
     return Padding(
       padding: const EdgeInsets.all(16),
@@ -175,6 +180,22 @@ class _SettingsSectionsState extends ConsumerState<SettingsSections> {
                     context,
                     MaterialPageRoute(
                       builder: (context) => const PrivacyPolicyPage(),
+                    ),
+                  );
+                },
+              ),
+              _buildDivider(),
+              _buildSettingItem(
+                context,
+                icon: Icons.description_outlined,
+                title: l10n.termsOfService,
+                subtitle: l10n.termsAndConditions,
+                color: const Color(0xFF4285F4),
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const TermsOfServicePage(),
                     ),
                   );
                 },
@@ -490,6 +511,16 @@ class _SettingsSectionsState extends ConsumerState<SettingsSections> {
   void _showSupportDialog(BuildContext context, AppLocalizations l10n) {
     const primary = Color(0xFF4285F4);
 
+    // Ưu tiên thông tin liên hệ từ API; fallback về giá trị mặc định
+    // khi chưa tải được (offline / backend chưa cấu hình).
+    final contact = ref.read(websiteConfigProvider).value?.contact;
+    final email = (contact != null && contact.email.isNotEmpty)
+        ? contact.email
+        : 'support@citea.fr';
+    final phone = (contact != null && contact.phone.isNotEmpty)
+        ? contact.phone
+        : '+33 1 23 45 67 89';
+
     showModalBottomSheet(
       context: context,
       backgroundColor: Colors.white,
@@ -583,7 +614,7 @@ class _SettingsSectionsState extends ConsumerState<SettingsSections> {
                       l10n,
                       icon: Icons.email_outlined,
                       title: l10n.emailUs,
-                      value: 'support@localizy.com',
+                      value: email,
                       copyable: true,
                     ),
                     const SizedBox(height: 12),
@@ -592,7 +623,7 @@ class _SettingsSectionsState extends ConsumerState<SettingsSections> {
                       l10n,
                       icon: Icons.phone_outlined,
                       title: l10n.callUs,
-                      value: '+84 123 456 789',
+                      value: phone,
                       copyable: true,
                     ),
                     const SizedBox(height: 12),

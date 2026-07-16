@@ -1,18 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:localizy/l10n/app_localizations.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
+import '../providers/website_config_provider.dart';
 import 'privacy_policy_page.dart';
+import 'terms_of_service_page.dart';
 
-class AboutPage extends StatefulWidget {
+class AboutPage extends ConsumerStatefulWidget {
   const AboutPage({super.key});
 
   @override
-  State<AboutPage> createState() => _AboutPageState();
+  ConsumerState<AboutPage> createState() => _AboutPageState();
 }
 
-class _AboutPageState extends State<AboutPage> {
+class _AboutPageState extends ConsumerState<AboutPage> {
   PackageInfo? _packageInfo;
   bool _isLoading = true;
 
@@ -417,6 +420,18 @@ class _AboutPageState extends State<AboutPage> {
   }
 
   Widget _buildContactCard(AppLocalizations l10n) {
+    // Ưu tiên thông tin liên hệ từ API; fallback về giá trị mặc định.
+    final contact = ref.watch(websiteConfigProvider).value?.contact;
+    final email = (contact != null && contact.email.isNotEmpty)
+        ? contact.email
+        : 'support@citea.fr';
+    final phone = (contact != null && contact.phone.isNotEmpty)
+        ? contact.phone
+        : '+33 1 23 45 67 89';
+    final address = (contact != null && contact.address.isNotEmpty)
+        ? contact.address
+        : 'Paris, France';
+
     return Container(
       padding: const EdgeInsets. all(20),
       decoration: BoxDecoration(
@@ -435,15 +450,15 @@ class _AboutPageState extends State<AboutPage> {
           _buildContactItem(
             Icons.email,
             l10n.email,
-            'support@citea.fr',
-            () => _copyToClipboard('support@citea.fr', l10n.email),
+            email,
+            () => _copyToClipboard(email, l10n.email),
           ),
           const Divider(height: 24),
           _buildContactItem(
             Icons.phone,
             l10n.phone,
-            '+33 1 23 45 67 89',
-            () => _copyToClipboard('+33123456789', l10n.phone),
+            phone,
+            () => _copyToClipboard(phone, l10n.phone),
           ),
           const Divider(height: 24),
           _buildContactItem(
@@ -456,8 +471,8 @@ class _AboutPageState extends State<AboutPage> {
           _buildContactItem(
             Icons. location_city,
             l10n.address,
-            'Paris, France',
-            () => _copyToClipboard('Paris, France', l10n.address),
+            address,
+            () => _copyToClipboard(address, l10n.address),
           ),
         ],
       ),
@@ -547,7 +562,12 @@ class _AboutPageState extends State<AboutPage> {
             l10n.termsOfService,
             l10n.termsAndConditions,
             () {
-              _showComingSoon(l10n.termsOfService);
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const TermsOfServicePage(),
+                ),
+              );
             },
           ),
           const Divider(height: 24),
@@ -682,25 +702,6 @@ class _AboutPageState extends State<AboutPage> {
             ),
           ),
         ],
-      ),
-    );
-  }
-
-  void _showComingSoon(String feature) {
-    final l10n = AppLocalizations.of(context)!;
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Row(
-          children: [
-            const Icon(Icons.info_outline, color: Colors.white),
-            const SizedBox(width: 12),
-            Expanded(child: Text(l10n.featureComingSoon(feature))),
-          ],
-        ),
-        backgroundColor: Colors.blue.shade700,
-        behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-        duration: const Duration(seconds: 2),
       ),
     );
   }

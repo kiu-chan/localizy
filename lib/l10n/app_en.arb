@@ -635,6 +635,7 @@
   "privacyRetentionBody": "We keep your data only as long as necessary to provide our services and comply with legal obligations. Transaction records are retained according to applicable accounting laws. You can request deletion of your account at any time.",
   "privacyRightsTitle": "Your rights",
   "privacyRightsBody": "In accordance with the GDPR, you have the right to:\n• Access the personal data we hold about you\n• Correct inaccurate or incomplete data\n• Request deletion of your data\n• Object to or restrict certain processing\n• Receive your data in a portable format\n• Withdraw your consent at any time",
+  "contentBeingUpdated": "This content is being updated. Please check back later.",
   "privacyContactTitle": "Contact us",
   "privacyContactBody": "If you have any questions about this privacy policy or how we handle your data, contact us at:"
 }

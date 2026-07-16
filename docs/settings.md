@@ -15,10 +15,11 @@
 
 ```json
 {
-  "siteName": "Localizy",
-  "siteDescription": "...",
-  "logoUrl": "/uploads/logo.png",
-  "primaryColor": "#1976D2"
+  "appDownload": { "iosLink": "...", "androidLink": "..." },
+  "socialMedia": { "facebook": "...", "twitter": "...", "instagram": "...", "linkedIn": "...", "youtube": "..." },
+  "contact": { "email": "...", "phone": "...", "address": "..." },
+  "general": { "slogan": "...", "description": "...", "aboutUs": "..." },
+  "legal": { "termsOfUse": "...", "privacyPolicy": "..." }
 }
 ```
 
@@ -112,3 +113,37 @@ PUT /api/settings/{key}
 
 **Errors:**
 - `404` - Setting not found
+
+---
+
+## 6. Update site info (contact + legal)
+
+```http
+PUT /api/settings/site-info
+```
+
+**Authorization:** Admin
+
+Partial update: only the fields present (non-null) in the body are updated. Settings that do not exist yet are created automatically (`Phone`/`Email` in category `Contact`, `TermsOfUse`/`PrivacyPolicy` in category `Legal`).
+
+**Request Body:**
+```json
+{
+  "phone": "+237 6XX XXX XXX",
+  "email": "contact@localizy.com",
+  "termsOfUse": "Full terms of use content...",
+  "privacyPolicy": "Full privacy policy content..."
+}
+```
+
+**Response:** `200 OK`
+```json
+{
+  "phone": "+237 6XX XXX XXX",
+  "email": "contact@localizy.com",
+  "termsOfUse": "Full terms of use content...",
+  "privacyPolicy": "Full privacy policy content..."
+}
+```
+
+The updated values are also exposed publicly via `GET /api/settings/website-config` (`contact` and `legal` sections).

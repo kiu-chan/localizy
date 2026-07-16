@@ -3224,6 +3224,12 @@ abstract class AppLocalizations {
   /// **'Conformément au RGPD, vous avez le droit de :\n• Accéder aux données personnelles que nous détenons à votre sujet\n• Corriger des données inexactes ou incomplètes\n• Demander la suppression de vos données\n• Vous opposer à certains traitements ou les restreindre\n• Recevoir vos données dans un format portable\n• Retirer votre consentement à tout moment'**
   String get privacyRightsBody;
 
+  /// No description provided for @contentBeingUpdated.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ce contenu est en cours de mise à jour. Veuillez revenir plus tard.'**
+  String get contentBeingUpdated;
+
   /// No description provided for @privacyContactTitle.
   ///
   /// In fr, this message translates to:

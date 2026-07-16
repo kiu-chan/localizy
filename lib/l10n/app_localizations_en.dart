@@ -1676,6 +1676,10 @@ class AppLocalizationsEn extends AppLocalizations {
       'In accordance with the GDPR, you have the right to:\n• Access the personal data we hold about you\n• Correct inaccurate or incomplete data\n• Request deletion of your data\n• Object to or restrict certain processing\n• Receive your data in a portable format\n• Withdraw your consent at any time';
 
   @override
+  String get contentBeingUpdated =>
+      'This content is being updated. Please check back later.';
+
+  @override
   String get privacyContactTitle => 'Contact us';
 
   @override
