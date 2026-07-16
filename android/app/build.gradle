@@ -82,20 +82,18 @@ afterEvaluate {
         def assembleTask = tasks.findByName("assemble${variantName}")
         assembleTask?.doLast {
             def apkDir = file("${buildDir}/outputs/flutter-apk")
-            apkDir.listFiles()?.each { f ->
-                if (f.name.endsWith(".apk") && !f.name.startsWith("citea_")) {
-                    project.copy { from f; into apkDir; rename { "${baseName}.apk" } }
-                }
+            def apk = new File(apkDir, "app-${variant.name}.apk")
+            if (apk.exists()) {
+                project.copy { from apk; into apkDir; rename { "${baseName}.apk" } }
             }
         }
 
         def bundleTask = tasks.findByName("bundle${variantName}")
         bundleTask?.doLast {
             def aabDir = file("${buildDir}/outputs/bundle/${variant.name}")
-            aabDir.listFiles()?.each { f ->
-                if (f.name.endsWith(".aab") && !f.name.startsWith("citea_")) {
-                    project.copy { from f; into aabDir; rename { "${baseName}.aab" } }
-                }
+            def aab = new File(aabDir, "app-${variant.name}.aab")
+            if (aab.exists()) {
+                project.copy { from aab; into aabDir; rename { "${baseName}.aab" } }
             }
         }
     }
