@@ -5,6 +5,7 @@ import 'package:localizy/l10n/app_localizations.dart';
 
 import '../../domain/validation_assignment.dart';
 import '../providers/validator_providers.dart';
+import '../widgets/dashboard_skeleton.dart';
 import '../widgets/validation_badges.dart';
 
 class DashboardPage extends ConsumerWidget {
@@ -34,7 +35,7 @@ class DashboardPage extends ConsumerWidget {
         ],
       ),
       body: dashboardAsync.when(
-        loading: () => const Center(child: CircularProgressIndicator()),
+        loading: () => const DashboardSkeleton(),
         error: (_, _) => _buildError(l10n, ref),
         data: (dashboard) => RefreshIndicator(
           onRefresh: () => ref.refresh(validatorDashboardProvider.future),

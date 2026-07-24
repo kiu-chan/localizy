@@ -2,9 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:localizy/l10n/app_localizations.dart';
 
+import '../../../../core/widgets/skeleton_loader.dart';
 import '../../domain/validation_assignment.dart';
 import '../providers/validator_providers.dart';
 import '../widgets/assignment_card.dart';
+import '../widgets/assignment_card_skeleton.dart';
 import '../widgets/assignment_detail_sheet.dart';
 
 class RequestListPage extends ConsumerStatefulWidget {
@@ -80,7 +82,13 @@ class _RequestListPageState extends ConsumerState<RequestListPage> {
           ),
           Expanded(
             child: assignmentsAsync.when(
-              loading: () => const Center(child: CircularProgressIndicator()),
+              loading: () => ShimmerLoader(
+                child: ListView.builder(
+                  padding: const EdgeInsets.all(16),
+                  itemCount: 6,
+                  itemBuilder: (_, _) => const AssignmentCardSkeleton(),
+                ),
+              ),
               error: (_, _) => _buildError(l10n),
               data: (assignments) {
                 final filtered = _filtered(assignments);
