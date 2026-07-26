@@ -758,6 +758,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get scannerFrameHint => 'Align the license plate inside the frame';
 
   @override
+  String get scannerHelpTip4 =>
+      'Supported format: Cameroon plates, e.g. LT 1234 A';
+
+  @override
   String get scannerGallery => 'Gallery';
 
   @override

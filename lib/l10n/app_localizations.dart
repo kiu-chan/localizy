@@ -1532,6 +1532,12 @@ abstract class AppLocalizations {
   /// **'Alignez la plaque à l\'intérieur du cadre'**
   String get scannerFrameHint;
 
+  /// No description provided for @scannerHelpTip4.
+  ///
+  /// In fr, this message translates to:
+  /// **'Format pris en charge : plaques camerounaises, ex. LT 1234 A'**
+  String get scannerHelpTip4;
+
   /// No description provided for @scannerGallery.
   ///
   /// In fr, this message translates to:

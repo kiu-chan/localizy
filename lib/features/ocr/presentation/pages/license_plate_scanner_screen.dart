@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show SystemUiOverlayStyle;
 import 'package:image_picker/image_picker.dart';
 import 'package:localizy/l10n/app_localizations.dart';
-import 'package:localizy/features/ocr/domain/plate_country.dart';
 import '../../data/plate_recognition_service.dart';
 import '../widgets/plate_confirm_dialog.dart';
 import '../widgets/scanner_camera_view.dart';
@@ -97,7 +96,7 @@ class _LicensePlateScannerScreenState extends State<LicensePlateScannerScreen> {
       }
       if (mounted) setState(() { _isProcessing = true; _detectedText = l10n.recognizing; });
 
-      final detectedPlate = await _recognitionService.recognizeFromImage(picture.path, PlateCountry.auto);
+      final detectedPlate = await _recognitionService.recognizeFromImage(picture.path);
 
       if (mounted) await _handleDetection(detectedPlate);
     } catch (e) {
@@ -145,7 +144,7 @@ class _LicensePlateScannerScreenState extends State<LicensePlateScannerScreen> {
       }
       if (mounted) setState(() { _isProcessing = true; _detectedText = l10n.processing; });
 
-      final detectedPlate = await _recognitionService.recognizeFromImage(image.path, PlateCountry.auto);
+      final detectedPlate = await _recognitionService.recognizeFromImage(image.path);
 
       if (mounted) await _handleDetection(detectedPlate);
     } catch (e) {

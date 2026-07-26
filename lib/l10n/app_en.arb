@@ -252,6 +252,7 @@
   "scannerHelpTip2": "You can also pick a photo from the gallery",
   "scannerHelpTip3": "After detection, you can edit the plate number if needed",
   "scannerFrameHint": "Align the license plate inside the frame",
+  "scannerHelpTip4": "Supported format: Cameroon plates, e.g. LT 1234 A",
   "scannerGallery": "Gallery",
   "scannerFlash": "Flash",
   "scannerEditHint": "Check and edit if the result is not correct",

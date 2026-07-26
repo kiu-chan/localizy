@@ -41,6 +41,7 @@ class ScannerHelpBottomSheet {
               _buildTip(Icons.center_focus_strong_rounded, l10n.scannerHelpTip1),
               _buildTip(Icons.photo_library_outlined, l10n.scannerHelpTip2),
               _buildTip(Icons.edit_outlined, l10n.scannerHelpTip3),
+              _buildTip(Icons.flag_outlined, l10n.scannerHelpTip4),
             ],
           ),
         ),

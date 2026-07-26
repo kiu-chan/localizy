@@ -781,6 +781,10 @@ class AppLocalizationsFr extends AppLocalizations {
   String get scannerFrameHint => 'Alignez la plaque à l\'intérieur du cadre';
 
   @override
+  String get scannerHelpTip4 =>
+      'Format pris en charge : plaques camerounaises, ex. LT 1234 A';
+
+  @override
   String get scannerGallery => 'Galerie';
 
   @override

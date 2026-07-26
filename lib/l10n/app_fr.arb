@@ -252,6 +252,7 @@
   "scannerHelpTip2": "Vous pouvez aussi choisir une photo depuis la galerie",
   "scannerHelpTip3": "Après la détection, vous pouvez modifier le numéro si nécessaire",
   "scannerFrameHint": "Alignez la plaque à l'intérieur du cadre",
+  "scannerHelpTip4": "Format pris en charge : plaques camerounaises, ex. LT 1234 A",
   "scannerGallery": "Galerie",
   "scannerFlash": "Flash",
   "scannerEditHint": "Vérifiez et corrigez si le résultat est incorrect",
