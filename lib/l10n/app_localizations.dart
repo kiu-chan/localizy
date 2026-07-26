@@ -1526,6 +1526,30 @@ abstract class AppLocalizations {
   /// **'Après la détection, vous pouvez modifier le numéro si nécessaire'**
   String get scannerHelpTip3;
 
+  /// No description provided for @scannerFrameHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Alignez la plaque à l\'intérieur du cadre'**
+  String get scannerFrameHint;
+
+  /// No description provided for @scannerGallery.
+  ///
+  /// In fr, this message translates to:
+  /// **'Galerie'**
+  String get scannerGallery;
+
+  /// No description provided for @scannerFlash.
+  ///
+  /// In fr, this message translates to:
+  /// **'Flash'**
+  String get scannerFlash;
+
+  /// No description provided for @scannerEditHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Vérifiez et corrigez si le résultat est incorrect'**
+  String get scannerEditHint;
+
   /// No description provided for @dashboard.
   ///
   /// In fr, this message translates to:

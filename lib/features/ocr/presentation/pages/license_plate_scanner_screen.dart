@@ -1,10 +1,12 @@
 import 'dart:io';
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart' show SystemUiOverlayStyle;
 import 'package:image_picker/image_picker.dart';
 import 'package:localizy/l10n/app_localizations.dart';
 import 'package:localizy/features/ocr/domain/plate_country.dart';
 import '../../data/plate_recognition_service.dart';
+import '../widgets/plate_confirm_dialog.dart';
 import '../widgets/scanner_camera_view.dart';
 import '../widgets/scanner_captured_image_view.dart';
 import '../widgets/scanner_help_bottom_sheet.dart';
@@ -97,17 +99,7 @@ class _LicensePlateScannerScreenState extends State<LicensePlateScannerScreen> {
 
       final detectedPlate = await _recognitionService.recognizeFromImage(picture.path, PlateCountry.auto);
 
-      if (mounted) {
-        if (detectedPlate.isNotEmpty) {
-          setState(() { _detectedText = detectedPlate; });
-          _showEditDialog(detectedPlate);
-        } else {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(l10n.noLicensePlateDetected), duration: const Duration(seconds: 2)),
-          );
-          setState(() { _detectedText = ''; });
-        }
-      }
+      if (mounted) await _handleDetection(detectedPlate);
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('${l10n.error}: $e')));
@@ -115,6 +107,29 @@ class _LicensePlateScannerScreenState extends State<LicensePlateScannerScreen> {
       }
     } finally {
       if (mounted) setState(() { _isProcessing = false; });
+    }
+  }
+
+  /// Hiển thị kết quả OCR: mở popup xác nhận nếu đọc được biển số,
+  /// báo snackbar nếu không.
+  Future<void> _handleDetection(String detectedPlate) async {
+    final l10n = AppLocalizations.of(context)!;
+
+    if (detectedPlate.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(l10n.noLicensePlateDetected), duration: const Duration(seconds: 2)),
+      );
+      setState(() { _detectedText = ''; });
+      return;
+    }
+
+    setState(() { _detectedText = detectedPlate; _isProcessing = false; });
+    final confirmed = await PlateConfirmDialog.show(context, detectedPlate);
+    if (!mounted) return;
+    if (confirmed == null) {
+      _retake();
+    } else {
+      Navigator.pop(context, confirmed);
     }
   }
 
@@ -132,17 +147,7 @@ class _LicensePlateScannerScreenState extends State<LicensePlateScannerScreen> {
 
       final detectedPlate = await _recognitionService.recognizeFromImage(image.path, PlateCountry.auto);
 
-      if (mounted) {
-        if (detectedPlate.isNotEmpty) {
-          setState(() { _detectedText = detectedPlate; });
-          _showEditDialog(detectedPlate);
-        } else {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(l10n.noLicensePlateDetected), duration: const Duration(seconds: 2)),
-          );
-          setState(() { _detectedText = ''; });
-        }
-      }
+      if (mounted) await _handleDetection(detectedPlate);
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('${l10n.error}: $e')));
@@ -151,85 +156,6 @@ class _LicensePlateScannerScreenState extends State<LicensePlateScannerScreen> {
     } finally {
       if (mounted) setState(() { _isProcessing = false; });
     }
-  }
-
-  void _showEditDialog(String detectedPlate) {
-    final l10n = AppLocalizations.of(context)!;
-    final controller = TextEditingController(text: detectedPlate);
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (dialogContext) => AlertDialog(
-        title: Row(
-          children: [
-            const Icon(Icons.edit, color: Colors.blue, size: 28),
-            const SizedBox(width: 12),
-            Expanded(child: Text(l10n.confirmLicensePlate)),
-          ],
-        ),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(l10n.detectedLicensePlate, style: const TextStyle(fontSize: 14, color: Colors.grey)),
-            const SizedBox(height: 12),
-            TextField(
-              controller: controller,
-              decoration: InputDecoration(
-                hintText: l10n.enterLicensePlate,
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                  borderSide: BorderSide(color: Colors.blue.shade200, width: 2),
-                ),
-                enabledBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                  borderSide: BorderSide(color: Colors.blue.shade200, width: 2),
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                  borderSide: const BorderSide(color: Colors.blue, width: 2),
-                ),
-                filled: true,
-                fillColor: Colors.blue.shade50,
-                prefixIcon: Icon(Icons.directions_car, color: Colors.blue.shade700),
-              ),
-              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, letterSpacing: 1.2),
-              textAlign: TextAlign.center,
-              textCapitalization: TextCapitalization.characters,
-              autofocus: true,
-              maxLines: 2,
-            ),
-          ],
-        ),
-        actions: [
-          TextButton.icon(
-            onPressed: () { Navigator.pop(dialogContext); _retake(); },
-            icon: const Icon(Icons.close),
-            label: Text(l10n.cancel),
-          ),
-          ElevatedButton.icon(
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.green,
-              foregroundColor: Colors.white,
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-            ),
-            onPressed: () {
-              final plateNumber = controller.text.trim().toUpperCase();
-              if (plateNumber.isNotEmpty) {
-                Navigator.pop(dialogContext);
-                Navigator.pop(context, plateNumber);
-              } else {
-                ScaffoldMessenger.of(dialogContext).showSnackBar(
-                  SnackBar(content: Text(l10n.pleaseEnterLicensePlate)),
-                );
-              }
-            },
-            icon: const Icon(Icons.check_circle),
-            label: Text(l10n.confirm),
-          ),
-        ],
-      ),
-    );
   }
 
   @override
@@ -245,24 +171,10 @@ class _LicensePlateScannerScreenState extends State<LicensePlateScannerScreen> {
   Widget _buildBody() {
     final l10n = AppLocalizations.of(context)!;
 
-    if (_errorText != null) {
-      return Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Icon(Icons.error_outline, size: 64, color: Colors.red),
-            const SizedBox(height: 16),
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Text(_errorText!, style: const TextStyle(color: Colors.red), textAlign: TextAlign.center),
-            ),
-          ],
-        ),
-      );
-    }
+    if (_errorText != null) return _buildError(_errorText!);
 
     if (_controller == null || _initializeControllerFuture == null) {
-      return const Center(child: CircularProgressIndicator());
+      return const Center(child: CircularProgressIndicator(color: Colors.white));
     }
 
     return FutureBuilder<void>(
@@ -283,7 +195,6 @@ class _LicensePlateScannerScreenState extends State<LicensePlateScannerScreen> {
             detectedText: _detectedText,
             onCapture: _captureAndProcessImage,
             onGallery: _pickImageFromGallery,
-            onHelp: () => ScannerHelpBottomSheet.show(context),
             onFlashToggle: () async {
               if (_controller != null) {
                 final mode = _controller!.value.flashMode;
@@ -295,26 +206,31 @@ class _LicensePlateScannerScreenState extends State<LicensePlateScannerScreen> {
             },
           );
         } else if (snapshot.hasError) {
-          return Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                const Icon(Icons.error_outline, size: 64, color: Colors.red),
-                const SizedBox(height: 16),
-                Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Text(
-                    '${l10n.errorInitializingCamera}: ${snapshot.error}',
-                    textAlign: TextAlign.center,
-                  ),
-                ),
-              ],
-            ),
-          );
+          return _buildError('${l10n.errorInitializingCamera}: ${snapshot.error}');
         } else {
-          return const Center(child: CircularProgressIndicator());
+          return const Center(child: CircularProgressIndicator(color: Colors.white));
         }
       },
+    );
+  }
+
+  Widget _buildError(String message) {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(32),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(Icons.videocam_off_rounded, size: 56, color: Colors.white.withValues(alpha: 0.7)),
+            const SizedBox(height: 20),
+            Text(
+              message,
+              textAlign: TextAlign.center,
+              style: TextStyle(color: Colors.white.withValues(alpha: 0.85), height: 1.5),
+            ),
+          ],
+        ),
+      ),
     );
   }
 
@@ -322,12 +238,28 @@ class _LicensePlateScannerScreenState extends State<LicensePlateScannerScreen> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     return Scaffold(
+      backgroundColor: Colors.black,
+      extendBodyBehindAppBar: true,
       appBar: AppBar(
-        title: Text(l10n.licensePlateScanner),
-        backgroundColor: Colors.red,
+        backgroundColor: Colors.transparent,
         foregroundColor: Colors.white,
+        elevation: 0,
+        scrolledUnderElevation: 0,
+        systemOverlayStyle: SystemUiOverlayStyle.light,
+        title: Text(
+          l10n.licensePlateScanner,
+          style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w600),
+        ),
+        actions: [
+          IconButton(
+            onPressed: () => ScannerHelpBottomSheet.show(context),
+            icon: const Icon(Icons.help_outline_rounded),
+            tooltip: l10n.scannerHelpTitle,
+          ),
+          const SizedBox(width: 4),
+        ],
       ),
-      body: SafeArea(child: _buildBody()),
+      body: _buildBody(),
     );
   }
 }

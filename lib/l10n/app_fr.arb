@@ -251,6 +251,10 @@
   "scannerHelpTip1": "Pointez la caméra sur la plaque, puis appuyez sur le bouton de capture",
   "scannerHelpTip2": "Vous pouvez aussi choisir une photo depuis la galerie",
   "scannerHelpTip3": "Après la détection, vous pouvez modifier le numéro si nécessaire",
+  "scannerFrameHint": "Alignez la plaque à l'intérieur du cadre",
+  "scannerGallery": "Galerie",
+  "scannerFlash": "Flash",
+  "scannerEditHint": "Vérifiez et corrigez si le résultat est incorrect",
 
   "dashboard": "Tableau de bord",
   "subAccounts": "Sous-comptes",

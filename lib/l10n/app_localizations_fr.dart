@@ -778,6 +778,19 @@ class AppLocalizationsFr extends AppLocalizations {
       'Après la détection, vous pouvez modifier le numéro si nécessaire';
 
   @override
+  String get scannerFrameHint => 'Alignez la plaque à l\'intérieur du cadre';
+
+  @override
+  String get scannerGallery => 'Galerie';
+
+  @override
+  String get scannerFlash => 'Flash';
+
+  @override
+  String get scannerEditHint =>
+      'Vérifiez et corrigez si le résultat est incorrect';
+
+  @override
   String get dashboard => 'Tableau de bord';
 
   @override

@@ -755,6 +755,18 @@ class AppLocalizationsEn extends AppLocalizations {
       'After detection, you can edit the plate number if needed';
 
   @override
+  String get scannerFrameHint => 'Align the license plate inside the frame';
+
+  @override
+  String get scannerGallery => 'Gallery';
+
+  @override
+  String get scannerFlash => 'Flash';
+
+  @override
+  String get scannerEditHint => 'Check and edit if the result is not correct';
+
+  @override
   String get dashboard => 'Dashboard';
 
   @override

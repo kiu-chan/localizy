@@ -251,6 +251,10 @@
   "scannerHelpTip1": "Point the camera at the license plate, then tap the capture button",
   "scannerHelpTip2": "You can also pick a photo from the gallery",
   "scannerHelpTip3": "After detection, you can edit the plate number if needed",
+  "scannerFrameHint": "Align the license plate inside the frame",
+  "scannerGallery": "Gallery",
+  "scannerFlash": "Flash",
+  "scannerEditHint": "Check and edit if the result is not correct",
 
   "dashboard": "Dashboard",
   "subAccounts": "Sub Accounts",
