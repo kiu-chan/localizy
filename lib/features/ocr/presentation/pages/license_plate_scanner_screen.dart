@@ -4,10 +4,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show SystemUiOverlayStyle;
 import 'package:image_picker/image_picker.dart';
 import 'package:localizy/l10n/app_localizations.dart';
+import 'package:localizy/features/ocr/domain/plate_scan_roi.dart';
 import '../../data/plate_recognition_service.dart';
 import '../widgets/plate_confirm_dialog.dart';
 import '../widgets/scanner_camera_view.dart';
 import '../widgets/scanner_captured_image_view.dart';
+import '../widgets/scanner_frame_overlay.dart';
 import '../widgets/scanner_help_bottom_sheet.dart';
 
 class LicensePlateScannerScreen extends StatefulWidget {
@@ -55,19 +57,68 @@ class _LicensePlateScannerScreenState extends State<LicensePlateScannerScreen> {
         (c) => c.lensDirection == CameraLensDirection.back,
         orElse: () => cameras.first,
       );
-      _controller = CameraController(
-        backCamera, ResolutionPreset.high,
-        enableAudio: false, imageFormatGroup: ImageFormatGroup.jpeg,
-      );
-      _initializeControllerFuture = _controller!.initialize();
-      await _initializeControllerFuture;
+      // Ảnh càng nét thì OCR càng chính xác; tụt xuống `high` nếu máy không
+      // hỗ trợ độ phân giải cao hơn.
+      for (final preset in [ResolutionPreset.veryHigh, ResolutionPreset.high]) {
+        try {
+          _controller = CameraController(
+            backCamera, preset,
+            enableAudio: false, imageFormatGroup: ImageFormatGroup.jpeg,
+          );
+          _initializeControllerFuture = _controller!.initialize();
+          await _initializeControllerFuture;
+          break;
+        } on CameraException {
+          await _controller?.dispose();
+          _controller = null;
+          _initializeControllerFuture = null;
+          if (preset == ResolutionPreset.high) rethrow;
+        }
+      }
+
       await _controller!.setFlashMode(FlashMode.off);
+      await _setContinuousAutoFocus();
       if (mounted) setState(() {});
     } on CameraException catch (e) {
       if (mounted) setState(() { _errorText = '${l10n.cameraError}: ${e.code} ${e.description}'; });
     } catch (e) {
       if (mounted) setState(() { _errorText = '${l10n.errorInitializingCamera}: $e'; });
     }
+  }
+
+  Future<void> _setContinuousAutoFocus() async {
+    // Không phải máy nào cũng hỗ trợ — lỗi ở đây không nên chặn màn hình quét.
+    try {
+      await _controller?.setFocusMode(FocusMode.auto);
+      await _controller?.setExposureMode(ExposureMode.auto);
+    } on CameraException catch (e) {
+      debugPrint('Không đặt được chế độ lấy nét: ${e.code}');
+    }
+  }
+
+  /// Chạm vào preview để lấy nét đúng chỗ có biển số.
+  Future<void> _focusOnPoint(Offset normalized) async {
+    final controller = _controller;
+    if (controller == null || !controller.value.isInitialized) return;
+    try {
+      await controller.setFocusPoint(normalized);
+      await controller.setExposurePoint(normalized);
+    } on CameraException catch (e) {
+      debugPrint('Không lấy nét được tại điểm chạm: ${e.code}');
+    }
+  }
+
+  /// Khung ngắm hiện tại, chuẩn hoá theo màn hình — dùng để cắt ảnh trước khi OCR.
+  PlateScanRoi _currentRoi() {
+    final size = MediaQuery.sizeOf(context);
+    final rect = ScannerFrameOverlay.frameRect(size);
+    return PlateScanRoi(
+      left: rect.left / size.width,
+      top: rect.top / size.height,
+      right: rect.right / size.width,
+      bottom: rect.bottom / size.height,
+      viewportAspect: size.width / size.height,
+    );
   }
 
   void _retake() {
@@ -86,6 +137,8 @@ class _LicensePlateScannerScreenState extends State<LicensePlateScannerScreen> {
     if (_controller == null || !_controller!.value.isInitialized) return;
     if (_isProcessing) return;
 
+    // Chốt khung ngắm ngay lúc chụp, trước khi ảnh chụp che mất preview.
+    final roi = _currentRoi();
     setState(() { _isProcessing = true; });
     try {
       final XFile picture = await _controller!.takePicture();
@@ -96,7 +149,10 @@ class _LicensePlateScannerScreenState extends State<LicensePlateScannerScreen> {
       }
       if (mounted) setState(() { _isProcessing = true; _detectedText = l10n.recognizing; });
 
-      final detectedPlate = await _recognitionService.recognizeFromImage(picture.path);
+      final detectedPlate = await _recognitionService.recognizeFromImage(
+        picture.path,
+        roi: roi,
+      );
 
       if (mounted) await _handleDetection(detectedPlate);
     } catch (e) {
@@ -194,6 +250,7 @@ class _LicensePlateScannerScreenState extends State<LicensePlateScannerScreen> {
             detectedText: _detectedText,
             onCapture: _captureAndProcessImage,
             onGallery: _pickImageFromGallery,
+            onFocusTap: _focusOnPoint,
             onFlashToggle: () async {
               if (_controller != null) {
                 final mode = _controller!.value.flashMode;
