@@ -4,6 +4,7 @@ import 'package:localizy/l10n/app_localizations.dart';
 
 import '../../data/address_repository.dart';
 import '../../domain/address_models.dart';
+import 'address_detail_skeleton.dart';
 
 /// Callback khi người dùng chọn chỉ đường
 typedef OnGetDirections = void Function(AddressCoordinate address);
@@ -110,10 +111,7 @@ class _AddressDetailBottomSheetState
           // Content
           Flexible(
             child: _isLoading
-                ? const Padding(
-                    padding: EdgeInsets.all(40),
-                    child: CircularProgressIndicator(),
-                  )
+                ? const AddressDetailSkeleton(showLeadingIcon: true)
                 : _errorMessage != null
                     ? _buildErrorState()
                     : _buildDetailContent(l10n),

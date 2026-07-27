@@ -7,6 +7,8 @@ import 'package:localizy/core/network/api_client.dart';
 import 'package:localizy/features/auth/data/auth_repository.dart';
 import 'package:localizy/l10n/app_localizations.dart';
 
+import '../widgets/account_settings_skeleton.dart';
+
 class AccountSettingsPage extends ConsumerStatefulWidget {
   const AccountSettingsPage({super.key});
 
@@ -217,7 +219,7 @@ class _AccountSettingsPageState extends ConsumerState<AccountSettingsPage> {
         ],
       ),
       body: _loading
-          ? const Center(child: CircularProgressIndicator())
+          ? const AccountSettingsSkeleton()
           : SingleChildScrollView(
               child: Column(
                 children: [

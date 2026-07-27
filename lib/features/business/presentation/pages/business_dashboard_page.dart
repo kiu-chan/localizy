@@ -4,6 +4,7 @@ import 'package:localizy/l10n/app_localizations.dart';
 
 import '../../domain/business_dashboard.dart';
 import '../providers/business_providers.dart';
+import '../widgets/business_dashboard_skeleton.dart';
 
 class BusinessDashboardPage extends ConsumerWidget {
   const BusinessDashboardPage({super.key});
@@ -40,7 +41,7 @@ class BusinessDashboardPage extends ConsumerWidget {
       body: RefreshIndicator(
         onRefresh: () => ref.refresh(businessDashboardProvider.future),
         child: dashboardAsync.when(
-          loading: () => const Center(child: CircularProgressIndicator()),
+          loading: () => const BusinessDashboardSkeleton(),
           error: (e, _) => _buildError(context, ref, l10n, e),
           data: (dashboard) => _buildContent(context, l10n, dashboard),
         ),

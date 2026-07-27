@@ -4,6 +4,7 @@ import 'package:flutter_widget_from_html_core/flutter_widget_from_html_core.dart
 import 'package:localizy/l10n/app_localizations.dart';
 
 import '../providers/website_config_provider.dart';
+import '../widgets/legal_document_skeleton.dart';
 
 class TermsOfServicePage extends ConsumerWidget {
   const TermsOfServicePage({super.key});
@@ -27,7 +28,7 @@ class TermsOfServicePage extends ConsumerWidget {
         elevation: 0,
       ),
       body: configAsync.when(
-        loading: () => const Center(child: CircularProgressIndicator()),
+        loading: () => const LegalDocumentSkeleton(),
         error: (_, _) => _buildError(context, ref, l10n),
         data: (config) {
           final content = config.legal.termsOfUse.trim();

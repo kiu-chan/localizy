@@ -6,6 +6,8 @@ import 'package:url_launcher/url_launcher.dart';
 
 import '../../data/address_repository.dart';
 import '../../domain/address_models.dart';
+import '../widgets/address_card_skeleton.dart';
+import '../widgets/address_detail_skeleton.dart';
 
 class AddressSearchPage extends ConsumerStatefulWidget {
   const AddressSearchPage({super.key});
@@ -204,11 +206,7 @@ class _AddressSearchPageState extends ConsumerState<AddressSearchPage> {
 
     if (_searchController.text.isEmpty) {
       if (_isLoadingAll) {
-        return Center(
-          child: CircularProgressIndicator(
-            valueColor: AlwaysStoppedAnimation<Color>(Colors.purple.shade700),
-          ),
-        );
+        return const AddressCardSkeletonList();
       }
       if (_allAddresses.isEmpty) {
         return Center(
@@ -228,19 +226,9 @@ class _AddressSearchPageState extends ConsumerState<AddressSearchPage> {
       );
     }
 
+    // Ô tìm kiếm đã có spinner nhỏ khi _isSearching, nên phần thân dùng skeleton.
     if (_isSearching) {
-      return Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            CircularProgressIndicator(
-              valueColor: AlwaysStoppedAnimation<Color>(Colors.purple.shade700),
-            ),
-            const SizedBox(height: 16),
-            Text(l10n.searching),
-          ],
-        ),
-      );
+      return const AddressCardSkeletonList(itemCount: 4);
     }
 
     if (_searchResults.isEmpty) {
@@ -458,11 +446,7 @@ class _AddressDetailSheetState extends ConsumerState<_AddressDetailSheet> {
             // Content
             Expanded(
               child: _isLoading
-                  ? Center(
-                      child: CircularProgressIndicator(
-                        valueColor: AlwaysStoppedAnimation<Color>(Colors.purple.shade700),
-                      ),
-                    )
+                  ? const AddressDetailSkeleton()
                   : _buildContent(controller),
             ),
           ],

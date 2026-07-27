@@ -5,6 +5,7 @@ import 'package:localizy/l10n/app_localizations.dart';
 
 import '../../domain/website_config.dart';
 import '../providers/website_config_provider.dart';
+import '../widgets/legal_document_skeleton.dart';
 
 class PrivacyPolicyPage extends ConsumerWidget {
   const PrivacyPolicyPage({super.key});
@@ -30,7 +31,7 @@ class PrivacyPolicyPage extends ConsumerWidget {
         elevation: 0,
       ),
       body: configAsync.when(
-        loading: () => const Center(child: CircularProgressIndicator()),
+        loading: () => const LegalDocumentSkeleton(),
         // API lỗi (vd: offline) → hiển thị nội dung tĩnh thay vì màn hình lỗi.
         error: (_, _) => _buildBody(context, l10n, null),
         data: (config) => _buildBody(context, l10n, config),

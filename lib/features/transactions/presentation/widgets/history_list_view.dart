@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../../core/widgets/skeleton_loader.dart';
+import 'history_card_skeleton.dart';
+
 /// Danh sách async dùng chung cho các tab lịch sử:
 /// loading / error + retry / empty / pull-to-refresh.
 class HistoryListView<T> extends StatelessWidget {
@@ -26,7 +29,13 @@ class HistoryListView<T> extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return value.when(
-      loading: () => const Center(child: CircularProgressIndicator()),
+      loading: () => ShimmerLoader(
+        child: ListView.builder(
+          padding: const EdgeInsets.all(16),
+          itemCount: 5,
+          itemBuilder: (_, _) => const HistoryCardSkeleton(),
+        ),
+      ),
       error: (error, _) => _ErrorView(message: '$error', onRetry: onRetry),
       data: (items) => RefreshIndicator(
         onRefresh: onRefresh,

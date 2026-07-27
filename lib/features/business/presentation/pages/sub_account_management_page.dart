@@ -2,10 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:localizy/l10n/app_localizations.dart';
 
+import '../../../../core/widgets/skeleton_loader.dart';
 import '../../data/business_repository.dart';
 import '../../domain/sub_account.dart';
 import '../providers/business_providers.dart';
 import '../widgets/sub_account_card.dart';
+import '../widgets/sub_account_card_skeleton.dart';
 import '../widgets/sub_account_detail_sheet.dart';
 import '../widgets/sub_account_form_dialog.dart';
 
@@ -87,7 +89,13 @@ class SubAccountManagementPage extends ConsumerWidget {
         label: Text(l10n.addAccount),
       ),
       body: accountsAsync.when(
-        loading: () => const Center(child: CircularProgressIndicator()),
+        loading: () => ShimmerLoader(
+          child: ListView.builder(
+            padding: const EdgeInsets.fromLTRB(16, 16, 16, 88),
+            itemCount: 6,
+            itemBuilder: (_, _) => const SubAccountCardSkeleton(),
+          ),
+        ),
         error: (e, _) => _buildError(context, ref, l10n, e),
         data: (accounts) => _buildList(context, ref, l10n, accounts),
       ),

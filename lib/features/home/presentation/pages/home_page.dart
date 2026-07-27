@@ -11,6 +11,7 @@ import 'package:localizy/features/transactions/presentation/pages/transaction_hi
 import 'package:localizy/features/ocr/presentation/pages/license_plate_scanner_screen.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../../core/widgets/skeleton_loader.dart';
 import '../../data/slide_repository.dart';
 import '../../domain/home_slide.dart';
 
@@ -131,13 +132,11 @@ class _HomePageState extends ConsumerState<HomePage> {
               child: Stack(
                 children: [
                   // Three states:
-                  // 1) Loading -> show progress indicator
+                  // 1) Loading -> show skeleton banner
                   // 2) No slides -> show "Đang cập nhật slide"
                   // 3) Has slides -> PageView
                   if (_isLoading)
-                    const Center(
-                      child: CircularProgressIndicator(),
-                    )
+                    const _SlideSkeleton()
                   else if (_noSlides)
                     Container(
                       width: double.infinity,
@@ -605,6 +604,44 @@ class _HomePageState extends ConsumerState<HomePage> {
               Icon(Icons.chevron_right_rounded, size: 20, color: Colors.grey[350]),
             ],
           ),
+        ),
+      ),
+    );
+  }
+}
+/// Skeleton của banner slider ở đầu trang chủ (cùng chiều cao 290 với slide thật)
+/// để header không bị nhảy layout khi slide tải xong.
+class _SlideSkeleton extends StatelessWidget {
+  const _SlideSkeleton();
+
+  @override
+  Widget build(BuildContext context) {
+    final white = Colors.white.withValues(alpha: 0.4);
+    return ShimmerLoader(
+      child: Container(
+        width: double.infinity,
+        padding: const EdgeInsets.all(32),
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [Color(0xFF1565C0), Color(0xFF42A5F5)],
+          ),
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            SkeletonBox(
+              width: 100,
+              height: 100,
+              borderRadius: BorderRadius.circular(50),
+              color: white,
+            ),
+            const SizedBox(height: 20),
+            SkeletonBox(width: 200, height: 20, color: white),
+            const SizedBox(height: 10),
+            SkeletonBox(width: 140, height: 20, color: white),
+          ],
         ),
       ),
     );
