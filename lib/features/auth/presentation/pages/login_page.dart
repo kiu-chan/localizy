@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../widgets/auth_emblem.dart';
 import '../widgets/forgot_password_form.dart';
 import '../widgets/login_form.dart';
 import '../widgets/register_form.dart';
@@ -26,6 +27,22 @@ class _LoginPageState extends ConsumerState<LoginPage> {
   /// Chiều trượt của form mới: đi sâu hơn thì vào từ phải, quay lại thì từ trái.
   bool _slideFromRight = true;
 
+  /// Form quên mật khẩu đã gửi email xong → đổi hoạt ảnh ở đầu trang.
+  bool _emailSent = false;
+
+  AuthEmblemKind get _emblemKind {
+    switch (_view) {
+      case AuthView.register:
+        return AuthEmblemKind.register;
+      case AuthView.forgotPassword:
+        return _emailSent
+            ? AuthEmblemKind.emailSent
+            : AuthEmblemKind.forgotPassword;
+      case AuthView.login:
+        return AuthEmblemKind.login;
+    }
+  }
+
   /// Đăng nhập là gốc; đăng ký và quên mật khẩu là một cấp sâu hơn.
   int _depth(AuthView view) => view == AuthView.login ? 0 : 1;
 
@@ -35,6 +52,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
     setState(() {
       _slideFromRight = _depth(view) > _depth(_view);
       _view = view;
+      _emailSent = false;
     });
   }
 
@@ -66,6 +84,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
         return ForgotPasswordForm(
           key: const ValueKey(AuthView.forgotPassword),
           onBackToLogin: () => _switchTo(AuthView.login),
+          onEmailSentChanged: (sent) => setState(() => _emailSent = sent),
         );
       case AuthView.login:
         return LoginForm(
@@ -98,36 +117,9 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Container(
-                        padding: const EdgeInsets.all(20),
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          shape: BoxShape.circle,
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black.withValues(alpha: 0.2),
-                              blurRadius: 20,
-                              offset: const Offset(0, 10),
-                            ),
-                          ],
-                        ),
-                        child: ClipOval(
-                          child: Image.asset(
-                            'assets/icon/logo.png',
-                            width: 80,
-                            height: 80,
-                            fit: BoxFit.cover,
-                            errorBuilder: (context, error, stackTrace) {
-                              return Icon(
-                                Icons.eco,
-                                size: 60,
-                                color: Colors.green.shade700,
-                              );
-                            },
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: 40),
+                      AuthEmblem(kind: _emblemKind),
+                      // Hoạt ảnh đã có lề trắng sẵn trong khung vẽ nên gap nhỏ hơn.
+                      const SizedBox(height: 24),
                       AnimatedSize(
                         duration: _duration,
                         curve: Curves.easeInOut,

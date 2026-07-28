@@ -9,10 +9,17 @@ import '../../domain/auth_exception.dart';
 /// Trang này không có nút đổi form nào khác nên vẫn giữ nút quay lại
 /// (do trang bao ngoài hiển thị) để trở về đăng nhập.
 class ForgotPasswordForm extends ConsumerStatefulWidget {
-  const ForgotPasswordForm({super.key, required this.onBackToLogin});
+  const ForgotPasswordForm({
+    super.key,
+    required this.onBackToLogin,
+    required this.onEmailSentChanged,
+  });
 
   /// Quay về form đăng nhập (không pop route).
   final VoidCallback onBackToLogin;
+
+  /// Báo cho trang bao ngoài để đổi hoạt ảnh sang "đã gửi email".
+  final ValueChanged<bool> onEmailSentChanged;
 
   @override
   ConsumerState<ForgotPasswordForm> createState() =>
@@ -43,6 +50,7 @@ class _ForgotPasswordFormState extends ConsumerState<ForgotPasswordForm> {
       if (!mounted) return;
       FocusScope.of(context).unfocus();
       setState(() => _emailSent = true);
+      widget.onEmailSentChanged(true);
     } on AuthException catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
@@ -263,7 +271,10 @@ class _ForgotPasswordFormState extends ConsumerState<ForgotPasswordForm> {
               ),
               const SizedBox(height: 16),
               TextButton(
-                onPressed: () => setState(() => _emailSent = false),
+                onPressed: () {
+                  setState(() => _emailSent = false);
+                  widget.onEmailSentChanged(false);
+                },
                 child: Text(
                   l10n.sendAgain,
                   style: TextStyle(

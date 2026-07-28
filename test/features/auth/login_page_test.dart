@@ -144,6 +144,9 @@ void main() {
 
     await tester.enterText(find.byType(TextFormField).at(0), 'a@b.com');
     await tester.enterText(find.byType(TextFormField).at(1), 'secret1');
+    // Hoạt ảnh đầu trang đẩy nút xuống ngoài viewport của test.
+    await tester.ensureVisible(find.byType(ElevatedButton));
+    await tester.pump();
     await tester.tap(find.byType(ElevatedButton));
     await tester.pump(); // chạy _handleLogin
     await tester.pump(); // hiện SnackBar
