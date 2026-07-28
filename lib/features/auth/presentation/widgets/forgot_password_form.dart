@@ -4,17 +4,22 @@ import 'package:localizy/l10n/app_localizations.dart';
 
 import '../../data/auth_repository.dart';
 import '../../domain/auth_exception.dart';
-import '../widgets/wave_background.dart';
 
-class ForgotPasswordPage extends ConsumerStatefulWidget {
-  const ForgotPasswordPage({super.key});
+/// Phần "quên mật khẩu" của [LoginPage] — logo và nền do trang bao ngoài dựng.
+/// Trang này không có nút đổi form nào khác nên vẫn giữ nút quay lại
+/// (do trang bao ngoài hiển thị) để trở về đăng nhập.
+class ForgotPasswordForm extends ConsumerStatefulWidget {
+  const ForgotPasswordForm({super.key, required this.onBackToLogin});
+
+  /// Quay về form đăng nhập (không pop route).
+  final VoidCallback onBackToLogin;
 
   @override
-  ConsumerState<ForgotPasswordPage> createState() =>
-      _ForgotPasswordPageState();
+  ConsumerState<ForgotPasswordForm> createState() =>
+      _ForgotPasswordFormState();
 }
 
-class _ForgotPasswordPageState extends ConsumerState<ForgotPasswordPage> {
+class _ForgotPasswordFormState extends ConsumerState<ForgotPasswordForm> {
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
   bool _isLoading = false;
@@ -36,6 +41,7 @@ class _ForgotPasswordPageState extends ConsumerState<ForgotPasswordPage> {
           .read(authRepositoryProvider)
           .forgotPassword(email: _emailController.text.trim());
       if (!mounted) return;
+      FocusScope.of(context).unfocus();
       setState(() => _emailSent = true);
     } on AuthException catch (e) {
       if (!mounted) return;
@@ -55,71 +61,36 @@ class _ForgotPasswordPageState extends ConsumerState<ForgotPasswordPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Stack(
-        children: [
-          const WaveBackground(),
-          SafeArea(
-            child: Column(
-              children: [
-                Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Row(
-                    children: [
-                      IconButton(
-                        icon: const Icon(Icons.arrow_back, color: Colors.white),
-                        onPressed: () => Navigator.pop(context),
-                      ),
-                    ],
-                  ),
-                ),
-                Expanded(
-                  child: Center(
-                    child: SingleChildScrollView(
-                      padding: const EdgeInsets.all(24.0),
-                      child:
-                          _emailSent ? _buildSuccessView() : _buildFormView(),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
+    // Gửi xong → đổi sang thông báo "kiểm tra email" bằng cùng hiệu ứng mờ.
+    return AnimatedSize(
+      duration: const Duration(milliseconds: 300),
+      curve: Curves.easeInOut,
+      alignment: Alignment.topCenter,
+      child: AnimatedSwitcher(
+        duration: const Duration(milliseconds: 300),
+        layoutBuilder: (currentChild, previousChildren) => Stack(
+          alignment: Alignment.topCenter,
+          children: [...previousChildren, ?currentChild],
+        ),
+        child: _emailSent
+            ? _buildSuccessView(const ValueKey('sent'))
+            : _buildFormView(const ValueKey('form')),
       ),
     );
   }
 
-  Widget _buildFormView() {
+  Widget _buildFormView(Key key) {
     final l10n = AppLocalizations.of(context)!;
 
     return Form(
       key: _formKey,
       child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
+        key: key,
+        mainAxisSize: MainAxisSize.min,
         children: [
-          Container(
-            padding: const EdgeInsets.all(20),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              shape: BoxShape.circle,
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.2),
-                  blurRadius: 20,
-                  offset: const Offset(0, 10),
-                ),
-              ],
-            ),
-            child: Icon(
-              Icons.lock_reset,
-              size: 60,
-              color: Colors.green.shade700,
-            ),
-          ),
-          const SizedBox(height: 40),
           Text(
             l10n.resetPassword,
+            textAlign: TextAlign.center,
             style: const TextStyle(
               fontSize: 32,
               fontWeight: FontWeight.bold,
@@ -132,10 +103,7 @@ class _ForgotPasswordPageState extends ConsumerState<ForgotPasswordPage> {
             child: Text(
               l10n.resetPasswordDescription,
               textAlign: TextAlign.center,
-              style: const TextStyle(
-                fontSize: 16,
-                color: Colors.white70,
-              ),
+              style: const TextStyle(fontSize: 16, color: Colors.white70),
             ),
           ),
           const SizedBox(height: 40),
@@ -224,34 +192,16 @@ class _ForgotPasswordPageState extends ConsumerState<ForgotPasswordPage> {
     );
   }
 
-  Widget _buildSuccessView() {
+  Widget _buildSuccessView(Key key) {
     final l10n = AppLocalizations.of(context)!;
 
     return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
+      key: key,
+      mainAxisSize: MainAxisSize.min,
       children: [
-        Container(
-          padding: const EdgeInsets.all(20),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            shape: BoxShape.circle,
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withValues(alpha: 0.2),
-                blurRadius: 20,
-                offset: const Offset(0, 10),
-              ),
-            ],
-          ),
-          child: Icon(
-            Icons.mark_email_read,
-            size: 60,
-            color: Colors.green.shade700,
-          ),
-        ),
-        const SizedBox(height: 40),
         Text(
           l10n.checkEmail,
+          textAlign: TextAlign.center,
           style: const TextStyle(
             fontSize: 32,
             fontWeight: FontWeight.bold,
@@ -264,10 +214,7 @@ class _ForgotPasswordPageState extends ConsumerState<ForgotPasswordPage> {
           child: Text(
             '${l10n.checkEmailDescription} ${_emailController.text}',
             textAlign: TextAlign.center,
-            style: const TextStyle(
-              fontSize: 16,
-              color: Colors.white70,
-            ),
+            style: const TextStyle(fontSize: 16, color: Colors.white70),
           ),
         ),
         const SizedBox(height: 40),
@@ -286,11 +233,17 @@ class _ForgotPasswordPageState extends ConsumerState<ForgotPasswordPage> {
           ),
           child: Column(
             children: [
+              Icon(
+                Icons.mark_email_read,
+                size: 48,
+                color: Colors.green.shade700,
+              ),
+              const SizedBox(height: 24),
               SizedBox(
                 width: double.infinity,
                 height: 56,
                 child: ElevatedButton(
-                  onPressed: () => Navigator.pop(context),
+                  onPressed: widget.onBackToLogin,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.green.shade700,
                     foregroundColor: Colors.white,
@@ -310,11 +263,7 @@ class _ForgotPasswordPageState extends ConsumerState<ForgotPasswordPage> {
               ),
               const SizedBox(height: 16),
               TextButton(
-                onPressed: () {
-                  setState(() {
-                    _emailSent = false;
-                  });
-                },
+                onPressed: () => setState(() => _emailSent = false),
                 child: Text(
                   l10n.sendAgain,
                   style: TextStyle(
