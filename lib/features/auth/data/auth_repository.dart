@@ -33,6 +33,10 @@ class AuthRepository {
   static const _tokenKey = 'auth_token';
   static const _userKey = 'auth_user';
 
+  /// Email của lần đăng nhập gần nhất — giữ lại sau khi logout để điền sẵn
+  /// ô email ở màn hình đăng nhập.
+  static const _lastEmailKey = 'last_login_email';
+
   // ── Đăng nhập / đăng ký ────────────────────────────────────────────────────
 
   Future<User> login({required String email, required String password}) async {
@@ -125,6 +129,24 @@ class AuthRepository {
   }
 
   Future<String?> getToken() => _storage.read(key: _tokenKey);
+
+  /// Email đã dùng ở lần đăng nhập thành công gần nhất (null nếu chưa có
+  /// hoặc người dùng đã xoá).
+  Future<String?> getLastLoginEmail() async {
+    try {
+      final email = await _storage.read(key: _lastEmailKey);
+      return (email == null || email.isEmpty) ? null : email;
+    } catch (_) {
+      return null;
+    }
+  }
+
+  /// Quên email đã lưu — lần mở app sau ô email sẽ trống.
+  Future<void> clearLastLoginEmail() async {
+    try {
+      await _storage.delete(key: _lastEmailKey);
+    } catch (_) {}
+  }
 
   Future<User?> getStoredUser() async {
     try {
@@ -254,6 +276,9 @@ class AuthRepository {
       }
       // Lưu nguyên payload để nơi khác dùng userId, name, avatarUrl...
       await _storage.write(key: _userKey, value: json.encode(data));
+      if (user.email.isNotEmpty) {
+        await _storage.write(key: _lastEmailKey, value: user.email);
+      }
       return user;
     }
     throw AuthException(_errorMessage(resp.body, fallbackMessage));

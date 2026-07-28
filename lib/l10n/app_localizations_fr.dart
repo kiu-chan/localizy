@@ -21,6 +21,9 @@ class AppLocalizationsFr extends AppLocalizations {
   String get email => 'E-mail';
 
   @override
+  String get clearEmail => 'Effacer l\'e-mail enregistré';
+
+  @override
   String get password => 'Mot de passe';
 
   @override

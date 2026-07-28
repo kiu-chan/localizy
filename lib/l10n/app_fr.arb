@@ -6,6 +6,7 @@
   "welcomeBack": "Bon retour! ",
   "loginToContinue": "Connectez-vous pour continuer",
   "email": "E-mail",
+  "clearEmail": "Effacer l'e-mail enregistré",
   "password":  "Mot de passe",
   "forgotPassword": "Mot de passe oublié?",
   "login": "Se connecter",

@@ -16,6 +16,9 @@ void main() {
     authRepo = MockAuthRepository();
     // AuthNotifier.build() đọc phiên đã lưu — trả null (chưa đăng nhập).
     when(() => authRepo.getStoredUser()).thenAnswer((_) async => null);
+    // LoginPage điền sẵn email của lần đăng nhập trước — mặc định chưa có.
+    when(() => authRepo.getLastLoginEmail()).thenAnswer((_) async => null);
+    when(() => authRepo.clearLastLoginEmail()).thenAnswer((_) async {});
   });
 
   Future<void> pumpLoginPage(WidgetTester tester) async {
@@ -50,6 +53,30 @@ void main() {
 
     verifyNever(() => authRepo.login(
         email: any(named: 'email'), password: any(named: 'password')));
+  });
+
+  testWidgets('có email đã lưu → điền sẵn vào ô email', (tester) async {
+    when(() => authRepo.getLastLoginEmail())
+        .thenAnswer((_) async => 'last@user.com');
+
+    await pumpLoginPage(tester);
+    await tester.pump(); // hoàn tất _prefillLastEmail
+
+    expect(find.text('last@user.com'), findsOneWidget);
+  });
+
+  testWidgets('nhấn nút X → xoá ô email và quên email đã lưu', (tester) async {
+    when(() => authRepo.getLastLoginEmail())
+        .thenAnswer((_) async => 'last@user.com');
+
+    await pumpLoginPage(tester);
+    await tester.pump();
+
+    await tester.tap(find.byIcon(Icons.clear));
+    await tester.pump();
+
+    expect(find.text('last@user.com'), findsNothing);
+    verify(() => authRepo.clearLastLoginEmail()).called(1);
   });
 
   testWidgets('đăng nhập lỗi → hiện SnackBar với message', (tester) async {

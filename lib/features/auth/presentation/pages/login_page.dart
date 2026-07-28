@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:localizy/l10n/app_localizations.dart';
 
+import '../../data/auth_repository.dart';
 import '../../domain/auth_exception.dart';
 import '../providers/auth_provider.dart';
 import '../role_navigation.dart';
@@ -34,6 +35,20 @@ class _LoginPageState extends ConsumerState<LoginPage> {
     _passwordController.addListener(() => setState(() {}));
     _emailFocusNode.addListener(() => setState(() {}));
     _passwordFocusNode.addListener(() => setState(() {}));
+    _prefillLastEmail();
+  }
+
+  /// Điền sẵn email của lần đăng nhập gần nhất.
+  Future<void> _prefillLastEmail() async {
+    final email = await ref.read(authRepositoryProvider).getLastLoginEmail();
+    if (!mounted || email == null || _emailController.text.isNotEmpty) return;
+    _emailController.text = email;
+  }
+
+  /// Xoá ô email và quên luôn email đã lưu.
+  Future<void> _clearEmail() async {
+    _emailController.clear();
+    await ref.read(authRepositoryProvider).clearLastLoginEmail();
   }
 
   @override
@@ -218,6 +233,16 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                                   Icons.email_outlined,
                                   color: Colors.green.shade700,
                                 ),
+                                suffixIcon: _emailController.text.isEmpty
+                                    ? null
+                                    : IconButton(
+                                        icon: Icon(
+                                          Icons.clear,
+                                          color: Colors.grey.shade600,
+                                        ),
+                                        tooltip: l10n.clearEmail,
+                                        onPressed: _clearEmail,
+                                      ),
                                 border: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(12),
                                 ),

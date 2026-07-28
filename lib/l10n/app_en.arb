@@ -6,6 +6,7 @@
   "welcomeBack":  "Welcome back!",
   "loginToContinue": "Login to continue",
   "email":  "Email",
+  "clearEmail": "Clear saved email",
   "password":  "Password",
   "forgotPassword": "Forgot password?",
   "login": "Login",

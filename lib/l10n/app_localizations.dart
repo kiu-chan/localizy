@@ -122,6 +122,12 @@ abstract class AppLocalizations {
   /// **'E-mail'**
   String get email;
 
+  /// No description provided for @clearEmail.
+  ///
+  /// In fr, this message translates to:
+  /// **'Effacer l\'e-mail enregistré'**
+  String get clearEmail;
+
   /// No description provided for @password.
   ///
   /// In fr, this message translates to:
